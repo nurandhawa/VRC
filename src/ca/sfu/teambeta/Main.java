@@ -1,4 +1,4 @@
-package ca.sfu.teambeta;
+package src.ca.sfu.teambeta;
 
 class Main {
     public static void main(String args[]) {
