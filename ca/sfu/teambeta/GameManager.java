@@ -7,13 +7,13 @@ public class GameManager {
 
     private MatchCard testCard;
 
-    public GameManager(){
+    public GameManager() {
 
         // just testing it out. Can have an ArrayList here to store Match Cards.
         testCard = new MatchCard(3);
     }
 
-    public void createMatchCards(){
+    public void createMatchCards() {
 
         //Teams would be gathered from the Ladder.
         testCard.addTeamToMatchCard("Roger Federer");
@@ -23,10 +23,10 @@ public class GameManager {
         testCard.displayMatchCard();
     }
 
-    public void inputMatchResults(){
+    public void inputMatchResults() {
 
-        testCard.addMatchCardResults(1,"W","L","NA");
-        testCard.addMatchCardResults(2,"W","NA","L");
+        testCard.addMatchCardResults(1, "W", "L", "NA");
+        testCard.addMatchCardResults(2, "W", "NA", "L");
 
         System.out.println();
         testCard.displayMatchCard();
