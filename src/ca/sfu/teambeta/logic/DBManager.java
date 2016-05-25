@@ -1,4 +1,4 @@
-package ca.sfu.teambeta;
+package ca.sfu.teambeta.logic;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
