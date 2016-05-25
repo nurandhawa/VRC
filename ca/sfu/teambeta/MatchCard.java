@@ -1,4 +1,4 @@
-package src.ca.sfu.teambeta;
+package ca.sfu.teambeta;
 
 import java.util.ArrayList;
 

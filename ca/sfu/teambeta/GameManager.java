@@ -1,4 +1,4 @@
-package src.ca.sfu.teambeta;
+package ca.sfu.teambeta;
 
 /**
  * Created by NoorUllah on 2016-05-23.
