@@ -16,14 +16,14 @@ public class DBManager {
     private final String FILENAME = "ladder.csv";
 
     /**
-     * Saves values to the database.
-     * TODO: Accept Ladder data type, convert to List<String[]> manually in this method
+     * Saves values to the database. TODO: Accept Ladder data type, convert to List<String[]>
+     * manually in this method
      *
      * @param values: A List of String arrays, where each String array is a "row" of data
      */
     public void saveToDB(List<String[]> values) {
-        try(CSVWriter writer = new CSVWriter(new FileWriter(FILENAME))) {
-            for (String[] nextLine: values) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(FILENAME))) {
+            for (String[] nextLine : values) {
                 writer.writeNext(nextLine);
             }
         } catch (IOException e) {
@@ -32,8 +32,8 @@ public class DBManager {
     }
 
     /**
-     * Loads values from the database.
-     * TODO: Return the Ladder data type, convert List manually in this method
+     * Loads values from the database. TODO: Return the Ladder data type, convert List manually in
+     * this method
      *
      * @return List of all values
      */
