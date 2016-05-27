@@ -8,6 +8,7 @@ import java.util.ArrayList;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Ladder {
+
     //used for shiftPositions
     private final static int SHIFT_LEFT = 1;
     private final static int SHIFT_RIGHT = 2;

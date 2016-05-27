@@ -53,7 +53,6 @@ public class Pair {
         this.GroupPosition = GroupPosition;
     }
 
-
     public int getGroupNum(){
         return GroupNumber;
     }
