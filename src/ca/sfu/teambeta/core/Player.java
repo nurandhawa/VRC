@@ -22,16 +22,19 @@ public class Player {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Player player = (Player) o;
-
         return playerID == player.playerID;
-
     }
 
     @Override
+    // Once we get a database setup, the playerID attribute will be guaranteed unique
     public int hashCode() {
         return playerID;
     }
