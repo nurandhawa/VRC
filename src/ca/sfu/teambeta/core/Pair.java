@@ -8,54 +8,83 @@ import java.util.Date;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Pair {
-    private ArrayList<Player> team = new ArrayList<>();
-    private Date dateCreated;
-    private int position;
-    private int penalty;
 
-    public Pair(Player firstPlayer, Player secondPlayer){
-        team.add(firstPlayer);
-        team.add(secondPlayer);
-        dateCreated = new Date(); //sets to current Date
-        position = 0;
-        penalty = 0;
+    private ArrayList<Player> Players = new ArrayList<>();
+    private Date DateCreated;
+    private int Position;
+    private int GroupNumber;
+    private int GroupPosition;
+    private boolean Activity;
+    private int Penalty;
+
+    Pair(Player firstPlayer, Player secondPlayer){
+        Players.add(firstPlayer);
+        Players.add(secondPlayer);
+        DateCreated = new Date(); //sets to current Date
+        Activity = true;
     }
 
     public Date whenCreated(){
-        return dateCreated;
+        return DateCreated;
     }
 
     public boolean hasPlayer(Player searchPlayer){
-        return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
+        return (Players.get(1).equals(searchPlayer) || Players.get(2).equals(searchPlayer));
     }
 
     public boolean hasPlayer(Player firstPlayer, Player secondPlayer){
-        return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
-                && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
+        return (Players.get(1).equals(firstPlayer) || Players.get(2).equals(firstPlayer))
+                && (Players.get(1).equals(secondPlayer) || Players.get(2).equals(secondPlayer));
     }
 
     public void setPosition(int Position){
-        this.position = Position;
+        this.Position = Position;
     }
 
     public int getPosition(){
-        return position;
+        return Position;
     }
 
-    //Penalty related methods
+    public int getGroupPosition(){
+        return GroupPosition;
+    }
+
+    public void setGroupPosition(int GroupPosition){
+        this.GroupPosition = GroupPosition;
+    }
+
+
+    public int getGroupNum(){
+        return GroupNumber;
+    }
+
+    public void setGroupNum(int GroupNumber){
+        this.GroupNumber = GroupNumber;
+    }
+
+    public void setPassive(){
+        Activity = false;
+        Penalty = 0;
+    }
+
+    public void setActive(){
+        Activity = true;
+    }
+
+    public boolean isActive(){
+        return Activity;
+    }
 
     public int positionAfterPenalty(){
-        int newPosition = position + penalty;
-        penalty = 0;
+        int newPosition = Position + Penalty;
         return newPosition;
     }
 
-    public void setPenalty(int penalty){
-        this.penalty = penalty;
+    public void miss(){
+        Penalty = 10;
     }
 
-    public String toString() {
-        return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+    public void late(){
+        Penalty = 4;
     }
-
 }
