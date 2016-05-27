@@ -17,7 +17,32 @@ public class Ladder {
         }
     }
 
+    public void resetLadder(){
+        ArrayList<Pair> newLadder = new ArrayList<>();
+        for (Pair current : activePairs){
+            int first = current.getPosition();
+            if (listOfPairs.isEmpty()){
+                newLadder.addAll(activePairs);
+                activePairs.clear();
+                break;
+            }
+            Pair obj = listOfPairs.get(0);
+            int second = obj.getPosition();
 
+            if (first > second){
+                newLadder.add(current);
+                activePairs.remove(0);
+            }else{
+                newLadder.add(obj);
+                listOfPairs.remove(0);
+            }
+        }
+        if ( ! listOfPairs.isEmpty()){
+            newLadder.addAll(listOfPairs);
+            listOfPairs.clear();
+        }
+        listOfPairs = newLadder;
+    }
 
     public void makeGroups(){
         //assign group numbers to every pair
