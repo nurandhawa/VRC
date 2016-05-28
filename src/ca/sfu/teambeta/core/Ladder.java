@@ -1,96 +1,123 @@
 package ca.sfu.teambeta.core;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Ladder {
-    private ArrayList<Pair> listOfPairs = new ArrayList<>();
-    private ArrayList<Pair> activePairs = new ArrayList<>();
-    private int Members;
+    //Ladder is subdivided into two Lists: playing and not playing Pairs
+    //Groups are created from playing(active) pairs in GameManager
+    //Members are a total amount of all pairs = active + passive
+    private List<Pair> passivePairs;
+    private List<Pair> activePairs;
+    private List<List<Pair>> groups;
+    private int active;
+    private int passive;
+
+    public Ladder(){
+        active = 0;
+        passive = 0;
+        activePairs = new ArrayList<>();
+        //passivePairs from the DB
+        groups = new ArrayList<List<Pair>>();
+    }
+
+    public List<Pair> getActivePair(){
+        return passivePairs;
+    }
+    public Pair getActivePair(int index){
+        return activePairs.get(index);
+    }
+
+    public List<Pair> getPassivePair(){
+        return passivePairs;
+    }
+    public Pair getPassivePair(int index){
+        return passivePairs.get(index);
+    }
+
+    public void putGroups(ArrayList<List<Pair>> groups){
+        this.groups = groups;
+    }
+
+    public List<List<Pair>> getGroups(){
+        return groups;
+    }
 
     public void activatePair(Pair somePair){
         if (!activePairs.contains(somePair)) {
             activePairs.add(somePair);
-            listOfPairs.remove(somePair);
-        }
-    }
-
-    public void resetLadder(){
-        ArrayList<Pair> newLadder = new ArrayList<>();
-        for (Pair current : activePairs){
-            int first = current.getPosition();
-            if (listOfPairs.isEmpty()){
-                newLadder.addAll(activePairs);
-                activePairs.clear();
-                break;
-            }
-            Pair obj = listOfPairs.get(0);
-            int second = obj.getPosition();
-
-            if (first > second){
-                newLadder.add(current);
-                activePairs.remove(0);
-            }else{
-                newLadder.add(obj);
-                listOfPairs.remove(0);
-            }
-        }
-        if ( ! listOfPairs.isEmpty()){
-            newLadder.addAll(listOfPairs);
-            listOfPairs.clear();
-        }
-        listOfPairs = newLadder;
-    }
-
-    public void makeGroups(){
-        //assign group numbers to every pair
-    }
-
-    public void rearrangeGroups(){
-        //regroup when all info about w/l is available
-    }
-
-    public void swapBetweenGroups(){
-        if (Members >= 2){
-            int lastIndex = Members - (Members % 2) - 2;
-            for(int i = 0; i < lastIndex; i += 2){
-                int j = i + 1;
-                if (activePairs.get(i).getGroupNum() != activePairs.get(j).getGroupNum()){ //different groups
-                    swapPair(i, j);
-                }
-            }
+            passivePairs.remove(somePair);
         }
     }
 
     public void addNewPair(Pair newPair){
-        newPair.setPosition(Members);
-        listOfPairs.add(newPair);
-        Members++;
+        newPair.setPosition(passive);
+        passivePairs.add(newPair);
+        passive++;
+    }
+
+    public void removePair(Pair pair){
+        if ( ! activePairs.remove(pair)){
+            if (passivePairs.remove(pair)){
+                passive--;
+            }
+        }else{
+            active--;
+        }
     }
 
     public void removePair(Player firstPlayer, Player secondPlayer){
-        for (Pair current : listOfPairs){
+        for (Pair current : passivePairs){
             if (current.hasPlayer(firstPlayer, secondPlayer)){
                 int iPair = current.getPosition();
-                listOfPairs.remove(iPair);
+                passivePairs.remove(iPair);
+                passive--;
                 break;
             }
         }
-        Members--;
+        for (Pair current : activePairs){
+            if (current.hasPlayer(firstPlayer, secondPlayer)){
+                int iPair = current.getPosition();
+                activePairs.remove(iPair);
+                active--;
+                break;
+            }
+        }
     }
 
     public void swapPair(int fromIndex, int toIndex){
-        Pair firstPair = listOfPairs.get(fromIndex);
+        Pair firstPair = passivePairs.get(fromIndex);
         int firstPosition = firstPair.getPosition();
-        Pair secondPair = listOfPairs.get(toIndex);
+        Pair secondPair = passivePairs.get(toIndex);
         int secondPosition = secondPair.getPosition();
 
         firstPair.setPosition(secondPosition);
         firstPair.setPosition(firstPosition);
 
-        listOfPairs.add(fromIndex, secondPair);
-        listOfPairs.add(toIndex, firstPair);
+        passivePairs.add(fromIndex, secondPair);
+        passivePairs.add(toIndex, firstPair);
+    }
+
+    public void assignNewLadder(List<Pair> newLadder){
+        passivePairs = newLadder;
+    }
+
+    public void makePassiveEmpty(){
+        passivePairs.clear();
+    }
+
+    public void makeActiveEmpty(){
+        activePairs.clear();
+    }
+
+    public int sizePlaying(){
+        return active;
+    }
+
+    public int sizeNotPlaying(){
+        return passive;
     }
 }
