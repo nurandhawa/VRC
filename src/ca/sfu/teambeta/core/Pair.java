@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.core;
 
+import javafx.geometry.Pos;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,17 +12,15 @@ import java.util.Date;
 public class Pair {
     private ArrayList<Player> Players = new ArrayList<>();
     private Date DateCreated;
-    private int Position;
-    private int GroupNumber;
-    private int GroupPosition;
-    private boolean Activity;
-    private int Penalty;
+    private int position;
+    private int penalty;
 
-    Pair(Player firstPlayer, Player secondPlayer){
+    public Pair(Player firstPlayer, Player secondPlayer){
         Players.add(firstPlayer);
         Players.add(secondPlayer);
         DateCreated = new Date(); //sets to current Date
-        Activity = true;
+        position = 0;
+        penalty = 0;
     }
 
     public Date whenCreated(){
@@ -37,52 +37,30 @@ public class Pair {
     }
 
     public void setPosition(int Position){
-        this.Position = Position;
+        this.position = Position;
     }
 
     public int getPosition(){
-        return Position;
+        return position;
     }
 
-    public int getGroupPosition(){
-        return GroupPosition;
-    }
-
-    public void setGroupPosition(int GroupPosition){
-        this.GroupPosition = GroupPosition;
-    }
-
-    public int getGroupNum(){
-        return GroupNumber;
-    }
-
-    public void setGroupNum(int GroupNumber){
-        this.GroupNumber = GroupNumber;
-    }
-
-    public void setPassive(){
-        Activity = false;
-        Penalty = 0;
-    }
-
-    public void setActive(){
-        Activity = true;
-    }
-
-    public boolean isActive(){
-        return Activity;
-    }
+    //Penalty related methods
 
     public int positionAfterPenalty(){
-        int newPosition = Position + Penalty;
+        int newPosition = position + penalty;
+        penalty = 0;
         return newPosition;
     }
 
     public void miss(){
-        Penalty = 10;
+        penalty = 10;
     }
 
     public void late(){
-        Penalty = 4;
+        penalty = 4;
+    }
+
+    public void absent(){
+        penalty = 2;
     }
 }
