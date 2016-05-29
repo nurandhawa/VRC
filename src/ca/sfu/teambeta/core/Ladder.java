@@ -16,10 +16,6 @@ public class Ladder {
         //passivePairs from the DB
     }
 
-    public List<Pair> getPassivePairs(){
-        return passivePairs;
-    }
-
     public void removePair(Pair pair) {
         int index = passivePairs.indexOf(pair);
         if (index != -1) { //pair was found
@@ -64,17 +60,8 @@ public class Ladder {
         members++;
     }
 
-    public void swapPair(int fromIndex, int toIndex){
-        Pair firstPair = passivePairs.get(fromIndex);
-        int firstPosition = firstPair.getPosition();
-        Pair secondPair = passivePairs.get(toIndex);
-        int secondPosition = secondPair.getPosition();
-
-        firstPair.setPosition(secondPosition);
-        secondPair.setPosition(firstPosition);
-
-        passivePairs.add(fromIndex, secondPair);
-        passivePairs.add(toIndex, firstPair);
+    public List<Pair> getPassivePairs(){
+        return passivePairs;
     }
 
     public void assignNewLadder(List<Pair> newLadder){
