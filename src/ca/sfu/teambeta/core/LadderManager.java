@@ -17,32 +17,64 @@ public class LadderManager {
     public void resetLadder(){
         //Combines active and passive pairs after all the matches were completed
         //To be optimized... as penalties for late and missed pairs are not applied
+        List<Pair> passivePairs = ladder.getPassivePair();
+        List<Pair> activePairs = ladder.getActivePair();
+        int allMembers = ladder.size();
+        int notPlaying = passivePairs.size();
+        int arePlaying = allMembers - notPlaying;
+        int[] positions = new int[notPlaying];
+        int[] emptyPositions = new int[arePlaying];
 
-        List<Pair> newLadder = new ArrayList<>();
-        for (Pair current : ladder.getActivePair()){
-            int first = current.getPosition();
-            if (ladder.getPassivePair().isEmpty()){
-                newLadder.addAll(ladder.getActivePair());
-                ladder.makeActiveEmpty();
-                break;
-            }
-            Pair obj = ladder.getPassivePair(0);
-            int second = obj.getPosition();
+        int i = 0;
+        for (Pair current : passivePairs){
+            positions[i] = current.getPosition();
+            i++;
+        }
 
-            if (first < second){
-                newLadder.add(current);
-                ladder.removePair(current);
+        //Create array of empty positions for participants
+        i = 0;
+        int j = 0;
+        for(int position = 1; position <= allMembers; position++){
+            if (position == positions[j]){
+                //This position is taken
+                j++;
             }else{
-                newLadder.add(obj);
-                ladder.removePair(obj);
+                emptyPositions[i] = position; //Position not used
+                i++;
             }
         }
 
-        if ( ! ladder.getPassivePair().isEmpty()){
-            newLadder.addAll(ladder.getPassivePair());
-            ladder.makePassiveEmpty();
+        //Put participants in empty positions
+        i = 0;
+        for (Pair current : activePairs){
+            current.setPosition(emptyPositions[i]);
+            i++;
         }
+
+        //Combine all pairs in new ladder
+        List<Pair> newLadder = new ArrayList<>();
+        i = 0;
+        j = 0;
+        while((i != notPlaying - 1) || (j != arePlaying - 1)){
+            Pair pPair = passivePairs.get(i);
+            Pair aPair = activePairs.get(j);
+            if (pPair.getPosition() < aPair.getPosition()) {
+                newLadder.add(pPair);
+                i++;
+            }else{
+                newLadder.add(aPair);
+                j++;
+            }
+        }
+        ladder.makeActiveEmpty();
         ladder.assignNewLadder(newLadder);
+
+
+        //
+        // MOVE late and missed pairs in the ladder
+        //      NOT IMPLEMENTED
+        //
+        
     }
 
     public void accident(Pair pair){
