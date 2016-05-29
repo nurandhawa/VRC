@@ -11,20 +11,20 @@ import java.util.Date;
  */
 public class Pair {
     private ArrayList<Player> Players = new ArrayList<>();
-    private Date DateCreated;
+    private Date dateCreated;
     private int position;
     private int penalty;
 
     public Pair(Player firstPlayer, Player secondPlayer){
         Players.add(firstPlayer);
         Players.add(secondPlayer);
-        DateCreated = new Date(); //sets to current Date
+        dateCreated = new Date(); //sets to current Date
         position = 0;
         penalty = 0;
     }
 
     public Date whenCreated(){
-        return DateCreated;
+        return dateCreated;
     }
 
     public boolean hasPlayer(Player searchPlayer){
@@ -52,15 +52,7 @@ public class Pair {
         return newPosition;
     }
 
-    public void miss(){
-        penalty = 10;
-    }
-
-    public void late(){
-        penalty = 4;
-    }
-
-    public void absent(){
-        penalty = 2;
+    public void setPenalty(int penalty){
+        this.penalty = penalty;
     }
 }
