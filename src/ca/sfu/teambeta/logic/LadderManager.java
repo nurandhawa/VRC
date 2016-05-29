@@ -50,6 +50,29 @@ public class LadderManager {
         }
     }
 
+    public void accident(Pair pair){
+        pair.setPenalty( - DROP_PASSIVE); //Results in penalty of 0
+        setNotPlaying(pair);
+    }
+
+    public void miss(Pair pair){
+        pair.setPenalty(DROP_MISS);
+        //Remains active
+    }
+
+    public void late(Pair pair){
+        pair.setPenalty(DROP_LATE);
+        //Remains active
+    }
+
+    public void removePenalty(Pair pair){
+        pair.setPenalty(0);
+    }
+
+    public int sizePlaying(){
+        return active;
+    }
+
     public void resetLadder(){
         //Combines active and passive pairs after all the matches were completed
         //To be optimized... as penalties for late and missed pairs are not applied
@@ -112,25 +135,6 @@ public class LadderManager {
         
     }
 
-    public void accident(Pair pair){
-        pair.setPenalty( - DROP_PASSIVE); //Results in penalty of 0
-        setNotPlaying(pair);
-    }
-
-    public void miss(Pair pair){
-        pair.setPenalty(DROP_MISS);
-        //Remains active
-    }
-
-    public void late(Pair pair){
-        pair.setPenalty(DROP_LATE);
-        //Remains active
-    }
-
-    public void removePenalty(Pair pair){
-        pair.setPenalty(0);
-    }
-
     public void penaltyManager(){
         List<Pair> absentPairs = ladder.getPassivePairs();
         int allMembers = ladder.size();
@@ -145,29 +149,37 @@ public class LadderManager {
         }
         if (positions[notPlaying - 1] > allMembers){ //Last player exceeded the ladder size
             positions[notPlaying - 1] = allMembers;
+            absentPairs.get(notPlaying - 1).setPosition(allMembers);
         }
         if (positions[notPlaying - 2] > allMembers){//Player before the last one exceeded the ladder size
             positions[notPlaying - 2] = allMembers;
         }
-
         //Move players up on one position if adjacent pairs have the same position in the ladder
-        for (int j = notPlaying - 1; j > 1; j--){
-            if (positions[j-1] == positions[j]){
-                positions[j-1] -= 1;
+        for (i = notPlaying - 1; i > 1; i--){
+            if (positions[i-1] == positions[i]){
+                absentPairs.get(i).setPosition(positions[i] - 1);
             }
         }
-
-        i = 0;
-        for (Pair current : absentPairs){
-            current.setPosition(positions[i]);
-            i++;
+        //Array of absent pairs is sorted in ascending oder according to position
+        for (i = 0; i < absentPairs.size() - 1; i++){
+            Pair first = absentPairs.get(i);
+            Pair second = absentPairs.get(i+1);
+            int posFirst = first.getPosition();
+            int posSecond = second.getPosition();
+            if (posFirst > posSecond){
+                absentPairs.set(i, second);
+                absentPairs.set(i+1, first);
+            }
         }
         //Players who didn't play have new positions
         ladder.assignNewLadder(absentPairs);
     }
 
     public void swapBetweenGroups(){
-        //not implemented
+        //
+        // SWAPPING between groups and saving result in activePairs
+        //      NOT IMPLEMENTED
+        //
     }
 
     private void insertPlaying(int position, Pair pair){
@@ -184,9 +196,5 @@ public class LadderManager {
             activePairs.add(pair);
         }
         active++;
-    }
-
-    public int sizePlaying(){
-        return active;
     }
 }
