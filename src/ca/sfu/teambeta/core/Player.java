@@ -7,7 +7,7 @@ public class Player {
     private int playerID;
     private String name;
 
-    Player(int id, String name) {
+    public Player(int id, String name) {
         this.playerID = id;
         this.name = name;
     }

@@ -18,13 +18,15 @@ public class Scorecard<T> {
 
     private Map<T, List<Integer>> scoreMap;
 
-    Scorecard(List<T> teams) {
+    public Scorecard(List<T> teams) {
         int numTeams = teams.size();
         scoreMap = new HashMap<>(numTeams);
         for (T t : teams) {
             List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_GAMES, NO_SCORE));
             scoreMap.put(t, emptyScores);
         }
+
+
     }
 
     public boolean setWin(T team, int matchNum) {
