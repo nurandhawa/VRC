@@ -28,7 +28,6 @@ public class GameManager {
     }
 
     private void splitLadderIntoGroups() {
-
         int playingCount = getWillingToPlayCount();
         System.out.println("Players willing to play: " + playingCount);
 
@@ -59,7 +58,6 @@ public class GameManager {
     }
 
     private void makeQuadGroup(int num, ArrayList<Player> groupings) {
-
         for (int i = num; i < ladder.size(); i++) {
 
             if (ladder.get(i).getPlayerID() == 1) {
@@ -84,7 +82,6 @@ public class GameManager {
     }
 
     private int makeTripleGroups(int num, ArrayList<Player> groupings) {
-
         int doneGroups = 0;
         int indexPosition = 0;
 
@@ -122,7 +119,6 @@ public class GameManager {
 
 
     private int getWillingToPlayCount() {
-
         int count = 0;
 
         for (int i = 0; i < ladder.size(); i++) {
@@ -136,7 +132,6 @@ public class GameManager {
     }
 
     private void fillUpLadder() {
-
         Random rand = new Random();
 
         for (int i = 0; i < 25; i++) {
@@ -153,7 +148,6 @@ public class GameManager {
     }
 
     private void displayLadder() {
-
         System.out.printf("%10s %15s", "TEAMS", "   WILLING TO PLAY");
         System.out.println();
 
