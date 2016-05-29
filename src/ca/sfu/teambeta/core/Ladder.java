@@ -11,7 +11,8 @@ public class Ladder {
     private int members;
 
     public Ladder(){
-        //members;
+        //passive
+        //members
         //passivePairs from the DB
     }
 
@@ -19,21 +20,30 @@ public class Ladder {
         return passivePairs;
     }
 
-    public void removePair(Pair pair){
-        if (passivePairs.remove(pair)){
+    public void removePair(Pair pair) {
+        int index = passivePairs.indexOf(pair);
+        if (index != -1) { //pair was found
+            passivePairs.remove(index);
+            for(int i = index; i < passivePairs.size(); i++){ //Process following pairs by moving them up
+                int position = passivePairs.get(i).getPosition();
+                passivePairs.get(i).setPosition(position - 1);
+            }
             members--;
-            //UPDATE
         }
     }
 
     public void removePair(Player firstPlayer, Player secondPlayer){
+        boolean removed = false;
         for (Pair current : passivePairs){
             if (current.hasPlayer(firstPlayer, secondPlayer)){
                 int iPair = current.getPosition();
                 passivePairs.remove(iPair);
-                //UPDATE
                 members--;
-                break;
+                removed = true;
+            }
+            if (removed){ //Process following pairs by moving them up
+                int position = current.getPosition();
+                current.setPosition(position - 1);
             }
         }
     }
