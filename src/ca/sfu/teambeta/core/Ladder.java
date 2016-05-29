@@ -27,15 +27,9 @@ public class Ladder {
     public List<Pair> getActivePair(){
         return passivePairs;
     }
-    public Pair getActivePair(int index){
-        return activePairs.get(index);
-    }
 
     public List<Pair> getPassivePair(){
         return passivePairs;
-    }
-    public Pair getPassivePair(int index){
-        return passivePairs.get(index);
     }
 
     public void putGroups(ArrayList<List<Pair>> groups){
@@ -116,10 +110,6 @@ public class Ladder {
 
     public void assignNewLadder(List<Pair> newLadder){
         passivePairs = newLadder;
-    }
-
-    public void makePassiveEmpty(){
-        passivePairs.clear();
     }
 
     public void makeActiveEmpty(){
