@@ -46,10 +46,23 @@ public class Ladder {
         return groups;
     }
 
-    public void activatePair(Pair somePair){
+    public void setIsPlaying(Pair somePair){
         if (!activePairs.contains(somePair)) {
-            activePairs.add(somePair);
+            int index = somePair.getPosition();
+            activePairs.add(index, somePair);
             passivePairs.remove(somePair);
+            passive--;
+            active++;
+        }
+    }
+
+    public void setNotPlaying(Pair somePair){
+        if (!passivePairs.contains(somePair)) {
+            int index = somePair.getPosition();
+            passivePairs.add(index, somePair);
+            activePairs.remove(somePair);
+            active--;
+            passive++;
         }
     }
 
@@ -119,5 +132,9 @@ public class Ladder {
 
     public int sizeNotPlaying(){
         return passive;
+    }
+
+    public int size(){
+        return active+passive;
     }
 }
