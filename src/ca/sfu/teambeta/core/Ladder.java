@@ -1,6 +1,5 @@
 package ca.sfu.teambeta.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +13,11 @@ public class Ladder {
         //passive
         //members
         //passivePairs from the DB
+    }
+
+    public Ladder(List<Pair> passivePairs, int members) {
+        this.passivePairs = passivePairs;
+        this.members = members;
     }
 
     public void removePair(Pair pair) {
