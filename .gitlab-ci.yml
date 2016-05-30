@@ -1,3 +1,4 @@
+image: java:openjdk-8-jdk
 
 stages:
   - build
