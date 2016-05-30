@@ -79,4 +79,10 @@ public class Ladder {
     public int size(){
         return members;
     }
+
+    public void dumpLadder() {
+        for(Pair pair : passivePairs) {
+            System.out.println(pair);
+        }
+    }
 }
