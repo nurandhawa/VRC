@@ -112,15 +112,15 @@ public class UserInterface {
                 input = scanner.nextLine();
                 selection = Integer.parseInt(input);
                 // TODO: pair.add(ladder[selection])
-                pair.add(new Player());
             } else if (selection == NEW_PLAYER) {
                 System.out.println("Enter name of new player: ");
                 input = scanner.nextLine();
                 // TODO: get length of player list from DB to pick new ID
                 // or insert player name into DB and fetch back to get ID
+                int playerID = 1;
 
                 // TODO: Create player object and pair.add()
-                pair.add(new Player());
+                pair.add(new Player(1, input));
             }
         }
     }
