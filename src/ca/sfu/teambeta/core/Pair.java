@@ -26,12 +26,12 @@ public class Pair {
     }
 
     public boolean hasPlayer(Player searchPlayer){
-        return (team.get(1).equals(searchPlayer) || team.get(2).equals(searchPlayer));
+        return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
     }
 
     public boolean hasPlayer(Player firstPlayer, Player secondPlayer){
-        return (team.get(1).equals(firstPlayer) || team.get(2).equals(firstPlayer))
-                && (team.get(1).equals(secondPlayer) || team.get(2).equals(secondPlayer));
+        return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
+                && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
     }
 
     public void setPosition(int Position){
@@ -53,4 +53,9 @@ public class Pair {
     public void setPenalty(int penalty){
         this.penalty = penalty;
     }
+
+    public String toString() {
+        return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+    }
+
 }
