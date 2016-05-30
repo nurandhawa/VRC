@@ -197,4 +197,8 @@ public class LadderManager {
         }
         active++;
     }
+
+    private void isPositionEmpty() {
+
+    }
 }
