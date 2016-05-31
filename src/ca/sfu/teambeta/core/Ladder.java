@@ -19,9 +19,9 @@ public class Ladder {
         //passivePairs from the DB
     }
 
-    public Ladder(List<Pair> ladder, int numPairs) {
+    public Ladder(List<Pair> ladder) {
         this.ladder = ladder;
-        this.numPairs = numPairs;
+        this.numPairs = ladder.size();
     }
 
     //returns false if pair was not found
