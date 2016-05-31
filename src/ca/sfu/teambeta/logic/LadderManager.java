@@ -5,10 +5,6 @@ import java.util.List;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
-<<<<<<< 4c01d42332fb557ff34a0b5748ace1b36695165a
-=======
-
->>>>>>> Remove the merging comments
 
 /**
  * Created by constantin on 27/05/16.
@@ -50,7 +46,7 @@ public class LadderManager {
         ladder.insertAtEnd(newPair);
         ladder.incLadderLength();
     }
-
+    
     private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
         List<Pair> newPairs = new ArrayList<Pair>();
         for (Pair p : fullLadder) {
