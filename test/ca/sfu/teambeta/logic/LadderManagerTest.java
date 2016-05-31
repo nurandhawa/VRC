@@ -11,8 +11,7 @@ import java.util.List;
  */
 public class LadderManagerTest extends TestCase{
 
-    List<Pair> pairList;
-    pairList = new ArrayList(){{
+    List<Pair> pairList = new ArrayList<>(){{
         add(new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true));
         add(new Pair(new Player(3, "David1"), new Player(4, "Dave1"), false));
         add(new Pair(new Player(5, "David1"), new Player(6, "Dave1"), false));
