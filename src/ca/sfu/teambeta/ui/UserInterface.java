@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.logic.GameManager;
+import ca.sfu.teambeta.logic.LadderManager;
 
 /**
  * Simple text-based UI to perform basic display and modification functions.
@@ -20,7 +24,7 @@ public class UserInterface {
     private static boolean isRunning = true;
     private static Scanner scanner = new Scanner(System.in);
 
-    public static void start() {
+    public static void start(GameManager gameManager, LadderManager ladderManager) {
         while (isRunning) {
             System.out.println("Welcome. Enter an option:");
             System.out.println(LIST_LADDER + ". List Ladder");
@@ -33,16 +37,16 @@ public class UserInterface {
                 int selection = Integer.parseInt(input);
                 switch (selection) {
                     case LIST_LADDER:
-                        listLadder();
+                        listLadder(ladderManager.getPlayingPairs());
                         break;
                     case LIST_MATCHES:
                         listMatches();
                         break;
                     case EDIT_LADDER:
-                        editLadder();
+                        editLadder(ladderManager);
                         break;
                     case EDIT_MATCHES:
-                        editMatches();
+                        editMatches(gameManager);
                         break;
                     case FINISH:
                         isRunning = false;
@@ -57,7 +61,7 @@ public class UserInterface {
         scanner.close();
     }
 
-    private static void editMatches() {
+    private static void editMatches(GameManager gameManager) {
         System.out.println("Current matches: ");
         listMatches();
         System.out.println("Enter the match number you want to edit: ");
@@ -72,7 +76,7 @@ public class UserInterface {
         // TODO: GameManager.editMatch(GameManager.REMOVE_PAIR, matchSelection or matches.get(matchselection), pairSelection);
     }
 
-    private static void editLadder() {
+    private static void editLadder(LadderManager ladderManager) {
         String input;
         int selection;
         System.out.println("Choose an action:");
@@ -82,9 +86,9 @@ public class UserInterface {
         input = scanner.nextLine();
         selection = Integer.parseInt(input);
         if (selection == EDIT_LADDER_ADD) {
-            addPair();
+            addPair(ladderManager);
         } else if (selection == EDIT_LADDER_REMOVE) {
-            removePair();
+            removePair(ladderManager);
         }
     }
 
@@ -92,15 +96,20 @@ public class UserInterface {
         System.out.println("Matches: ");
     }
 
-    private static void listLadder() {
+    private static void listLadder(List<Pair> ladder) {
         System.out.println("Ladder: ");
+
+        int index = 1;
+        for (Pair pair : ladder) {
+            System.out.println(index + ". " + pair.toString());
+        }
     }
 
-    private static void addPair() {
+    private static void addPair(LadderManager ladderManager) {
         final int EXISTING_PLAYER = 1;
         final int NEW_PLAYER = 2;
 
-        List pair = new ArrayList<Player>(2);
+        List<Player> pair = new ArrayList<>(2);
         while (pair.size() < 2) {
             System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER +
                     " for new player.");
@@ -115,17 +124,17 @@ public class UserInterface {
             } else if (selection == NEW_PLAYER) {
                 System.out.println("Enter name of new player: ");
                 input = scanner.nextLine();
-                // TODO: get length of player list from DB to pick new ID
-                // or insert player name into DB and fetch back to get ID
+                // TODO: get length of player list from LadderManager to pick new ID
                 int playerID = 1;
 
                 // TODO: Create player object and pair.add()
                 pair.add(new Player(1, input));
             }
         }
+        ladderManager.addNewPair(new Pair(pair.get(0), pair.get(1)));
     }
 
-    private static void removePair() {
+    private static void removePair(LadderManager ladderManager) {
         System.out.println("Remove from ladder");
     }
 }
