@@ -1,9 +1,10 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
 import java.util.ArrayList;
 import java.util.List;
+
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
 
 /**
  * Created by constantin on 27/05/16.
@@ -36,6 +37,8 @@ public class LadderManager {
         List<Pair> fullLadder = ladder.getLadder();
 
         //TODO: Divide fullLadder into activePairs and passivePairs (David)
+        activePairs = findPairs(fullLadder, true);
+        passivePairs = findPairs(fullLadder, false);
         //TODO: Any other job (if it exists) before LadderManager can be used
     }
 
@@ -43,6 +46,17 @@ public class LadderManager {
         newPair.setPosition(ladder.getLadderLength());
         ladder.insertAtEnd(newPair);
         ladder.incLadderLength();
+    }
+
+    public List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
+        List<Pair> newPairs = new ArrayList<Pair>();
+        for(Pair p : fullLadder) {
+            if(p.isPlaying() == isPlaying) {
+                newPairs.add(p);
+            }
+        }
+
+        return newPairs;
     }
 /*
     public void setIsPlaying(Pair pair){
