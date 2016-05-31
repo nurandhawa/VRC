@@ -36,6 +36,6 @@ public class Player {
     @Override
     // Once we get a database setup, the playerID attribute will be guaranteed unique
     public int hashCode() {
-        return playerID;
+        return playerID; 
     }
 }
