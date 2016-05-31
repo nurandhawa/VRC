@@ -2,6 +2,7 @@ package ca.sfu.teambeta.core;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -56,6 +57,10 @@ public class Pair {
 
     public String toString() {
         return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+    }
+
+    public List<Player> getPlayers() {
+        return team;
     }
 
 }
