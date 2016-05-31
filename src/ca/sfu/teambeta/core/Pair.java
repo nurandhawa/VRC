@@ -12,12 +12,14 @@ public class Pair {
     private Date dateCreated;
     private int position;
     private int penalty;
+<<<<<<< HEAD
     private boolean isPlaying;
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying){
         team.add(firstPlayer);
         team.add(secondPlayer);
         this.isPlaying = isPlaying;
+>>>>>>> dc2f92b3850b156d2118c3378f0716ffd2d157f8
         dateCreated = new Date(); //sets to current Date
         position = 0;
         penalty = 0;
@@ -56,12 +58,17 @@ public class Pair {
         this.penalty = penalty;
     }
 
+<<<<<<< HEAD
     public boolean isPlaying() {
         return isPlaying;
     }
 
     public String toString() {
         return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+=======
+    public String toString() {
+        return "Player 1: " + team.get(0).getPlayerName() + " Player 2:" + team.get(1).getPlayerName();
+>>>>>>> dc2f92b3850b156d2118c3378f0716ffd2d157f8
     }
 
 }

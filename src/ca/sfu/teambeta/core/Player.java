@@ -4,6 +4,7 @@ package ca.sfu.teambeta.core;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Player {
+<<<<<<< HEAD
     private int playerID;
     private String name;
 
@@ -37,5 +38,6 @@ public class Player {
     // Once we get a database setup, the playerID attribute will be guaranteed unique
     public int hashCode() {
         return playerID;
+>>>>>>> dc2f92b3850b156d2118c3378f0716ffd2d157f8
     }
 }
