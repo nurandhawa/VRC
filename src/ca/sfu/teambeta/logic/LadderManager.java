@@ -28,7 +28,7 @@ public class LadderManager {
         this.groups = groups;
     }
 
-    public List<Pair> getPlayingPairs(){
+    public List<Pair> getActivePairs(){
         return activePairs;
     }
 
