@@ -15,10 +15,10 @@ public class LadderManager {
 
     private Ladder ladder = new Ladder();
     private List<Pair> activePairs;
-    private List<List<Pair>> groups;
+    private List<Pair> groups;
     private int active;
 
-    public void putGroups(ArrayList<List<Pair>> groups){
+    public void putGroups(ArrayList<Pair> groups){
         this.groups = groups;
     }
 
@@ -64,6 +64,11 @@ public class LadderManager {
         pair.setPenalty(DROP_LATE);
         //Remains active
     }
+//
+//    public List<Pair> getAllPairs(){
+//
+//
+//}
 
     public void removePenalty(Pair pair){
         pair.setPenalty(0);
