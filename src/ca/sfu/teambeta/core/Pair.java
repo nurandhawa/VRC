@@ -14,7 +14,7 @@ public class Pair {
     private int penalty;
     private boolean isPlaying;
 
-    public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying){
+    public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
         team.add(firstPlayer);
         team.add(secondPlayer);
         this.isPlaying = isPlaying;
@@ -23,36 +23,36 @@ public class Pair {
         penalty = 0;
     }
 
-    public Date whenCreated(){
+    public Date whenCreated() {
         return dateCreated;
     }
 
-    public boolean hasPlayer(Player searchPlayer){
+    public boolean hasPlayer(Player searchPlayer) {
         return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
     }
 
-    public boolean hasPlayer(Player firstPlayer, Player secondPlayer){
+    public boolean hasPlayer(Player firstPlayer, Player secondPlayer) {
         return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
                 && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
     }
 
-    public void setPosition(int Position){
+    public void setPosition(int Position) {
         this.position = Position;
     }
 
-    public int getPosition(){
+    public int getPosition() {
         return position;
     }
 
     //Penalty related methods
 
-    public int positionAfterPenalty(){
+    public int positionAfterPenalty() {
         int newPosition = position + penalty;
         penalty = 0;
         return newPosition;
     }
 
-    public void setPenalty(int penalty){
+    public void setPenalty(int penalty) {
         this.penalty = penalty;
     }
 
@@ -63,3 +63,4 @@ public class Pair {
     public String toString() {
         return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
     }
+}
