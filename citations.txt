@@ -1,1 +1,2 @@
 Gradle task to fetch dependencies from https://stackoverflow.com/questions/21814652/how-to-download-dependencies-in-gradle
+Found method to improve CI build times from here https://stackoverflow.com/questions/33940384/gitlab-8-2-1-how-to-use-cache-in-gitlab-ci-yml/35478988#35478988
