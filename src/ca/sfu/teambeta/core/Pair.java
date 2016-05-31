@@ -12,10 +12,12 @@ public class Pair {
     private Date dateCreated;
     private int position;
     private int penalty;
+    private boolean isPlaying;
 
-    public Pair(Player firstPlayer, Player secondPlayer){
+    public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying){
         team.add(firstPlayer);
         team.add(secondPlayer);
+        this.isPlaying = isPlaying;
         dateCreated = new Date(); //sets to current Date
         position = 0;
         penalty = 0;
