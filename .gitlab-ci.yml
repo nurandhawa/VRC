@@ -1,0 +1,21 @@
+image: java:openjdk-8-jdk
+
+before_script:
+    - export GRADLE_USER_HOME=`pwd`/.gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+stages:
+  - build
+  - test
+
+compile:
+  script: ./gradlew assemble
+  stage: build
+
+junit:
+  script: ./gradlew test
+  stage: test

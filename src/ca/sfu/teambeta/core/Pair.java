@@ -1,7 +1,5 @@
 package ca.sfu.teambeta.core;
 
-import javafx.geometry.Pos;
-
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,14 +8,14 @@ import java.util.Date;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Pair {
-    private ArrayList<Player> Players = new ArrayList<>();
+    private ArrayList<Player> team = new ArrayList<>();
     private Date dateCreated;
     private int position;
     private int penalty;
 
     public Pair(Player firstPlayer, Player secondPlayer){
-        Players.add(firstPlayer);
-        Players.add(secondPlayer);
+        team.add(firstPlayer);
+        team.add(secondPlayer);
         dateCreated = new Date(); //sets to current Date
         position = 0;
         penalty = 0;
@@ -28,12 +26,12 @@ public class Pair {
     }
 
     public boolean hasPlayer(Player searchPlayer){
-        return (Players.get(1).equals(searchPlayer) || Players.get(2).equals(searchPlayer));
+        return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
     }
 
     public boolean hasPlayer(Player firstPlayer, Player secondPlayer){
-        return (Players.get(1).equals(firstPlayer) || Players.get(2).equals(firstPlayer))
-                && (Players.get(1).equals(secondPlayer) || Players.get(2).equals(secondPlayer));
+        return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
+                && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
     }
 
     public void setPosition(int Position){
@@ -55,4 +53,9 @@ public class Pair {
     public void setPenalty(int penalty){
         this.penalty = penalty;
     }
+
+    public String toString() {
+        return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+    }
+
 }

@@ -15,10 +15,11 @@ public class LadderManager {
 
     private Ladder ladder = new Ladder();
     private List<Pair> activePairs;
-    private List<Pair> groups;
+    private List<Pair> passivePairs;
+    private List<List<Pair>> groups;
     private int active;
 
-    public void putGroups(ArrayList<Pair> groups){
+    public void putGroups(ArrayList<List<Pair>> groups){
         this.groups = groups;
     }
 
@@ -26,12 +27,24 @@ public class LadderManager {
         return activePairs;
     }
 
-    public void addNewPair(Pair newPair){
-        newPair.setPosition(ladder.size());
-        ladder.insert(ladder.size(), newPair);
-        ladder.increaseSize();
+    //init MUST be called to use LadderManager object
+    /*NOTE: I am assuming that the LadderManager will somehow get a List<Pair> somehow; whether it is a new List<Pair>
+      or retrieved from processing the DB. If this design is not suitable, please discuss it with me so we can change it.
+      - Sam 5/30/2016 */
+    public void init(List<Pair> dbLadder){
+        ladder = new Ladder(dbLadder);
+        List<Pair> fullLadder = ladder.getLadder();
+
+        //TODO: Divide fullLadder into activePairs and passivePairs (David)
+        //TODO: Any other job (if it exists) before LadderManager can be used
     }
 
+    public void addNewPair(Pair newPair){
+        newPair.setPosition(ladder.getLadderLength());
+        ladder.insertAtEnd(newPair);
+        ladder.incLadderLength();
+    }
+/*
     public void setIsPlaying(Pair pair){
         if (ladder.getPassivePairs().contains(pair)){
             int position = pair.getPosition();
@@ -64,11 +77,6 @@ public class LadderManager {
         pair.setPenalty(DROP_LATE);
         //Remains active
     }
-//
-//    public List<Pair> getAllPairs(){
-//
-//
-//}
 
     public void removePenalty(Pair pair){
         pair.setPenalty(0);
@@ -202,4 +210,9 @@ public class LadderManager {
         }
         active++;
     }
+
+    private void isPositionEmpty() {
+
+    }
+    */
 }

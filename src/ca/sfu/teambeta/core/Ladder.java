@@ -1,14 +1,17 @@
 package ca.sfu.teambeta.core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Ladder {
-    private List<Pair> passivePairs;
-    private int members;
+    //used for shiftPositions
+    private final static int SHIFT_LEFT = 1;
+    private final static int SHIFT_RIGHT = 2;
+
+    private List<Pair> ladder;
+    private int numPairs;
 
     public Ladder(){
         //passive
@@ -16,18 +19,24 @@ public class Ladder {
         //passivePairs from the DB
     }
 
-    public void removePair(Pair pair) {
-        int index = passivePairs.indexOf(pair);
-        if (index != -1) { //pair was found
-            passivePairs.remove(index);
-            for(int i = index; i < passivePairs.size(); i++){ //Process following pairs by moving them up
-                int position = passivePairs.get(i).getPosition();
-                passivePairs.get(i).setPosition(position - 1);
-            }
-            members--;
-        }
+    public Ladder(List<Pair> ladder) {
+        this.ladder = ladder;
+        this.numPairs = ladder.size();
     }
 
+    //returns false if pair was not found
+    public boolean removePair(Pair pair) {
+        int index = ladder.indexOf(pair);
+        if (index != -1) { //pair was found
+            ladder.remove(index);
+            shiftPositions(SHIFT_LEFT, index);
+            numPairs--;
+        } else {
+            return false;
+        }
+        return true;
+    }
+/* omitted unless there is a need for function overload
     public void removePair(Player firstPlayer, Player secondPlayer){
         boolean removed = false;
         for (Pair current : passivePairs){
@@ -43,36 +52,51 @@ public class Ladder {
             }
         }
     }
-
-    public void insert(int position, Pair pair){
-        int i = 0;
-        boolean inserted = false;
-        for (Pair current : passivePairs){
-            if (current.getPosition() > position){
-                passivePairs.add(i, pair);
-                inserted = true;
-                break;
+*/
+    //for use in add, remove methods. Shifts the position field of every pair starting at index.
+    private void shiftPositions(int direction, int index){
+        if (direction == SHIFT_LEFT){
+            for (int i = index; i < ladder.size(); i++) {
+                int position = ladder.get(i).getPosition();
+                ladder.get(i).setPosition(position - 1);
+            }
+        } else if (direction == SHIFT_RIGHT){
+            for (int i = index; i < ladder.size(); i++) {
+                int position = ladder.get(i).getPosition();
+                ladder.get(i).setPosition(position + 1);
             }
         }
-        if (! inserted){
-            passivePairs.add(pair);
-        }
-        members++;
+    }
+    public void insertAtIndex(int index, Pair pair){
+        ladder.add(index, pair);
+        shiftPositions(SHIFT_RIGHT, index+1);
+        numPairs++;
     }
 
-    public List<Pair> getPassivePairs(){
-        return passivePairs;
+    public void insertAtEnd(Pair pair){
+        ladder.add(pair);
+        numPairs++;
+    }
+
+    public List<Pair> getLadder(){
+        return ladder;
     }
 
     public void assignNewLadder(List<Pair> newLadder){
-        passivePairs = newLadder;
+        ladder = newLadder;
     }
 
-    public void increaseSize(){
-        members++;
+    public void incLadderLength(){
+        numPairs++;
     }
 
-    public int size(){
-        return members;
+    public int getLadderLength(){
+        return numPairs;
     }
+/* omitted but keeping in case we ever need it
+    public void dumpLadder() {
+        for(Pair pair : passivePairs) {
+            System.out.println(pair);
+        }
+    } */
 }
