@@ -31,7 +31,7 @@ public class LadderManagerTest extends TestCase{
             add(new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true));
         }};
 
-        Assert.assertEquals(ladderManager.getActivePlayers(), expectedOrder);
+        Assert.assertEquals(ladderManager.getActivePlayers(), activePairs);
     }
     @Test
     public void testFindPassivePlayers() {
