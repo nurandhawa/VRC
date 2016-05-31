@@ -48,7 +48,7 @@ public class LadderManager {
         ladder.incLadderLength();
     }
 
-    public List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
+    private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
         List<Pair> newPairs = new ArrayList<Pair>();
         for(Pair p : fullLadder) {
             if(p.isPlaying() == isPlaying) {

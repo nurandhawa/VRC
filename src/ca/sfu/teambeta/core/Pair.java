@@ -61,7 +61,7 @@ public class Pair {
     }
 
     public String toString() {
-        return "Player 1: " + team.get(0).getPlayerName() + " Player 2:" + team.get(1).getPlayerName();
+        return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
     }
 
 }
