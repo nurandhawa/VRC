@@ -56,6 +56,10 @@ public class Pair {
         this.penalty = penalty;
     }
 
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
     public String toString() {
         return "Player 1: " + team.get(0).getPlayerName() + " Player 2:" + team.get(1).getPlayerName();
     }
