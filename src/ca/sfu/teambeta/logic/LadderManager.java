@@ -39,7 +39,6 @@ public class LadderManager {
 
         activePairs = findPairs(fullLadder, true);
         passivePairs = findPairs(fullLadder, false);
-        //TODO: Any other job (if it exists) before LadderManager can be used
     }
 
     public void addNewPair(Pair newPair) {
@@ -58,16 +57,16 @@ public class LadderManager {
 
         return newPairs;
     }
-/*
+
     public void setIsPlaying(Pair pair){
         if (ladder.getLadder().contains(pair)){
-            //pair.acivate();
+            pair.activate();
         }
     }
 
     public void setNotPlaying(Pair pair){
         if (ladder.getLadder().contains(pair)) {
-            //pair.deactivate();
+            pair.deActivate();
         }
     }
 
@@ -90,15 +89,11 @@ public class LadderManager {
         pair.setPenalty(0);
     }
 
-    public int sizePlaying(){
-        return active;
-    }
-
     public void resetLadder(){
         //Combines active and passive pairs after all the matches were completed
         //To be optimized... as penalties for late and missed pairs are not applied
 
-    //    split(); //Split that creates two arrays that will be saved into the ladderManager, used afterwords
+        //Split that creates two arrays that will be saved into the ladderManager, used afterwords
 
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
@@ -219,9 +214,4 @@ public class LadderManager {
         }
         active++;
     }
-
-    private void isPositionEmpty() {
-
-    }
-    */
 }

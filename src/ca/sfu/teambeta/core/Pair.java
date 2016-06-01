@@ -26,6 +26,14 @@ public class Pair {
         penalty = 0;
     }
 
+    public void activate(){
+        this.isPlaying = true;
+    }
+
+    public void deActivate(){
+        this.isPlaying = false;
+    }
+
     public Date whenCreated() {
         return dateCreated;
     }
