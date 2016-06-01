@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Created by j_jassal588 on 2016-05-31.
+ * Created by Jasdeep on 2016-05-31.
+ *
+ * This class instantiates mock Player, Pair objects and array's for use in testing
  */
 public class TestObjects {
 
@@ -14,7 +16,8 @@ public class TestObjects {
     private List<Pair> pairs;
 
     public void TestObjects() {
-        players = new ArrayList<>();
+        players = new ArrayList<Player>();
+        pairs = new ArrayList<Pair>();
 
         setupNames();
         setupPlayers();
@@ -56,6 +59,7 @@ public class TestObjects {
 
             Pair pair = new Pair(player1, player2);
 
+            pairs.add(pair);
         }
     }
 }
