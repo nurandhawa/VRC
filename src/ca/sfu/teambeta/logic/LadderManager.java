@@ -192,38 +192,43 @@ public class LadderManager {
     }
     */
 
-    public void swapBetweenGroups(){//(ArrayList<Scorecard> scorecards){
+    public void swapBetweenGroups(ArrayList<Scorecard> scorecards){
         // SWAPPING between groups and saving result in activePairs
 
-        /*
+        // Setup a list to hold the decompiled Scorecard's and
+        //  one to hold the first group
+        List<Pair> completedPairs = new ArrayList<Pair>();
         List<Pair> firstGroup = scorecards.get(0).getTeamRankings();
 
+
+        List<Pair> previousGroup = firstGroup;
         for (int i = 1; i < scorecards.size(); i++) {
+            // Swap the player's in the first and last position of subsequent groups
+            List<Pair> currentGroup = scorecards.get(i).getTeamRankings();
+            swapPlayers(previousGroup, currentGroup);
 
+            completedPairs.addAll(previousGroup);
+            previousGroup = currentGroup;
         }
-        */
 
-        /*
-        ArrayList<Integer> intA = new ArrayList<Integer>();
-        ArrayList<Integer> intB = new ArrayList<Integer>();
+        // The for loop omits the last group, thus add it now:
+        completedPairs.addAll(previousGroup);
 
-        intA.add(1);
-        intA.add(33);
+        // Finally update the active list of players
+        this.activePairs = completedPairs;
 
-        intB.add(99);
-        intB.add(66);
-
-        this.swap(intA, intB);
-
-        System.out.println(intA.get(0));
-        System.out.println(intB.get(0));
-        */
     }
 
-    private void swap(ArrayList<Integer> int1, ArrayList<Integer> int2) { //(Scorecard firstPosition, Scorecard lastPosition) {
-        int temp = int2.get(0);
-        int2.set(0, int1.get(0));
-        int1.set(0, temp);
+    private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
+        // This method swaps the last member of 'firstGroup' with the first member of 'secondGroup'
+
+        int lastIndexOfFirstGroup = firstGroup.size() - 1;
+
+        Pair temp = firstGroup.get(lastIndexOfFirstGroup);
+
+        firstGroup.set(lastIndexOfFirstGroup, secondGroup.get(0));
+        secondGroup.set(0, temp);
+
     }
 
     /*
