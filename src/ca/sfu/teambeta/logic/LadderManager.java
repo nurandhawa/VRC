@@ -2,6 +2,9 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Scorecard;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -187,14 +190,43 @@ public class LadderManager {
         //Players who didn't play have new positions
         ladder.assignNewLadder(absentPairs);
     }
+    */
 
-    public void swapBetweenGroups(){
-        //
+    public void swapBetweenGroups(){//(ArrayList<Scorecard> scorecards){
         // SWAPPING between groups and saving result in activePairs
-        //      NOT IMPLEMENTED
-        //
+
+        /*
+        List<Pair> firstGroup = scorecards.get(0).getTeamRankings();
+
+        for (int i = 1; i < scorecards.size(); i++) {
+
+        }
+        */
+
+        /*
+        ArrayList<Integer> intA = new ArrayList<Integer>();
+        ArrayList<Integer> intB = new ArrayList<Integer>();
+
+        intA.add(1);
+        intA.add(33);
+
+        intB.add(99);
+        intB.add(66);
+
+        this.swap(intA, intB);
+
+        System.out.println(intA.get(0));
+        System.out.println(intB.get(0));
+        */
     }
 
+    private void swap(ArrayList<Integer> int1, ArrayList<Integer> int2) { //(Scorecard firstPosition, Scorecard lastPosition) {
+        int temp = int2.get(0);
+        int2.set(0, int1.get(0));
+        int1.set(0, temp);
+    }
+
+    /*
     private void insertPlaying(int position, Pair pair){
         int i = 0;
         boolean inserted = false;
