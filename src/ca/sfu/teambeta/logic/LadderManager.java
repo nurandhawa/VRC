@@ -18,7 +18,13 @@ public class LadderManager {
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
     private List<List<Pair>> groups;
-    private int active;
+
+    public LadderManager(){
+        ladder = new Ladder();
+        activePairs = new ArrayList<>();
+        passivePairs = new ArrayList<>();
+        groups = new ArrayList<>();
+    }
 
     public void putGroups(ArrayList<List<Pair>> groups) {
         this.groups = groups;
@@ -28,7 +34,9 @@ public class LadderManager {
         return activePairs;
     }
 
-    public Ladder getLadder(){ return ladder; }
+    public Ladder getLadder(){
+        return ladder;
+    }
     //init MUST be called to use LadderManager object
     /*NOTE: I am assuming that the LadderManager will somehow get a List<Pair> somehow; whether it is a new List<Pair>
       or retrieved from processing the DB. If this design is not suitable, please discuss it with me so we can change it.
@@ -39,7 +47,7 @@ public class LadderManager {
 
     public void split(){
         List<Pair> fullLadder = ladder.getLadder();
-        
+
         activePairs = findPairs(fullLadder, true);
         passivePairs = findPairs(fullLadder, false);
     }
@@ -93,11 +101,7 @@ public class LadderManager {
     }
 
     public void resetLadder(){
-        //Combines active and passive pairs after all the matches were completed
-        //To be optimized... as penalties for late and missed pairs are not applied
-
-        //Split that creates two arrays that will be saved into the ladderManager, used afterwords
-
+        split();
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
         int arePlaying = allMembers - notPlaying;
@@ -117,8 +121,8 @@ public class LadderManager {
             if (position == positions[j]){
                 //This position is taken
                 j++;
-            }else{
-                emptyPositions[i] = position; //Position not used
+            }else{ //Position not used
+                emptyPositions[i] = position;
                 i++;
             }
         }
@@ -157,6 +161,7 @@ public class LadderManager {
     }
 
     public void penaltyManager(){
+        split();
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
         int[] positions = new int[notPlaying];
@@ -191,8 +196,7 @@ public class LadderManager {
                 passivePairs.set(i+1, first);
             }
         }
-        //Players who didn't play have new positions
-        ladder.assignNewLadder(passivePairs);
+        //Players who didn't play have new positions saved in passivePairs
     }
 
     public void swapBetweenGroups(){
@@ -200,21 +204,5 @@ public class LadderManager {
         // SWAPPING between groups and saving result in activePairs
         //      NOT IMPLEMENTED
         //
-    }
-
-    private void insertPlaying(int position, Pair pair){
-        int i = 0;
-        boolean inserted = false;
-        for (Pair current : activePairs){
-            if (current.getPosition() > position){
-                activePairs.add(i, pair);
-                inserted = true;
-                break;
-            }
-        }
-        if (! inserted){
-            activePairs.add(pair);
-        }
-        active++;
     }
 }
