@@ -82,10 +82,6 @@ public class Ladder {
         return ladder;
     }
 
-    public void assignNewLadder(List<Pair> newLadder){
-        ladder = newLadder;
-    }
-
     public void incLadderLength(){
         numPairs++;
     }

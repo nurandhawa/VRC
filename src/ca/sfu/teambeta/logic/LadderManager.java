@@ -30,10 +30,6 @@ public class LadderManager {
         this.groups = groups;
     }
 
-    public List<Pair> getActivePairs() {
-        return activePairs;
-    }
-
     public Ladder getLadder(){
         return ladder;
     }
@@ -45,28 +41,10 @@ public class LadderManager {
         ladder = new Ladder(dbLadder);
     }
 
-    public void split(){
-        List<Pair> fullLadder = ladder.getLadder();
-
-        activePairs = findPairs(fullLadder, true);
-        passivePairs = findPairs(fullLadder, false);
-    }
-
     public void addNewPair(Pair newPair) {
         newPair.setPosition(ladder.getLadderLength());
         ladder.insertAtEnd(newPair);
         ladder.incLadderLength();
-    }
-    
-    private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
-        List<Pair> newPairs = new ArrayList<Pair>();
-        for (Pair p : fullLadder) {
-            if (p.isPlaying() == isPlaying) {
-                newPairs.add(p);
-            }
-        }
-
-        return newPairs;
     }
 
     public void setIsPlaying(Pair pair){
@@ -100,8 +78,21 @@ public class LadderManager {
         pair.setPenalty(0);
     }
 
-    public void resetLadder(){
-        split();
+    public void processLadder(){
+        applyAbsentPenalty(); //Absent pairs will Drop, except pairs with Accident
+        //Passive pairs have changes
+        swapBetweenGroups(); //Swap adjacent players between groups
+        //Now active and passive pairs have changes
+        mergeActivePassive(); //New positions for played pairs will be set
+        applyLateMissedPenalty(); //Last penalty adjustments
+    }
+
+    //*******************************************
+    //  Methods used ONLY INSIDE of this class
+    //*******************************************
+
+    private void mergeActivePassive(){
+        //Operations are done with separated ladder, then merged
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
         int arePlaying = allMembers - notPlaying;
@@ -121,46 +112,24 @@ public class LadderManager {
             if (position == positions[j]){
                 //This position is taken
                 j++;
-            }else{ //Position not used
+            }else{
+                //Position not used
                 emptyPositions[i] = position;
                 i++;
             }
         }
 
-        //Put participants in empty positions
+        //Assign participants to empty positions and sat them to not playing
         i = 0;
         for (Pair current : activePairs){
+            current.deActivate();
             current.setPosition(emptyPositions[i]);
             i++;
         }
-
-        //Combine all pairs in new ladder
-        List<Pair> newLadder = new ArrayList<>();
-        i = 0;
-        j = 0;
-        while((i != notPlaying - 1) || (j != arePlaying - 1)){
-            Pair pPair = passivePairs.get(i);
-            Pair aPair = activePairs.get(j);
-            if (pPair.getPosition() < aPair.getPosition()) {
-                newLadder.add(pPair);
-                i++;
-            }else{
-                newLadder.add(aPair);
-                j++;
-            }
-        }
-        activePairs.clear();
-        ladder.assignNewLadder(newLadder);
-
-
-        //
-        // MOVE late and missed pairs in the ladder
-        //      NOT IMPLEMENTED
-        //
-        
+        combine();
     }
 
-    public void penaltyManager(){
+    private void applyAbsentPenalty(){
         split();
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
@@ -203,6 +172,54 @@ public class LadderManager {
         //
         // SWAPPING between groups and saving result in activePairs
         //      NOT IMPLEMENTED
+        //
+    }
+
+    private void split(){
+        List<Pair> fullLadder = ladder.getLadder();
+
+        activePairs = findPairs(fullLadder, true);
+        passivePairs = findPairs(fullLadder, false);
+    }
+
+    private void combine(){
+        int notPlaying = passivePairs.size();
+        int arePlaying = activePairs.size();
+        List<Pair> newLadder = new ArrayList<>();
+        int i = 0;
+        int j = 0;
+        while((i != notPlaying - 1) || (j != arePlaying - 1)){
+            Pair pPair = passivePairs.get(i);
+            Pair aPair = activePairs.get(j);
+            if (pPair.getPosition() < aPair.getPosition()) {
+                newLadder.add(pPair);
+                i++;
+            }else{
+                newLadder.add(aPair);
+                j++;
+            }
+        }
+        passivePairs.clear();
+        activePairs.clear();
+        ladder =  new Ladder(newLadder);
+    }
+
+    private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
+        List<Pair> newPairs = new ArrayList<>();
+        for (Pair p : fullLadder) {
+            if (p.isPlaying() == isPlaying) {
+                newPairs.add(p);
+            }
+        }
+
+        return newPairs;
+    }
+
+    private void applyLateMissedPenalty(){
+        // activePairs and passivePairs now are empty, ladder has rearanged pairs.
+        // NOTE some pairs have Late/Missed penalties
+        //
+        //          NOT IMPLEMENTED
         //
     }
 }
