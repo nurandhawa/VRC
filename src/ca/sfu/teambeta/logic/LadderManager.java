@@ -4,7 +4,6 @@ import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -192,7 +191,7 @@ public class LadderManager {
     }
     */
 
-    public void swapBetweenGroups(ArrayList<Scorecard> scorecards){
+    public List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
@@ -217,6 +216,7 @@ public class LadderManager {
         // Finally update the active list of players
         this.activePairs = completedPairs;
 
+        return completedPairs;
     }
 
     private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
