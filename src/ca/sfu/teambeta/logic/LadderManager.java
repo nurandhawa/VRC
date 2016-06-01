@@ -1,9 +1,10 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
 import java.util.ArrayList;
 import java.util.List;
+
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
 
 /**
  * Created by constantin on 27/05/16.
@@ -19,34 +20,45 @@ public class LadderManager {
     private List<List<Pair>> groups;
     private int active;
 
-    public void putGroups(ArrayList<List<Pair>> groups){
+    public void putGroups(ArrayList<List<Pair>> groups) {
         this.groups = groups;
     }
 
-    public List<Pair> getPlayingPairs(){
+    public List<Pair> getActivePairs() {
         return activePairs;
     }
 
     public Ladder getLadder(){ return ladder; }
-
     //init MUST be called to use LadderManager object
     /*NOTE: I am assuming that the LadderManager will somehow get a List<Pair> somehow; whether it is a new List<Pair>
       or retrieved from processing the DB. If this design is not suitable, please discuss it with me so we can change it.
       - Sam 5/30/2016 */
-    public void init(List<Pair> dbLadder){
+    public void init(List<Pair> dbLadder) {
         ladder = new Ladder(dbLadder);
         List<Pair> fullLadder = ladder.getLadder();
 
-        //TODO: Divide fullLadder into activePairs and passivePairs (David)
+        activePairs = findPairs(fullLadder, true);
+        passivePairs = findPairs(fullLadder, false);
         //TODO: Any other job (if it exists) before LadderManager can be used
     }
 
-    public void addNewPair(Pair newPair){
+    public void addNewPair(Pair newPair) {
         newPair.setPosition(ladder.getLadderLength());
         ladder.insertAtEnd(newPair);
         ladder.incLadderLength();
     }
+    
+    private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
+        List<Pair> newPairs = new ArrayList<Pair>();
+        for (Pair p : fullLadder) {
+            if (p.isPlaying() == isPlaying) {
+                newPairs.add(p);
+            }
+        }
 
+        return newPairs;
+    }
+/*
     public void setIsPlaying(Pair pair){
         if (ladder.getLadder().contains(pair)){
             //pair.acivate();
@@ -211,4 +223,5 @@ public class LadderManager {
     private void isPositionEmpty() {
 
     }
+    */
 }
