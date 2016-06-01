@@ -3,7 +3,7 @@ package ca.sfu.teambeta.core;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,13 +20,11 @@ public class Scorecard<T> {
 
     public Scorecard(List<T> teams) {
         int numTeams = teams.size();
-        scoreMap = new HashMap<>(numTeams);
+        scoreMap = new LinkedHashMap<>(numTeams);
         for (T t : teams) {
             List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_GAMES, NO_SCORE));
             scoreMap.put(t, emptyScores);
         }
-
-
     }
 
     public boolean setWin(T team, int matchNum) {
