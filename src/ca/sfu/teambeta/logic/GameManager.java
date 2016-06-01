@@ -13,15 +13,30 @@ import java.util.Random;
 public class GameManager {
 
     private ArrayList<Player> ladder;
-    private ArrayList<Scorecard> groups;
+    private ArrayList<Scorecard<Player>> groups;
+    private ArrayList<MatchCard> matchCards;
 
     public GameManager() {
         ladder = new ArrayList<>();
         groups = new ArrayList<>();
+        matchCards = new ArrayList<>();
         /* will not need this once ladder is up and filled already.
         * I am using a Player object and using "playerId" field to incorporate tags of will or will not play for the time being.*/
         fillUpLadder();
         splitLadderIntoGroups();
+
+        System.out.println("Group Size: " + groups.size());
+
+        /*for(Scorecard<Player> s : groups){
+            System.out.println("Size: " + s.getTeams().size());
+            List<Player> players = s.getTeams();
+
+            for(Player p : players){
+                System.out.printf("%3s",p.getName());
+            }
+            System.out.println();
+        }*/
+        //inputMatchResults();
     }
 
     private void splitLadderIntoGroups() {
@@ -50,18 +65,25 @@ public class GameManager {
 
     private void makeQuadGroup(int num, ArrayList<Player> groupings) {
         for (int i = num; i < ladder.size(); i++) {
+            boolean check = false;
             if (ladder.get(i).getPlayerID() == 1) {
                 groupings.add(ladder.get(i));
             }
 
             if (groupings.size() == 4) {
-                Scorecard s = new Scorecard(groupings);
+                Scorecard<Player> s = new Scorecard<>(groupings);
                 groups.add(s);
+
+                //MatchCard m = new MatchCard(groupings);
+                //matchCards.add(m);
 
                 for (Player p : groupings) {
                     System.out.printf("%5s", p.getName());
                 }
+                check = true;
                 System.out.println();
+            }
+            if(check){
                 groupings.clear();
             }
         }
@@ -72,22 +94,31 @@ public class GameManager {
         int indexPosition = 0;
 
         for (int i = 0; i < ladder.size(); i++) {
+            boolean check = false;
+
             if (ladder.get(i).getPlayerID() == 1) {
                 groupings.add(ladder.get(i));
             }
 
             if (groupings.size() == 3) {
-                Scorecard s = new Scorecard(groupings);
+                check = true;
+                Scorecard<Player> s = new Scorecard<>(groupings);
                 groups.add(s);
+
+                //MatchCard m = new MatchCard(groupings);
+                //matchCards.add(m);
 
                 for (Player p : groupings) {
                     System.out.printf("%5s", p.getName());
                 }
                 System.out.println();
-                groupings.clear();
                 doneGroups++;
             }
-
+            if(check){
+                System.out.println("Group[0] size: " + groups.get(0).getTeams().size());
+                groupings.clear();
+                System.out.println("Group[00] size: " + groups.get(0).getTeams().size());
+            }
             if (doneGroups == num) {
                 indexPosition = i + 1;
                 break;
@@ -133,6 +164,13 @@ public class GameManager {
     public void inputMatchResults() {
 
 
+        for(MatchCard m : matchCards){
+            m.addMatchCardResults(1,"L","W","");
+            m.addMatchCardResults(2,"W","","L");
+            m.addMatchCardResults(3,"","W","L");
+            //m.calculateRankings();
+            m.displayMatchCard();
+        }
     }
 
 }
