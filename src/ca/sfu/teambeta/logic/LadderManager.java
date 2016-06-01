@@ -35,8 +35,11 @@ public class LadderManager {
       - Sam 5/30/2016 */
     public void init(List<Pair> dbLadder) {
         ladder = new Ladder(dbLadder);
-        List<Pair> fullLadder = ladder.getLadder();
+    }
 
+    public void split(){
+        List<Pair> fullLadder = ladder.getLadder();
+        
         activePairs = findPairs(fullLadder, true);
         passivePairs = findPairs(fullLadder, false);
     }
