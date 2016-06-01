@@ -159,9 +159,5 @@ public class GameManager {
                 }
             }
         }
-        for (Player p : players) {
-            System.out.println(p.getName() + " " + s.getScore(p));
-        }
-        System.out.println();
     }
 }
