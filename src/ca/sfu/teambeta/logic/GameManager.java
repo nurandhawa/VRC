@@ -25,17 +25,17 @@ public class GameManager {
         fillUpLadder();
         splitLadderIntoGroups();
 
-        for(Scorecard<Player> s : groups){
+        for (Scorecard<Player> s : groups) {
             String sample[][] = new String[][]{
-                    {"L","W","L","W"},
-                    {"","W","L",""},
-                    {"L","","W",""}
+                    {"L", "W", "L", "W"},
+                    {"", "W", "L", ""},
+                    {"L", "", "W", ""}
             };
-            inputMatchResults(s,sample);
+            inputMatchResults(s, sample);
         }
     }
 
-    public List<Scorecard<Player>> getScorecards(){
+    public List<Scorecard<Player>> getScorecards() {
         return groups;
     }
 
@@ -149,19 +149,17 @@ public class GameManager {
         int rows = results.length;
         int cols = players.size();
 
-            for(int i=0; i<rows; i++){
-                for(int j=0; j<cols; j++){
-                    if(results[i][j].equals("W")){
-                        s.setWin(players.get(j),i);
-                    }
-                    else if(results[i][j].equals("L")){
-                        s.setLose(players.get(j),i);
-                    }
-                    else{
-                    }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (results[i][j].equals("W")) {
+                    s.setWin(players.get(j), i);
+                } else if (results[i][j].equals("L")) {
+                    s.setLose(players.get(j), i);
+                } else {
                 }
             }
-        for(Player p : players){
+        }
+        for (Player p : players) {
             System.out.println(p.getName() + " " + s.getScore(p));
         }
         System.out.println();
