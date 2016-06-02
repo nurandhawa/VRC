@@ -2,7 +2,6 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -12,16 +11,30 @@ import java.util.Random;
  */
 public class GameManager {
 
-    private ArrayList<Player> ladder;
-    private ArrayList<Scorecard> groups;
+    private List<Player> ladder;
+    private List<Scorecard<Player>> groups;
 
     public GameManager() {
         ladder = new ArrayList<>();
         groups = new ArrayList<>();
+
         /* will not need this once ladder is up and filled already.
         * I am using a Player object and using "playerId" field to incorporate tags of will or will not play for the time being.*/
         fillUpLadder();
         splitLadderIntoGroups();
+
+        for (Scorecard<Player> s : groups) {
+            String sample[][] = new String[][]{
+                    {"L", "W", "L", "W"},
+                    {"", "W", "L", ""},
+                    {"L", "", "W", ""}
+            };
+            inputMatchResults(s, sample);
+        }
+    }
+
+    public List<Scorecard<Player>> getScorecards() {
+        return groups;
     }
 
     private void splitLadderIntoGroups() {
@@ -55,7 +68,7 @@ public class GameManager {
             }
 
             if (groupings.size() == 4) {
-                Scorecard s = new Scorecard(groupings);
+                Scorecard<Player> s = new Scorecard<>(groupings);
                 groups.add(s);
 
                 for (Player p : groupings) {
@@ -77,7 +90,7 @@ public class GameManager {
             }
 
             if (groupings.size() == 3) {
-                Scorecard s = new Scorecard(groupings);
+                Scorecard<Player> s = new Scorecard<>(groupings);
                 groups.add(s);
 
                 for (Player p : groupings) {
@@ -87,7 +100,6 @@ public class GameManager {
                 groupings.clear();
                 doneGroups++;
             }
-
             if (doneGroups == num) {
                 indexPosition = i + 1;
                 break;
@@ -130,9 +142,20 @@ public class GameManager {
         }
     }
 
-    public void inputMatchResults() {
+    public void inputMatchResults(Scorecard<Player> s, String results[][]) {
+        List<Player> players = s.getTeamRankings();
+        int rows = results.length;
+        int cols = players.size();
 
-
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (results[i][j].equals("W")) {
+                    s.setWin(players.get(j), i);
+                } else if (results[i][j].equals("L")) {
+                    s.setLose(players.get(j), i);
+                } else {
+                }
+            }
+        }
     }
-
 }
