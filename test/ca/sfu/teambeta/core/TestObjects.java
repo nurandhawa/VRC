@@ -7,7 +7,9 @@ import java.util.List;
 /**
  * Created by Jasdeep on 2016-05-31.
  *
- * This class instantiates mock Player, Pair objects and array's for use in testing
+ * This class instantiates mock Player and Pair array's for use in testing.
+ * As it's initial setup it will use 18 names: to create 18 Player objects: 9 Pair objects
+ *
  */
 public class TestObjects {
 
@@ -41,7 +43,7 @@ public class TestObjects {
         //  IE: Keep it an even number of names
 
         names = new ArrayList<String>(Arrays.asList("Shikoba", "Lori", "Brant", "Mikki", "Kasandra", "Netta", "Dorita",
-                "Lewis", "Nikolas", "Emmanuel", "Alvina", "Linette", "Dion", "Sidney"));
+                "Lewis", "Nikolas", "Emmanuel", "Alvina", "Linette", "Dion", "Sidney", "Ryan", "Ronald", "Sharron", "Reed"));
     }
 
     private void setupPlayers() {
@@ -54,10 +56,12 @@ public class TestObjects {
 
     private void setupPairs() {
         if (players.size() % 2 != 0) {
+            // Generally we won't reach this condition because the add function will prompt for two names
+            //  However it is useful if someone edits the array of names internal to this class
+
             System.out.println("ERROR: Odd number of players");
 
             // Gracefully handle this error by adding a placeholder name indicating the error
-            //  Generally we won't reach this condition because the add function will prompt for two names
             String errorName = "ERR-ADD_NAME";
             this.names.add(errorName);
             this.players.add(new Player(this.names.size(), errorName));
@@ -73,13 +77,37 @@ public class TestObjects {
         }
     }
 
+    private void setupScorecards() {
+        // TODO: Mock Scorecard's
+        //       Once GameManager accept's a ladder object, construct that here and pass it a ladder
+        //       and then take the List<Scorecard> 's it creates and add mock scores.
+    }
 
-    // MARK: - Method to
+
+    // MARK: - Additional/Misc Method(s)
+    public boolean addAdditionalPair(String player1, String player2) {
+        if (player1.isEmpty() || player2.isEmpty()) {
+            System.out.println("ERROR: Player name cannot be an empty string");
+            return false;
+        }
+
+        this.names.add(player1);
+        this.names.add(player2);
+
+        this.players.clear();
+        this.pairs.clear();
+
+        setupPlayers();
+        setupPairs();
+
+        return true;
+    }
+
 
     // MARK: - Printing Methods
     public void printPlayers() {
         System.out.println("\nPlayers: (ID & Name)");
-        // Print all names
+
         for (Player player : this.players) {
             System.out.println("" + player.getPlayerID() + " : " + player.getName());
         }
@@ -88,7 +116,6 @@ public class TestObjects {
     public void printPairs() {
         System.out.println("\nPairs:");
         System.out.println("------");
-        // Print all names
 
         int i = 1;
         for (Pair pair : this.pairs) {
@@ -100,10 +127,23 @@ public class TestObjects {
     }
 
 
+    /*
+    // MARK: - Main Function, Usage of Class explained below
     public static void main(String[] args) {
         TestObjects testObjs = new TestObjects();
 
+        // Use these function's to get a List of Players or Pairs
+        List<Player> mockListOfPlayers = testObjs.getPlayers();
+        List<Pair> mockListOfPairs = testObjs.getPairs();
+
+        // Use these two functions to print contents (for debugging)
         testObjs.printPlayers();
         testObjs.printPairs();
+
+        // Use this to add an additional Pair
+        testObjs.addAdditionalPair("Edit_Player1", "Edit_Player2");
+
     }
+    */
+
 }
