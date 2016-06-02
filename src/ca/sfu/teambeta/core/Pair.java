@@ -70,8 +70,26 @@ public class Pair {
     public boolean isPlaying() {
         return isPlaying;
     }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Pair pair = (Pair) o;
+        return team.equals(pair.getTeam());
+    }
+
 
     public String toString() {
         return "Player 1: " + team.get(0).getName() + " Player 2:" + team.get(1).getName();
+    }
+
+    public ArrayList<Player> getTeam() {
+        return team;
     }
 }
