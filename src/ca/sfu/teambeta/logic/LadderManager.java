@@ -9,6 +9,9 @@ import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+
 /**
  * Created by constantin on 27/05/16.
  * <p>
@@ -23,9 +26,6 @@ public class LadderManager {
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
     private List<List<Pair>> groups;
-
-
-
 
     public LadderManager() {
         ladder = new Ladder(new ArrayList<Pair>());

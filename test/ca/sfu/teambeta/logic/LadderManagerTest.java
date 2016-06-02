@@ -28,7 +28,7 @@ public class LadderManagerTest{
         LadderManager ladderManager;
         ladderManager = new LadderManager();
         ladderManager.init(pairList);
-
+        
         ArrayList<Pair> activePairs = new ArrayList<Pair>(){{
             add(new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true));
             add(new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true));
@@ -66,6 +66,7 @@ public class LadderManagerTest{
         for(int i = 0; i < passivePairs.size(); i++){
             actualPositions[i] = passivePairs.get(i).getPosition();
         }
+
         int[] expectedPositions = new int[]{3,4,6,7};
 
         Assert.assertArrayEquals(actualPositions, expectedPositions);
