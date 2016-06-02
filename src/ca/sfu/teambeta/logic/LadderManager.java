@@ -163,24 +163,12 @@ public class LadderManager {
             passivePairs.get(notPlaying - 2).setPosition(allMembers - 1);
         }
 
-
-        for(int current : positions){
-            System.out.print(current);
-        }
-        System.out.println();
-
         //Move players up on one position if adjacent pairs have the same position in the ladder
         for (i = notPlaying - 1; i >= 1; i--){
-            if (positions[i-1] == positions[i]){
-                positions[i-1]--;
+            if (positions[i-1] >= positions[i]){
+                positions[i-1] = positions[i] - 1;
             }
         }
-
-
-        for(int current : positions){
-            System.out.print(current);
-        }
-        System.out.println();
 
         //Assign new positions after the penalty
         for(i = 0; i < notPlaying; i++){

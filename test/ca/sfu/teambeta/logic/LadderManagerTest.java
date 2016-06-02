@@ -66,10 +66,15 @@ public class LadderManagerTest{
 
         manager.applyAbsentPenalty();
 
-        List<Pair> x = manager.getPassivePairs();
-        for(Pair current : x){
-            System.out.println(current.getPosition());
+        List<Pair> passivePairs = manager.getPassivePairs();
+
+        int[] actualPositions = new int[passivePairs.size()];
+        for(int i = 0; i < passivePairs.size(); i++){
+            actualPositions[i] = passivePairs.get(i).getPosition();
         }
+        int[] expectedPositions = new int[]{3,4,5,6,7};
+
+        Assert.assertArrayEquals(actualPositions, expectedPositions);
     }
 
     private List<Pair> fakeDB(){
