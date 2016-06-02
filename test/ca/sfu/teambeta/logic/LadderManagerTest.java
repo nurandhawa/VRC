@@ -77,6 +77,33 @@ public class LadderManagerTest{
         Assert.assertArrayEquals(actualPositions, expectedPositions);
     }
 
+    @Test
+    public void testSplitAndCombine(){
+        LadderManager manager = new LadderManager();
+        manager.init(fakeDB());
+
+        manager.split();
+        manager.combine();
+
+        List<Pair> ladder = manager.getLadder();
+        for (Pair current : ladder){
+            System.out.println(current);
+        }
+    }
+
+    @Test
+    public void  testMergePairs(){
+        LadderManager manager = new LadderManager();
+        manager.init(fakeDB());
+
+        manager.processLadder();
+        List<Pair> ladder = manager.getLadder();
+
+        for (Pair current : ladder){
+            System.out.println(current);
+        }
+    }
+
     private List<Pair> fakeDB(){
         List<Pair> db = new ArrayList<>();
 
@@ -100,9 +127,9 @@ public class LadderManagerTest{
         //No penalty
         db.add(pair);
 
-        pair = new Pair(new Player(9, "Kevin"), new Player(10, "Jasmin"), false);
+        pair = new Pair(new Player(9, "Kevin"), new Player(10, "Jasmin"), true);
         pair.setPosition(5);
-        pair.setPenalty(DROP_PASSIVE);
+        pair.setPenalty(DROP_LATE);
         db.add(pair);
 
         pair = new Pair(new Player(11, "Amy"), new Player(12, "Maria"), false);
@@ -110,7 +137,7 @@ public class LadderManagerTest{
         pair.setPenalty(DROP_PASSIVE);
         db.add(pair);
 
-        pair = new Pair(new Player(13, "Kate"), new Player(14, "Nick"), false);
+        pair = new Pair(new Player(13, "Tony"), new Player(14, "Angelica"), false);
         pair.setPosition(7);
         pair.setPenalty(DROP_PASSIVE);
         db.add(pair);
