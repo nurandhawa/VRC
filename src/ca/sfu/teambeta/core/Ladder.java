@@ -86,6 +86,10 @@ public class Ladder {
         ladder = newLadder;
     }
 
+    public Pair getPairAtIndex(int index){
+        return ladder.get(index);
+    }
+
     public void incLadderLength(){
         numPairs++;
     }

@@ -15,7 +15,7 @@ public class LadderManager {
     private final int DROP_MISS = 10;
     private final int DROP_LATE = 4;
 
-    private Ladder ladder = new Ladder();
+    private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
     private List<List<Pair>> groups;
@@ -29,11 +29,19 @@ public class LadderManager {
         return activePairs;
     }
 
-    //init MUST be called to use LadderManager object
+    public List<Pair> getFullLadder() {
+        return ladder.getLadder();
+    }
+
+    public boolean removePairAtIndex(int index){
+        Pair pairToRemove = ladder.getPairAtIndex(index);
+        return ladder.removePair(pairToRemove);
+    }
+
     /*NOTE: I am assuming that the LadderManager will somehow get a List<Pair> somehow; whether it is a new List<Pair>
       or retrieved from processing the DB. If this design is not suitable, please discuss it with me so we can change it.
       - Sam 5/30/2016 */
-    public void init(List<Pair> dbLadder){
+    public LadderManager(List<Pair> dbLadder){
         ladder = new Ladder(dbLadder);
         List<Pair> fullLadder = ladder.getLadder();
 
