@@ -2,8 +2,6 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,8 +11,8 @@ import java.util.Random;
  */
 public class GameManager {
 
-    private ArrayList<Player> ladder;
-    private ArrayList<Scorecard<Player>> groups;
+    private List<Player> ladder;
+    private List<Scorecard<Player>> groups;
 
     public GameManager() {
         ladder = new ArrayList<>();
