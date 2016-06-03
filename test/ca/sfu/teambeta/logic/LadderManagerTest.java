@@ -82,6 +82,7 @@ public class LadderManagerTest{
         }
     }
 
+    /*
     @Test
     public void  testMergePairs(){
         LadderManager manager = new LadderManager(fakeDB());
@@ -93,6 +94,7 @@ public class LadderManagerTest{
             System.out.println(current);
         }
     }
+    */
 
     private List<Pair> fakeDB(){
         List<Pair> db = new ArrayList<>();
