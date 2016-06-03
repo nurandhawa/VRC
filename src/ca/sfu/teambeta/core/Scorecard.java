@@ -27,6 +27,8 @@ public class Scorecard<T> {
         }
     }
 
+    //Asked Gordon to finish check all input function.
+
     public boolean setWin(T team, int matchNum) {
         List<Integer> scoreList = scoreMap.get(team);
         scoreList.set(matchNum, WIN);

@@ -1,7 +1,7 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Scorecard;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,23 @@ public class GameManager {
 
     private List<Pair> ladder;
     private List<Scorecard<Pair>> groups;
+    private Observer observer= null;
+    private int groupsDone = 0;
 
     public GameManager(List<Pair> activeLadder) {
         ladder = activeLadder;
         groups = new ArrayList<>();
+        observer = new Observer() {
+            @Override
+            public void done() {
+                groupsDone++;
+                if(groupsDone == groups.size()){
+                    //call putGroups function;
+                }
+            }
+        };
+
+
 
         splitLadderIntoGroups();
     }
@@ -95,7 +108,6 @@ public class GameManager {
                     s.setWin(teams.get(j), i);
                 } else if (results[i][j].equals("L")) {
                     s.setLose(teams.get(j), i);
-                } else {
                 }
             }
         }
