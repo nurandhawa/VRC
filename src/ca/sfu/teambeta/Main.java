@@ -9,7 +9,8 @@ import ca.sfu.teambeta.ui.UserInterface;
 class Main {
     public static void main(String args[]) {
 
-        LadderManager ladderManager = new LadderManager();
+        Ladder loadedLadder = DBManager.loadFromDB();
+        LadderManager ladderManager = new LadderManager(loadedLadder.getLadder());
 
         ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
 

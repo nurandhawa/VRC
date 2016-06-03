@@ -71,13 +71,20 @@ public class UserInterface {
         input = scanner.nextLine();
 
         int matchSelection = Integer.parseInt(input);
-        Scorecard<Pair> match = scorecards.get(matchSelection);
+        int matchIndex = matchSelection - 1;
+        Scorecard<Pair> match = scorecards.get(matchIndex);
         System.out.println(match.toString());
 
         System.out.println("Choose an action:");
         System.out.println(EDIT_MATCHES_RESULTS + ". Input results");
         System.out.println(EDIT_MATCHES_REMOVE + ". Remove a pair from the match");
         input = scanner.nextLine();
+
+        int index = 1;
+        for (Pair pair : match.getTeamRankings()) {
+            System.out.println(index + ". " + pair.toString());
+            index++;
+        }
 
         int selection = Integer.parseInt(input);
         if (selection == EDIT_MATCHES_RESULTS) {
@@ -86,30 +93,20 @@ public class UserInterface {
             System.out.println("Enter the pair number to remove: ");
             input = scanner.nextLine();
             int pairSelection = Integer.parseInt(input);
-//            TODO: gameManager.removePlayingPair();
-            // TODO: GameManager.editMatch(GameManager.REMOVE_PAIR, matchSelection or matches.get(matchselection), pairSelection);
+            int pairIndex = pairSelection - 1;
+            gameManager.removePlayingPair(match.getTeamRankings().get(pairIndex));
         }
     }
 
     private static void inputMatchResults(Scorecard<Pair> match, GameManager gameManager) {
-        int index = 1;
-        for (Pair pair : match.getTeamRankings()) {
-            System.out.println(index + ". " + pair.toString());
-            index++;
+        String input;
+        int numTeams = match.getTeamRankings().size();
+        String[][] results = new String[numTeams][3];
+        for (int i = 0; i < numTeams; i++) {
+            System.out.println("Enter team " + (i + 1) + "'s record vs other teams (W for win, L for loss, - for bye, space delimited)");
+            input = scanner.nextLine();
+            results[i] = input.split(" ");
         }
-
-        String[][] results = new String[3][3];
-        System.out.println("Enter team 1's record vs other teams (W for win, L for loss, - for bye, space delimited)");
-        String input = scanner.nextLine();
-        results[0] = input.split(" ");
-
-        System.out.println("Enter team 2's record vs other teams (W for win, L for loss, - for bye, space delimited)");
-        input = scanner.nextLine();
-        results[1] = input.split(" ");
-
-        System.out.println("Enter team 3's record vs other teams (W for win, L for loss, - for bye, space delimited)");
-        input = scanner.nextLine();
-        results[2] = input.split(" ");
 
         gameManager.inputMatchResults(match, results);
 
@@ -138,7 +135,9 @@ public class UserInterface {
 
     private static void listMatches(List<Scorecard<Pair>> scorecards) {
         System.out.println("Matches: ");
+        int index = 1;
         for (Scorecard<Pair> scorecard : scorecards) {
+            System.out.println("****************** MATCH " + index + " ******************");
             System.out.println(scorecard.toString());
         }
     }
@@ -194,6 +193,11 @@ public class UserInterface {
     }
 
     private static void removePair(LadderManager ladderManager) {
-        System.out.println("Remove from ladder");
+        listLadder(ladderManager.getFullLadder());
+        System.out.println("Enter number of pair to remove:");
+        String input = scanner.nextLine();
+        int selection = Integer.parseInt(input);
+        int index = selection - 1;
+        ladderManager.removePairAtIndex(index);
     }
 }

@@ -14,7 +14,7 @@ public class Scorecard<T> {
     public static final int WIN = 1;
     public static final int NO_SCORE = 0;
     public static final int LOSE = -1;
-    private static final int NUM_GAMES = 3;
+    private static final int NUM_GAMES = 4;
 
     private Map<T, List<Integer>> scoreMap;
 
