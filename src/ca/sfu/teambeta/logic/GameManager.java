@@ -100,4 +100,8 @@ public class GameManager {
             }
         }
     }
+
+    public void removePlayingPair(Pair pair) {
+
+    }
 }

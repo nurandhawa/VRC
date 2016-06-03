@@ -22,13 +22,26 @@ public class LadderManager {
     private List<Pair> passivePairs;
 
     public LadderManager() {
-        ladder = new Ladder(new ArrayList<Pair>());
+        Ladder loadedLadder = DBManager.loadFromDB();
+        if (loadedLadder.getLadder().size() == 0) {
+            ladder = new Ladder(new ArrayList<Pair>());
+        } else {
+            ladder = loadedLadder;
+        }
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
     }
 
     public List<Pair> getFullLadder() {
         return ladder.getLadder();
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
     }
 
     public boolean removePairAtIndex(int index){
