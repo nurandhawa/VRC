@@ -11,9 +11,9 @@ import java.util.Map;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Scorecard<T> {
-    public static final int WIN = 1;
-    public static final int NO_SCORE = 0;
-    public static final int LOSE = -1;
+    private static final int WIN = 1;
+    private static final int NO_SCORE = 0;
+    private static final int LOSE = -1;
     private static final int NUM_GAMES = 4;
 
     private Map<T, List<Integer>> scoreMap;
@@ -24,7 +24,7 @@ public class Scorecard<T> {
         int numTeams = teams.size();
         scoreMap = new LinkedHashMap<>(numTeams);
         for (T t : teams) {
-            List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_ROUNDS, NO_SCORE));
+            List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_GAMES, NO_SCORE));
             scoreMap.put(t, emptyScores);
         }
         observer = obs;
