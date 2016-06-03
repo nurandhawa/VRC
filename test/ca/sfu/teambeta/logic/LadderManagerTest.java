@@ -26,9 +26,8 @@ public class LadderManagerTest{
     public void testFindActivePairs() {
 
         LadderManager ladderManager;
-        ladderManager = new LadderManager();
-        ladderManager.init(pairList);
-        
+        ladderManager = new LadderManager(pairList);
+
         ArrayList<Pair> activePairs = new ArrayList<Pair>(){{
             add(new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true));
             add(new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true));
@@ -55,8 +54,7 @@ public class LadderManagerTest{
 
     @Test
     public void testAbsentPenalties(){
-        LadderManager manager = new LadderManager();
-        manager.init(fakeDB());
+        LadderManager manager = new LadderManager(fakeDB());
 
         manager.applyAbsentPenalty();
 
@@ -74,8 +72,7 @@ public class LadderManagerTest{
 
     @Test
     public void testSplitAndCombine(){
-        LadderManager manager = new LadderManager();
-        manager.init(fakeDB());
+        LadderManager manager = new LadderManager(fakeDB());
 
         manager.combine();
 
@@ -87,8 +84,7 @@ public class LadderManagerTest{
 
     @Test
     public void  testMergePairs(){
-        LadderManager manager = new LadderManager();
-        manager.init(fakeDB());
+        LadderManager manager = new LadderManager(fakeDB());
 
         manager.processLadder();
         List<Pair> ladder = manager.getLadder();
