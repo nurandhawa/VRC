@@ -23,7 +23,12 @@ public class LadderManager {
     private List<List<Pair>> groups;
 
     public LadderManager() {
-        ladder = new Ladder(new ArrayList<Pair>());
+        Ladder loadedLadder = DBManager.loadFromDB();
+        if (loadedLadder.getLadder().size() == 0) {
+            ladder = new Ladder(new ArrayList<Pair>());
+        } else {
+            ladder = loadedLadder;
+        }
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
         groups = new ArrayList<>();
@@ -31,6 +36,14 @@ public class LadderManager {
 
     public List<Pair> getFullLadder() {
         return ladder.getLadder();
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
     }
 
     public boolean removePairAtIndex(int index){

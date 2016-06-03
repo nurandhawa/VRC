@@ -7,8 +7,8 @@ import ca.sfu.teambeta.ui.UserInterface;
 class Main {
     public static void main(String args[]) {
 
-        GameManager gameManager = new GameManager();
         LadderManager ladderManager = new LadderManager();
+        GameManager gameManager = new GameManager(ladderManager.getActivePairs());
         UserInterface.start(gameManager, ladderManager);
 
     }
