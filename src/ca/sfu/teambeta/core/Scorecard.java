@@ -17,14 +17,16 @@ public class Scorecard<T> {
     private static final int NUM_GAMES = 3;
 
     private Map<T, List<Integer>> scoreMap;
+    private Observer observer;
 
-    public Scorecard(List<T> teams) {
+    public Scorecard(List<T> teams, Observer obs) {
         int numTeams = teams.size();
         scoreMap = new LinkedHashMap<>(numTeams);
         for (T t : teams) {
             List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_GAMES, NO_SCORE));
             scoreMap.put(t, emptyScores);
         }
+        observer = obs;
     }
 
     //Asked Gordon to finish check all input function.
@@ -32,12 +34,18 @@ public class Scorecard<T> {
     public boolean setWin(T team, int matchNum) {
         List<Integer> scoreList = scoreMap.get(team);
         scoreList.set(matchNum, WIN);
+        if (observer != null) {
+            observer.done();
+        }
         return true;
     }
 
     public boolean setLose(T team, int matchNum) {
         List<Integer> scoreList = scoreMap.get(team);
         scoreList.set(matchNum, LOSE);
+        if (observer != null) {
+            observer.done();
+        }
         return true;
     }
 
@@ -76,7 +84,7 @@ public class Scorecard<T> {
 
     public static void main(String[] args) {
         List<String> list = Arrays.asList("Canucks", "Flames", "Oilers", "Leafs");
-        Scorecard<String> sc = new Scorecard<>(list);
+        Scorecard<String> sc = new Scorecard<>(list, null);
 
         sc.setWin("Canucks", 0);
         sc.setWin("Oilers", 1);
