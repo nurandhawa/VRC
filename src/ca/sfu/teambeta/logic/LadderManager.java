@@ -28,19 +28,14 @@ public class LadderManager {
         passivePairs = new ArrayList<>();
     }
 
-    public List<Pair> getFullLadder() {
-        return ladder.getLadder();
-    }
-
-    public boolean removePairAtIndex(int index){
-        Pair pairToRemove = ladder.getPairAtIndex(index);
-        return ladder.removePair(pairToRemove);
-    }
-
     public LadderManager(List<Pair> dbLadder) {
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
         passivePairs = findPairs(ladder.getLadder(), false);
+    }
+
+    public List<Pair> getFullLadder() {
+        return ladder.getLadder();
     }
 
     public List<Pair> getLadder() {
@@ -57,10 +52,20 @@ public class LadderManager {
         return passivePairs;
     }
 
-    public void addNewPair(Pair newPair) {
-        newPair.setPosition(ladder.getLadderLength());
-        ladder.insertAtEnd(newPair);
-        ladder.incLadderLength();
+    public boolean addNewPair(Pair newPair) { //Reports if it was successful
+        boolean pairExists = ladder.getLadder().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            newPair.activate();
+            ladder.insertAtEnd(newPair);
+            ladder.incLadderLength();
+        }
+        return !pairExists;
+    }
+
+    public boolean removePairAtIndex(int index){
+        Pair pairToRemove = ladder.getPairAtIndex(index);
+        return ladder.removePair(pairToRemove);
     }
 
     public boolean setIsPlaying(Pair pair) {

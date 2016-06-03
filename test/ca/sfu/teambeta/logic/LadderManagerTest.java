@@ -41,12 +41,14 @@ public class LadderManagerTest{
         LadderManager manager = new LadderManager();
         Pair pair1 = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), true);
         Pair pair2 = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
+        Pair duplicatePair = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
         List<Pair> expected = new ArrayList<>();
         expected.add(pair1);
         expected.add(pair2);
 
-        manager.addNewPair(pair1);
-        manager.addNewPair(pair2);
+        Assert.assertEquals(manager.addNewPair(pair1), true);
+        Assert.assertEquals(manager.addNewPair(pair2), true);
+        Assert.assertEquals(manager.addNewPair(duplicatePair), false); //Such pair was already added
         List<Pair> ladder = manager.getLadder();
 
         Assert.assertEquals(ladder,expected);
