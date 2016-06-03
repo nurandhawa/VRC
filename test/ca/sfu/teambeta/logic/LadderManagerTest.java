@@ -51,6 +51,20 @@ public class LadderManagerTest{
 
         Assert.assertEquals(ladder,expected);
     }
+
+    @Test
+    public void testSetIsPlaying(){
+        LadderManager manager = new LadderManager(fakeDB());
+        Pair repeatedPlayer = new Pair(new Player(15, "Jessica"), new Player(7, "Richard"), false); //Richard already is in game
+        Pair uniquePair = new Pair(new Player(16, "Hannah"), new Player(17, "Kate"), false); // None of players are playing
+
+        manager.addNewPair(repeatedPlayer);
+        Assert.assertEquals(manager.setIsPlaying(repeatedPlayer), false); //This pair cannot play
+
+        manager.addNewPair(uniquePair);
+        Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
+    }
+
 /*
                 //      NOTE:
                 //Functions are unavailable as they are not public anymore
