@@ -25,7 +25,6 @@ public class LadderManager {
         ladder = new Ladder(new ArrayList<Pair>());
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
-        groups = new ArrayList<>();
     }
 
     public LadderManager(Ladder loadedLadder) {
