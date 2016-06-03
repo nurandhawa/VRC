@@ -23,12 +23,7 @@ public class LadderManager {
     private List<List<Pair>> groups;
 
     public LadderManager() {
-        Ladder loadedLadder = DBManager.loadFromDB();
-        if (loadedLadder.getLadder().size() == 0) {
-            ladder = new Ladder(new ArrayList<Pair>());
-        } else {
-            ladder = loadedLadder;
-        }
+        ladder = new Ladder(new ArrayList<Pair>());
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
         groups = new ArrayList<>();
