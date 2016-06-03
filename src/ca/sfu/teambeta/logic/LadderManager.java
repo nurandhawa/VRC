@@ -5,9 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.*;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -82,11 +80,11 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    public void processLadder() {
+    public void processLadder(List<Scorecard> scorecards) {
         //The following functions have to be executed ONLY in such order
         applyAbsentPenalty(); //Absent pairs will Drop, except pairs with Accident
         //Passive pairs have changes
-        swapBetweenGroups(); //Swap adjacent players between groups
+        swapBetweenGroups(scorecards); //Swap adjacent players between groups
         //Now active and passive pairs have changes
         mergeActivePassive(); //New positions for played pairs will be set
         applyLateMissedPenalty(); //Last penalty adjustments
@@ -181,11 +179,45 @@ public class LadderManager {
         //Players who didn't play have new positions saved in passivePairs
     }
 
-    public void swapBetweenGroups() {
-        //
+    public List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
         // SWAPPING between groups and saving result in activePairs
-        //      NOT IMPLEMENTED
-        //
+
+        // Setup a list to hold the decompiled Scorecard's and
+        //  one to hold the first group
+        List<Pair> completedPairs = new ArrayList<Pair>();
+        List<Pair> firstGroup = scorecards.get(0).getTeamRankings();
+
+
+        List<Pair> previousGroup = firstGroup;
+        for (int i = 1; i < scorecards.size(); i++) {
+            // Swap the player's in the first and last position of subsequent groups
+            List<Pair> currentGroup = scorecards.get(i).getTeamRankings();
+            swapPlayers(previousGroup, currentGroup);
+
+            completedPairs.addAll(previousGroup);
+            previousGroup = currentGroup;
+        }
+
+        // The for loop omits the last group, thus add it now:
+        completedPairs.addAll(previousGroup);
+
+        // Finally update the active list of players
+        this.activePairs = completedPairs;
+
+        return completedPairs;
+
+    }
+
+    private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
+        // This method swaps the last member of 'firstGroup' with the first member of 'secondGroup'
+
+        int lastIndexOfFirstGroup = firstGroup.size() - 1;
+
+        Pair temp = firstGroup.get(lastIndexOfFirstGroup);
+
+        firstGroup.set(lastIndexOfFirstGroup, secondGroup.get(0));
+        secondGroup.set(0, temp);
+
     }
 
     public void combine() {
