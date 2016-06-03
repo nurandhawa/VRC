@@ -2,6 +2,11 @@ group 'ca.sfu.teambeta'
 version '0.1'
 
 apply plugin: 'java'
+apply plugin: 'checkstyle'
+
+checkstyle {
+    toolVersion = "6.19"
+}
 
 sourceSets.main {
     java {
