@@ -5,13 +5,14 @@ package ca.sfu.teambeta.core;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Pair {
-    private ArrayList<Player> team = new ArrayList<>();
+    private List<Player> team = new ArrayList<>();
     private Date dateCreated;
     private int position;
     private int penalty;
@@ -35,7 +36,7 @@ public class Pair {
         this.isPlaying = isPlaying;
     }
 
-    public ArrayList<Player> getTeam() {
+    public List<Player> getPlayers() {
         return team;
     }
 
@@ -92,7 +93,7 @@ public class Pair {
         }
 
         Pair pair = (Pair) o;
-        return team.equals(pair.getTeam());
+        return team.equals(pair.getPlayers());
     }
 
     public String toString() {
