@@ -1,5 +1,7 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.logic.DBManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import ca.sfu.teambeta.ui.UserInterface;
@@ -7,7 +9,8 @@ import ca.sfu.teambeta.ui.UserInterface;
 class Main {
     public static void main(String args[]) {
 
-        LadderManager ladderManager = new LadderManager();
+        Ladder loadedLadder = DBManager.loadFromDB();
+        LadderManager ladderManager = new LadderManager(loadedLadder);
 
         ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
 
