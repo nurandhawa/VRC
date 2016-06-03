@@ -51,7 +51,10 @@ public class LadderManagerTest{
 
         Assert.assertEquals(ladder,expected);
     }
-
+/*
+                //      NOTE:
+                //Functions are unavailable as they are not public anymore
+                //
     @Test
     public void testAbsentPenalties(){
         LadderManager manager = new LadderManager(fakeDB());
@@ -82,7 +85,7 @@ public class LadderManagerTest{
         }
     }
 
-    /*
+
     @Test
     public void  testMergePairs(){
         LadderManager manager = new LadderManager(fakeDB());
