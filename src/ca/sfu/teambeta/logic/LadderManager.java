@@ -12,6 +12,7 @@ import ca.sfu.teambeta.core.*;
  * <p>
  * <p>
  * USAGE: After all of the games took place
+ * setIsPlaying(Pair) returns false if any of players are already playing
  * (1) pass groups to LadderManager
  * (2) call processLadder() for all the computations to be complete.
  */
@@ -62,10 +63,18 @@ public class LadderManager {
         ladder.incLadderLength();
     }
 
-    public void setIsPlaying(Pair pair) {
+    public boolean setIsPlaying(Pair pair) {
+        //Set pair to playing if players are unique(returns true)
         if (ladder.getLadder().contains(pair)) {
-            pair.activate();
+            List<Player> team  = pair.getPlayers();
+            Player first = team.get(0);
+            Player second = team.get(1);
+            if(!searchActivePlayer(first) && !searchActivePlayer(second)) {
+                pair.activate();
+                return true;
+            }
         }
+        return false;
     }
 
     public void setNotPlaying(Pair pair) {
@@ -250,6 +259,16 @@ public class LadderManager {
         List<Pair> newPairs = fullLadder.stream().filter(p -> p.isPlaying() == isPlaying).collect(Collectors.toList());
 
         return newPairs;
+    }
+
+    private boolean searchActivePlayer(Player player){
+        split();
+        for(Pair current : activePairs){
+            if(current.hasPlayer(player)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void applyLateMissedPenalty() {
