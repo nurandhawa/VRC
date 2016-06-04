@@ -283,6 +283,23 @@ public class LadderManager {
 
 
     private void applyLateMissedPenalty() {
-        
+
+    }
+
+    private Pair searchPairByPosition(int position){
+        for (Pair current : ladder.getLadder()){
+            if (current.getPosition() == position){
+                return current;
+            }
+        }
+        return new Pair(new Player(0, ""), new Player(0, ""));
+    }
+
+
+    private void savePositions(){
+        List<Pair> listPairs = ladder.getLadder();
+        for(Pair current : listPairs){
+            current.establishPosition();
+        }
     }
 }
