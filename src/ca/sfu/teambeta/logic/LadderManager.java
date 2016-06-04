@@ -94,7 +94,30 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
+    //Sets specific penalty to a pair on the ladder
+    public void setPenaltyToPair(int pairIndex, String penaltyType) {
+        Pair pair = ladder.getPairAtIndex(pairIndex);
+        int retPenalty = getPenaltyFromString(penaltyType);
+        int penalty = 0;
+        //if penalty is already two and add missing should be 8 and late should only be 4
+        if(pair.getPenalty() >= 2 && retPenalty != -1 && retPenalty != 0 ) {
+            penalty = retPenalty - pair.getPenalty();
+            pair.setPenalty(penalty);
+        } else if (retPenalty == 0) {
+            removePenalty(pair);
+        } else {
+            pair.setPenalty(retPenalty);
+        }
+    }
+
     public void processLadder(List<Scorecard> scorecards, String fileName) {
+        /**
+         * 1. swap the pairs around based on the result
+         * 2. combine the list of both active and inactive pairs
+         * 3. set the absent(-2) penalty to all passive pairs
+         * 4. apply all penalties that have been previously set before the method call
+         * 5. then save the ladder to a db
+         **/
         swapBetweenGroups(scorecards);
         mergeActivePassive();
         setAbsentPenaltyToPairs();
@@ -243,26 +266,12 @@ public class LadderManager {
         return newPairs;
     }
 
-    public void setAbsentPenaltyToPairs() {
+    //Applies absent penalty to the pairs who didn't show up
+    private void setAbsentPenaltyToPairs() {
         List<Pair> passivePairs = getPassivePairs();
 
         for (Pair currentPair : passivePairs) {
             currentPair.setPenalty(Penalty.ABSENT.getPenalty());
-        }
-    }
-
-    public void setPenaltyToPair(int pairIndex, String penaltyType) {
-        Pair pair = ladder.getPairAtIndex(pairIndex);
-        int retPenalty = getPenaltyFromString(penaltyType);
-        int penalty = 0;
-        //if penalty is already two and add missing should be 8 and late should only be 4
-        if(pair.getPenalty() >= 2 && retPenalty != -1 && retPenalty != 0 ) {
-            penalty = retPenalty - pair.getPenalty();
-            pair.setPenalty(penalty);
-        } else if (retPenalty == 0) {
-            removePenalty(pair);
-        } else {
-            pair.setPenalty(retPenalty);
         }
     }
 
@@ -277,6 +286,7 @@ public class LadderManager {
         }
     }
 
+    //Applies additional penalties beside the absent penalty
     public void applyPenalties() {
         List<Pair> currentLadder = getFullLadder();
 
@@ -289,14 +299,10 @@ public class LadderManager {
     }
 
     private void fixPairPositionOnLadder() {
-        int ladderLength = ladder.getLadderLength();
-        List<Pair> currentLadder = getFullLadder();
-
-        for(int i = ladderLength - 1; i > 0; i--) {
-            if(currentLadder.get(i).getPosition() > ladderLength) {
-                currentLadder.get(i).setPosition(ladderLength);
-                ladderLength--;
-            }
+        int position = 0;
+        for (Pair currentPair : getFullLadder()) {
+            position++;
+            currentPair.setPosition(position);
         }
     }
 

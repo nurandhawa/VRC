@@ -28,6 +28,12 @@ public class LadderManagerTest {
             add(new Pair(new Player(19, "Person 19"), new Player(20, "Person 20"), true));
         }};
 
+        int position = 2;
+        for(Pair p : expectedActivePairs) {
+            p.setPosition(position);
+            position += 2;
+        }
+
         Assert.assertEquals(expectedActivePairs, ladderManager.getActivePairs());
     }
 
@@ -43,6 +49,12 @@ public class LadderManagerTest {
             add(new Pair(new Player(13, "Person 13"), new Player(14, "Person 14"), false));
             add(new Pair(new Player(17, "Person 17"), new Player(18, "Person 18"), false));
         }};
+
+        int position = 1;
+        for(Pair p : expectedPassivePairs) {
+            p.setPosition(position);
+            position += 2;
+        }
 
         Assert.assertEquals(expectedPassivePairs, ladderManager.getPassivePairs());
     }
@@ -67,7 +79,7 @@ public class LadderManagerTest {
         }};
 
         int position = 0;
-        for(Pair p : expectedLadder) {
+        for (Pair p : expectedLadder) {
             position++;
             p.setPosition(position);
         }
@@ -78,11 +90,35 @@ public class LadderManagerTest {
     @Test
     public void testApplyPenalties() {
         LadderManager ladderManager = new LadderManager(testData());
-        ladderManager.setPenaltyToPair(1, "missing");
-        ladderManager.setPenaltyToPair(2, "late");
-        ladderManager.setPenaltyToPair(3, "missing");
 
+        ladderManager.setPenaltyToPair(0, "missing");
+        ladderManager.setPenaltyToPair(5, "late");
+        ladderManager.setPenaltyToPair(8, "missing");
+
+        ladderManager.mergeActivePassive();
         ladderManager.applyPenalties();
+
+        List<Pair> expectedLadder = new ArrayList<Pair>() {{
+            add(new Pair(new Player(3, "Person 3"), new Player(4, "Person 4"), true));
+            add(new Pair(new Player(5, "Person 5"), new Player(6, "Person 6"), false));
+            add(new Pair(new Player(7, "Person 7"), new Player(8, "Person 8"), true));
+            add(new Pair(new Player(9, "Person 9"), new Player(10, "Person 10"), false));
+            add(new Pair(new Player(13, "Person 13"), new Player(14, "Person 14"), false));
+            add(new Pair(new Player(15, "Person 15"), new Player(16, "Person 16"), true));
+            add(new Pair(new Player(11, "Person 11"), new Player(12, "Person 12"), true));
+            add(new Pair(new Player(19, "Person 19"), new Player(20, "Person 20"), true));
+            add(new Pair(new Player(1, "Person 1"), new Player(2, "Person 2"), false));
+            add(new Pair(new Player(17, "Person 17"), new Player(18, "Person 18"), false));
+        }};
+
+        int position = 0;
+        for (Pair p : expectedLadder) {
+            position++;
+            p.setPosition(position);
+        }
+
+        Assert.assertEquals(expectedLadder, ladderManager.getFullLadder());
+
     }
 
 
