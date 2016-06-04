@@ -2,7 +2,6 @@ package ca.sfu.teambeta.logic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Pair;
@@ -25,10 +24,7 @@ public class GameManager {
             public void done() {
                 groupsDone++;
                 if(groupsDone == groups.size()){
-                    List<List<Pair>> listOfGroups = groups.stream()
-                            .map(Scorecard::getTeamRankings)
-                            .collect(Collectors.toList());
-                    ladderManager.setGroups(listOfGroups);
+                    ladderManager.processLadder(groups);
                 }
             }
         };

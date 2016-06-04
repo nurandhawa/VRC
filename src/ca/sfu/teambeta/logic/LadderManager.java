@@ -105,7 +105,7 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    public void processLadder(List<Scorecard> scorecards) {
+    public void processLadder(List<Scorecard<Pair>> scorecards) {
         //The following functions have to be executed ONLY in such order
         applyAbsentPenalty(); //Absent pairs will Drop, except pairs with Accident
         //Passive pairs have changes
@@ -212,7 +212,7 @@ public class LadderManager {
         passivePairs = findPairs(fullLadder, false);
     }
 
-    private List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
+    private List<Pair> swapBetweenGroups(List<Scorecard<Pair>> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
