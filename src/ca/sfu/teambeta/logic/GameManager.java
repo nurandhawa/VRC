@@ -1,23 +1,23 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Observer;
-import ca.sfu.teambeta.core.Scorecard;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.stream.Collectors;
+
+import ca.sfu.teambeta.core.Observer;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 public class GameManager {
-
     private List<Pair> ladder;
     private List<Scorecard<Pair>> groups;
     private Observer observer= null;
     private int groupsDone = 0;
 
-    public GameManager(List<Pair> activeLadder) {
+    public GameManager(List<Pair> activeLadder, LadderManager ladderManager) {
         ladder = activeLadder;
         groups = new ArrayList<>();
         observer = new Observer() {
@@ -25,7 +25,10 @@ public class GameManager {
             public void done() {
                 groupsDone++;
                 if(groupsDone == groups.size()){
-                    //call putGroups function;
+                    List<List<Pair>> listOfGroups = groups.stream()
+                            .map(Scorecard::getTeamRankings)
+                            .collect(Collectors.toList());
+                    ladderManager.setGroups(listOfGroups);
                 }
             }
         };
@@ -62,12 +65,12 @@ public class GameManager {
         }
     }
 
-    private void makeQuadGroup(int num, ArrayList<Pair> groupings) {
+    private void makeQuadGroup(int num, List<Pair> groupings) {
         for (int i = num; i < ladder.size(); i++) {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 4) {
-                Scorecard<Pair> s = new Scorecard<>(groupings);
+                Scorecard<Pair> s = new Scorecard<>(groupings, observer);
                 groups.add(s);
                 System.out.println();
                 groupings.clear();
@@ -75,7 +78,7 @@ public class GameManager {
         }
     }
 
-    private int makeTripleGroups(int num, ArrayList<Pair> groupings) {
+    private int makeTripleGroups(int num, List<Pair> groupings) {
         int doneGroups = 0;
         int indexPosition = 0;
 
@@ -83,7 +86,7 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 3) {
-                Scorecard<Pair> s = new Scorecard<>(groupings);
+                Scorecard<Pair> s = new Scorecard<>(groupings, observer);
                 groups.add(s);
                 System.out.println();
                 groupings.clear();

@@ -5,7 +5,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by constantin on 27/05/16.
@@ -59,7 +62,7 @@ public class LadderManager {
         return passivePairs;
     }
 
-    public void setGroups(ArrayList<List<Pair>> groups) {
+    public void setGroups(List<List<Pair>> groups) {
         this.groups = groups;
     }
 
