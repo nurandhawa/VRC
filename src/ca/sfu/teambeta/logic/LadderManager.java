@@ -68,9 +68,9 @@ public class LadderManager {
     }
 
     public void addNewPair(Pair newPair) {
+        ladder.incLadderLength();
         newPair.setPosition(ladder.getLadderLength());
         ladder.insertAtEnd(newPair);
-        ladder.incLadderLength();
     }
 
     public void setIsPlaying(Pair pair) {

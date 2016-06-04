@@ -96,8 +96,12 @@ public class Pair {
             return false;
         }
 
+
         Pair pair = (Pair) o;
-        return team.equals(pair.getPlayers());
+
+        return team.equals(pair.getPlayers())
+                && position == pair.getPosition()
+                && isPlaying == pair.isPlaying();
     }
 
     public String toString() {
