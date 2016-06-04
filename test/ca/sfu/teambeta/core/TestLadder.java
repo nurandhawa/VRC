@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Monkey on 6/4/2016.
+ * Created by Samuel Kim on 6/4/2016.
  */
 public class TestLadder {
     @Test
