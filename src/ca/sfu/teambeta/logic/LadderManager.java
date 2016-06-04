@@ -56,7 +56,7 @@ public class LadderManager {
         boolean pairExists = ladder.getLadder().contains(newPair);
         if (!pairExists) {
             newPair.setPosition(ladder.getLadderLength());
-            newPair.activate();
+            setIsPlaying(newPair);
             ladder.insertAtEnd(newPair);
             ladder.incLadderLength();
         }

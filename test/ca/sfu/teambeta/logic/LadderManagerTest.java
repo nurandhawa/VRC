@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -67,10 +68,10 @@ public class LadderManagerTest{
         Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
     }
 
-/*
-                //      NOTE:
-                //Functions are unavailable as they are not public anymore
-                //
+    /*
+    //      NOTE:
+    //Functions are unavailable as they are not public anymore
+    //
     @Test
     public void testAbsentPenalties(){
         LadderManager manager = new LadderManager(fakeDB());
