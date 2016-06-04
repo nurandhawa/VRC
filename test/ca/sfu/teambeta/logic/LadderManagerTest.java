@@ -1,15 +1,11 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
 
 /**
  * Created by David Li on 30/05/16.
@@ -114,6 +110,22 @@ public class LadderManagerTest{
             System.out.println(current);
         }
     }
+
+      @Test
+    public void testProcessingLadder(){
+        //Tested output without swapping, late and missed penalties applied correctly
+        LadderManager manager = new LadderManager(fakeDB());
+        List<Scorecard> scorecards = new ArrayList<>();
+
+        manager.processLadder(scorecards);
+
+        List<Pair> ladder = manager.getLadder();
+        for(Pair current : ladder){
+            System.out.println(current);
+        }
+    }
+
+
     */
 
     private List<Pair> fakeDB(){
@@ -131,7 +143,7 @@ public class LadderManagerTest{
 
         pair = new Pair(new Player(5, "David"), new Player(6, "Bob"), true);
         pair.setPosition(3);
-        //No penalty
+        pair.setPenalty(Penalty.LATE.getPenalty());
         db.add(pair);
 
         pair = new Pair(new Player(7, "Richard"), new Player(8, "Robin"), true);
