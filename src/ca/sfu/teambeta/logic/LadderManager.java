@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 
 /**
@@ -23,6 +24,7 @@ public class LadderManager {
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
+    private List<List<Pair>> groups;
 
     public LadderManager() {
         ladder = new Ladder(new ArrayList<Pair>());
