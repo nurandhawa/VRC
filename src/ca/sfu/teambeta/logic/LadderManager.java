@@ -138,7 +138,7 @@ public class LadderManager {
         i = 0;
         int j = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position == positions[j]) {
+            if (position < positions.length && position == positions[j]) {
                 //This position is taken
                 j++;
             } else {
