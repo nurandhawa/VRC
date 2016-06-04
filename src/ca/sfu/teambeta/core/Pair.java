@@ -17,6 +17,7 @@ public class Pair {
     private int position;
     private int penalty;
     private boolean isPlaying;
+    private int prevPosition;
 
     public Pair(Player firstPlayer, Player secondPlayer) {
         team.add(firstPlayer);
@@ -48,8 +49,11 @@ public class Pair {
         return position;
     }
 
-    public void setPosition(int Position) {
-        this.position = Position;
+    public void setPosition(int position) {
+        if(this.position == 0) {
+            prevPosition = position;
+        }
+        this.position = position;
     }
 
     public int getPenalty() {
@@ -78,6 +82,10 @@ public class Pair {
         return newPosition;
     }
 
+    public int getPrevPosition() {
+        return prevPosition;
+    }
+
     public boolean hasPlayer(Player searchPlayer) {
         return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
     }
@@ -95,7 +103,6 @@ public class Pair {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
 
         Pair pair = (Pair) o;
 

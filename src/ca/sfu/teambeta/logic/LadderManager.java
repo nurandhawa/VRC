@@ -107,42 +107,57 @@ public class LadderManager {
     // .: Public for the testing.
     //*******************************************
 
-    private void mergeActivePassive() {
-        //Operations are done with separated ladder, then merged
-        int allMembers = ladder.getLadderLength();
-        int notPlaying = passivePairs.size();
-        int arePlaying = allMembers - notPlaying;
-        int[] positions = new int[notPlaying];
-        int[] emptyPositions = new int[arePlaying];
+    public void mergeActivePassive() {
+        List<Integer> emptyPositions = getAvailablePos();
+        assignAvaiablePos(emptyPositions);
+        combine();
+    }
 
+    private List<Integer> getAvailablePos() {
+        int totalPos = ladder.getLadderLength();
+        int notPlaying = passivePairs.size();
+        List<Integer> takenPositions = new ArrayList<Integer>();
+        List<Integer> emptyPositions = new ArrayList<Integer>();
         int i = 0;
+
         for (Pair current : passivePairs) {
-            positions[i] = current.getPosition();
-            i++;
+            takenPositions.add(current.getPosition());
         }
 
-        //Create array of empty positions for participants
-        i = 0;
-        int j = 0;
-        for (int position = 1; position <= allMembers; position++) {
-            if (position == positions[j]) {
-                //This position is taken
-                j++;
-            } else {
-                //Position not used
-                emptyPositions[i] = position;
-                i++;
+        emptyPositions.addAll(findMissingPos(0, takenPositions.get(0)));
+
+        while(i < (takenPositions.size() - 1)) {
+            emptyPositions.addAll(findMissingPos(takenPositions.get(i), takenPositions.get(++i)));
+        }
+
+        if(takenPositions.get(notPlaying - 1) != totalPos) {
+            emptyPositions.add(totalPos);
+        }
+
+        return emptyPositions;
+    }
+
+    private void assignAvaiablePos(List<Integer> emptyPositions) {
+        int i = 0;
+        for (Pair current : activePairs) {
+            current.deActivate();
+            current.setPosition(emptyPositions.get(i));
+            i++;
+        }
+    }
+
+    private List<Integer> findMissingPos(Integer startPos, Integer endPos) {
+        List<Integer> emptyPositions = new ArrayList<Integer>();
+        int difference = Math.subtractExact(endPos, startPos);
+        if (difference == 2) {
+            emptyPositions.add(++startPos);
+        } else {
+            for(int i = 1; i < difference; i++) {
+                emptyPositions.add(startPos + i);
             }
         }
 
-        //Assign participants to empty positions and sat them to not playing
-        i = 0;
-        for (Pair current : activePairs) {
-            current.deActivate();
-            current.setPosition(emptyPositions[i]);
-            i++;
-        }
-        combine();
+        return emptyPositions;
     }
 
     private void combine() {
@@ -211,7 +226,13 @@ public class LadderManager {
         return new Comparator<Pair>() {
                 @Override
                 public int compare(Pair p1, Pair p2) {
-                    return p1.getPosition() - p2.getPosition();
+                    int result;
+                    if(p1.getPosition() == p2.getPosition()) {
+                        result = p1.getPrevPosition() - p2.getPrevPosition();
+                    } else {
+                        result = p1.getPosition() - p2.getPosition();
+                    }
+                    return result;
                 }
             };
     }
@@ -241,7 +262,7 @@ public class LadderManager {
         } else if (retPenalty == 0) {
             removePenalty(pair);
         } else {
-            pair.setPenalty(penalty);
+            pair.setPenalty(retPenalty);
         }
     }
 
@@ -257,7 +278,6 @@ public class LadderManager {
     }
 
     public void applyPenalties() {
-        mergeActivePassive();
         List<Pair> currentLadder = getFullLadder();
 
         for (Pair currentPair : currentLadder) {
@@ -284,7 +304,7 @@ public class LadderManager {
         DBManager.saveToDB(this.ladder, fileName);
     }
 
-    private void printLadder() {
+    public void printLadder() {
         for (Pair currentPair : getFullLadder()) {
             System.out.println(currentPair);
         }
