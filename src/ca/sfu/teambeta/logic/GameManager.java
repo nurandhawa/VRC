@@ -115,4 +115,10 @@ public class GameManager {
             }
         }
     }
+
+    public void removePlayingPair(Pair pair) {
+        ladder.remove(pair);
+        groups.clear();
+        splitLadderIntoGroups();
+    }
 }

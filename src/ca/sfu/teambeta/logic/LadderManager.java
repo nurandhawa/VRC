@@ -23,17 +23,33 @@ public class LadderManager {
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
-    private List<List<Pair>> groups;
 
     public LadderManager() {
         ladder = new Ladder(new ArrayList<Pair>());
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
-        groups = new ArrayList<>();
+    }
+
+    public LadderManager(Ladder loadedLadder) {
+        if (loadedLadder.getLadder().size() == 0) {
+            ladder = new Ladder(new ArrayList<Pair>());
+        } else {
+            ladder = loadedLadder;
+        }
+        activePairs = new ArrayList<>();
+        passivePairs = new ArrayList<>();
     }
 
     public List<Pair> getFullLadder() {
         return ladder.getLadder();
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
     }
 
     public boolean removePairAtIndex(int index){
@@ -41,9 +57,6 @@ public class LadderManager {
         return ladder.removePair(pairToRemove);
     }
 
-    /*NOTE: I am assuming that the LadderManager will somehow get a List<Pair> somehow; whether it is a new List<Pair>
-      or retrieved from processing the DB. If this design is not suitable, please discuss it with me so we can change it.
-      - Sam 5/30/2016 */
     public LadderManager(List<Pair> dbLadder) {
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
@@ -55,10 +68,12 @@ public class LadderManager {
     }
 
     public List<Pair> getActivePairs() {
+        split();
         return activePairs;
     }
 
     public List<Pair> getPassivePairs() {
+        split();
         return passivePairs;
     }
 
@@ -100,10 +115,10 @@ public class LadderManager {
 
     //*******************************************
     //  Methods used ONLY INSIDE of this class
-    // .: Public for the testing. TODO make the following functions private
+    // .: Public for the testing.
     //*******************************************
 
-    public void mergeActivePassive() {
+    private void mergeActivePassive() {
         //Operations are done with separated ladder, then merged
         int allMembers = ladder.getLadderLength();
         int notPlaying = passivePairs.size();
@@ -168,7 +183,8 @@ public class LadderManager {
         return passivePairsPos;
     }
 
-    public void applyAbsentPenalty() {
+    private void applyAbsentPenalty() {
+        split();
         int notPlaying = passivePairs.size();
         int[] positions = calAbsentPenalty();
         positions = fixPosAbsentPenalty(positions);
@@ -187,7 +203,14 @@ public class LadderManager {
         //Players who didn't play have new positions saved in passivePairs
     }
 
-    public List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
+    private void split() {
+        List<Pair> fullLadder = ladder.getLadder();
+
+        activePairs = findPairs(fullLadder, true);
+        passivePairs = findPairs(fullLadder, false);
+    }
+
+    private List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
@@ -228,7 +251,7 @@ public class LadderManager {
 
     }
 
-    public void combine() {
+    private void combine() {
         //Implemented by David Li and Kostiantyn Koval
         List<Pair> newLadder = new ArrayList<>();
 
