@@ -52,6 +52,10 @@ public class Pair {
         this.position = Position;
     }
 
+    public int getPenalty() {
+        return penalty;
+    }
+
     public void setPenalty(int penalty) {
         this.penalty = penalty;
     }
