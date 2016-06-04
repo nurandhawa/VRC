@@ -1,8 +1,5 @@
 package ca.sfu.teambeta.core;
 
-//Pair should have information about pairs activity
-//Ladder shoud return the size of itself
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +12,7 @@ public class Pair {
     private List<Player> team = new ArrayList<>();
     private Date dateCreated;
     private int position;
+    private int oldPosition;
     private int penalty;
     private boolean isPlaying;
 
@@ -23,6 +21,7 @@ public class Pair {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
+        oldPosition = 0;
         penalty = 0;
         this.isPlaying = true;
     }
@@ -32,6 +31,7 @@ public class Pair {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
+        oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
     }
@@ -48,8 +48,24 @@ public class Pair {
         return position;
     }
 
+    public int getOldPosition(){
+        return oldPosition;
+    }
+
     public void setPosition(int Position) {
         this.position = Position;
+        if (oldPosition == 0){
+            this.oldPosition = position;
+        }
+    }
+
+    public void establishPosition(){
+        this.oldPosition = position;
+    }
+
+    public int showRankingProgress(){
+        //Negative result means that pair drop in the ladder ranking
+        return oldPosition - position;
     }
 
     public void setPenalty(int penalty) {
