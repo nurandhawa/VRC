@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,6 +19,7 @@ import ca.sfu.teambeta.core.*;
  */
 
 public class LadderManager {
+    private static final int NO_PENALTY = 0;
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
@@ -145,7 +147,7 @@ public class LadderManager {
         combine();
     }
 
-    private int[] calAbsentPenalty() {
+    private int[] callAbsentPenalty() {
         int[] passivePairsPos = new int[passivePairs.size()];
         int i = 0;
 
@@ -175,7 +177,7 @@ public class LadderManager {
     private void applyAbsentPenalty() {
         split();
         int notPlaying = passivePairs.size();
-        int[] positions = calAbsentPenalty();
+        int[] positions = callAbsentPenalty();
         positions = fixPosAbsentPenalty(positions);
 
         //Move players up on one position if adjacent pairs have the same position in the ladder
@@ -241,23 +243,15 @@ public class LadderManager {
     }
 
     private void combine() {
-        //Implemented by David Li and Kostiantyn Koval
         List<Pair> newLadder = new ArrayList<>();
 
         newLadder.addAll(passivePairs);
         newLadder.addAll(activePairs);
 
-        Comparator<Pair> makeSorter = new Comparator<Pair>() {
-            @Override
-            public int compare(Pair p1, Pair p2) {
-                return p1.getPosition() - p2.getPosition();
-            }
-        };
-
-        java.util.Collections.sort(newLadder, makeSorter);
         passivePairs.clear();
         activePairs.clear();
         ladder = new Ladder(newLadder);
+        sortByPosition();
     }
 
     private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
@@ -276,11 +270,19 @@ public class LadderManager {
         return false;
     }
 
+    private void sortByPosition(){
+        Comparator<Pair> makeSorter = new Comparator<Pair>() {
+            @Override
+            public int compare(Pair p1, Pair p2) {
+                return p1.getPosition() - p2.getPosition();
+            }
+        };
+
+        java.util.Collections.sort(ladder.getLadder(), makeSorter);
+    }
+
+
     private void applyLateMissedPenalty() {
-        // activePairs and passivePairs now are empty, ladder has rearranged pairs.
-        // NOTE some pairs have Late/Missed penalties
-        //
-        //          NOT IMPLEMENTED
-        //
+        
     }
 }

@@ -63,9 +63,8 @@ public class Pair {
         this.oldPosition = position;
     }
 
-    public int showRankingProgress(){
-        //Negative result means that pair drop in the ladder ranking
-        return oldPosition - position;
+    public int getPenalty(){
+        return penalty;
     }
 
     public void setPenalty(int penalty) {
