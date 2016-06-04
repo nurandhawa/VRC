@@ -16,6 +16,7 @@ import ca.sfu.teambeta.core.Scorecard;
  * <p>
  * <p>
  * USAGE: After all of the games took place
+ * setIsPlaying(Pair) returns false if any of players are already playing
  * (1) pass groups to LadderManager
  * (2) call processLadder() for all the computations to be complete.
  */
@@ -24,7 +25,6 @@ public class LadderManager {
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
-    private List<List<Pair>> groups;
 
     public LadderManager() {
         ladder = new Ladder(new ArrayList<Pair>());
@@ -32,37 +32,14 @@ public class LadderManager {
         passivePairs = new ArrayList<>();
     }
 
-    public LadderManager(Ladder loadedLadder) {
-        if (loadedLadder.getLadder().size() == 0) {
-            ladder = new Ladder(new ArrayList<Pair>());
-        } else {
-            ladder = loadedLadder;
-        }
-        activePairs = new ArrayList<>();
-        passivePairs = new ArrayList<>();
-    }
-
-    public List<Pair> getFullLadder() {
-        return ladder.getLadder();
-    }
-
-    public List<Player> getAllPlayers() {
-        List<Player> players = new ArrayList<>();
-        for (Pair pair : ladder.getLadder()) {
-            players.addAll(pair.getPlayers());
-        }
-        return players;
-    }
-
-    public boolean removePairAtIndex(int index){
-        Pair pairToRemove = ladder.getPairAtIndex(index);
-        return ladder.removePair(pairToRemove);
-    }
-
     public LadderManager(List<Pair> dbLadder) {
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
         passivePairs = findPairs(ladder.getLadder(), false);
+    }
+
+    public List<Pair> getFullLadder() {
+        return ladder.getLadder();
     }
 
     public List<Pair> getLadder() {
@@ -74,25 +51,47 @@ public class LadderManager {
         return activePairs;
     }
 
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
+    }
+
     public List<Pair> getPassivePairs() {
         split();
         return passivePairs;
     }
 
-    public void setGroups(List<List<Pair>> groups) {
-        this.groups = groups;
-    }
-
-    public void addNewPair(Pair newPair) {
-        newPair.setPosition(ladder.getLadderLength());
-        ladder.insertAtEnd(newPair);
-        ladder.incLadderLength();
-    }
-
-    public void setIsPlaying(Pair pair) {
-        if (ladder.getLadder().contains(pair)) {
-            pair.activate();
+    public boolean addNewPair(Pair newPair) { //Reports if it was successful
+        boolean pairExists = ladder.getLadder().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            setIsPlaying(newPair);
+            ladder.insertAtEnd(newPair);
+            ladder.incLadderLength();
         }
+        return !pairExists;
+    }
+
+    public boolean removePairAtIndex(int index){
+        Pair pairToRemove = ladder.getPairAtIndex(index);
+        return ladder.removePair(pairToRemove);
+    }
+
+    public boolean setIsPlaying(Pair pair) {
+        //Set pair to playing if players are unique(returns true)
+        if (ladder.getLadder().contains(pair)) {
+            List<Player> team  = pair.getPlayers();
+            Player first = team.get(0);
+            Player second = team.get(1);
+            if(!searchActivePlayer(first) && !searchActivePlayer(second)) {
+                pair.activate();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setNotPlaying(Pair pair) {
@@ -277,6 +276,16 @@ public class LadderManager {
         List<Pair> newPairs = fullLadder.stream().filter(p -> p.isPlaying() == isPlaying).collect(Collectors.toList());
 
         return newPairs;
+    }
+
+    private boolean searchActivePlayer(Player player){
+        split();
+        for(Pair current : activePairs){
+            if(current.hasPlayer(player)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void applyLateMissedPenalty() {

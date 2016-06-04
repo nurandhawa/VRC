@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -41,20 +42,36 @@ public class LadderManagerTest{
         LadderManager manager = new LadderManager();
         Pair pair1 = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), true);
         Pair pair2 = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
+        Pair duplicatePair = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
         List<Pair> expected = new ArrayList<>();
         expected.add(pair1);
         expected.add(pair2);
 
-        manager.addNewPair(pair1);
-        manager.addNewPair(pair2);
+        Assert.assertEquals(manager.addNewPair(pair1), true);
+        Assert.assertEquals(manager.addNewPair(pair2), true);
+        Assert.assertEquals(manager.addNewPair(duplicatePair), false); //Such pair was already added
         List<Pair> ladder = manager.getLadder();
 
         Assert.assertEquals(ladder,expected);
     }
-/*
-                //      NOTE:
-                //Functions are unavailable as they are not public anymore
-                //
+
+    @Test
+    public void testSetIsPlaying(){
+        LadderManager manager = new LadderManager(fakeDB());
+        Pair repeatedPlayer = new Pair(new Player(15, "Jessica"), new Player(7, "Richard"), false); //Richard already is in game
+        Pair uniquePair = new Pair(new Player(16, "Hannah"), new Player(17, "Kate"), false); // None of players are playing
+
+        manager.addNewPair(repeatedPlayer);
+        Assert.assertEquals(manager.setIsPlaying(repeatedPlayer), false); //This pair cannot play
+
+        manager.addNewPair(uniquePair);
+        Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
+    }
+
+    /*
+    //      NOTE:
+    //Functions are unavailable as they are not public anymore
+    //
     @Test
     public void testAbsentPenalties(){
         LadderManager manager = new LadderManager(fakeDB());
