@@ -5,7 +5,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by constantin on 27/05/16.
@@ -34,10 +38,6 @@ public class LadderManager {
         passivePairs = findPairs(ladder.getLadder(), false);
     }
 
-    public List<Pair> getFullLadder() {
-        return ladder.getLadder();
-    }
-
     public List<Pair> getLadder() {
         return ladder.getLadder();
     }
@@ -45,6 +45,14 @@ public class LadderManager {
     public List<Pair> getActivePairs() {
         split();
         return activePairs;
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
     }
 
     public List<Pair> getPassivePairs() {
@@ -58,7 +66,6 @@ public class LadderManager {
             newPair.setPosition(ladder.getLadderLength());
             setIsPlaying(newPair);
             ladder.insertAtEnd(newPair);
-            ladder.incLadderLength();
         }
         return !pairExists;
     }
@@ -92,7 +99,7 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    public void processLadder(List<Scorecard> scorecards) {
+    public void processLadder(List<Scorecard<Pair>> scorecards) {
         //The following functions have to be executed ONLY in such order
         applyAbsentPenalty(); //Absent pairs will Drop, except pairs with Accident
         //Passive pairs have changes
@@ -128,7 +135,7 @@ public class LadderManager {
         //Players who didn't play have new positions saved in passivePairs
     }
 
-    private List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
+    private List<Pair> swapBetweenGroups(List<Scorecard<Pair>> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
@@ -175,7 +182,7 @@ public class LadderManager {
         i = 0;
         int j = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position == positions[j]) {
+            if (position < positions.length && position == positions[j]) {
                 //This position is taken
                 j++;
             } else {

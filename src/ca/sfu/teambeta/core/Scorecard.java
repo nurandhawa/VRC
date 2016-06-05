@@ -11,32 +11,61 @@ import java.util.Map;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Scorecard<T> {
-    public static final int WIN = 1;
-    public static final int NO_SCORE = 0;
-    public static final int LOSE = -1;
-    private static final int NUM_GAMES = 3;
+    private static final int WIN = 1;
+    private static final int NO_SCORE = 0;
+    private static final int LOSE = -1;
+    private static final int NUM_GAMES = 4;
 
     private Map<T, List<Integer>> scoreMap;
+    private Observer observer = null;
+    private int setCount = 0;
 
-    public Scorecard(List<T> teams) {
+    public Scorecard(List<T> teams, Observer obs) {
         int numTeams = teams.size();
         scoreMap = new LinkedHashMap<>(numTeams);
         for (T t : teams) {
             List<Integer> emptyScores = new ArrayList<>(Collections.nCopies(NUM_GAMES, NO_SCORE));
             scoreMap.put(t, emptyScores);
         }
+        observer = obs;
     }
 
-    public boolean setWin(T team, int matchNum) {
+    private void setStatus(T team, int matchNum, int status) {
+        assert (status != NO_SCORE);
         List<Integer> scoreList = scoreMap.get(team);
-        scoreList.set(matchNum, WIN);
-        return true;
+
+        // Should only track newly set scores,
+        // a score update should not count towards the number of sets
+        if (scoreList.get(matchNum) == NO_SCORE) {
+            setCount++;
+        }
+        scoreList.set(matchNum, status);
+
+        if (observer != null && isFilled()) {
+            observer.done();
+        }
     }
 
-    public boolean setLose(T team, int matchNum) {
+    private boolean isFilled() {
+        int numTeams = scoreMap.keySet().size();
+        return setCount == (2 * numTeams);
+    }
+
+    public void setWin(T team, int matchNum) {
+        setStatus(team, matchNum, WIN);
+    }
+
+    public void setLose(T team, int matchNum) {
+        setStatus(team, matchNum, LOSE);
+    }
+
+    public void unsetStatus(T team, int matchNum) {
         List<Integer> scoreList = scoreMap.get(team);
-        scoreList.set(matchNum, LOSE);
-        return true;
+
+        if (scoreList.get(matchNum) != NO_SCORE) {
+            setCount--;
+        }
+        scoreList.set(matchNum, NO_SCORE);
     }
 
     public int getScore(T team) {
@@ -74,7 +103,7 @@ public class Scorecard<T> {
 
     public static void main(String[] args) {
         List<String> list = Arrays.asList("Canucks", "Flames", "Oilers", "Leafs");
-        Scorecard<String> sc = new Scorecard<>(list);
+        Scorecard<String> sc = new Scorecard<>(list, null);
 
         sc.setWin("Canucks", 0);
         sc.setWin("Oilers", 1);

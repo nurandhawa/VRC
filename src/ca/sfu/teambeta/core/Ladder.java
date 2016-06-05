@@ -69,12 +69,14 @@ public class Ladder {
     }
     public void insertAtIndex(int index, Pair pair){
         ladder.add(index, pair);
+        ladder.get(index).setPosition(index + 1);
         shiftPositions(SHIFT_RIGHT, index+1);
         numPairs++;
     }
 
     public void insertAtEnd(Pair pair){
         ladder.add(pair);
+        ladder.get(numPairs).setPosition(numPairs + 1);
         numPairs++;
     }
 
@@ -88,10 +90,6 @@ public class Ladder {
 
     public Pair getPairAtIndex(int index){
         return ladder.get(index);
-    }
-
-    public void incLadderLength(){
-        numPairs++;
     }
 
     public int getLadderLength(){

@@ -13,7 +13,7 @@ public class ScorecardTest {
     @Test
     public void testFirstExample() {
         List<String> teams = Arrays.asList("Victor Joyce", "Vicky David", "Ros Stevie");
-        Scorecard<String> sc = new Scorecard<>(teams);
+        Scorecard<String> sc = new Scorecard<>(teams, null);
         sc.setWin("Victor Joyce", 0);
         sc.setWin("Victor Joyce", 1);
 
@@ -31,7 +31,7 @@ public class ScorecardTest {
     @Test
     public void testLastExample() {
         List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina");
-        Scorecard<String> sc = new Scorecard<>(teams);
+        Scorecard<String> sc = new Scorecard<>(teams, null);
         sc.setWin("Ben Katrina", 0);
         sc.setWin("Ben Katrina", 1);
 
