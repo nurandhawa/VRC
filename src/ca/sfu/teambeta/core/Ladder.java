@@ -92,10 +92,6 @@ public class Ladder {
         return ladder.get(index);
     }
 
-    public void incLadderLength(){
-        numPairs++;
-    }
-
     public int getLadderLength(){
         return numPairs;
     }
