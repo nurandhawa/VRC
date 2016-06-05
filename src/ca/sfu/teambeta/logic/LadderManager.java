@@ -30,7 +30,7 @@ public class LadderManager {
 
     public LadderManager(List<Pair> dbLadder) {
         int i = 1;
-        for(Pair current : dbLadder){
+        for (Pair current : dbLadder) {
             current.setPosition(i);
             i++;
         }
@@ -180,16 +180,16 @@ public class LadderManager {
         }
 
         //Create array of empty positions for participants
-        i = 0;
-        int j = 0;
+        int indexEmptyPosition = 0;
+        int indexTakenPosition = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position == positions[j]) {
+            if (position == positions[indexTakenPosition]) {
                 //This position is taken
-                j++;
+                indexTakenPosition++;
             } else {
                 //Position not used
-                emptyPositions[i] = position;
-                i++;
+                emptyPositions[indexEmptyPosition] = position;
+                indexEmptyPosition++;
             }
         }
 

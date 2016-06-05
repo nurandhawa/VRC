@@ -68,7 +68,7 @@ public class LadderManagerTest {
         manager.addNewPair(uniquePair);
         Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
     }
-    
+
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
 
