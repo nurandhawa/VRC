@@ -166,11 +166,12 @@ public class UserInterface {
 
         List<Pair> ladder = ladderManager.getLadder();
         List<Player> pair = new ArrayList<>(2);
+        String input;
         while (pair.size() < 2) {
             System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER
                     + " for new player.");
 
-            String input = scanner.nextLine();
+            input = scanner.nextLine();
             int selection = Integer.parseInt(input);
             if (selection == EXISTING_PLAYER) {
                 List<Player> players = ladderManager.getAllPlayers();
@@ -190,7 +191,20 @@ public class UserInterface {
                 pair.add(new Player(playerID, input));
             }
         }
-        ladderManager.addNewPair(new Pair(pair.get(0), pair.get(1)));
+
+        Pair newPair = new Pair(pair.get(0), pair.get(1));
+
+        System.out.println("Add to end of ladder? (y/n): ");
+        input = scanner.nextLine();
+        if (input.toLowerCase().equals("y")) {
+            ladderManager.addNewPair(newPair);
+        } else {
+            System.out.println("Enter position to insert at: ");
+            input = scanner.nextLine();
+            int position = Integer.parseInt(input);
+            int index = position - 1;
+            ladderManager.addNewPairAtIndex(newPair, index);
+        }
     }
 
     private static void listPlayers(List<Player> players) {
