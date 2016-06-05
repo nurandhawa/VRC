@@ -68,71 +68,7 @@ public class LadderManagerTest {
         manager.addNewPair(uniquePair);
         Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
     }
-
-    /*
-    //      NOTE:
-    //Functions are unavailable as they are not public anymore
-    //
-    @Test
-    public void testAbsentPenalties(){
-        LadderManager manager = new LadderManager(fakeDB());
-
-        manager.applyAbsentPenalty();
-
-        List<Pair> passivePairs = manager.getPassivePairs();
-
-        int[] actualPositions = new int[passivePairs.size()];
-        for(int i = 0; i < passivePairs.size(); i++){
-            actualPositions[i] = passivePairs.get(i).getPosition();
-        }
-
-        int[] expectedPositions = new int[]{3,4,6,7};
-
-        Assert.assertArrayEquals(actualPositions, expectedPositions);
-    }
-
-    @Test
-    public void testSplitAndCombine(){
-        LadderManager manager = new LadderManager(fakeDB());
-
-        manager.combine();
-
-        List<Pair> ladder = manager.getLadder();
-        for (Pair current : ladder){
-            System.out.println(current);
-        }
-    }
-
-
-    @Test
-    public void  testMergePairs(){
-        LadderManager manager = new LadderManager(fakeDB());
-
-        manager.processLadder();
-        List<Pair> ladder = manager.getLadder();
-
-        for (Pair current : ladder){
-            System.out.println(current);
-        }
-    }
-
-      @Test
-    public void testProcessingLadder(){
-        //Tested output without swapping, late and missed penalties applied correctly
-        LadderManager manager = new LadderManager(fakeDB());
-        List<Scorecard<Pair>> scorecards = new ArrayList<>();
-
-        manager.processLadder(scorecards);
-
-        List<Pair> ladder = manager.getLadder();
-        for(Pair current : ladder){
-            System.out.println(current);
-        }
-    }
-
-*/
-
-
+    
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
 
