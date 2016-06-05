@@ -13,22 +13,18 @@ import ca.sfu.teambeta.core.Scorecard;
 public class GameManager {
     private List<Pair> ladder;
     private List<Scorecard<Pair>> groups;
-    private Observer observer= null;
+    private Observer observer = null;
     private int groupsDone = 0;
 
     public GameManager(List<Pair> activeLadder, LadderManager ladderManager) {
         ladder = activeLadder;
         groups = new ArrayList<>();
-        observer = new Observer() {
-            @Override
-            public void done() {
-                groupsDone++;
-                if(groupsDone == groups.size()){
-                    ladderManager.processLadder(groups);
-                }
+        observer = () -> {
+            groupsDone++;
+            if (groupsDone == groups.size()) {
+                ladderManager.processLadder(groups);
             }
         };
-
 
 
         splitLadderIntoGroups();
@@ -66,8 +62,8 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 4) {
-                Scorecard<Pair> s = new Scorecard<>(groupings, observer);
-                groups.add(s);
+                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                groups.add(sc);
                 System.out.println();
                 groupings.clear();
             }
@@ -82,8 +78,8 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 3) {
-                Scorecard<Pair> s = new Scorecard<>(groupings, observer);
-                groups.add(s);
+                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                groups.add(sc);
                 System.out.println();
                 groupings.clear();
                 doneGroups++;
@@ -96,7 +92,7 @@ public class GameManager {
         return indexPosition;
     }
 
-    public void inputMatchResults(Scorecard<Pair> s, String results[][]) {
+    public void inputMatchResults(Scorecard<Pair> s, String[][] results) {
         List<Pair> teams = s.getTeamRankings();
         int rows = results.length;
         int cols = teams.size();

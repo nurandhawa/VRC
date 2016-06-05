@@ -30,6 +30,17 @@ public class Scorecard<T> {
         observer = obs;
     }
 
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("Canucks", "Flames", "Oilers", "Leafs");
+        Scorecard<String> sc = new Scorecard<>(list, null);
+
+        sc.setWin("Canucks", 0);
+        sc.setWin("Oilers", 1);
+        sc.setWin("Canucks", 2);
+        System.out.println(sc.getScore("Canucks"));
+        System.out.println(sc.getTeamRankings().toString());
+    }
+
     private void setStatus(T team, int matchNum, int status) {
         assert (status != NO_SCORE);
         List<Integer> scoreList = scoreMap.get(team);
@@ -99,16 +110,5 @@ public class Scorecard<T> {
             builder.append("\n");
         }
         return builder.toString();
-    }
-
-    public static void main(String[] args) {
-        List<String> list = Arrays.asList("Canucks", "Flames", "Oilers", "Leafs");
-        Scorecard<String> sc = new Scorecard<>(list, null);
-
-        sc.setWin("Canucks", 0);
-        sc.setWin("Oilers", 1);
-        sc.setWin("Canucks", 2);
-        System.out.println(sc.getScore("Canucks"));
-        System.out.println(sc.getTeamRankings().toString());
     }
 }

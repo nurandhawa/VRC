@@ -7,9 +7,8 @@ import java.util.List;
 /**
  * Created by Jasdeep on 2016-05-31.
  *
- * This class instantiates mock Player and Pair array's for use in testing.
- * As it's initial setup it will use 18 names: to create 18 Player objects: 9 Pair objects
- *
+ * This class instantiates mock Player and Pair array's for use in testing. As it's initial setup it
+ * will use 18 names: to create 18 Player objects: 9 Pair objects
  */
 public class TestObjects {
 
@@ -39,11 +38,18 @@ public class TestObjects {
 
     // MARK: - Methods to setup our array's
     private void setupNames() {
-        // NOTE: If adding a name to this array, make sure you add two names. Or else Pair creation will be thrown off
+        // NOTE: If adding a name to this array, make sure you add two names.
+        // Or else Pair creation will be thrown off
         //  IE: Keep it an even number of names
 
-        names = new ArrayList<String>(Arrays.asList("Shikoba", "Lori", "Brant", "Mikki", "Kasandra", "Netta", "Dorita",
-                "Lewis", "Nikolas", "Emmanuel", "Alvina", "Linette", "Dion", "Sidney", "Ryan", "Ronald", "Sharron", "Reed"));
+        names = new ArrayList<>(Arrays.asList(
+                "Shikoba", "Lori", "Brant",
+                "Mikki", "Kasandra", "Netta",
+                "Dorita", "Lewis", "Nikolas",
+                "Emmanuel", "Alvina", "Linette",
+                "Dion", "Sidney", "Ryan",
+                "Ronald", "Sharron", "Reed"
+        ));
     }
 
     private void setupPlayers() {
@@ -56,7 +62,8 @@ public class TestObjects {
 
     private void setupPairs() {
         if (players.size() % 2 != 0) {
-            // Generally we won't reach this condition because the add function will prompt for two names
+            // Generally we won't reach this condition because
+            // the add function will prompt for two names
             //  However it is useful if someone edits the array of names internal to this class
 
             System.out.println("ERROR: Odd number of players");
@@ -117,12 +124,12 @@ public class TestObjects {
         System.out.println("\nPairs:");
         System.out.println("------");
 
-        int i = 1;
+        int num = 1;
         for (Pair pair : this.pairs) {
-            System.out.println("Pair #: " + i);
+            System.out.println("Pair #: " + num);
             System.out.println(pair + "\n");
 
-            i += 1;
+            num += 1;
         }
     }
 
