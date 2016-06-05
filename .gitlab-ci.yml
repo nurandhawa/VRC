@@ -11,10 +11,10 @@ stages:
   - build
   - test
 
-compile:
-  script: ./gradlew assemble
+build:
+  script: gradle assemble
   stage: build
 
-junit:
-  script: ./gradlew test
-  stage: check
+test:
+  script: gradle check
+  stage: test
