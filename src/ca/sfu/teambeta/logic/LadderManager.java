@@ -84,6 +84,7 @@ public class LadderManager {
             Player second = team.get(1);
             if (!searchActivePlayer(first) && !searchActivePlayer(second)) {
                 pair.activate();
+                getActivePairs();
                 return true;
             }
         }
@@ -93,6 +94,7 @@ public class LadderManager {
     public void setNotPlaying(Pair pair) {
         if (ladder.getLadder().contains(pair)) {
             pair.deActivate();
+            getActivePairs();
         }
     }
 
