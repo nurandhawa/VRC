@@ -5,13 +5,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by constantin on 27/05/16.
  * <p>
  * <p>
  * USAGE: After all of the games took place
+ * setIsPlaying(Pair) returns false if any of players are already playing
  * (1) pass groups to LadderManager
  * (2) call processLadder() for all the computations to be complete.
  */
@@ -25,15 +30,6 @@ public class LadderManager {
         ladder = new Ladder(new ArrayList<Pair>());
         activePairs = new ArrayList<>();
         passivePairs = new ArrayList<>();
-    }
-
-    public List<Pair> getFullLadder() {
-        return ladder.getLadder();
-    }
-
-    public boolean removePairAtIndex(int index){
-        Pair pairToRemove = ladder.getPairAtIndex(index);
-        return ladder.removePair(pairToRemove);
     }
 
     public LadderManager(List<Pair> dbLadder) {
@@ -51,20 +47,47 @@ public class LadderManager {
         return activePairs;
     }
 
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : ladder.getLadder()) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
+    }
+
     public List<Pair> getPassivePairs() {
         split();
         return passivePairs;
     }
 
-    public void addNewPair(Pair newPair) {
-        newPair.setPosition(ladder.getLadderLength());
-        ladder.insertAtEnd(newPair);
+    public boolean addNewPair(Pair newPair) { //Reports if it was successful
+        boolean pairExists = ladder.getLadder().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            setIsPlaying(newPair);
+            ladder.insertAtEnd(newPair);
+            ladder.incLadderLength();
+        }
+        return !pairExists;
     }
 
-    public void setIsPlaying(Pair pair) {
+    public boolean removePairAtIndex(int index){
+        Pair pairToRemove = ladder.getPairAtIndex(index);
+        return ladder.removePair(pairToRemove);
+    }
+
+    public boolean setIsPlaying(Pair pair) {
+        //Set pair to playing if players are unique(returns true)
         if (ladder.getLadder().contains(pair)) {
-            pair.activate();
+            List<Player> team  = pair.getPlayers();
+            Player first = team.get(0);
+            Player second = team.get(1);
+            if(!searchActivePlayer(first) && !searchActivePlayer(second)) {
+                pair.activate();
+                return true;
+            }
         }
+        return false;
     }
 
     public void setNotPlaying(Pair pair) {
@@ -77,7 +100,7 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    public void processLadder(List<Scorecard> scorecards) {
+    public void processLadder(List<Scorecard<Pair>> scorecards) {
         //The following functions have to be executed ONLY in such order
         applyAbsentPenalty(); //Absent pairs will Drop, except pairs with Accident
         //Passive pairs have changes
@@ -110,7 +133,7 @@ public class LadderManager {
         i = 0;
         int j = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position == positions[j]) {
+            if (position < positions.length && position == positions[j]) {
                 //This position is taken
                 j++;
             } else {
@@ -184,7 +207,7 @@ public class LadderManager {
         passivePairs = findPairs(fullLadder, false);
     }
 
-    private List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
+    private List<Pair> swapBetweenGroups(List<Scorecard<Pair>> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
@@ -249,6 +272,16 @@ public class LadderManager {
         List<Pair> newPairs = fullLadder.stream().filter(p -> p.isPlaying() == isPlaying).collect(Collectors.toList());
 
         return newPairs;
+    }
+
+    private boolean searchActivePlayer(Player player){
+        split();
+        for(Pair current : activePairs){
+            if(current.hasPlayer(player)){
+                return true;
+            }
+        }
+        return false;
     }
 
     private void applyLateMissedPenalty() {
