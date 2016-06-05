@@ -16,5 +16,5 @@ build:
   stage: build
 
 test:
-  script: gradle check --info
+  script: gradle check
   stage: test
