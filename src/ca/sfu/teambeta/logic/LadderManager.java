@@ -29,10 +29,10 @@ public class LadderManager {
     }
 
     public LadderManager(List<Pair> dbLadder) {
-        int i = 1;
+        int index = 1;
         for (Pair current : dbLadder) {
-            current.setPosition(i);
-            i++;
+            current.setPosition(index);
+            index++;
         }
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
@@ -173,10 +173,10 @@ public class LadderManager {
         int[] positions = new int[notPlaying];
         int[] emptyPositions = new int[arePlaying];
 
-        int i = 0;
+        int index = 0;
         for (Pair current : passivePairs) {
-            positions[i] = current.getPosition();
-            i++;
+            positions[index] = current.getPosition();
+            index++;
         }
 
         //Create array of empty positions for participants
@@ -194,11 +194,11 @@ public class LadderManager {
         }
 
         //Assign participants to empty positions and sat them to not playing
-        i = 0;
+        index = 0;
         for (Pair current : activePairs) {
             current.deActivate();
-            current.setPosition(emptyPositions[i]);
-            i++;
+            current.setPosition(emptyPositions[index]);
+            index++;
         }
         combine();
     }
