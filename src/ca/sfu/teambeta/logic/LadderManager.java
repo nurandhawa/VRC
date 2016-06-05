@@ -29,6 +29,11 @@ public class LadderManager {
     }
 
     public LadderManager(List<Pair> dbLadder) {
+        int i = 1;
+        for(Pair current : dbLadder){
+            current.setPosition(i);
+            i++;
+        }
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
         passivePairs = findPairs(ladder.getLadder(), false);
