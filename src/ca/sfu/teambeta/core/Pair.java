@@ -48,22 +48,22 @@ public class Pair {
         return position;
     }
 
-    public int getOldPosition(){
-        return oldPosition;
-    }
-
-    public void setPosition(int Position) {
-        this.position = Position;
-        if (oldPosition == 0){
+    public void setPosition(int position) {
+        this.position = position;
+        if (oldPosition == 0) {
             this.oldPosition = position;
         }
     }
 
-    public void establishPosition(){
+    public int getOldPosition() {
+        return oldPosition;
+    }
+
+    public void establishPosition() {
         this.oldPosition = position;
     }
 
-    public int getPenalty(){
+    public int getPenalty() {
         return penalty;
     }
 
@@ -71,11 +71,11 @@ public class Pair {
         this.penalty = penalty;
     }
 
-    public void activate(){
+    public void activate() {
         this.isPlaying = true;
     }
 
-    public void deActivate(){
+    public void deActivate() {
         this.isPlaying = false;
     }
 

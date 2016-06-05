@@ -7,7 +7,7 @@ import ca.sfu.teambeta.logic.LadderManager;
 import ca.sfu.teambeta.ui.UserInterface;
 
 class Main {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         Ladder loadedLadder = DBManager.loadFromDB();
         LadderManager ladderManager = new LadderManager(loadedLadder.getLadder());

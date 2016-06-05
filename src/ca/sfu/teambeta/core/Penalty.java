@@ -1,12 +1,8 @@
 package ca.sfu.teambeta.core;
 
 /**
- * Created by constantin on 27/05/16.
- * <p>
- * <p>
- * USAGE: After all of the games took place
- * (1) pass groups to LadderManager
- * (2) call processLadder() for all the computations to be complete.
+ * Created by constantin on 27/05/16. <p> <p> USAGE: After all of the games took place (1) pass
+ * groups to LadderManager (2) call processLadder() for all the computations to be complete.
  */
 
 public enum Penalty {

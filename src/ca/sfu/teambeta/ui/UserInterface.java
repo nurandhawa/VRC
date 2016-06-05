@@ -118,14 +118,13 @@ public class UserInterface {
     }
 
     private static void editLadder(LadderManager ladderManager) {
-        String input;
-        int selection;
         System.out.println("Choose an action:");
         System.out.println(EDIT_LADDER_ADD + ". Add pair to ladder");
         System.out.println(EDIT_LADDER_REMOVE + ". Remove pair from ladder");
 
-        input = scanner.nextLine();
-        selection = Integer.parseInt(input);
+        String input = scanner.nextLine();
+        int selection = Integer.parseInt(input);
+
         if (selection == EDIT_LADDER_ADD) {
             addPair(ladderManager);
         } else if (selection == EDIT_LADDER_REMOVE) {
@@ -158,8 +157,8 @@ public class UserInterface {
         List<Pair> ladder = ladderManager.getLadder();
         List<Player> pair = new ArrayList<>(2);
         while (pair.size() < 2) {
-            System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER +
-                    " for new player.");
+            System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER
+                    + " for new player.");
 
             String input = scanner.nextLine();
             int selection = Integer.parseInt(input);

@@ -12,13 +12,9 @@ import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 
 /**
- * Created by constantin on 27/05/16.
- * <p>
- * <p>
- * USAGE: After all of the games took place
- * setIsPlaying(Pair) returns false if any of players are already playing
- * (1) pass groups to LadderManager
- * (2) call processLadder() for all the computations to be complete.
+ * Created by constantin on 27/05/16. <p> <p> USAGE: After all of the games took place
+ * setIsPlaying(Pair) returns false if any of players are already playing (1) pass groups to
+ * LadderManager (2) call processLadder() for all the computations to be complete.
  */
 
 public class LadderManager {
@@ -70,7 +66,7 @@ public class LadderManager {
         return !pairExists;
     }
 
-    public boolean removePairAtIndex(int index){
+    public boolean removePairAtIndex(int index) {
         Pair pairToRemove = ladder.getPairAtIndex(index);
         return ladder.removePair(pairToRemove);
     }
@@ -78,10 +74,10 @@ public class LadderManager {
     public boolean setIsPlaying(Pair pair) {
         //Set pair to playing if players are unique(returns true)
         if (ladder.getLadder().contains(pair)) {
-            List<Player> team  = pair.getPlayers();
+            List<Player> team = pair.getPlayers();
             Player first = team.get(0);
             Player second = team.get(1);
-            if(!searchActivePlayer(first) && !searchActivePlayer(second)) {
+            if (!searchActivePlayer(first) && !searchActivePlayer(second)) {
                 pair.activate();
                 return true;
             }
@@ -172,32 +168,32 @@ public class LadderManager {
         int[] positions = new int[notPlaying];
         int[] emptyPositions = new int[arePlaying];
 
-        int i = 0;
+        int positionIndex = 0;
         for (Pair current : passivePairs) {
-            positions[i] = current.getPosition();
-            i++;
+            positions[positionIndex] = current.getPosition();
+            positionIndex++;
         }
 
         //Create array of empty positions for participants
-        i = 0;
-        int j = 0;
+        int emptyPostitionIndex = 0;
+        int currentPositionIndex = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position < positions.length && position == positions[j]) {
+            if (position < positions.length && position == positions[currentPositionIndex]) {
                 //This position is taken
-                j++;
+                currentPositionIndex++;
             } else {
                 //Position not used
-                emptyPositions[i] = position;
-                i++;
+                emptyPositions[emptyPostitionIndex] = position;
+                emptyPostitionIndex++;
             }
         }
 
         //Assign participants to empty positions and sat them to not playing
-        i = 0;
+        int index = 0;
         for (Pair current : activePairs) {
             current.deActivate();
-            current.setPosition(emptyPositions[i]);
-            i++;
+            current.setPosition(emptyPositions[index]);
+            index++;
         }
         combine();
     }
@@ -206,13 +202,13 @@ public class LadderManager {
         List<Pair> pairList = ladder.getLadder();
         int size = ladder.getLadderLength();
 
-        for(Pair current : pairList) {
+        for (Pair current : pairList) {
             int penalty = current.getPenalty();
             if (penalty != 0) {
                 current.setPenalty(Penalty.ZERO.getPenalty());
                 int actualPosition = current.getPosition();
                 int newPosition = current.getOldPosition() + penalty;
-                if (newPosition >= size){
+                if (newPosition >= size) {
                     newPosition = size - 1;
                 }
                 for (int i = actualPosition; i <= newPosition; i++) {
@@ -222,9 +218,9 @@ public class LadderManager {
         }
     }
 
-    private void savePositions(){
+    private void savePositions() {
         List<Pair> listPairs = ladder.getLadder();
-        for(Pair current : listPairs){
+        for (Pair current : listPairs) {
             current.establishPosition();
         }
     }
@@ -250,15 +246,14 @@ public class LadderManager {
     }
 
 
-
     private int[] callAbsentPenalty() {
         int[] passivePairsPos = new int[passivePairs.size()];
-        int i = 0;
+        int absentPairIndex = 0;
 
         for (Pair current : passivePairs) {
             current.setPenalty(Penalty.ABSENT.getPenalty());
-            passivePairsPos[i] = current.positionAfterPenalty();
-            i++;
+            passivePairsPos[absentPairIndex] = current.positionAfterPenalty();
+            absentPairIndex++;
         }
 
         return passivePairsPos;
@@ -267,8 +262,8 @@ public class LadderManager {
     private int[] fixPosAbsentPenalty(int[] passivePairsPos) {
         int ladderLength = ladder.getLadderLength();
 
-        for(int i = passivePairs.size() - 1; i > 0; i--) {
-            if(passivePairsPos[i] > ladderLength) {
+        for (int i = passivePairs.size() - 1; i > 0; i--) {
+            if (passivePairsPos[i] > ladderLength) {
                 passivePairsPos[i] = ladderLength;
                 passivePairs.get(i).setPosition(ladderLength);
                 ladderLength--;
@@ -291,22 +286,22 @@ public class LadderManager {
     }
 
     private List<Pair> findPairs(List<Pair> fullLadder, boolean isPlaying) {
-        List<Pair> newPairs = fullLadder.stream().filter(p -> p.isPlaying() == isPlaying).collect(Collectors.toList());
-
-        return newPairs;
+        return fullLadder.stream()
+                .filter(p -> p.isPlaying() == isPlaying)
+                .collect(Collectors.toList());
     }
 
-    private boolean searchActivePlayer(Player player){
+    private boolean searchActivePlayer(Player player) {
         split();
-        for(Pair current : activePairs){
-            if(current.hasPlayer(player)){
+        for (Pair current : activePairs) {
+            if (current.hasPlayer(player)) {
                 return true;
             }
         }
         return false;
     }
 
-    private void sortByPosition(){
+    private void sortByPosition() {
         Comparator<Pair> makeSorter = new Comparator<Pair>() {
             @Override
             public int compare(Pair p1, Pair p2) {
@@ -317,7 +312,7 @@ public class LadderManager {
         java.util.Collections.sort(ladder.getLadder(), makeSorter);
     }
 
-    public void swapPair(int firstIndex, int secondIndex){
+    public void swapPair(int firstIndex, int secondIndex) {
         List<Pair> listPairs = ladder.getLadder();
 
         Pair first = listPairs.get(firstIndex);

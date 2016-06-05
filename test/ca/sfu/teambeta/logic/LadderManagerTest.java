@@ -1,23 +1,27 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
 
 /**
  * Created by David Li on 30/05/16.
  */
-public class LadderManagerTest{
+public class LadderManagerTest {
 
-    List<Pair> pairList = new ArrayList<Pair>(){{
-        add(new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true));
-        add(new Pair(new Player(3, "David1"), new Player(4, "Dave1"), false));
-        add(new Pair(new Player(5, "David1"), new Player(6, "Dave1"), false));
-        add(new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true));
-    }};
+    List<Pair> pairList = Arrays.asList(
+            new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true),
+            new Pair(new Player(3, "David1"), new Player(4, "Dave1"), false),
+            new Pair(new Player(5, "David1"), new Player(6, "Dave1"), false),
+            new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true)
+    );
 
     @Test
     public void testFindActivePairs() {
@@ -25,16 +29,16 @@ public class LadderManagerTest{
         LadderManager ladderManager;
         ladderManager = new LadderManager(pairList);
 
-        ArrayList<Pair> activePairs = new ArrayList<Pair>(){{
-            add(new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true));
-            add(new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true));
-        }};
+        List<Pair> activePairs = Arrays.asList(
+                new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true),
+                new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true)
+        );
 
         Assert.assertEquals(ladderManager.getActivePairs(), activePairs);
     }
 
     @Test
-    public void testAddPair(){
+    public void testAddPair() {
         LadderManager manager = new LadderManager();
         Pair pair1 = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), true);
         Pair pair2 = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
@@ -48,11 +52,11 @@ public class LadderManagerTest{
         Assert.assertEquals(manager.addNewPair(duplicatePair), false); //Such pair was already added
         List<Pair> ladder = manager.getLadder();
 
-        Assert.assertEquals(ladder,expected);
+        Assert.assertEquals(ladder, expected);
     }
 
     @Test
-    public void testSetIsPlaying(){
+    public void testSetIsPlaying() {
         LadderManager manager = new LadderManager(fakeDB());
         Pair repeatedPlayer = new Pair(new Player(15, "Jessica"), new Player(7, "Richard"), false); //Richard already is in game
         Pair uniquePair = new Pair(new Player(16, "Hannah"), new Player(17, "Kate"), false); // None of players are playing
@@ -128,7 +132,7 @@ public class LadderManagerTest{
 
     */
 
-    private List<Pair> fakeDB(){
+    private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
 
         Pair pair = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), false);

@@ -19,9 +19,9 @@ import ca.sfu.teambeta.core.Player;
  */
 public class DBManager {
     private static final String DEFAULT_FILENAME = "ladder.csv";
-    private static String OVERRIDDEN_FILENAME = null;
     private static final int PLAYERID_INDEX = 0;
     private static final int PLAYERNAME_INDEX = 1;
+    private static String OVERRIDDEN_FILENAME = null;
 
     /**
      * Saves values to the database.
@@ -72,8 +72,14 @@ public class DBManager {
             while (ladderIter.hasNext()) {
                 String[] player1Data = ladderIter.next();
                 String[] player2Data = ladderIter.next();
-                Player player1 = new Player(Integer.parseInt(player1Data[PLAYERID_INDEX]), player1Data[PLAYERNAME_INDEX]);
-                Player player2 = new Player(Integer.parseInt(player2Data[PLAYERID_INDEX]), player2Data[PLAYERNAME_INDEX]);
+                Player player1 = new Player(
+                        Integer.parseInt(player1Data[PLAYERID_INDEX]),
+                        player1Data[PLAYERNAME_INDEX]
+                );
+                Player player2 = new Player(
+                        Integer.parseInt(player2Data[PLAYERID_INDEX]),
+                        player2Data[PLAYERNAME_INDEX]
+                );
                 Pair pair = new Pair(player1, player2);
                 pairs.add(pair);
             }
