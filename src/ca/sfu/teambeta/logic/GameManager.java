@@ -117,4 +117,10 @@ public class GameManager {
         groups.clear();
         splitLadderIntoGroups();
     }
+
+    public void addPlayingPair(Pair pair) {
+        ladder.add(pair);
+        groups.clear();
+        splitLadderIntoGroups();
+    }
 }
