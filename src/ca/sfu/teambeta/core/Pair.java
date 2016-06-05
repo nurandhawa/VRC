@@ -97,8 +97,8 @@ public class Pair {
     }
 
     public String toString() {
-        return "Player 1: " + team.get(0).getName()
-                + " Player 2: " + team.get(1).getName()
-                + " Position: " + position;
+        return team.get(0).getName()
+                + " & " + team.get(1).getName()
+                + "  Playing? " + isPlaying;
     }
 }
