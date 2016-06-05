@@ -8,8 +8,14 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
+stages:
+  - build
+  - test
+
 compile:
   script: ./gradlew assemble
+  stage: build
 
 junit:
-  script: ./gradlew check
+  script: ./gradlew test
+  stage: check
