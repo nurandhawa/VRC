@@ -70,6 +70,16 @@ public class LadderManager {
         return !pairExists;
     }
 
+    public boolean addNewPairAtIndex(Pair newPair, int index) {
+        boolean pairExists = ladder.getLadder().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            setIsPlaying(newPair);
+            ladder.insertAtIndex(index, newPair);
+        }
+        return !pairExists;
+    }
+
     public boolean removePairAtIndex(int index){
         Pair pairToRemove = ladder.getPairAtIndex(index);
         return ladder.removePair(pairToRemove);
