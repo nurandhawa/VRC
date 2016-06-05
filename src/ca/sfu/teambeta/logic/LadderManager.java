@@ -168,32 +168,32 @@ public class LadderManager {
         int[] positions = new int[notPlaying];
         int[] emptyPositions = new int[arePlaying];
 
-        int positionIndex = 0;
+        int i = 0;
         for (Pair current : passivePairs) {
-            positions[positionIndex] = current.getPosition();
-            positionIndex++;
+            positions[i] = current.getPosition();
+            i++;
         }
 
         //Create array of empty positions for participants
-        int emptyPostitionIndex = 0;
-        int currentPositionIndex = 0;
+        i = 0;
+        int j = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position < positions.length && position == positions[currentPositionIndex]) {
+            if (position == positions[j]) {
                 //This position is taken
-                currentPositionIndex++;
+                j++;
             } else {
                 //Position not used
-                emptyPositions[emptyPostitionIndex] = position;
-                emptyPostitionIndex++;
+                emptyPositions[i] = position;
+                i++;
             }
         }
 
         //Assign participants to empty positions and sat them to not playing
-        int index = 0;
+        i = 0;
         for (Pair current : activePairs) {
             current.deActivate();
-            current.setPosition(emptyPositions[index]);
-            index++;
+            current.setPosition(emptyPositions[i]);
+            i++;
         }
         combine();
     }

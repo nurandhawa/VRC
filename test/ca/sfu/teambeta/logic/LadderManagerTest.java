@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -119,7 +120,7 @@ public class LadderManagerTest {
     public void testProcessingLadder(){
         //Tested output without swapping, late and missed penalties applied correctly
         LadderManager manager = new LadderManager(fakeDB());
-        List<Scorecard> scorecards = new ArrayList<>();
+        List<Scorecard<Pair>> scorecards = new ArrayList<>();
 
         manager.processLadder(scorecards);
 
@@ -129,8 +130,8 @@ public class LadderManagerTest {
         }
     }
 
+*/
 
-    */
 
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
