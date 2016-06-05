@@ -38,10 +38,6 @@ public class LadderManager {
         passivePairs = findPairs(ladder.getLadder(), false);
     }
 
-    public List<Pair> getFullLadder() {
-        return ladder.getLadder();
-    }
-
     public List<Pair> getLadder() {
         return ladder.getLadder();
     }

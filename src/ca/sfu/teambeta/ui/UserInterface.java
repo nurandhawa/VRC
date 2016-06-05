@@ -39,7 +39,7 @@ public class UserInterface {
                 int selection = Integer.parseInt(input);
                 switch (selection) {
                     case LIST_LADDER:
-                        listLadder(ladderManager.getFullLadder());
+                        listLadder(ladderManager.getLadder());
                         break;
                     case LIST_MATCHES:
                         listMatches(gameManager.getScorecards());
@@ -155,7 +155,7 @@ public class UserInterface {
         final int EXISTING_PLAYER = 1;
         final int NEW_PLAYER = 2;
 
-        List<Pair> ladder = ladderManager.getFullLadder();
+        List<Pair> ladder = ladderManager.getLadder();
         List<Player> pair = new ArrayList<>(2);
         while (pair.size() < 2) {
             System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER +
@@ -193,7 +193,7 @@ public class UserInterface {
     }
 
     private static void removePair(LadderManager ladderManager) {
-        listLadder(ladderManager.getFullLadder());
+        listLadder(ladderManager.getLadder());
         System.out.println("Enter number of pair to remove:");
         String input = scanner.nextLine();
         int selection = Integer.parseInt(input);
