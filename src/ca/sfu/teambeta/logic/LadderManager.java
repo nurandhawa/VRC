@@ -71,6 +71,16 @@ public class LadderManager {
         return !pairExists;
     }
 
+    public boolean addNewPairAtIndex(Pair newPair, int index) {
+        boolean pairExists = ladder.getLadder().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            setIsPlaying(newPair);
+            ladder.insertAtIndex(index, newPair);
+        }
+        return !pairExists;
+    }
+
     public boolean removePairAtIndex(int index) {
         Pair pairToRemove = ladder.getPairAtIndex(index);
         return ladder.removePair(pairToRemove);
@@ -84,6 +94,7 @@ public class LadderManager {
             Player second = team.get(1);
             if (!searchActivePlayer(first) && !searchActivePlayer(second)) {
                 pair.activate();
+                getActivePairs();
                 return true;
             }
         }
@@ -93,6 +104,7 @@ public class LadderManager {
     public void setNotPlaying(Pair pair) {
         if (ladder.getLadder().contains(pair)) {
             pair.deActivate();
+            getActivePairs();
         }
     }
 

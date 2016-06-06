@@ -20,6 +20,8 @@ public class UserInterface {
     private static final int EDIT_MATCHES = 4;
     private static final int EDIT_LADDER_ADD = 1;
     private static final int EDIT_LADDER_REMOVE = 2;
+    private static final int EDIT_LADDER_SET_PLAYING = 3;
+    private static final int EDIT_LADDER_SET_NOT_PLAYING = 4;
     private static final int EDIT_MATCHES_RESULTS = 1;
     private static final int EDIT_MATCHES_REMOVE = 2;
     private static final int FINISH = 5;
@@ -46,6 +48,7 @@ public class UserInterface {
                         break;
                     case EDIT_LADDER:
                         editLadder(ladderManager);
+                        gameManager.updateGroups(ladderManager.getActivePairs());
                         break;
                     case EDIT_MATCHES:
                         editMatches(gameManager);
@@ -101,9 +104,10 @@ public class UserInterface {
     private static void inputMatchResults(Scorecard<Pair> match, GameManager gameManager) {
         String input;
         int numTeams = match.getTeamRankings().size();
-        String[][] results = new String[numTeams][3];
+        String[][] results = new String[numTeams][numTeams];
         for (int i = 0; i < numTeams; i++) {
-            System.out.println("Enter team " + (i + 1) + "'s record vs other teams (W for win, L for loss, - for bye, space delimited)");
+            System.out.println("Enter Round " + (i + 1) +
+                    "'s Score (W for win, L for loss, - for bye, space delimited)");
             input = scanner.nextLine();
             results[i] = input.split(" ");
         }
@@ -121,6 +125,8 @@ public class UserInterface {
         System.out.println("Choose an action:");
         System.out.println(EDIT_LADDER_ADD + ". Add pair to ladder");
         System.out.println(EDIT_LADDER_REMOVE + ". Remove pair from ladder");
+        System.out.println(EDIT_LADDER_SET_PLAYING + ". Set pair to play");
+        System.out.println(EDIT_LADDER_SET_NOT_PLAYING + ". Set pair to not play");
 
         String input = scanner.nextLine();
         int selection = Integer.parseInt(input);
@@ -129,6 +135,10 @@ public class UserInterface {
             addPair(ladderManager);
         } else if (selection == EDIT_LADDER_REMOVE) {
             removePair(ladderManager);
+        } else if (selection == EDIT_LADDER_SET_PLAYING) {
+            setPlaying(ladderManager);
+        } else if (selection == EDIT_LADDER_SET_NOT_PLAYING) {
+            setNotPlaying(ladderManager);
         }
     }
 
@@ -138,6 +148,7 @@ public class UserInterface {
         for (Scorecard<Pair> scorecard : scorecards) {
             System.out.println("****************** MATCH " + index + " ******************");
             System.out.println(scorecard.toString());
+            index++;
         }
     }
 
@@ -156,11 +167,12 @@ public class UserInterface {
 
         List<Pair> ladder = ladderManager.getLadder();
         List<Player> pair = new ArrayList<>(2);
+        String input;
         while (pair.size() < 2) {
             System.out.println("Enter " + EXISTING_PLAYER + " for existing player, " + NEW_PLAYER
                     + " for new player.");
 
-            String input = scanner.nextLine();
+            input = scanner.nextLine();
             int selection = Integer.parseInt(input);
             if (selection == EXISTING_PLAYER) {
                 List<Player> players = ladderManager.getAllPlayers();
@@ -180,7 +192,20 @@ public class UserInterface {
                 pair.add(new Player(playerID, input));
             }
         }
-        ladderManager.addNewPair(new Pair(pair.get(0), pair.get(1)));
+
+        Pair newPair = new Pair(pair.get(0), pair.get(1));
+
+        System.out.println("Add to end of ladder? (y/n): ");
+        input = scanner.nextLine();
+        if (input.toLowerCase().equals("y")) {
+            ladderManager.addNewPair(newPair);
+        } else {
+            System.out.println("Enter position to insert at: ");
+            input = scanner.nextLine();
+            int position = Integer.parseInt(input);
+            int index = position - 1;
+            ladderManager.addNewPairAtIndex(newPair, index);
+        }
     }
 
     private static void listPlayers(List<Player> players) {
@@ -198,5 +223,23 @@ public class UserInterface {
         int selection = Integer.parseInt(input);
         int index = selection - 1;
         ladderManager.removePairAtIndex(index);
+    }
+
+    private static void setPlaying(LadderManager ladderManager) {
+        listLadder(ladderManager.getLadder());
+        System.out.println("Enter number of pair to set them to play: ");
+        String input = scanner.nextLine();
+        int selection = Integer.parseInt(input);
+        int index = selection - 1;
+        ladderManager.setIsPlaying(ladderManager.getLadder().get(index));
+    }
+
+    private static void setNotPlaying(LadderManager ladderManager) {
+        listLadder(ladderManager.getLadder());
+        System.out.println("Enter number of pair to set them to not play: ");
+        String input = scanner.nextLine();
+        int selection = Integer.parseInt(input);
+        int index = selection - 1;
+        ladderManager.setNotPlaying(ladderManager.getLadder().get(index));
     }
 }
