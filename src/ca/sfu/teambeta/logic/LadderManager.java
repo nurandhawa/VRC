@@ -177,6 +177,10 @@ public class LadderManager {
         List<Integer> emptyPositions = new ArrayList<Integer>();
         int index = 0;
 
+        if (notPlaying == 0) {
+            return emptyPositions;
+        }
+
         for (Pair current : passivePairs) {
             takenPositions.add(current.getPosition());
         }
@@ -196,6 +200,9 @@ public class LadderManager {
 
     private void assignAvailablePos(List<Integer> emptyPositions) {
         int index = 0;
+        if (emptyPositions.isEmpty()) {
+            return;
+        }
         for (Pair current : activePairs) {
             current.deActivate();
             current.setPosition(emptyPositions.get(index));
