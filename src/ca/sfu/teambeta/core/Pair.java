@@ -1,5 +1,8 @@
 package ca.sfu.teambeta.core;
 
+//Pair should have information about pairs activity
+//Ladder shoud return the size of itself
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
