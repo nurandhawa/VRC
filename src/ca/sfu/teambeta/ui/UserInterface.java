@@ -191,7 +191,7 @@ public class UserInterface {
                 System.out.println("Enter name of new player: ");
                 input = scanner.nextLine();
 
-                int playerID = ladder.size() + 1;
+                int playerID = ladderManager.getAllPlayers().size() + pair.size() + 1;
                 pair.add(new Player(playerID, input));
             }
         }

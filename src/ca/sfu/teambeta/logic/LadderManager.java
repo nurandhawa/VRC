@@ -67,7 +67,10 @@ public class LadderManager {
 
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
-        for (Pair pair : ladder.getLadder()) {
+        for (Pair pair : activePairs) {
+            players.addAll(pair.getPlayers());
+        }
+        for (Pair pair : passivePairs) {
             players.addAll(pair.getPlayers());
         }
         return players;
