@@ -17,4 +17,20 @@ public enum Penalty {
     public int getPenalty() {
         return penalty;
     }
+
+    public static int fromString(String text) {
+        if (text != null) {
+            if (text.contains("zero")) {
+                return ZERO.getPenalty();
+            } else if (text.contains("absent")) {
+                return ABSENT.getPenalty();
+            } else if (text.contains("late")) {
+                return LATE.getPenalty();
+            } else if (text.contains("missing")) {
+                return MISSING.getPenalty();
+            }
+        }
+
+        throw new IllegalArgumentException("No penalty of type " + text + " is found");
+    }
 }

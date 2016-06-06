@@ -17,56 +17,133 @@ import ca.sfu.teambeta.core.Player;
  */
 public class LadderManagerTest {
 
-    List<Pair> pairList = Arrays.asList(
-            new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true),
-            new Pair(new Player(3, "David1"), new Player(4, "Dave1"), false),
-            new Pair(new Player(5, "David1"), new Player(6, "Dave1"), false),
-            new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true)
-    );
-
     @Test
     public void testFindActivePairs() {
 
-        LadderManager ladderManager;
-        ladderManager = new LadderManager(pairList);
+        LadderManager ladderManager = new LadderManager(testData());
 
-        List<Pair> activePairs = Arrays.asList(
-                new Pair(new Player(1, "David1"), new Player(2, "Dave1"), true),
-                new Pair(new Player(7, "David1"), new Player(8, "Dave1"), true)
+        List<Pair> expectedActivePairs = Arrays.asList(
+            new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
+            new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
+            new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
+            new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
+            new Pair(new Player(19, "P19"), new Player(20, "P20"), true)
         );
 
-        Assert.assertEquals(ladderManager.getActivePairs(), activePairs);
+        int position = 2;
+        for(Pair p : expectedActivePairs) {
+            p.setPosition(position);
+            position += 2;
+        }
+
+        Assert.assertEquals(expectedActivePairs, ladderManager.getActivePairs());
+    }
+
+    @Test
+    public void testFindPassivePairs() {
+
+        LadderManager ladderManager = new LadderManager(testData());
+
+        ArrayList<Pair> expectedPassivePairs = new ArrayList<Pair>() {{
+            add(new Pair(new Player(1, "P1"), new Player(2, "P2"), false));
+            add(new Pair(new Player(5, "P5"), new Player(6, "P6"), false));
+            add(new Pair(new Player(9, "P9"), new Player(10, "P10"), false));
+            add(new Pair(new Player(13, "P13"), new Player(14, "P14"), false));
+            add(new Pair(new Player(17, "P17"), new Player(18, "P18"), false));
+        }};
+
+        int position = 1;
+        for(Pair p : expectedPassivePairs) {
+            p.setPosition(position);
+            position += 2;
+        }
+
+        Assert.assertEquals(expectedPassivePairs, ladderManager.getPassivePairs());
     }
 
     @Test
     public void testAddPair() {
-        LadderManager manager = new LadderManager();
-        Pair pair1 = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), true);
-        Pair pair2 = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
-        Pair duplicatePair = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), true);
-        List<Pair> expected = new ArrayList<>();
-        expected.add(pair1);
-        expected.add(pair2);
+        LadderManager ladderManager = new LadderManager(testData());
+        ladderManager.addNewPair(new Pair(new Player(21, "P21"), new Player(22, "P22")));
 
-        Assert.assertEquals(manager.addNewPair(pair1), true);
-        Assert.assertEquals(manager.addNewPair(pair2), true);
-        Assert.assertEquals(manager.addNewPair(duplicatePair), false); //Such pair was already added
-        List<Pair> ladder = manager.getLadder();
+        List<Pair> expectedLadder = new ArrayList<Pair>() {{
+            add(new Pair(new Player(1, "P1"), new Player(2, "P2"), false));
+            add(new Pair(new Player(3, "P3"), new Player(4, "P4"), true));
+            add(new Pair(new Player(5, "P5"), new Player(6, "P6"), false));
+            add(new Pair(new Player(7, "P7"), new Player(8, "P8"), true));
+            add(new Pair(new Player(9, "P9"), new Player(10, "P10"), false));
+            add(new Pair(new Player(11, "P11"), new Player(12, "P12"), true));
+            add(new Pair(new Player(13, "P13"), new Player(14, "P14"), false));
+            add(new Pair(new Player(15, "P15"), new Player(16, "P16"), true));
+            add(new Pair(new Player(17, "P17"), new Player(18, "P18"), false));
+            add(new Pair(new Player(19, "P19"), new Player(20, "P20"), true));
+            add(new Pair(new Player(21, "P21"), new Player(22, "P22"), true));
+        }};
 
-        Assert.assertEquals(ladder, expected);
+        int position = 0;
+        for (Pair p : expectedLadder) {
+            position++;
+            p.setPosition(position);
+        }
+
+        Assert.assertEquals(expectedLadder, ladderManager.getFullLadder());
     }
 
     @Test
-    public void testSetIsPlaying() {
-        LadderManager manager = new LadderManager(fakeDB());
-        Pair repeatedPlayer = new Pair(new Player(15, "Jessica"), new Player(7, "Richard"), false); //Richard already is in game
-        Pair uniquePair = new Pair(new Player(16, "Hannah"), new Player(17, "Kate"), false); // None of players are playing
+    public void testApplyPenalties() {
+        LadderManager ladderManager = new LadderManager(testData());
 
-        manager.addNewPair(repeatedPlayer);
-        Assert.assertEquals(manager.setIsPlaying(repeatedPlayer), false); //This pair cannot play
+        ladderManager.setPenaltyToPair(0, "missing");
+        ladderManager.setPenaltyToPair(5, "late");
+        ladderManager.setPenaltyToPair(8, "missing");
 
-        manager.addNewPair(uniquePair);
-        Assert.assertEquals(manager.setIsPlaying(uniquePair), true);
+        ladderManager.mergeActivePassive();
+        ladderManager.applyPenalties();
+
+        List<Pair> expectedLadder = Arrays.asList(
+            new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
+            new Pair(new Player(5, "P5"), new Player(6, "P6"), false),
+            new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
+            new Pair(new Player(9, "P9"), new Player(10, "P10"), false),
+            new Pair(new Player(13, "P13"), new Player(14, "P14"), false),
+            new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
+            new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
+            new Pair(new Player(19, "P19"), new Player(20, "P20"), true),
+            new Pair(new Player(1, "P1"), new Player(2, "P2"), false),
+            new Pair(new Player(17, "P17"), new Player(18, "P18"), false)
+        );
+
+        int position = 0;
+        for (Pair p : expectedLadder) {
+            position++;
+            p.setPosition(position);
+        }
+
+        //Assert.assertEquals(ladderManager.getFullLadder(), expectedLadder);
+
+    }
+
+
+    private List<Pair> testData() {
+        List<Pair> ladder = new ArrayList<>();
+        String playerOne;
+        String playerTwo;
+        boolean isPlaying;
+
+        for (int i = 1; i <= 10; i++) {
+            playerOne = "P" + ((i * 2) - 1);
+            playerTwo = "P" + (i * 2);
+            if (i % 2 == 0) {
+                isPlaying = true;
+            } else {
+                isPlaying = false;
+            }
+            Pair pair = new Pair(new Player((i * 2) - 1, playerOne), new Player((i * 2), playerTwo), isPlaying);
+            pair.setPosition(i);
+            ladder.add(pair);
+        }
+
+        return ladder;
     }
 
     private List<Pair> fakeDB() {
@@ -84,7 +161,7 @@ public class LadderManagerTest {
 
         pair = new Pair(new Player(5, "David"), new Player(6, "Bob"), true);
         pair.setPosition(3);
-        pair.setPenalty(Penalty.LATE.getPenalty());
+        //No penalty
         db.add(pair);
 
         pair = new Pair(new Player(7, "Richard"), new Player(8, "Robin"), true);
