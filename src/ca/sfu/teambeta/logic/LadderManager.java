@@ -19,8 +19,8 @@ import ca.sfu.teambeta.core.Scorecard;
 
 public class LadderManager {
     private static final int NO_PENALTY = 0;
-    private static final int LATE = 0;
-    private static final int MISS = 0;
+    private static final int LATE = 4;
+    private static final int MISS = 10;
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
