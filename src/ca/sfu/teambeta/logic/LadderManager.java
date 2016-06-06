@@ -18,6 +18,9 @@ import ca.sfu.teambeta.core.Scorecard;
  */
 
 public class LadderManager {
+    private static final int NO_PENALTY = 0;
+    private static final int LATE = 0;
+    private static final int MISS = 0;
     private Ladder ladder;
     private List<Pair> activePairs;
     private List<Pair> passivePairs;
@@ -209,10 +212,17 @@ public class LadderManager {
 
         for (Pair current : pairList) {
             int penalty = current.getPenalty();
-            if (penalty != 0) {
+            if (penalty != NO_PENALTY) {
                 current.setPenalty(Penalty.ZERO.getPenalty());
                 int actualPosition = current.getPosition();
-                int newPosition = current.getOldPosition() + penalty;
+                int newPosition = 0;
+
+                if (penalty == LATE) {
+                    newPosition = actualPosition + penalty;
+                } else if (penalty == MISS) {
+                    newPosition = current.getOldPosition() + penalty;
+                }
+
                 if (newPosition >= size) {
                     newPosition = size - 1;
                 }
