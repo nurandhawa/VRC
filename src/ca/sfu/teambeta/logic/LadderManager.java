@@ -29,6 +29,11 @@ public class LadderManager {
     }
 
     public LadderManager(List<Pair> dbLadder) {
+        int index = 1;
+        for (Pair current : dbLadder) {
+            current.setPosition(index);
+            index++;
+        }
         ladder = new Ladder(dbLadder);
         activePairs = findPairs(ladder.getLadder(), true);
         passivePairs = findPairs(ladder.getLadder(), false);
@@ -168,28 +173,28 @@ public class LadderManager {
         int[] positions = new int[notPlaying];
         int[] emptyPositions = new int[arePlaying];
 
-        int positionIndex = 0;
+        int index = 0;
         for (Pair current : passivePairs) {
-            positions[positionIndex] = current.getPosition();
-            positionIndex++;
+            positions[index] = current.getPosition();
+            index++;
         }
 
         //Create array of empty positions for participants
-        int emptyPostitionIndex = 0;
-        int currentPositionIndex = 0;
+        int indexEmptyPosition = 0;
+        int indexTakenPosition = 0;
         for (int position = 1; position <= allMembers; position++) {
-            if (position < positions.length && position == positions[currentPositionIndex]) {
+            if (position == positions[indexTakenPosition]) {
                 //This position is taken
-                currentPositionIndex++;
+                indexTakenPosition++;
             } else {
                 //Position not used
-                emptyPositions[emptyPostitionIndex] = position;
-                emptyPostitionIndex++;
+                emptyPositions[indexEmptyPosition] = position;
+                indexEmptyPosition++;
             }
         }
 
         //Assign participants to empty positions and sat them to not playing
-        int index = 0;
+        index = 0;
         for (Pair current : activePairs) {
             current.deActivate();
             current.setPosition(emptyPositions[index]);
