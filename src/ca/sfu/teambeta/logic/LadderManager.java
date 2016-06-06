@@ -165,9 +165,22 @@ public class LadderManager {
     //*******************************************
 
     private void mergeActivePassive() {
-        List<Integer> emptyPositions = getAvailablePos();
-        assignAvailablePos(emptyPositions);
-        combine();
+        List<Pair> newLadder = new ArrayList<>();
+        newLadder.addAll(activePairs);
+        for (Pair pair : passivePairs) {
+            newLadder.add(pair.getPosition(), pair);
+        }
+        ladder = new Ladder(newLadder);
+
+        int position = 1;
+        for (Pair pair : ladder.getLadder()) {
+            pair.setPosition(position);
+            position++;
+        }
+
+//        List<Integer> emptyPositions = getAvailablePos();
+//        assignAvailablePos(emptyPositions);
+//        combine();
     }
 
     private List<Integer> getAvailablePos() {
