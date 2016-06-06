@@ -164,7 +164,7 @@ public class LadderManager {
     // .: Public for the testing.
     //*******************************************
 
-    public void mergeActivePassive() {
+    private void mergeActivePassive() {
         List<Integer> emptyPositions = getAvailablePos();
         assignAvailablePos(emptyPositions);
         combine();
@@ -175,7 +175,7 @@ public class LadderManager {
         int notPlaying = passivePairs.size();
         List<Integer> takenPositions = new ArrayList<Integer>();
         List<Integer> emptyPositions = new ArrayList<Integer>();
-        int i = 0;
+        int index = 0;
 
         for (Pair current : passivePairs) {
             takenPositions.add(current.getPosition());
@@ -183,8 +183,8 @@ public class LadderManager {
 
         emptyPositions.addAll(findMissingPos(0, takenPositions.get(0)));
 
-        while (i < (takenPositions.size() - 1)) {
-            emptyPositions.addAll(findMissingPos(takenPositions.get(i), takenPositions.get(++i)));
+        while (index < (takenPositions.size() - 1)) {
+            emptyPositions.addAll(findMissingPos(takenPositions.get(index), takenPositions.get(++index)));
         }
 
         if (takenPositions.get(notPlaying - 1) != totalPos) {
@@ -195,11 +195,11 @@ public class LadderManager {
     }
 
     private void assignAvailablePos(List<Integer> emptyPositions) {
-        int i = 0;
+        int index = 0;
         for (Pair current : activePairs) {
             current.deActivate();
-            current.setPosition(emptyPositions.get(i));
-            i++;
+            current.setPosition(emptyPositions.get(index));
+            index++;
         }
     }
 
