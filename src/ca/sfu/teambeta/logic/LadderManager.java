@@ -81,7 +81,7 @@ public class LadderManager {
         return !pairExists;
     }
 
-    public boolean removePairAtIndex(int index){
+    public boolean removePairAtIndex(int index) {
         Pair pairToRemove = ladder.getPairAtIndex(index);
         return ladder.removePair(pairToRemove);
     }

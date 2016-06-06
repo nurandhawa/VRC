@@ -106,7 +106,8 @@ public class UserInterface {
         int numTeams = match.getTeamRankings().size();
         String[][] results = new String[numTeams][numTeams];
         for (int i = 0; i < numTeams; i++) {
-            System.out.println("Enter Round " + (i + 1) + "'s Score (W for win, L for loss, - for bye, space delimited)");
+            System.out.println("Enter Round " + (i + 1) +
+                    "'s Score (W for win, L for loss, - for bye, space delimited)");
             input = scanner.nextLine();
             results[i] = input.split(" ");
         }
@@ -224,7 +225,7 @@ public class UserInterface {
         ladderManager.removePairAtIndex(index);
     }
 
-    private static void setPlaying(LadderManager ladderManager){
+    private static void setPlaying(LadderManager ladderManager) {
         listLadder(ladderManager.getLadder());
         System.out.println("Enter number of pair to set them to play: ");
         String input = scanner.nextLine();
@@ -233,7 +234,7 @@ public class UserInterface {
         ladderManager.setIsPlaying(ladderManager.getLadder().get(index));
     }
 
-    private static void setNotPlaying(LadderManager ladderManager){
+    private static void setNotPlaying(LadderManager ladderManager) {
         listLadder(ladderManager.getLadder());
         System.out.println("Enter number of pair to set them to not play: ");
         String input = scanner.nextLine();

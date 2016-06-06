@@ -120,7 +120,7 @@ public class GameManager {
         splitLadderIntoGroups();
     }
 
-    public void updateGroups(List<Pair> active){
+    public void updateGroups(List<Pair> active) {
         ladder = active;
         groups.clear();
         splitLadderIntoGroups();
