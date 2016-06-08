@@ -38,6 +38,9 @@ dependencies {
     compile 'com.h2database:h2:1.4.192'
     compile 'mysql:mysql-connector-java:6.0.2'
     compile 'org.hsqldb:hsqldb:2.0.0'
+    compile 'com.sparkjava:spark-core:2.5'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
 }
 
 // Code copied from:
