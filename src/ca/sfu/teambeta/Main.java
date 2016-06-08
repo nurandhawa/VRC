@@ -1,21 +1,20 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.logic.DBManager;
-import ca.sfu.teambeta.logic.GameManager;
-import ca.sfu.teambeta.logic.LadderManager;
-import ca.sfu.teambeta.ui.UserInterface;
+import com.google.gson.Gson;
 
-class Main {
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Player;
+
+import static spark.Spark.get;
+import static spark.Spark.port;
+
+public class Main {
+    private static Gson gson = new Gson();
     public static void main(String[] args) {
-
-        Ladder loadedLadder = DBManager.loadFromDB();
-        LadderManager ladderManager = new LadderManager(loadedLadder.getLadder());
-
-        ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
-
-        GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
-        UserInterface.start(gameManager, ladderManager);
-
+        port(8000);
+        get("/", (request, response) -> {
+            response.type("application/json");
+            return gson.toJson(new Pair(new Player(1, "Bob"), new Player(2, "Bobby")));
+        });
     }
 }
