@@ -5,11 +5,7 @@ import ca.sfu.teambeta.logic.DBManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 
-import static spark.Spark.get;
-import static spark.Spark.port;
-import static spark.Spark.staticFiles;
-
-public class Main {
+class Main {
     public static void main(String[] args) {
 
         Ladder loadedLadder = DBManager.loadFromDB();
