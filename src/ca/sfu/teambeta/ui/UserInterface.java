@@ -109,10 +109,10 @@ public class UserInterface {
         System.out.println("Enter match results (W for win, L for loss, - for bye," +
                 " space delimited, / for newline");
         input = scanner.nextLine();
-        int i = 0;
+        int index = 0;
         for (String round : input.split("/")) {
-            results[i] = round.split(" ");
-            i++;
+            results[index] = round.split(" ");
+            index++;
         }
 
         gameManager.inputMatchResults(match, results);
