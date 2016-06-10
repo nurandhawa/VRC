@@ -93,12 +93,17 @@ public class UserInterface {
         if (selection == EDIT_MATCHES_RESULTS) {
             inputMatchResults(match, gameManager);
         } else if (selection == EDIT_MATCHES_REMOVE) {
-            System.out.println("Enter the pair number to remove: ");
-            input = scanner.nextLine();
-            int pairSelection = Integer.parseInt(input);
-            int pairIndex = pairSelection - 1;
-            gameManager.removePlayingPair(match.getTeamRankings().get(pairIndex));
+            removePairFromMatch(match, gameManager);
         }
+    }
+
+    private static void removePairFromMatch(Scorecard<Pair> match, GameManager gameManager) {
+        String input;
+        System.out.println("Enter the pair number to remove: ");
+        input = scanner.nextLine();
+        int pairSelection = Integer.parseInt(input);
+        int pairIndex = pairSelection - 1;
+        gameManager.removePlayingPair(match.getTeamRankings().get(pairIndex));
     }
 
     private static void inputMatchResults(Scorecard<Pair> match, GameManager gameManager) {
@@ -168,7 +173,24 @@ public class UserInterface {
         final int EXISTING_PLAYER = 1;
         final int NEW_PLAYER = 2;
 
-        List<Pair> ladder = ladderManager.getLadder();
+        Pair newPair = createPlayers(ladderManager, EXISTING_PLAYER, NEW_PLAYER);
+
+        String input;
+        System.out.println("Add to end of ladder? (y/n): ");
+        input = scanner.nextLine();
+
+        if (input.toLowerCase().equals("y")) {
+            ladderManager.addNewPair(newPair);
+        } else {
+            System.out.println("Enter position to insert at: ");
+            input = scanner.nextLine();
+            int position = Integer.parseInt(input);
+            int index = position - 1;
+            ladderManager.addNewPairAtIndex(newPair, index);
+        }
+    }
+
+    private static Pair createPlayers(LadderManager ladderManager, int EXISTING_PLAYER, int NEW_PLAYER) {
         List<Player> pair = new ArrayList<>(2);
         String input;
         while (pair.size() < 2) {
@@ -196,19 +218,7 @@ public class UserInterface {
             }
         }
 
-        Pair newPair = new Pair(pair.get(0), pair.get(1));
-
-        System.out.println("Add to end of ladder? (y/n): ");
-        input = scanner.nextLine();
-        if (input.toLowerCase().equals("y")) {
-            ladderManager.addNewPair(newPair);
-        } else {
-            System.out.println("Enter position to insert at: ");
-            input = scanner.nextLine();
-            int position = Integer.parseInt(input);
-            int index = position - 1;
-            ladderManager.addNewPairAtIndex(newPair, index);
-        }
+        return new Pair(pair.get(0), pair.get(1));
     }
 
     private static void listPlayers(List<Player> players) {
