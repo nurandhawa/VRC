@@ -170,10 +170,7 @@ public class UserInterface {
     }
 
     private static void addPair(LadderManager ladderManager) {
-        final int EXISTING_PLAYER = 1;
-        final int NEW_PLAYER = 2;
-
-        Pair newPair = createPlayers(ladderManager, EXISTING_PLAYER, NEW_PLAYER);
+        Pair newPair = createPlayers(ladderManager);
 
         String input;
         System.out.println("Add to end of ladder? (y/n): ");
@@ -190,7 +187,10 @@ public class UserInterface {
         }
     }
 
-    private static Pair createPlayers(LadderManager ladderManager, int EXISTING_PLAYER, int NEW_PLAYER) {
+    private static Pair createPlayers(LadderManager ladderManager) {
+        final int EXISTING_PLAYER = 1;
+        final int NEW_PLAYER = 2;
+
         List<Player> pair = new ArrayList<>(2);
         String input;
         while (pair.size() < 2) {
