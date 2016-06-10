@@ -171,7 +171,8 @@ public class LadderManager {
         List<Pair> newLadder = new ArrayList<>();
         newLadder.addAll(activePairs);
         for (Pair pair : passivePairs) {
-            newLadder.add(pair.getPosition(), pair);
+            int pairIndex = pair.getPosition() - 1;
+            newLadder.add(pairIndex, pair);
         }
         ladder = new Ladder(newLadder);
 
