@@ -47,4 +47,40 @@ public class ScorecardTest {
         Assert.assertEquals(reOrdered, expectedOrder);
     }
 
+    @Test(expected = RuntimeException.class)
+    public void testObserverThreeTeams() {
+        List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina");
+        Observer observer = () -> {
+            throw new RuntimeException();
+        };
+        Scorecard<String> sc = new Scorecard<>(teams, observer);
+        sc.setWin("Ben Katrina", 0);
+        sc.setWin("Ben Katrina", 1);
+
+        sc.setLose("Peter Aby", 0);
+        sc.setLose("Peter Aby", 2);
+
+        sc.setWin("Jerome Karen", 0);
+        sc.setWin("Jerome Karen", 1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void testObserverFourTeams() {
+        List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina", "Bobby Chan");
+        Observer observer = () -> {
+            throw new RuntimeException();
+        };
+        Scorecard<String> sc = new Scorecard<>(teams, observer);
+        sc.setWin("Ben Katrina", 0);
+        sc.setLose("Peter Aby", 0);
+
+        sc.setWin("Ben Katrina", 1);
+        sc.setLose("Jerome Karen", 1);
+
+        sc.setWin("Bobby Chan", 2);
+        sc.setLose("Peter Aby", 2);
+
+        sc.setWin("Jerome Karen", 3);
+        sc.setLose("Bobby Chan", 3);
+    }
 }
