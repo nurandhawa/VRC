@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -154,6 +155,28 @@ public class LadderManagerTest {
         }
 
         return ladder;
+    }
+
+    @Test
+    public void testWithoutSwapping(){
+        //Comment out SwapBetweenGroups before running this test!!!
+
+        LadderManager manager = new LadderManager(fakeDB());
+        List<Pair> beforeProcessing = manager.getLadder();
+
+        for(Pair current : beforeProcessing){
+            System.out.println(current);
+        }
+        System.out.printf("%n%n%nNEW LADDER:%n%n");
+
+        List<Scorecard<Pair>> fakeScorecards = new ArrayList<>();
+        manager.processLadder(fakeScorecards);
+
+        List<Pair> afterProcessing = manager.getLadder();
+        for(Pair current : afterProcessing){
+            System.out.println(current);
+        }
+
     }
 
     private List<Pair> fakeDB() {

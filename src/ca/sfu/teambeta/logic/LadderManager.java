@@ -155,7 +155,7 @@ public class LadderManager {
          * 3. set the absent(-2) penalty to all passive pairs
          * 4. apply all penalties that have been previously set before the method call
          **/
-        swapBetweenGroups(scorecards);
+    //    swapBetweenGroups(scorecards);
         mergeActivePassive();
         setAbsentPenaltyToPairs();
         applyPenalties();
