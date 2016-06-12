@@ -365,27 +365,6 @@ public class LadderManager {
         System.out.println();
     }
 
-    //Applies absent penalty to the pairs who didn't show up
-    private void setAbsentPenaltyToPairs() {
-        List<Pair> passivePairs = getPassivePairs();
-
-        for (Pair currentPair : passivePairs) {
-            currentPair.setPenalty(Penalty.ABSENT.getPenalty());
-        }
-    }
-
-    //Applies additional penalties beside the absent penalty
-    public void applyPenalties() {
-        List<Pair> currentLadder = getLadder();
-
-        for (Pair currentPair : currentLadder) {
-            currentPair.setPosition(currentPair.positionAfterPenalty());
-        }
-
-        Collections.sort(currentLadder, getPairPositionComparator());
-        fixPairPositionOnLadder();
-    }
-
     private void fixPairPositionOnLadder() {
         int position = 0;
         for (Pair currentPair : getLadder()) {
