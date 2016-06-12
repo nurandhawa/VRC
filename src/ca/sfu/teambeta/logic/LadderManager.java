@@ -184,9 +184,8 @@ public class LadderManager {
         //  one to hold the first group
         List<Pair> completedPairs = new ArrayList<Pair>();
         List<Pair> firstGroup = scorecards.get(0).getTeamRankings();
-
-
         List<Pair> previousGroup = firstGroup;
+
         for (int i = 1; i < scorecards.size(); i++) {
             // Swap the player's in the first and last position of subsequent groups
             List<Pair> currentGroup = scorecards.get(i).getTeamRankings();
@@ -198,12 +197,9 @@ public class LadderManager {
 
         // The for loop omits the last group, thus add it now:
         completedPairs.addAll(previousGroup);
-
-        // Finally update the active list of players
         this.activePairs = completedPairs;
 
         return completedPairs;
-
     }
 
     private void assignNewPositionsToActivePairs() {
@@ -248,9 +244,7 @@ public class LadderManager {
 
         newLadder.addAll(passivePairs);
         newLadder.addAll(activePairs);
-
         Comparator<Pair> makeSorter = getPairPositionComparator();
-
         Collections.sort(newLadder, makeSorter);
         passivePairs.clear();
         activePairs.clear();
@@ -325,7 +319,6 @@ public class LadderManager {
 
     private void swapPair(int firstIndex, int secondIndex) {
         List<Pair> listPairs = ladder.getLadder();
-
         Pair first = listPairs.get(firstIndex);
         Pair second = listPairs.get(secondIndex);
 
@@ -336,13 +329,6 @@ public class LadderManager {
         listPairs.set(secondIndex, first);
 
         ladder.assignNewLadder(listPairs);
-    }
-
-
-    //-----------NOT USED FUNCTIONS------------
-
-    private void saveLadderToDBFile(String fileName) {
-        DBManager.saveToDB(this.ladder, fileName);
     }
 
     public List<Player> getAllPlayers() {
@@ -356,13 +342,6 @@ public class LadderManager {
         return players;
     }
 
-    public void printLadder() {
-        for (Pair currentPair : getLadder()) {
-            System.out.println(currentPair);
-        }
-        System.out.println();
-    }
-
     private boolean searchActivePlayer(Player player) {
         split();
         for (Pair current : activePairs) {
@@ -371,6 +350,19 @@ public class LadderManager {
             }
         }
         return false;
+    }
+
+    //-----------NOT USED FUNCTIONS------------
+
+    private void saveLadderToDBFile(String fileName) {
+        DBManager.saveToDB(this.ladder, fileName);
+    }
+
+    public void printLadder() {
+        for (Pair currentPair : getLadder()) {
+            System.out.println(currentPair);
+        }
+        System.out.println();
     }
 
     //Applies absent penalty to the pairs who didn't show up
