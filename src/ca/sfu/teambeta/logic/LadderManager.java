@@ -65,6 +65,12 @@ public class LadderManager {
         return activePairs;
     }
 
+    public List<Pair> getPassivePairs() {
+        split();
+        return passivePairs;
+    }
+
+    //USAGE???
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
         for (Pair pair : activePairs) {
@@ -76,12 +82,8 @@ public class LadderManager {
         return players;
     }
 
-    public List<Pair> getPassivePairs() {
-        split();
-        return passivePairs;
-    }
 
-    public boolean addNewPair(Pair newPair) { //Reports if it was successful
+    public boolean addNewPair(Pair newPair) {
         boolean pairExists = ladder.getLadder().contains(newPair);
         if (!pairExists) {
             newPair.setPosition(ladder.getLadderLength());
@@ -132,19 +134,13 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    //Sets specific penalty to a pair on the ladder
-    public void setPenaltyToPair(int pairIndex, String penaltyType) {
-        Pair pair = ladder.getPairAtIndex(pairIndex);
-        int retPenalty = getPenaltyFromString(penaltyType);
-        int penalty = 0;
-        //if penalty is already two and add missing should be 8 and late should only be 4
-        if (pair.getPenalty() >= 2 && retPenalty != -1 && retPenalty != 0) {
-            penalty = retPenalty - pair.getPenalty();
-            pair.setPenalty(penalty);
-        } else if (retPenalty == 0) {
-            removePenalty(pair);
-        } else {
-            pair.setPenalty(retPenalty);
+    public void setPenaltyToPair(int pairIndex, Penalty penalty) {
+        List<Pair> allPairs = ladder.getLadder();
+        int size = ladder.getLadderLength();
+
+        if(pairIndex < size) {
+            Pair pair = allPairs.get(pairIndex);
+            pair.setPenalty(penalty.getPenalty());
         }
     }
 
@@ -358,16 +354,6 @@ public class LadderManager {
         }
     }
 
-    private int getPenaltyFromString(String penaltyType) {
-        int penalty;
-        try {
-            penalty = Penalty.fromString(penaltyType);
-            return penalty;
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex);
-            return -1;
-        }
-    }
 
     //Applies additional penalties beside the absent penalty
     public void applyPenalties() {
