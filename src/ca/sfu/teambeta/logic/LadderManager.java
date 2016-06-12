@@ -373,30 +373,6 @@ public class LadderManager {
         }
     }
 
-    private void resetPenalties() {
-        getLadder().forEach(this::removePenalty);
-    }
-
-    private void mergeActivePassive() {
-        List<Pair> newLadder = new ArrayList<>();
-        newLadder.addAll(activePairs);
-        for (Pair pair : passivePairs) {
-            int pairIndex = pair.getPosition() - 1;
-            newLadder.add(pairIndex, pair);
-        }
-        ladder = new Ladder(newLadder);
-
-        int position = 1;
-        for (Pair pair : ladder.getLadder()) {
-            pair.setPosition(position);
-            position++;
-        }
-
-        //  List<Integer> emptyPositions = getAvailablePos();
-        //  assignAvailablePos(emptyPositions);
-        //  combine();
-    }
-
     private List<Integer> getAvailablePos() {
         int notPlaying = passivePairs.size();
         List<Integer> takenPositions = new ArrayList<Integer>();
