@@ -65,23 +65,12 @@ public class LadderManager {
         return activePairs;
     }
 
-    public List<Player> getAllPlayers() {
-        List<Player> players = new ArrayList<>();
-        for (Pair pair : activePairs) {
-            players.addAll(pair.getPlayers());
-        }
-        for (Pair pair : passivePairs) {
-            players.addAll(pair.getPlayers());
-        }
-        return players;
-    }
-
     public List<Pair> getPassivePairs() {
         split();
         return passivePairs;
     }
 
-    public boolean addNewPair(Pair newPair) { //Reports if it was successful
+    public boolean addNewPair(Pair newPair) {
         boolean pairExists = ladder.getLadder().contains(newPair);
         if (!pairExists) {
             newPair.setPosition(ladder.getLadderLength());
@@ -132,114 +121,31 @@ public class LadderManager {
         pair.setPenalty(Penalty.ZERO.getPenalty());
     }
 
-    //Sets specific penalty to a pair on the ladder
-    public void setPenaltyToPair(int pairIndex, String penaltyType) {
-        Pair pair = ladder.getPairAtIndex(pairIndex);
-        int retPenalty = getPenaltyFromString(penaltyType);
-        int penalty = 0;
-        //if penalty is already two and add missing should be 8 and late should only be 4
-        if (pair.getPenalty() >= 2 && retPenalty != -1 && retPenalty != 0) {
-            penalty = retPenalty - pair.getPenalty();
-            pair.setPenalty(penalty);
-        } else if (retPenalty == 0) {
-            removePenalty(pair);
-        } else {
-            pair.setPenalty(retPenalty);
+    public void setPenaltyToPair(int pairIndex, Penalty penalty) {
+        List<Pair> allPairs = ladder.getLadder();
+        int size = ladder.getLadderLength();
+
+        if (pairIndex < size) {
+            Pair pair = allPairs.get(pairIndex);
+            pair.setPenalty(penalty.getPenalty());
         }
     }
 
     public void processLadder(List<Scorecard<Pair>> scorecards) {
-        /**
-         * 1. swap the pairs around based on the result
-         * 2. combine the list of both active and inactive pairs
-         * 3. set the absent(-2) penalty to all passive pairs
-         * 4. apply all penalties that have been previously set before the method call
-         **/
+        split();
+        applyAbsentPenalty();
         swapBetweenGroups(scorecards);
-        mergeActivePassive();
-        setAbsentPenaltyToPairs();
-        applyPenalties();
-        resetPenalties();
+        assignNewPositionsToActivePairs();
+        combineActivePassive();
+        applyLateMissPenalty();
+        savePositions();
     }
 
-    //*******************************************
-    //  Methods used ONLY INSIDE of this class
-    // .: Public for the testing.
-    //*******************************************
-
-    private void mergeActivePassive() {
-        List<Pair> newLadder = new ArrayList<>();
-        newLadder.addAll(activePairs);
-        for (Pair pair : passivePairs) {
-            int pairIndex = pair.getPosition() - 1;
-            newLadder.add(pairIndex, pair);
-        }
-        ladder = new Ladder(newLadder);
-
-        int position = 1;
-        for (Pair pair : ladder.getLadder()) {
-            pair.setPosition(position);
-            position++;
-        }
-
-//        List<Integer> emptyPositions = getAvailablePos();
-//        assignAvailablePos(emptyPositions);
-//        combine();
-    }
-
-    private List<Integer> getAvailablePos() {
-        int totalPos = ladder.getLadderLength();
-        int notPlaying = passivePairs.size();
-        List<Integer> takenPositions = new ArrayList<Integer>();
-        List<Integer> emptyPositions = new ArrayList<Integer>();
-        int index = 0;
-
-        if (notPlaying == 0) {
-            return emptyPositions;
-        }
-
-        for (Pair current : passivePairs) {
-            takenPositions.add(current.getPosition());
-        }
-
-        emptyPositions.addAll(findMissingPos(0, takenPositions.get(0)));
-
-        while (index < (takenPositions.size() - 1)) {
-            emptyPositions.addAll(findMissingPos(takenPositions.get(index), takenPositions.get(++index)));
-        }
-
-        if (takenPositions.get(notPlaying - 1) != totalPos) {
-            emptyPositions.add(totalPos);
-        }
-
-        return emptyPositions;
-    }
-
-    private void assignAvailablePos(List<Integer> emptyPositions) {
-        int index = 0;
-        if (emptyPositions.isEmpty()) {
-            return;
-        }
-        for (Pair current : activePairs) {
-            current.deActivate();
-            current.setPosition(emptyPositions.get(index));
-            index++;
-        }
-    }
-
-    private List<Integer> findMissingPos(Integer startPos, Integer endPos) {
-        List<Integer> emptyPositions = new ArrayList<Integer>();
-        int difference = Math.subtractExact(endPos, startPos);
-        if (difference == 2) {
-            emptyPositions.add(++startPos);
-        } else {
-            for (int i = 1; i < difference; i++) {
-                emptyPositions.add(startPos + i);
-            }
-        }
-
-        return emptyPositions;
-    }
+    //*******************************************//
+    //                                           //
+    //  Methods used ONLY INSIDE of this class   //
+    //                                           //
+    //*******************************************//
 
     private void split() {
         List<Pair> fullLadder = ladder.getLadder();
@@ -248,19 +154,27 @@ public class LadderManager {
         passivePairs = findPairs(fullLadder, false);
     }
 
-    private void combine() {
-        //Implemented by David Li and Kostiantyn Koval
-        List<Pair> newLadder = new ArrayList<>();
+    private void applyAbsentPenalty() {
+        int previousTakenPosition = ladder.getLadderLength();
+        int size = passivePairs.size();
 
-        newLadder.addAll(passivePairs);
-        newLadder.addAll(activePairs);
+        for (int i = size - 1; i >= 0; i--) {
+            Pair pair = passivePairs.get(i);
+            int position = pair.getPosition();
+            int possibleShift = previousTakenPosition - position;
 
-        Comparator<Pair> makeSorter = getPairPositionComparator();
+            switch (possibleShift) {
+                case 0:
+                    break;
+                case 1:
+                    pair.setPosition(position + 1);
+                    break;
+                default:
+                    pair.setPosition(position + Penalty.ABSENT.getPenalty());
+            }
 
-        Collections.sort(newLadder, makeSorter);
-        passivePairs.clear();
-        activePairs.clear();
-        ladder = new Ladder(newLadder);
+            previousTakenPosition = pair.getPosition() - 1;
+        }
     }
 
     private List<Pair> swapBetweenGroups(List<Scorecard<Pair>> scorecards) {
@@ -290,6 +204,91 @@ public class LadderManager {
 
         return completedPairs;
 
+    }
+
+    private void assignNewPositionsToActivePairs() {
+        int size = ladder.getLadderLength();
+        int[] emptyPositions = new int[activePairs.size()];
+        int[] takenPositions = new int[passivePairs.size()];
+
+        //Fill in takenPositions
+        int index = 0;
+        for (Pair current : passivePairs) {
+            takenPositions[index] = current.getPosition();
+            index++;
+        }
+
+        //Fill in emptyPositions
+        int takenIndex = 0;
+        int emptyIndex = 0;
+        for (int position = 1; position <= size; position++) {
+            if (takenPositions[takenIndex] != position) {
+                emptyPositions[emptyIndex] = position;
+                emptyIndex++;
+            } else {
+                if (takenIndex != passivePairs.size() - 1) { //Not last possible index
+                    takenIndex++;
+                }
+            }
+        }
+
+        //Give activePairs new positions
+        index = 0;
+        for (Pair current : activePairs) {
+            current.setPosition(emptyPositions[index]);
+            index++;
+        }
+    }
+
+    private void combineActivePassive() {
+        List<Pair> newLadder = new ArrayList<>();
+        for (Pair current : activePairs) {
+            current.deActivate();
+        }
+
+        newLadder.addAll(passivePairs);
+        newLadder.addAll(activePairs);
+
+        Comparator<Pair> makeSorter = getPairPositionComparator();
+
+        Collections.sort(newLadder, makeSorter);
+        passivePairs.clear();
+        activePairs.clear();
+        ladder = new Ladder(newLadder);
+    }
+
+    private void applyLateMissPenalty() {
+        List<Pair> pairList = ladder.getLadder();
+        int size = ladder.getLadderLength();
+
+        for (Pair current : pairList) {
+            int penalty = current.getPenalty();
+            if (penalty != Penalty.ZERO.getPenalty()) {
+                current.setPenalty(Penalty.ZERO.getPenalty());
+                int actualPosition = current.getPosition();
+                int newPosition = 0;
+
+                if (penalty == Penalty.LATE.getPenalty()) {
+                    newPosition = actualPosition + penalty;
+                } else if (penalty == Penalty.MISSING.getPenalty()) {
+                    newPosition = current.getOldPosition() + penalty;
+                }
+
+                if (newPosition > size) {
+                    newPosition = size;
+                }
+                for (int i = actualPosition; i < newPosition; i++) {
+                    swapPair(i - 1, i);
+                }
+            }
+        }
+    }
+
+    private void savePositions() {
+        List<Pair> listPairs = ladder.getLadder();
+        for (Pair current : listPairs) {
+            current.establishPosition();
+        }
     }
 
     private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
@@ -324,17 +323,7 @@ public class LadderManager {
                 .collect(Collectors.toList());
     }
 
-    private boolean searchActivePlayer(Player player) {
-        split();
-        for (Pair current : activePairs) {
-            if (current.hasPlayer(player)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void swapPair(int firstIndex, int secondIndex) {
+    private void swapPair(int firstIndex, int secondIndex) {
         List<Pair> listPairs = ladder.getLadder();
 
         Pair first = listPairs.get(firstIndex);
@@ -349,23 +338,47 @@ public class LadderManager {
         ladder.assignNewLadder(listPairs);
     }
 
+
+    //-----------NOT USED FUNCTIONS------------
+
+    private void saveLadderToDBFile(String fileName) {
+        DBManager.saveToDB(this.ladder, fileName);
+    }
+
+    public List<Player> getAllPlayers() {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : activePairs) {
+            players.addAll(pair.getPlayers());
+        }
+        for (Pair pair : passivePairs) {
+            players.addAll(pair.getPlayers());
+        }
+        return players;
+    }
+
+    public void printLadder() {
+        for (Pair currentPair : getLadder()) {
+            System.out.println(currentPair);
+        }
+        System.out.println();
+    }
+
+    private boolean searchActivePlayer(Player player) {
+        split();
+        for (Pair current : activePairs) {
+            if (current.hasPlayer(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Applies absent penalty to the pairs who didn't show up
     private void setAbsentPenaltyToPairs() {
         List<Pair> passivePairs = getPassivePairs();
 
         for (Pair currentPair : passivePairs) {
             currentPair.setPenalty(Penalty.ABSENT.getPenalty());
-        }
-    }
-
-    private int getPenaltyFromString(String penaltyType) {
-        int penalty;
-        try {
-            penalty = Penalty.fromString(penaltyType);
-            return penalty;
-        } catch (IllegalArgumentException ex) {
-            System.out.println(ex);
-            return -1;
         }
     }
 
@@ -393,15 +406,81 @@ public class LadderManager {
         getLadder().forEach(this::removePenalty);
     }
 
-    private void saveLadderToDBFile(String fileName) {
-        DBManager.saveToDB(this.ladder, fileName);
-    }
-
-    public void printLadder() {
-        for (Pair currentPair : getLadder()) {
-            System.out.println(currentPair);
+    private void mergeActivePassive() {
+        List<Pair> newLadder = new ArrayList<>();
+        newLadder.addAll(activePairs);
+        for (Pair pair : passivePairs) {
+            int pairIndex = pair.getPosition() - 1;
+            newLadder.add(pairIndex, pair);
         }
-        System.out.println();
+        ladder = new Ladder(newLadder);
+
+        int position = 1;
+        for (Pair pair : ladder.getLadder()) {
+            pair.setPosition(position);
+            position++;
+        }
+
+        //  List<Integer> emptyPositions = getAvailablePos();
+        //  assignAvailablePos(emptyPositions);
+        //  combine();
     }
 
+    private List<Integer> getAvailablePos() {
+        int notPlaying = passivePairs.size();
+        List<Integer> takenPositions = new ArrayList<Integer>();
+        List<Integer> emptyPositions = new ArrayList<Integer>();
+
+        if (notPlaying == 0) {
+            return emptyPositions;
+        }
+
+        for (Pair current : passivePairs) {
+            takenPositions.add(current.getPosition());
+        }
+
+        emptyPositions.addAll(findMissingPos(0, takenPositions.get(0)));
+
+        int index = 0;
+        while (index < (takenPositions.size() - 1)) {
+            emptyPositions.addAll(
+                    findMissingPos(
+                            takenPositions.get(index),
+                            takenPositions.get(++index))
+            );
+        }
+
+        int totalPos = ladder.getLadderLength();
+        if (takenPositions.get(notPlaying - 1) != totalPos) {
+            emptyPositions.add(totalPos);
+        }
+
+        return emptyPositions;
+    }
+
+    private void assignAvailablePos(List<Integer> emptyPositions) {
+        int index = 0;
+        if (emptyPositions.isEmpty()) {
+            return;
+        }
+        for (Pair current : activePairs) {
+            current.deActivate();
+            current.setPosition(emptyPositions.get(index));
+            index++;
+        }
+    }
+
+    private List<Integer> findMissingPos(Integer startPos, Integer endPos) {
+        List<Integer> emptyPositions = new ArrayList<Integer>();
+        int difference = Math.subtractExact(endPos, startPos);
+        if (difference == 2) {
+            emptyPositions.add(++startPos);
+        } else {
+            for (int i = 1; i < difference; i++) {
+                emptyPositions.add(startPos + i);
+            }
+        }
+
+        return emptyPositions;
+    }
 }

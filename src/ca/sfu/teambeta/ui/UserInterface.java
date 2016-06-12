@@ -111,8 +111,8 @@ public class UserInterface {
         int numTeams = match.getTeamRankings().size();
         String[][] results = new String[numTeams][numTeams];
 
-        System.out.println("Enter match results (W for win, L for loss, - for bye," +
-                " space delimited, / for newline");
+        System.out.println("Enter match results (W for win, L for loss, - for bye,"
+                + " space delimited, / for newline");
         input = scanner.nextLine();
         int index = 0;
         for (String round : input.split("/")) {
