@@ -19,11 +19,6 @@
     <!-- Custom styles for this template -->
     <link href="css/prj-web.css" rel="stylesheet">
 
-    <script src="jquery-1.12.4.js"></script>
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="bootstrap-material/dist/js/material.js"></script>
-    <script src="app.js"></script>
-
   </head>
 
   <body>
@@ -51,124 +46,34 @@
         </div>
       </nav>
 
-      <div class="header">
-        <h1 class="header-initial">Ladder</h1>
-        <div class="header-mid"><h5>Last modified at 10:00AM</h5></div>
+      <div id="header" class="header">
+        <h1 class="header-initial">{{ title }}</h1>
+        <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
         <div class="header-right">
-          <a onclick="test()" class="btn btn-raised btn-primary toggle-button">Edit Ladder</a>
+          <a v-on:onclick="editLadder()" class="btn btn-raised btn-primary toggle-button">Edit Ladder</a>
         </div>
       </div>
 
-      <div class="ladder">
-        <div class="panel panel-default ladder-element">
+      <div id="ladder" class="ladder">
+        <div class="panel panel-default ladder-element" v-for="entry in ladder">
           <div class="panel-body">
             <div class="pair-name">
-            <span class="label label-info position">1</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
+            <span class="label label-info position">{{ entry.position }}</span>
+              {{ entry.name }}
+              <a v-on:click="changeStatus($index)" class="btn btn-raised btn-xs toggle-button" v-bind:class="entry.playingStatus">{{ entry.playingStatus.status }}</a>
             </div>
           </div>
         </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">2</span>
-              Alex Land and David Li
-              <a href="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">3</span>
-              Alex Land and David Li
-              <a href="test()" class="btn btn-raised btn-xs btn-danger toggle-button">Not Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">4</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">5</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">6</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">7</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">8</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">9</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">10</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">11</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">12</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
+
       </div>
 
   </body>
+
+  <!-- Scripts run after DOM is loaded -->
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="bootstrap/js/bootstrap.js"></script>
+  <script src="bootstrap-material/dist/js/material.js"></script>
+  <script src="js/app.js"></script>
+
 </html>
