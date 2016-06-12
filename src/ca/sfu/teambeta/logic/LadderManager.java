@@ -151,7 +151,7 @@ public class LadderManager {
         for(int i = size - 1; i >= 0; i--){
             Pair pair = passivePairs.get(i);
             int position = pair.getPosition();
-            int possibleShift = previousTakenPosition - position - 1;
+            int possibleShift = previousTakenPosition - position;
 
             switch(possibleShift){
                 case 0: break;
@@ -160,7 +160,41 @@ public class LadderManager {
                 default: pair.setPosition(position + Penalty.ABSENT.getPenalty());
             }
 
-            previousTakenPosition = pair.getPosition();
+            previousTakenPosition = pair.getPosition() - 1;
+        }
+    }
+
+    private void insertActivePairsInEmptySpots(){
+        int size = ladder.getLadderLength();
+        int[] emptyPositions = new int[activePairs.size()];
+        int[] takenPositions = new int[passivePairs.size()];
+
+        //Fill in takenPositions
+        int index = 0;
+        for(Pair current : passivePairs){
+            takenPositions[index] = current.getPosition();
+            index++;
+        }
+
+        //Fill in emptyPositions
+        int takenIndex = 0;
+        int emptyIndex = 0;
+        for(int position = 1; position <= size; position++){
+            if(takenPositions[takenIndex] != position){
+                emptyPositions[emptyIndex] = position;
+                emptyIndex++;
+            } else {
+                if(takenIndex != passivePairs.size() - 1) { //Not last possible index
+                    takenIndex++;
+                }
+            }
+        }
+
+        //Give activePairs new positions
+        index = 0;
+        for(Pair current : activePairs){
+            current.setPosition(emptyPositions[index]);
+            index++;
         }
     }
 
