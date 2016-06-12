@@ -23,11 +23,11 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
 
         List<Pair> expectedActivePairs = Arrays.asList(
-            new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
-            new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
-            new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
-            new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
-            new Pair(new Player(19, "P19"), new Player(20, "P20"), true)
+                new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
+                new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
+                new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
+                new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
+                new Pair(new Player(19, "P19"), new Player(20, "P20"), true)
         );
 
         int position = 2;
@@ -45,11 +45,11 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
 
         List<Pair> expectedPassivePairs = Arrays.asList(
-            new Pair(new Player(1, "P1"), new Player(2, "P2"), false),
-            new Pair(new Player(5, "P5"), new Player(6, "P6"), false),
-            new Pair(new Player(9, "P9"), new Player(10, "P10"), false),
-            new Pair(new Player(13, "P13"), new Player(14, "P14"), false),
-            new Pair(new Player(17, "P17"), new Player(18, "P18"), false)
+                new Pair(new Player(1, "P1"), new Player(2, "P2"), false),
+                new Pair(new Player(5, "P5"), new Player(6, "P6"), false),
+                new Pair(new Player(9, "P9"), new Player(10, "P10"), false),
+                new Pair(new Player(13, "P13"), new Player(14, "P14"), false),
+                new Pair(new Player(17, "P17"), new Player(18, "P18"), false)
         );
 
         int position = 1;
@@ -67,17 +67,17 @@ public class LadderManagerTest {
         ladderManager.addNewPair(new Pair(new Player(21, "P21"), new Player(22, "P22")));
 
         List<Pair> expectedLadder = Arrays.asList(
-            new Pair(new Player(1, "P1"), new Player(2, "P2"), false),
-            new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
-            new Pair(new Player(5, "P5"), new Player(6, "P6"), false),
-            new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
-            new Pair(new Player(9, "P9"), new Player(10, "P10"), false),
-            new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
-            new Pair(new Player(13, "P13"), new Player(14, "P14"), false),
-            new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
-            new Pair(new Player(17, "P17"), new Player(18, "P18"), false),
-            new Pair(new Player(19, "P19"), new Player(20, "P20"), true),
-            new Pair(new Player(21, "P21"), new Player(22, "P22"), true)
+                new Pair(new Player(1, "P1"), new Player(2, "P2"), false),
+                new Pair(new Player(3, "P3"), new Player(4, "P4"), true),
+                new Pair(new Player(5, "P5"), new Player(6, "P6"), false),
+                new Pair(new Player(7, "P7"), new Player(8, "P8"), true),
+                new Pair(new Player(9, "P9"), new Player(10, "P10"), false),
+                new Pair(new Player(11, "P11"), new Player(12, "P12"), true),
+                new Pair(new Player(13, "P13"), new Player(14, "P14"), false),
+                new Pair(new Player(15, "P15"), new Player(16, "P16"), true),
+                new Pair(new Player(17, "P17"), new Player(18, "P18"), false),
+                new Pair(new Player(19, "P19"), new Player(20, "P20"), true),
+                new Pair(new Player(21, "P21"), new Player(22, "P22"), true)
         );
 
         int position = 0;
@@ -160,7 +160,7 @@ public class LadderManagerTest {
     }
 
     @Test
-    public void testLogicFunctionality(){
+    public void testLogicFunctionality() {
         LadderManager manager = new LadderManager(fakeDB());
         List<Pair> activePlayers = manager.getActivePairs();
         Pair pair1 = activePlayers.get(0);
