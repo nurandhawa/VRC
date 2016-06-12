@@ -144,6 +144,26 @@ public class LadderManager {
         }
     }
 
+    private void applyAbsentPenalty(){
+        int previousTakenPosition = ladder.getLadderLength();
+        int size = passivePairs.size();
+
+        for(int i = size - 1; i >= 0; i--){
+            Pair pair = passivePairs.get(i);
+            int position = pair.getPosition();
+            int possibleShift = previousTakenPosition - position - 1;
+
+            switch(possibleShift){
+                case 0: break;
+                case 1: pair.setPosition(position + 1);
+                    break;
+                default: pair.setPosition(position + Penalty.ABSENT.getPenalty());
+            }
+
+            previousTakenPosition = pair.getPosition();
+        }
+    }
+
     public void processLadder(List<Scorecard<Pair>> scorecards) {
         /**
          * 1. swap the pairs around based on the result
@@ -152,6 +172,7 @@ public class LadderManager {
          * 4. apply all penalties that have been previously set before the method call
          **/
     //    swapBetweenGroups(scorecards);
+        //split
         mergeActivePassive();
         setAbsentPenaltyToPairs();
         applyPenalties();
