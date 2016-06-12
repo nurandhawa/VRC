@@ -159,7 +159,33 @@ public class LadderManagerTest {
         return ladder;
     }
 
+    @Test
+    public void testLogicFunctionality(){
+        LadderManager manager = new LadderManager(fakeDB());
+        List<Pair> activePlayers = manager.getActivePairs();
+        Pair pair1 = activePlayers.get(0);
+        Pair pair2 = activePlayers.get(1);
+        Pair pair3 = activePlayers.get(2);
 
+        Scorecard<Pair> scorecards = new Scorecard<>(activePlayers, null);
+        scorecards.setWin(pair3, 0);
+        scorecards.setWin(pair3, 1);
+
+        scorecards.setLose(pair2, 0);
+        scorecards.setLose(pair2, 2);
+
+        scorecards.setWin(pair1, 0);
+        scorecards.setWin(pair1, 1);
+        scorecards.setLose(pair1, 2);
+
+        List<Scorecard<Pair>> cards = new ArrayList<>();
+        cards.add(scorecards);
+
+        manager.processLadder(cards);
+        List<Pair> afterProcessing = manager.getLadder();
+
+        Assert.assertEquals(afterProcessing, processedFakeDB());
+    }
 
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
@@ -202,6 +228,44 @@ public class LadderManagerTest {
         pair = new Pair(new Player(15, "Anastasia"), new Player(16, "Victoria"), true);
         pair.setPosition(8);
         //No penalty
+        db.add(pair);
+
+        return db;
+    }
+
+    private List<Pair> processedFakeDB() {
+        List<Pair> db = new ArrayList<>();
+
+        Pair pair = new Pair(new Player(15, "Anastasia"), new Player(16, "Victoria"), false);
+        pair.setPosition(1);
+        db.add(pair);
+
+        pair = new Pair(new Player(5, "David"), new Player(6, "Bob"), false);
+        pair.setPosition(2);
+        db.add(pair);
+
+        pair = new Pair(new Player(1, "Kate"), new Player(2, "Nick"), false);
+        pair.setPosition(3);
+        db.add(pair);
+
+        pair = new Pair(new Player(3, "Jim"), new Player(4, "Ryan"), false);
+        pair.setPosition(4);
+        db.add(pair);
+
+        pair = new Pair(new Player(7, "Richard"), new Player(8, "Robin"), false);
+        pair.setPosition(5);
+        db.add(pair);
+
+        pair = new Pair(new Player(11, "Amy"), new Player(12, "Maria"), false);
+        pair.setPosition(6);
+        db.add(pair);
+
+        pair = new Pair(new Player(13, "Tony"), new Player(14, "Angelica"), false);
+        pair.setPosition(7);
+        db.add(pair);
+
+        pair = new Pair(new Player(9, "Kevin"), new Player(10, "Jasmin"), false);
+        pair.setPosition(8);
         db.add(pair);
 
         return db;

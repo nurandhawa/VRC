@@ -147,9 +147,6 @@ public class LadderManager {
     //                                           //
     //*******************************************//
 
-
-
-
     private void split() {
         List<Pair> fullLadder = ladder.getLadder();
 
@@ -242,6 +239,9 @@ public class LadderManager {
 
     private void combineActivePassive() {
         List<Pair> newLadder = new ArrayList<>();
+        for(Pair current : activePairs){
+            current.deActivate();
+        }
 
         newLadder.addAll(passivePairs);
         newLadder.addAll(activePairs);
@@ -271,8 +271,8 @@ public class LadderManager {
                     newPosition = current.getOldPosition() + penalty;
                 }
 
-                if (newPosition >= size) {
-                    newPosition = size - 1;
+                if (newPosition > size) {
+                    newPosition = size;
                 }
                 for (int i = actualPosition; i < newPosition; i++) {
                     swapPair(i - 1, i);
@@ -287,10 +287,6 @@ public class LadderManager {
             current.establishPosition();
         }
     }
-
-
-
-
 
     private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
         // This method swaps the last member of 'firstGroup' with the first member of 'secondGroup'
@@ -324,7 +320,7 @@ public class LadderManager {
                 .collect(Collectors.toList());
     }
 
-    public void swapPair(int firstIndex, int secondIndex) {
+    private void swapPair(int firstIndex, int secondIndex) {
         List<Pair> listPairs = ladder.getLadder();
 
         Pair first = listPairs.get(firstIndex);
@@ -340,7 +336,7 @@ public class LadderManager {
     }
 
 
-    //-----------------------------------------NOT USED-------------------------------------------------
+    //-----------------------------------------NOT USED FUNCTIONS-------------------------------------------------
 
     private void saveLadderToDBFile(String fileName) {
         DBManager.saveToDB(this.ladder, fileName);
