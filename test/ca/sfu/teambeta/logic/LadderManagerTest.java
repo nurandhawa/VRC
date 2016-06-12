@@ -159,27 +159,7 @@ public class LadderManagerTest {
         return ladder;
     }
 
-    @Test
-    public void testWithoutSwapping(){
-        //Comment out SwapBetweenGroups before running this test!!!
 
-        LadderManager manager = new LadderManager(fakeDB());
-        List<Pair> beforeProcessing = manager.getLadder();
-
-        for(Pair current : beforeProcessing){
-            System.out.println(current);
-        }
-        System.out.printf("%n%n%nNEW LADDER:%n%n");
-
-        List<Scorecard<Pair>> fakeScorecards = new ArrayList<>();
-        manager.processLadder(fakeScorecards);
-
-        List<Pair> afterProcessing = manager.getLadder();
-        for(Pair current : afterProcessing){
-            System.out.println(current);
-        }
-
-    }
 
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
@@ -199,9 +179,9 @@ public class LadderManagerTest {
         //No penalty
         db.add(pair);
 
-        pair = new Pair(new Player(7, "Richard"), new Player(8, "Robin"), true);
+        pair = new Pair(new Player(7, "Richard"), new Player(8, "Robin"), false);
         pair.setPosition(4);
-        //No penalty
+        pair.setPenalty(Penalty.ABSENT.getPenalty());
         db.add(pair);
 
         pair = new Pair(new Player(9, "Kevin"), new Player(10, "Jasmin"), true);
@@ -217,6 +197,11 @@ public class LadderManagerTest {
         pair = new Pair(new Player(13, "Tony"), new Player(14, "Angelica"), false);
         pair.setPosition(7);
         pair.setPenalty(Penalty.ABSENT.getPenalty());
+        db.add(pair);
+
+        pair = new Pair(new Player(15, "Anastasia"), new Player(16, "Victoria"), true);
+        pair.setPosition(8);
+        //No penalty
         db.add(pair);
 
         return db;
