@@ -60,7 +60,8 @@
             <div class="pair-name">
             <span class="label label-info position">{{ entry.position }}</span>
               {{ entry.name }}
-              <a v-on:click="changeStatus($index)" class="btn btn-raised btn-xs toggle-button" v-bind:class="entry.playingStatus">{{ entry.playingStatus.status }}</a>
+              <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
+              </component>
             </div>
           </div>
         </div>
