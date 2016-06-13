@@ -1,6 +1,6 @@
 "use strict";
 
-var ladder = [
+var ladderData = [
   {
     position: 1,
     name: "Alex Land and David Li",
@@ -35,43 +35,9 @@ var ladder = [
   }
 ];
 
-var changeStatus = function(index) {
-  if (this.ladder[index].playingStatus.status === "Playing") {
-    this.ladder[index].playingStatus = {
-      status: "Not Playing",
-      'btn-danger': true
-    };
-  }
-  else {
-    this.ladder[index].playingStatus = {
-      status: "Playing",
-      'btn-success': true
-    };
-  }
+var editFunction = function() {
+    console.log("onCLick");
 };
 
-var headerComponent = new Vue({
-  el: '#header',
-  data: {
-    title: 'Ladder',
-    timestamp: function() {
-      // TODO: Use timestamp of when ladder was last modified on the server
-      var currentdate = new Date();
-      return currentdate.toDateString() + " at " + currentdate.toTimeString();
-    }()
-  }
-});
-
-var ladderComponent = new Vue({
-  el: '#ladder',
-  data: {
-    ladder: ladder
-  },
-  methods: {
-    changeStatus: changeStatus
-  }
-});
-
-function test() {
-  console.log("boo");
-}
+var header = new Header("Ladder", "Edit Ladder", editFunction);
+var ladder = new Ladder(ladderData);
