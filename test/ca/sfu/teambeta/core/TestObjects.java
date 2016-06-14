@@ -116,7 +116,7 @@ public class TestObjects {
         System.out.println("\nPlayers: (ID & Name)");
 
         for (Player player : this.players) {
-            System.out.println("" + player.getPlayerID() + " : " + player.getName());
+            System.out.println("" + player.getId() + " : " + player.getName());
         }
     }
 

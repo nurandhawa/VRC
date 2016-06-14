@@ -1,23 +1,68 @@
 package ca.sfu.teambeta.core;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-public class Player {
-    private int playerID;
-    private String name;
 
-    public Player(int id, String name) {
-        this.playerID = id;
-        this.name = name;
+@Entity
+@Table(name="Player")
+public class Player {
+    @GeneratedValue(generator="increment", strategy = GenerationType.IDENTITY)
+    private int id;
+
+    public Player() {
     }
 
-    public int getPlayerID() {
-        return playerID;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private String fname;
+    private String lname;
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    private String phoneNumber;
+
+    public Player(int id, String fname, String lname) {
+        this.id = id;
+        this.fname = fname;
+        this.lname = lname;
+    }
+
+    public Player(int id, String fname) {
+        this.id = id;
+        this.fname = fname;
+    }
+
+    public Player(String fname, String lname, String phoneNumber) {
+        this.fname = fname;
+        this.lname = lname;
+        this.phoneNumber = phoneNumber;
+    }
+
+    @javax.persistence.Id
+    public int getId() {
+        return id;
     }
 
     public String getName() {
-        return name;
+        return fname;
+    }
+
+    public void setName(String name) {
+        fname = name;
     }
 
     @Override
@@ -30,12 +75,12 @@ public class Player {
         }
 
         Player player = (Player) o;
-        return playerID == player.playerID;
+        return id == player.id;
     }
 
     @Override
-    // Once we get a database setup, the playerID attribute will be guaranteed unique
+    // Once we get a database setup, the id attribute will be guaranteed unique
     public int hashCode() {
-        return name.hashCode();
+        return fname.hashCode();
     }
 }

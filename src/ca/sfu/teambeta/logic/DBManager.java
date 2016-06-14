@@ -1,99 +1,124 @@
 package ca.sfu.teambeta.logic;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 
 /**
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
-    private static final String DEFAULT_FILENAME = "ladder.csv";
-    private static final int PLAYERID_INDEX = 0;
-    private static final int PLAYERNAME_INDEX = 1;
-    private static String OVERRIDDEN_FILENAME = null;
+    private static SessionFactory factory;
 
-    /**
-     * Saves values to the database.
-     *
-     * Schema: PlayerID, Player Name
-     *
-     * @param ladder: A Ladder object
-     */
-    public static void saveToDB(Ladder ladder) {
-        List<String[]> values = new ArrayList<>();
-
-        for (Pair pair : ladder.getLadder()) {
-            List<Player> players = pair.getPlayers();
-            for (Player player : players) {
-                String[] playerData = {String.valueOf(player.getPlayerID()), player.getName()};
-                values.add(playerData);
-            }
+    public static void main(String[] args) {
+        try {
+            factory = new Configuration().configure().buildSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Failed to create sessionFactory object." + ex);
+            throw new ExceptionInInitializerError(ex);
         }
+        DBManager ME = new DBManager();
 
-        String filename = OVERRIDDEN_FILENAME != null ? OVERRIDDEN_FILENAME : DEFAULT_FILENAME;
-        try (CSVWriter writer = new CSVWriter(new FileWriter(filename))) {
-            for (String[] nextLine : values) {
-                writer.writeNext(nextLine);
-            }
-        } catch (IOException e) {
+      /* Add few employee records in database */
+        Integer empID1 = ME.addPlayer("Zara", "Ali", 1000);
+        Integer empID2 = ME.addPlayer("Daisy", "Das", 5000);
+//        Integer empID3 = ME.addPlayer("John", "Paul", 10000);
+//
+//      /* List down all the employees */
+//        ME.listPlayers();
+//
+//      /* Update employee's records */
+//        ME.updatePlayer(empID1, "12345678");
+//
+//      /* Delete an employee from the database */
+//        ME.deletePlayer(empID2);
+
+      /* List down new list of the employees */
+        ME.listPlayers();
+    }
+
+    /* Method to CREATE an employee in the database */
+    public Integer addPlayer(String fname, String lname, int salary) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        Integer employeeID = null;
+        try {
+            tx = session.beginTransaction();
+            Player employee = new Player(fname, lname, "1234");
+            employeeID = (Integer) session.save(employee);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
             e.printStackTrace();
+        } finally {
+            session.close();
         }
+        return employeeID;
     }
 
-    public static void saveToDB(Ladder ladder, String filename) {
-        OVERRIDDEN_FILENAME = filename;
-        saveToDB(ladder);
-        OVERRIDDEN_FILENAME = null;
-    }
-
-    /**
-     * Loads values from the database.
-     *
-     * @return Ladder
-     */
-    public static Ladder loadFromDB() {
-        String filename = OVERRIDDEN_FILENAME != null ? OVERRIDDEN_FILENAME : DEFAULT_FILENAME;
-        try (CSVReader reader = new CSVReader(new FileReader(filename))) {
-            List<String[]> ladderEntries = reader.readAll();
-            List<Pair> pairs = new ArrayList<>();
-
-            Iterator<String[]> ladderIter = ladderEntries.iterator();
-            while (ladderIter.hasNext()) {
-                String[] player1Data = ladderIter.next();
-                String[] player2Data = ladderIter.next();
-                Player player1 = new Player(
-                        Integer.parseInt(player1Data[PLAYERID_INDEX]),
-                        player1Data[PLAYERNAME_INDEX]
-                );
-                Player player2 = new Player(
-                        Integer.parseInt(player2Data[PLAYERID_INDEX]),
-                        player2Data[PLAYERNAME_INDEX]
-                );
-                Pair pair = new Pair(player1, player2);
-                pairs.add(pair);
+    /* Method to  READ all the employees */
+    public void listPlayers() {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            List employees = session.createQuery("FROM Player").list();
+            for (Iterator iterator =
+                 employees.iterator(); iterator.hasNext(); ) {
+                Player employee = (Player) iterator.next();
+                System.out.print("First Name: " + employee.getName());
             }
-
-            return new Ladder(pairs);
-        } catch (IOException e) {
-            return new Ladder(new ArrayList<>());
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
         }
     }
 
-    public static Ladder loadFromDB(String filename) {
-        OVERRIDDEN_FILENAME = filename;
-        Ladder ladder = loadFromDB();
-        OVERRIDDEN_FILENAME = null;
-        return ladder;
+    /* Method to UPDATE salary for an employee */
+    public void updatePlayer(Integer PlayerID, String phNum) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            Player employee =
+                    (Player) session.get(Player.class, PlayerID);
+            employee.setPhoneNumber(phNum);
+            session.update(employee);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
     }
+
+    /* Method to DELETE an employee from the records */
+    public void deletePlayer(Integer PlayerID) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            Player employee =
+                    (Player) session.get(Player.class, PlayerID);
+            session.delete(employee);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+    }
+
 }
