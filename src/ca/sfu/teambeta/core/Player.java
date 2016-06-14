@@ -1,8 +1,10 @@
 package ca.sfu.teambeta.core;
 
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
@@ -12,8 +14,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="Player")
 public class Player {
-    @GeneratedValue(generator="increment", strategy = GenerationType.IDENTITY)
-    private int id;
+    @Id
+    @GeneratedValue
+    private Integer id = null;
 
     public Player() {
     }
@@ -22,6 +25,7 @@ public class Player {
         this.id = id;
     }
 
+    @Column(name = "name")
     private String fname;
     private String lname;
 
@@ -52,7 +56,6 @@ public class Player {
         this.phoneNumber = phoneNumber;
     }
 
-    @javax.persistence.Id
     public int getId() {
         return id;
     }
