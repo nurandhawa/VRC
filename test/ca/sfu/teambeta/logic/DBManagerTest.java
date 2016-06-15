@@ -1,4 +1,4 @@
-package test.ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.logic;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -14,7 +14,6 @@ import java.util.List;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.logic.DBManager;
 
 /**
  * Created by AlexLand on 2016-05-31.
@@ -41,8 +40,8 @@ public class DBManagerTest {
         Ladder referenceLadder = makeTestLadder();
         Ladder savedLadder = DBManager.loadFromDB("test/ca/sfu/teambeta/logic/referenceladder.csv");
 
-        List<Pair> referencePairs = referenceLadder.getLadder();
-        List<Pair> savedPairs = savedLadder.getLadder();
+        List<Pair> referencePairs = referenceLadder.getPairs();
+        List<Pair> savedPairs = savedLadder.getPairs();
         Assert.assertEquals(referencePairs.size(), savedPairs.size());
 
         for (int i = 0; i < referencePairs.size(); i++) {

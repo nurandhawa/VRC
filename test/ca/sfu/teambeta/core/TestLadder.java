@@ -37,44 +37,44 @@ public class TestLadder {
         Assert.assertEquals(testLadder.getLadderLength(), 4);
 
         System.out.println();
-        for (Pair iterPair : testLadder.getLadder()) {
+        for (Pair iterPair : testLadder.getPairs()) {
             System.out.println(iterPair.toString());
         }
         System.out.println();
         System.out.println("Testing Remove:");
 
         System.out.println("Removing pair at index 0 (position 1)");
-        Pair pairToRemove = testLadder.getLadder().get(0);
-        thisPair = testLadder.getLadder().get(1);
+        Pair pairToRemove = testLadder.getPairs().get(0);
+        thisPair = testLadder.getPairs().get(1);
         testLadder.removePair(pairToRemove);
-        Assert.assertEquals(thisPair, testLadder.getLadder().get(0));
+        Assert.assertEquals(thisPair, testLadder.getPairs().get(0));
         Assert.assertEquals(testLadder.getLadderLength(), 3);
 
-        for (Pair iterPair : testLadder.getLadder()) {
+        for (Pair iterPair : testLadder.getPairs()) {
             System.out.println(iterPair.toString());
         }
         System.out.println();
 
         System.out.println("Removing pair at index 1 (position 2)");
-        pairToRemove = testLadder.getLadder().get(1);
-        thisPair = testLadder.getLadder().get(2);
+        pairToRemove = testLadder.getPairs().get(1);
+        thisPair = testLadder.getPairs().get(2);
         testLadder.removePair(pairToRemove);
-        Assert.assertEquals(thisPair, testLadder.getLadder().get(1));
+        Assert.assertEquals(thisPair, testLadder.getPairs().get(1));
         Assert.assertEquals(testLadder.getLadderLength(), 2);
 
-        for (Pair iterPair : testLadder.getLadder()) {
+        for (Pair iterPair : testLadder.getPairs()) {
             System.out.println(iterPair.toString());
         }
         System.out.println();
 
         System.out.println("Removing pair at index 0 (position 1)");
-        pairToRemove = testLadder.getLadder().get(0);
-        thisPair = testLadder.getLadder().get(1);
+        pairToRemove = testLadder.getPairs().get(0);
+        thisPair = testLadder.getPairs().get(1);
         testLadder.removePair(pairToRemove);
-        Assert.assertEquals(thisPair, testLadder.getLadder().get(0));
+        Assert.assertEquals(thisPair, testLadder.getPairs().get(0));
         Assert.assertEquals(testLadder.getLadderLength(), 1);
 
-        for (Pair iterPair : testLadder.getLadder()) {
+        for (Pair iterPair : testLadder.getPairs()) {
             System.out.println(iterPair.toString());
         }
         System.out.println();

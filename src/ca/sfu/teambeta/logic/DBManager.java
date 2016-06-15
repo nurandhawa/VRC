@@ -6,9 +6,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 
@@ -30,7 +32,14 @@ public class DBManager {
       /* Add few employee records in database */
         Integer empID1 = ME.addPlayer("Zara", "Ali", 1000);
         Integer empID2 = ME.addPlayer("Daisy", "Das", 5000);
-        ME.addPair(empID1, empID2);
+        Integer empID3 = ME.addPlayer("Daisy", "Dass", 5000);
+        Pair p1 = ME.addPair(empID1, empID2);
+        Pair p2 = ME.addPair(empID1, empID3);
+        Pair p3 = ME.addPair(empID2, empID3);
+
+        ME.addLadder(Arrays.asList(p1, p2, p3));
+        ME.addLadder(Arrays.asList(p3, p1, p2));
+
 //        Integer empID3 = ME.addPlayer("John", "Paul", 10000);
 //
 //      /* List down all the employees */
@@ -46,16 +55,16 @@ public class DBManager {
         ME.listPlayers();
     }
 
-    public Integer addPair(int id1, int id2) {
+    public Pair addPair(int id1, int id2) {
         Session session = factory.openSession();
         Transaction tx = null;
-        Integer pairID = null;
+        Pair pair = null;
         try {
             tx = session.beginTransaction();
             Player p1 = session.load(Player.class, id1);
             Player p2 = session.load(Player.class, id2);
-            Pair pair = new Pair(p1, p2);
-            pairID = (Integer) session.save(pair);
+            pair = new Pair(p1, p2);
+            session.save(pair);
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
@@ -63,7 +72,7 @@ public class DBManager {
         } finally {
             session.close();
         }
-        return pairID;
+        return pair;
     }
 
     /* Method to CREATE an employee in the database */
@@ -75,6 +84,24 @@ public class DBManager {
             tx = session.beginTransaction();
             Player employee = new Player(fname, lname, "1234");
             employeeID = (Integer) session.save(employee);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        } finally {
+            session.close();
+        }
+        return employeeID;
+    }
+
+    public Integer addLadder(List<Pair> ladder) {
+        Session session = factory.openSession();
+        Transaction tx = null;
+        Integer employeeID = null;
+        try {
+            tx = session.beginTransaction();
+            Ladder l = new Ladder(ladder);
+            employeeID = (Integer) session.save(l);
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
