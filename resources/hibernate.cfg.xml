@@ -7,9 +7,10 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
         <property name="connection.driver_class">org.h2.Driver</property>
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
-        <property name="connection.url">jdbc:h2:file:C:/code/prj/resources/database.db</property>
+        <property name="connection.url">jdbc:h2:file:/home/freeman/prj/resources/database.db</property>
         <property name="connection.autocommit">true</property>
         <mapping class = "ca.sfu.teambeta.core.Player" />
+        <mapping class = "ca.sfu.teambeta.core.Pair" />
     </session-factory>
 
 </hibernate-configuration>
