@@ -1,5 +1,8 @@
 package ca.sfu.teambeta.core;
 
+import org.hibernate.annotations.Type;
+
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -8,7 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
+import javax.persistence.Transient;
 
 /**
  * Ladder ranking object. Contains a List of pairs to indicate the ranking of each pair
@@ -18,13 +22,20 @@ public class Ladder {
     //used for shiftPositions
     private static final int SHIFT_LEFT = 1;
     private static final int SHIFT_RIGHT = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @ManyToMany()
-    @Column(name = "pair_id")
-    @OrderBy("uuidColumn")
+
+    @ManyToMany
+    @OrderColumn
     private List<Pair> pairs;
+
+    @Column(name = "date_created")
+    @Type(type = "timestamp")
+    private Date dateCreated;
+
+    @Transient
     private int numPairs;
 
     public Ladder() {
