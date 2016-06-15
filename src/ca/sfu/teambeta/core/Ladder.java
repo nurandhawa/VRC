@@ -3,7 +3,7 @@ package ca.sfu.teambeta.core;
 import java.util.List;
 
 /**
- * Created by Gordon Shieh on 25/05/16.
+ * Ladder ranking object. Contains a List of pairs to indicate the ranking of each pair
  */
 public class Ladder {
     //used for shiftPositions
@@ -11,17 +11,9 @@ public class Ladder {
     private static final int SHIFT_RIGHT = 2;
 
     private List<Pair> ladder;
-    private int numPairs;
-
-    public Ladder() {
-        //passive
-        //members
-        //passivePairs from the DB
-    }
 
     public Ladder(List<Pair> ladder) {
         this.ladder = ladder;
-        this.numPairs = ladder.size();
     }
 
     //returns false if pair was not found
@@ -30,31 +22,12 @@ public class Ladder {
         if (index != -1) { //pair was found
             ladder.remove(index);
             shiftPositions(SHIFT_LEFT, index);
-            numPairs--;
         } else {
             return false;
         }
         return true;
     }
 
-    /* omitted unless there is a need for function overload
-    public void removePair(Player firstPlayer, Player secondPlayer){
-        boolean removed = false;
-        for (Pair current : passivePairs){
-            if (current.hasPlayer(firstPlayer, secondPlayer)){
-                int iPair = current.getPosition();
-                passivePairs.remove(iPair);
-                members--;
-                removed = true;
-            }
-            if (removed){ //Process following pairs by moving them up
-                int position = current.getPosition();
-                current.setPosition(position - 1);
-            }
-        }
-    }
-    */
-    //for use in add, remove methods. Shifts the position field of every pair starting at index.
     private void shiftPositions(int direction, int index) {
         if (direction == SHIFT_LEFT) {
             for (int i = index; i < ladder.size(); i++) {
@@ -73,13 +46,11 @@ public class Ladder {
         ladder.add(index, pair);
         ladder.get(index).setPosition(index + 1);
         shiftPositions(SHIFT_RIGHT, index + 1);
-        numPairs++;
     }
 
     public void insertAtEnd(Pair pair) {
         ladder.add(pair);
-        ladder.get(numPairs).setPosition(numPairs + 1);
-        numPairs++;
+        ladder.get(ladder.size() - 1).setPosition(ladder.size());
     }
 
     public List<Pair> getLadder() {
@@ -95,7 +66,7 @@ public class Ladder {
     }
 
     public int getLadderLength() {
-        return numPairs;
+        return ladder.size();
     }
 /* omitted but keeping in case we ever need it
     public void dumpLadder() {
