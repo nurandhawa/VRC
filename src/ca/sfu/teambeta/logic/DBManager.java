@@ -6,10 +6,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
@@ -18,7 +14,11 @@ import ca.sfu.teambeta.core.Player;
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
-    private static SessionFactory factory;
+    private SessionFactory factory;
+
+    DBManager(SessionFactory factory) {
+        this.factory = factory;
+    }
 
     private static Configuration getDefaultConfiguration() {
         Configuration config = new Configuration();
@@ -30,58 +30,50 @@ public class DBManager {
 
     public static SessionFactory getTestingSession() {
         Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
         config.setProperty("hibernate.connection.url", "jdbc:h2:file:/home/freeman/prj/resources/database.db");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
         return config.buildSessionFactory();
     }
 
+    public static SessionFactory getHSQLSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.connection.username", "");
+        config.setProperty("hibernate.connection.password", "");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:hsqldb:file:/home/freeman/prj/resources/database/test");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
+        return config.buildSessionFactory();
+    }
+
+    public static SessionFactory getMySQLSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
+        config.setProperty("hibernate.connection.username", "sql3124016");
+        config.setProperty("hibernate.connection.password", "kTZ23wYIQq");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql3124016");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        return config.buildSessionFactory();
+    }
+
     public static void main(String[] args) {
-        factory = getTestingSession();
-        try {
-
-        } catch (Throwable ex) {
-            System.err.println("Failed to create sessionFactory object." + ex);
-            throw new ExceptionInInitializerError(ex);
-        }
-        DBManager ME = new DBManager();
-
-      /* Add few employee records in database */
-        Integer empID1 = ME.addPlayer("Zara", "Ali", 1000);
-        Integer empID2 = ME.addPlayer("Daisy", "Das", 5000);
-        Integer empID3 = ME.addPlayer("Daisy", "Dass", 5000);
-        Pair p1 = ME.addPair(empID1, empID2);
-        Pair p2 = ME.addPair(empID1, empID3);
-        Pair p3 = ME.addPair(empID2, empID3);
-
-        ME.addLadder(Arrays.asList(p1, p2, p3));
-        ME.addLadder(Arrays.asList(p3, p1, p2));
-
-//        Integer empID3 = ME.addPlayer("John", "Paul", 10000);
-//
-//      /* List down all the employees */
-//        ME.listPlayers();
-//
-//      /* Update employee's records */
-//        ME.updatePlayer(empID1, "12345678");
-//
-//      /* Delete an employee from the database */
-//        ME.deletePlayer(empID2);
-
-      /* List down new list of the employees */
-        ME.listPlayers();
+        SessionFactory factory = getTestingSession();
+        DBManager dbMan = new DBManager(factory);
+        dbMan.addPlayer(new Player("Bobby", "Chan", ""));
     }
 
-    public Pair addPair(int id1, int id2) {
+    public int addPair(Pair pair) {
         Session session = factory.openSession();
         Transaction tx = null;
-        Pair pair = null;
+        int key = 0;
         try {
             tx = session.beginTransaction();
-            Player p1 = session.load(Player.class, id1);
-            Player p2 = session.load(Player.class, id2);
-            pair = new Pair(p1, p2);
-            session.save(pair);
+            key = (int) session.save(pair);
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
@@ -89,18 +81,16 @@ public class DBManager {
         } finally {
             session.close();
         }
-        return pair;
+        return key;
     }
 
-    /* Method to CREATE an employee in the database */
-    public Integer addPlayer(String fname, String lname, int salary) {
+    public int addPlayer(Player player) {
         Session session = factory.openSession();
         Transaction tx = null;
-        Integer employeeID = null;
+        int key = 0;
         try {
             tx = session.beginTransaction();
-            Player employee = new Player(fname, lname, "1234");
-            employeeID = (Integer) session.save(employee);
+            key = (int) session.save(player);
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
@@ -108,83 +98,6 @@ public class DBManager {
         } finally {
             session.close();
         }
-        return employeeID;
+        return key;
     }
-
-    public Integer addLadder(List<Pair> ladder) {
-        Session session = factory.openSession();
-        Transaction tx = null;
-        Integer employeeID = null;
-        try {
-            tx = session.beginTransaction();
-            Ladder l = new Ladder(ladder);
-            employeeID = (Integer) session.save(l);
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-        return employeeID;
-    }
-
-    /* Method to  READ all the employees */
-    public void listPlayers() {
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            List employees = session.createQuery("FROM Player").list();
-            for (Iterator iterator =
-                 employees.iterator(); iterator.hasNext(); ) {
-                Player employee = (Player) iterator.next();
-                System.out.print("First Name: " + employee.getId());
-            }
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-    }
-
-    /* Method to UPDATE salary for an employee */
-    public void updatePlayer(Integer PlayerID, String phNum) {
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            Player employee =
-                    (Player) session.get(Player.class, PlayerID);
-            employee.setPhoneNumber(phNum);
-            session.update(employee);
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-    }
-
-    /* Method to DELETE an employee from the records */
-    public void deletePlayer(Integer PlayerID) {
-        Session session = factory.openSession();
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            Player employee =
-                    (Player) session.get(Player.class, PlayerID);
-            session.delete(employee);
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-    }
-
 }
