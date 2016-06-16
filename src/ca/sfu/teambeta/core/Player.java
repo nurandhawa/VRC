@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.core;
 
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,36 +9,52 @@ import javax.persistence.Id;
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-
 @Entity(name="Player")
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id = null;
-    @Column(name = "name")
-    private String fname;
-    private String lname;
+    private int id;
+
+    private String firstName;
+    private String lastName;
     private String phoneNumber;
 
     public Player() {
     }
 
-    public Player(int id, String fname, String lname) {
+    public Player(int id, String firstName, String lastName) {
         this.id = id;
-        this.fname = fname;
-        this.lname = lname;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    public Player(int id, String fname) {
+    public Player(int id, String firstName) {
         this.id = id;
-        this.fname = fname;
+        this.firstName = firstName;
     }
 
-    public Player(String fname, String lname, String phoneNumber) {
-        this.fname = fname;
-        this.lname = lname;
+    public Player(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.phoneNumber = phoneNumber;
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -51,14 +66,6 @@ public class Player {
 
     public int getId() {
         return id;
-    }
-
-    public String getName() {
-        return fname;
-    }
-
-    public void setName(String name) {
-        fname = name;
     }
 
     @Override
@@ -77,6 +84,6 @@ public class Player {
     @Override
     // Once we get a database setup, the id attribute will be guaranteed unique
     public int hashCode() {
-        return fname.hashCode();
+        return firstName.hashCode();
     }
 }

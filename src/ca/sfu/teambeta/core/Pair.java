@@ -28,7 +28,7 @@ import javax.persistence.Transient;
 public class Pair {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Player> team = new ArrayList<>();
@@ -144,8 +144,8 @@ public class Pair {
     }
 
     public String toString() {
-        return getPlayers().get(0).getName()
-                + " & " + getPlayers().get(1).getName()
+        return getPlayers().get(0).getFirstName()
+                + " & " + getPlayers().get(1).getFirstName()
                 + "  Playing? " + isPlaying;
     }
 }
