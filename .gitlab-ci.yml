@@ -19,5 +19,5 @@ jshint:
   script:
     - cd web
     - npm install
-    - grunt
+    - grunt jshint
   stage: jshint
