@@ -20,9 +20,26 @@ import ca.sfu.teambeta.core.Player;
 public class DBManager {
     private static SessionFactory factory;
 
+    private static Configuration getDefaultConfiguration() {
+        Configuration config = new Configuration();
+        config.addAnnotatedClass(Player.class);
+        config.addAnnotatedClass(Pair.class);
+        config.addAnnotatedClass(Ladder.class);
+        return config;
+    }
+
+    public static SessionFactory getTestingSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.connection.url", "jdbc:h2:file:/home/freeman/prj/resources/database.db");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
+        return config.buildSessionFactory();
+    }
+
     public static void main(String[] args) {
+        factory = getTestingSession();
         try {
-            factory = new Configuration().configure().buildSessionFactory();
+
         } catch (Throwable ex) {
             System.err.println("Failed to create sessionFactory object." + ex);
             throw new ExceptionInInitializerError(ex);

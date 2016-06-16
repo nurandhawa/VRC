@@ -39,13 +39,10 @@ public class Ladder {
     private int numPairs;
 
     public Ladder() {
-        //passive
-        //members
-        //passivePairs from the DB
     }
 
     public Ladder(List<Pair> ladder) {
-        this.ladder = ladder;
+        this.pairs = ladder;
     }
 
     //returns false if pair was not found
@@ -81,8 +78,8 @@ public class Ladder {
     }
 
     public void insertAtEnd(Pair pair) {
-        ladder.add(pair);
-        ladder.get(ladder.size() - 1).setPosition(ladder.size());
+        pairs.add(pair);
+        pairs.get(pairs.size() - 1).setPosition(pairs.size());
     }
 
     public List<Pair> getPairs() {
@@ -98,7 +95,7 @@ public class Ladder {
     }
 
     public int getLadderLength() {
-        return ladder.size();
+        return pairs.size();
     }
 /* omitted but keeping in case we ever need it
     public void dumpLadder() {
