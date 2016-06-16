@@ -1,5 +1,7 @@
 "use strict";
 
+$.material.init();
+
 var ladderData = [
     {
         position: 1,
@@ -23,9 +25,10 @@ var ladderData = [
     }
 ];
 
+var ladder = new Ladder(ladderData);
+
 var editFunction = function() {
-    console.log("onCLick");
+    ladder.changeMode.call(ladder.component);
 };
 
 var header = new Header("Ladder", "Edit Ladder", editFunction);
-var ladder = new Ladder(ladderData);

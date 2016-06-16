@@ -4,6 +4,8 @@ var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus($index)"' +
 'class="btn btn-raised btn-xs toggle-button ';
 var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
+var EDIT_BUTTON_HTML = '<a v-on:click="editPair($index)" class="btn btn-default btn-fab btn-fab-mini toggle-button">';
+
 var Ladder = (function() {
     function Ladder(ladderData) {
 
@@ -38,17 +40,31 @@ var Ladder = (function() {
         });
         Vue.component('not-playing-button', notPlayingButton);
 
+        var editButton = Vue.extend({
+            props: ['index'],
+            template: EDIT_BUTTON_HTML,
+            methods: {
+                editPair: function() {
+                    console.log("Edit pair " + this.index);
+                }
+            }
+        });
+        Vue.component('edit-button', editButton);
+
         this.component = new Vue({
             el: '#ladder',
             data: {
-                ladder: ladderData
+                ladder: ladderData,
+                mode: 'read'
             },
             components: {
                 playing: playingButton,
-                notplaying: notPlayingButton
+                notplaying: notPlayingButton,
+                edit: editButton
             },
             methods: {
-                changeStatus: this.changeStatus
+                changeStatus: this.changeStatus,
+                changeMode: this.changeMode
             }
         });
     };
@@ -61,6 +77,22 @@ var Ladder = (function() {
             this.ladder[index].playingStatus = "playing";
         }
     };
+
+    Ladder.prototype.changeMode = function() {
+        if (this.mode === 'read') {
+            this.mode = 'edit';
+            this.ladder.forEach(function(entry) {
+                entry.playingStatus = 'edit';
+            });
+        }
+        else {
+            this.mode = 'read';
+            this.ladder.forEach(function(entry) {
+                // TODO: set status to previous state
+                entry.playingStatus = 'playing';
+            });
+        }
+    }
 
     return Ladder;
 })();
