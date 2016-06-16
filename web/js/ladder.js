@@ -67,7 +67,7 @@ var Ladder = (function() {
                 changeMode: this.changeMode
             }
         });
-    };
+    }
 
     Ladder.prototype.changeStatus = function(index) {
         if (this.ladder[index].playingStatus === "playing") {
@@ -92,7 +92,7 @@ var Ladder = (function() {
                 entry.playingStatus = 'playing';
             });
         }
-    }
+    };
 
     return Ladder;
 })();

@@ -13,7 +13,7 @@ var Header = (function() {
                 onClick: editOnClick
             }
         });
-    };
+    }
 
     Header.prototype.getTime = function() {
         // TODO: Use timestamp of when ladder was last modified on the server
