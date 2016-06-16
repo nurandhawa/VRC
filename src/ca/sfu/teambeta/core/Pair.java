@@ -13,9 +13,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
@@ -25,10 +22,7 @@ import javax.persistence.Transient;
  */
 @Entity(name="Pair")
 @Embeddable
-public class Pair {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+public class Pair extends Persistable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Player> team = new ArrayList<>();
@@ -47,7 +41,6 @@ public class Pair {
     private boolean isPlaying;
 
     public Pair() {
-
     }
 
     public Pair(Player firstPlayer, Player secondPlayer) {

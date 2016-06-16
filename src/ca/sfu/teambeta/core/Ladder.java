@@ -7,9 +7,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 
@@ -17,14 +14,10 @@ import javax.persistence.OrderColumn;
  * Ladder ranking object. Contains a List of pairs to indicate the ranking of each pair
  */
 @Entity(name = "Ladder")
-public class Ladder {
+public class Ladder extends Persistable {
     //used for shiftPositions
     private static final int SHIFT_LEFT = 1;
     private static final int SHIFT_RIGHT = 2;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
     @Column(name = "date_created")
     @Type(type = "timestamp")
@@ -92,5 +85,24 @@ public class Ladder {
 
     public int getLadderLength() {
         return pairs.size();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Ladder ladder = (Ladder) o;
+
+        return pairs.equals(ladder.pairs);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + pairs.hashCode();
+        return result;
     }
 }

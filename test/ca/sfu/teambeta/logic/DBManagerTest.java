@@ -48,10 +48,10 @@ public class DBManagerTest {
             List<Player> referencePlayers = referencePairs.get(i).getPlayers();
             List<Player> savedPlayers = savedPairs.get(i).getPlayers();
 
-            Assert.assertEquals(referencePlayers.get(0).getId(), savedPlayers.get(0).getId());
+            Assert.assertEquals(referencePlayers.get(0).getID(), savedPlayers.get(0).getID());
             Assert.assertEquals(referencePlayers.get(0).getName(), savedPlayers.get(0).getName());
 
-            Assert.assertEquals(referencePlayers.get(1).getId(), savedPlayers.get(1).getId());
+            Assert.assertEquals(referencePlayers.get(1).getID(), savedPlayers.get(1).getID());
             Assert.assertEquals(referencePlayers.get(1).getName(), savedPlayers.get(1).getName());
         }
 
