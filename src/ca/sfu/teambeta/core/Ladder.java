@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
-import javax.persistence.Transient;
 
 /**
  * Ladder ranking object. Contains a List of pairs to indicate the ranking of each pair
@@ -27,16 +26,13 @@ public class Ladder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToMany
-    @OrderColumn
-    private List<Pair> pairs;
-
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;
 
-    @Transient
-    private int numPairs;
+    @ManyToMany
+    @OrderColumn
+    private List<Pair> pairs;
 
     public Ladder() {
     }
@@ -97,10 +93,4 @@ public class Ladder {
     public int getLadderLength() {
         return pairs.size();
     }
-/* omitted but keeping in case we ever need it
-    public void dumpLadder() {
-        for(Pair pair : passivePairs) {
-            System.out.println(pair);
-        }
-    } */
 }
