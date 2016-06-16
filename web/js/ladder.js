@@ -1,12 +1,12 @@
-"use strict";
-
-var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus($index)"' +
-'class="btn btn-raised btn-xs toggle-button ';
-var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
-
-var EDIT_BUTTON_HTML = '<a v-on:click="editPair($index)" class="btn btn-default btn-fab btn-fab-mini toggle-button">';
-
 var Ladder = (function() {
+    "use strict";
+
+    var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus($index)"' +
+    'class="btn btn-raised btn-xs toggle-button ';
+    var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
+
+    var EDIT_BUTTON_HTML = '<a v-on:click="editPair($index)" class="btn btn-default btn-fab btn-fab-mini toggle-button">';
+
     function Ladder(ladderData) {
 
         var playingButton;

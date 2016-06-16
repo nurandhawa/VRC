@@ -1,6 +1,6 @@
-"use strict";
-
 var Header = (function() {
+    "use strict";
+
     function Header(titleText, buttonText, editOnClick) {
         this.component = new Vue({
             el: '#header',
