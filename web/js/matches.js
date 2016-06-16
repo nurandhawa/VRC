@@ -52,5 +52,3 @@ var Matches = (function() {
     };
     return Matches;
 })();
-
-
