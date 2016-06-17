@@ -16,12 +16,12 @@ public class AppController {
 
         //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
-        get("/index", (request, response) -> {
+        get("/api/index", (request, response) -> {
             return ladderManager.getLadder();
         });
 
         //updates a pair's playing status
-        put("/index", (request, response) -> {
+        put("/api/index", (request, response) -> {
             //id to identify a pair
             request.queryParams("id");
             if(request.queryParams("playingStatus") == "playing"){
@@ -35,42 +35,42 @@ public class AppController {
         });
 
         //add pair to ladder
-        post("/index/add", (request, response) -> {
+        post("/api/index/add", (request, response) -> {
             //call addNewPair
             return "Adding player";
         });
 
         //remove player from ladder
-        delete("/index/remove", (request, response) -> {
+        delete("/api/index/remove", (request, response) -> {
             request.queryParams("id");
             return "Remove player from ladder";
         });
 
         //update a pair's position in the ladder
-        put("/index/position", (request, response) -> {
+        put("/api/index/position", (request, response) -> {
             return "Update Position";
         });
 
         //add a penalty to a pair
-        post("/index/penalty", (request, response) -> {
+        post("/api/index/penalty", (request, response) -> {
             request.queryParams("id");
             request.queryParams("penIndex");
             return "Add penalty";
         });
 
         //Show a list of matches
-        get("/matches", (request, response) -> {
+        get("/api/matches", (request, response) -> {
             return gameManager.getScorecards();
         });
 
         //Input match results
-        post("/matches/input", (request, response) -> {
+        post("/api/matches/input", (request, response) -> {
             //call input results passing array
             return "Input Results";
         });
 
         //Remove a pair from a match
-        delete("/matches/remove", (request, response) -> {
+        delete("/api/matches/remove", (request, response) -> {
             request.queryParams("matchIndex");
             request.queryParams("id");
             return "Hello, We are the matches";
