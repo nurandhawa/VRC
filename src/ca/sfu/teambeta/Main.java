@@ -1,21 +1,19 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.logic.GameManager;
+import ca.sfu.teambeta.logic.LadderManager;
+
 import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.staticFiles;
 
 public class Main {
     public static void main(String[] args) {
-        port(8000);
-        staticFiles.location(".");
 
-        get("/ladder", (request, response) -> {
-            return "Hello, I am Ladder";
-        });
+        LadderManager ladderManager;
+        GameManager gameManager;
 
-        get("/matches", (request, response) -> {
-            return "Hello, We are the matches";
-        });
-        
+        AppController appController = new AppController(ladderManager,gameManager);
+
     }
 }
