@@ -95,7 +95,7 @@
     ladderData.pairs.forEach(function(pair) {
       pair.teamName = pair.team[0].firstName + " and " + pair.team[1].firstName;
       pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
-    })
+    });
 
 
     var ladder = new Ladder(ladderData.pairs);
