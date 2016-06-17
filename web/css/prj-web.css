@@ -53,6 +53,11 @@
   margin: 0;
 }
 
+.edit-button {
+  float: right;
+  margin: -10px;
+}
+
 .matches {
   display: flex;
 }

@@ -1,11 +1,11 @@
 var Ladder = (function() {
     "use strict";
 
-    var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus($index)"' +
+    var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
     'class="btn btn-raised btn-xs toggle-button ';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
-    var EDIT_BUTTON_HTML = '<a v-on:click="editPair($index)" class="btn btn-default btn-fab btn-fab-mini toggle-button">';
+    var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
     function Ladder(ladderData) {
 
@@ -45,7 +45,8 @@ var Ladder = (function() {
             template: EDIT_BUTTON_HTML,
             methods: {
                 editPair: function() {
-                    console.log("Edit pair " + this.index);
+                    var modalId = "#modal" + this.index;
+                    $(modalId).modal("show");
                 }
             }
         });

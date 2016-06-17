@@ -1,12 +1,12 @@
 var Header = (function() {
     "use strict";
 
-    function Header(titleText, buttonText, editOnClick) {
+    function Header(titleText, buttonText, lastModified, editOnClick) {
         this.component = new Vue({
             el: '#header',
             data: {
                 title: titleText,
-                timestamp: this.getTime(),
+                timestamp: lastModified,
                 buttonTitle: buttonText
             },
             methods: {
@@ -14,12 +14,6 @@ var Header = (function() {
             }
         });
     }
-
-    Header.prototype.getTime = function() {
-        // TODO: Use timestamp of when ladder was last modified on the server
-        var currentDate = new Date();
-        return currentDate.toDateString() + " at " + currentDate.toTimeString();
-    };
 
     return Header;
 })();
