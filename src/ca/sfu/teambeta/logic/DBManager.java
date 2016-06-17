@@ -8,6 +8,7 @@ import org.hibernate.cfg.Configuration;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Persistable;
 import ca.sfu.teambeta.core.Player;
 
 /**
@@ -62,42 +63,64 @@ public class DBManager {
     }
 
     public static void main(String[] args) {
-        SessionFactory factory = getTestingSession();
+        SessionFactory factory = getMySQLSession();
         DBManager dbMan = new DBManager(factory);
-        dbMan.addPlayer(new Player("Bobby", "Chan", ""));
+        Player p1 = new Player("Bobby", "Chan", "");
+        Player p2 = new Player("Wing", "Man", "");
+        dbMan.persistEntity(new Pair(p1, p2));
+
+        Player p3 = new Player("Hello", "World!", "");
+        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
+
+        Player test = dbMan.getPlayerFromID(5);
+
+        System.out.println(test.getFirstName());
     }
 
-    public int addPair(Pair pair) {
+    public int persistEntity(Persistable entity) {
         Session session = factory.openSession();
         Transaction tx = null;
         int key = 0;
         try {
             tx = session.beginTransaction();
-            key = (int) session.save(pair);
+            key = (int) session.save(entity);
             tx.commit();
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         } finally {
-            session.close();
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
         return key;
     }
 
-    public int addPlayer(Player player) {
+    private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
         Session session = factory.openSession();
         Transaction tx = null;
-        int key = 0;
+        Persistable entity = null;
         try {
             tx = session.beginTransaction();
-            key = (int) session.save(player);
+            entity = (Persistable) session.get(persistable, id);
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
+            tx.rollback();
         } finally {
-            session.close();
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
-        return key;
+        return entity;
+    }
+
+    public Player getPlayerFromID(int id) {
+        Player player = null;
+        try {
+            player = (Player) getEntityFromID(Player.class, id);
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+        return player;
     }
 }
