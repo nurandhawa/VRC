@@ -8,8 +8,14 @@ public class Main {
     public static void main(String[] args) {
         port(8000);
         staticFiles.location(".");
-        get("/", (request, response) -> {
-            return "";
+
+        get("/ladder", (request, response) -> {
+            return "Hello, I am Ladder";
         });
+
+        get("/matches", (request, response) -> {
+            return "Hello, We are the matches";
+        });
+        
     }
 }
