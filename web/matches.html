@@ -91,24 +91,16 @@
         </div>
       </div>
 
-      <div class="matches">
+      <div id="matches" div class="matches">
         <div class="matches-left">
-          <div class="panel panel-success">
+          <div class="panel panel-success" v-for="match in matches">
             <div class="panel-heading">
-              <h3 class="panel-title">Match 1</h3>
+              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
             <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
+              <div class="pair-name match-pair" v-for="pair in match.pairs">
+                <span class="label label-info position">{{ pair.matchRanking }}</span>
+                  {{ pair.name }}
               </div>
             </div>
           </div>
@@ -297,4 +289,11 @@
 
   </body>
   <script src="js/matches.js"></script>
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="bootstrap/js/bootstrap.js"></script>
+  <script src="bootstrap-material/dist/js/material.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/ladder.js"></script>
+  <script src="js/app.js"></script>
 </html>
