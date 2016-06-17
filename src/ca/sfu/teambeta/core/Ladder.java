@@ -21,7 +21,7 @@ public class Ladder extends Persistable {
 
     @Column(name = "date_created")
     @Type(type = "timestamp")
-    private Date dateCreated;
+    private Date dateCreated = new Date();
 
     @ManyToMany
     @OrderColumn
