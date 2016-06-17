@@ -5,6 +5,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -16,9 +19,11 @@ import ca.sfu.teambeta.core.Player;
  */
 public class DBManager {
     private SessionFactory factory;
+    private Session session;
 
     DBManager(SessionFactory factory) {
         this.factory = factory;
+        this.session = factory.openSession();
     }
 
     private static Configuration getDefaultConfiguration() {
@@ -75,10 +80,13 @@ public class DBManager {
         Player test = dbMan.getPlayerFromID(5);
 
         System.out.println(test.getFirstName());
+
+        Ladder l = dbMan.getLatestLadder();
+
+        System.out.println(l);
     }
 
     public int persistEntity(Persistable entity) {
-        Session session = factory.openSession();
         Transaction tx = null;
         int key = 0;
         try {
@@ -88,16 +96,11 @@ public class DBManager {
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
         }
         return key;
     }
 
     private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
-        Session session = factory.openSession();
         Transaction tx = null;
         Persistable entity = null;
         try {
@@ -106,10 +109,6 @@ public class DBManager {
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
         }
         return entity;
     }
@@ -122,5 +121,22 @@ public class DBManager {
             e.printStackTrace();
         }
         return player;
+    }
+
+    public Ladder getLatestLadder() {
+        Transaction tx = null;
+        Ladder ladder = null;
+        try {
+            tx = session.beginTransaction();
+            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+                    .setProjection(Projections.max("id"));
+            ladder = (Ladder) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return ladder;
     }
 }
