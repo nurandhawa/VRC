@@ -5,7 +5,7 @@ import ca.sfu.teambeta.logic.DBManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 
-class Main {
+public class Main {
     public static void main(String[] args) {
 
         Ladder loadedLadder = DBManager.loadFromDB();
