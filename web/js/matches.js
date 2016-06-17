@@ -19,3 +19,17 @@ new Vue({
         showModal: false
     }
 })
+
+var Matches = (function() {
+    function Matches(matchData) {
+        this.component = new Vue({
+            el: '#matches',
+            data: {
+                matches: matchData
+            }
+        });
+    };
+    return Matches;
+})();
+
+
