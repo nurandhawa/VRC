@@ -11,6 +11,8 @@ ENV GRADLE_HOME /usr/bin/gradle
 ENV PATH $PATH:$GRADLE_HOME/bin
 
 # Node installation
+# This uses the method shown in the official Node Dockerfile
+# https://github.com/nodejs/docker-node/blob/466e418a117f33c1cd550414ae1b39423319a265/6.2/Dockerfile
 RUN set -ex \
     && for key in \
         7937DFD2AB06298B2293C3187D33FF9D0246406D \
