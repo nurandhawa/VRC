@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -23,7 +24,7 @@ public class Ladder extends Persistable {
     @Type(type = "timestamp")
     private Date dateCreated = new Date();
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @OrderColumn
     private List<Pair> pairs;
 
