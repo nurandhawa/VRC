@@ -11,18 +11,16 @@
 
     <title>Vancouver Racquets Club</title>
 
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap-material/dist/css/bootstrap-material-design.css" rel="stylesheet">
-    <link href="bootstrap-material/dist/css/ripples.min.css" rel="stylesheet">
+    <link href="bootstrap-material/dist/css/ripples.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="css/prj-web.css" rel="stylesheet">
-
-    <script src="jquery-1.12.4.js"></script>
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="bootstrap-material/dist/js/material.js"></script>
-    <script src="app.js"></script>
 
   </head>
 
@@ -51,124 +49,38 @@
         </div>
       </nav>
 
-      <div class="header">
-        <h1 class="header-initial">Ladder</h1>
-        <div class="header-mid"><h5>Last modified at 10:00AM</h5></div>
+      <div id="header" class="header">
+        <h1 class="header-initial">{{ title }}</h1>
+        <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
         <div class="header-right">
-          <a onclick="test()" class="btn btn-raised btn-primary toggle-button">Edit Ladder</a>
+          <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
         </div>
       </div>
 
-      <div class="ladder">
-        <div class="panel panel-default ladder-element">
+      <div id="ladder" class="ladder">
+        <div class="panel panel-default ladder-element" v-for="entry in ladder">
           <div class="panel-body">
             <div class="pair-name">
-            <span class="label label-info position">1</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
+            <span class="label label-info position">{{ entry.position }}</span>
+              {{ entry.name }}
+              <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
+              </component>
             </div>
           </div>
         </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">2</span>
-              Alex Land and David Li
-              <a href="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">3</span>
-              Alex Land and David Li
-              <a href="test()" class="btn btn-raised btn-xs btn-danger toggle-button">Not Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">4</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">5</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">6</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">7</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">8</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">9</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">10</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">11</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default ladder-element">
-          <div class="panel-body">
-            <div class="pair-name">
-            <span class="label label-info position">12</span>
-              Alex Land and David Li
-              <a onclick="test()" class="btn btn-raised btn-xs btn-success toggle-button">Playing</a>
-            </div>
-          </div>
-        </div>
+
       </div>
 
   </body>
+
+  <!-- Scripts run after DOM is loaded -->
+  <script src="js/jquery-1.12.4.js"></script>
+  <script src="js/vue.js"></script>
+  <script src="bootstrap/js/bootstrap.js"></script>
+  <script src="bootstrap-material/dist/js/material.js"></script>
+  <script src="bootstrap-material/dist/js/ripples.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/ladder.js"></script>
+  <script src="js/app.js"></script>
+
 </html>
