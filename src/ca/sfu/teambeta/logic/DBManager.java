@@ -81,9 +81,9 @@ public class DBManager {
 
         System.out.println(test.getFirstName());
 
-        Ladder l = dbMan.getLatestLadder();
+        Ladder lad = dbMan.getLatestLadder();
 
-        System.out.println(l);
+        System.out.println(lad);
     }
 
     public int persistEntity(Persistable entity) {

@@ -20,7 +20,7 @@ import javax.persistence.Transient;
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-@Entity(name="Pair")
+@Entity(name = "Pair")
 @Embeddable
 public class Pair extends Persistable {
 
@@ -28,7 +28,7 @@ public class Pair extends Persistable {
     private List<Player> team = new ArrayList<>();
 
     @Column(name = "date_created")
-    @Type(type="timestamp")
+    @Type(type = "timestamp")
     private Date dateCreated;
 
     @Transient

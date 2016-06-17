@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-@Entity(name="Player")
+@Entity(name = "Player")
 public class Player extends Persistable {
     private String firstName;
     private String lastName;
