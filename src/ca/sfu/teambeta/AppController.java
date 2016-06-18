@@ -24,6 +24,7 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "playingStatus";
     private static final String POSITION = "Position";
+    private static final String NEW_POSITION = "newPosition";
     private static final String PLAYERS = "Players";
     private static final String IS_PLAYING = "IsPlaying";
 
@@ -93,7 +94,21 @@ public class AppController {
 
         //update a pair's position in the ladder
         put("/api/index/position", (request, response) -> {
-            return "Update Position";
+            String oldPositionStr = request.queryParams(POSITION);
+            String newPositionStr = request.queryParams(NEW_POSITION);
+            int oldPosition = Integer.parseInt(oldPositionStr);
+            int newPosition = Integer.parseInt(newPositionStr);
+            boolean validOldPos = 0 < oldPosition && oldPosition < ladderManager.ladderSize();
+            boolean validNewPos = 0 < newPosition && oldPosition < ladderManager.ladderSize();
+
+            if (validOldPos && validNewPos) {
+                ladderManager.movePair(oldPosition, newPosition);
+                response.status(OK);
+            } else {
+                response.status(BAD_REQUEST);
+            }
+
+            return response;
         });
 
         //add a penalty to a pair
@@ -150,53 +165,3 @@ public class AppController {
         return result;
     }
 }
-
-
-/*
-            response.body();               // get response content
-            response.body("Hello");        // sets content to Hello
-            response.header("FOO", "bar"); // sets header FOO with value bar
-            response.raw();                // raw response handed in by Jetty
-            response.redirect("/example"); // browser redirect to /example
-            response.status();             // get the response status
-            response.status(401);          // set status code to 401
-            response.type();               // get the content type
-            response.type("text/xml");     // set content type to text/xml
-
-            request.attributes();             // the attributes list
-            request.attribute("foo");         // value of foo attribute
-            request.attribute("A", "V");      // sets value of attribute A to V
-            request.body();                   // request body sent by the client
-            request.bodyAsBytes();            // request body as bytes
-            request.contentLength();          // length of request body
-            request.contentType();            // content type of request.body
-            request.contextPath();            // the context path, e.g. "/hello"
-            request.cookies();                // request cookies sent by the client
-            request.headers();                // the HTTP header list
-            request.headers("BAR");           // value of BAR header
-            request.host();                   // the host, e.g. "example.com"
-            request.ip();                     // client IP address
-            request.params("foo");            // value of foo path parameter
-            request.params();                 // map with all parameters
-            request.pathInfo();               // the path info
-            request.port();                   // the server port
-            request.protocol();               // the protocol, e.g. HTTP/1.1
-            request.queryMap();               // the query map
-            request.queryMap("foo");          // query map for a certain parameter
-            request.queryParams();            // the query param list
-            request.queryParams("FOO");       // value of FOO query param
-            request.queryParamsValues("FOO")  // all values of FOO query param
-            request.raw();                    // raw request handed in by Jetty
-            request.requestMethod();          // The HTTP method (GET, ..etc)
-            request.scheme();                 // "http"
-            request.servletPath();            // the servlet path, e.g. /result.jsp
-            request.session();                // session management
-            request.splat();                  // splat (*) parameters
-            request.uri();                    // the uri, e.g. "http://example.com/foo"
-            request.url();                    // the url. e.g. "http://example.com/foo"
-            request.userAgent();              // user agent
-
-
-
-
-*/
