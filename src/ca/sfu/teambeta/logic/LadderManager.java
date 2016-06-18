@@ -170,7 +170,6 @@ public class LadderManager {
 
     private void assignNewPositionsToActivePairs() {
         int size = ladder.getLadderLength();
-        int[] emptyPositions = new int[activePairs.size()];
         int[] takenPositions = new int[passivePairs.size()];
 
         //Fill in takenPositions
@@ -182,23 +181,17 @@ public class LadderManager {
 
         //Fill in emptyPositions
         int takenIndex = 0;
-        int emptyIndex = 0;
+        int activeIndex = 0;
         for (int position = 1; position <= size; position++) {
-            if (takenPositions[takenIndex] != position) {
-                emptyPositions[emptyIndex] = position;
-                emptyIndex++;
+            if (takenPositions.length == 0 || takenPositions[takenIndex] != position) {
+                Pair pair = activePairs.get(activeIndex);
+                pair.setPosition(position);
+                activeIndex++;
             } else {
                 if (takenIndex != passivePairs.size() - 1) { //Not last possible index
                     takenIndex++;
                 }
             }
-        }
-
-        //Give activePairs new positions
-        index = 0;
-        for (Pair current : activePairs) {
-            current.setPosition(emptyPositions[index]);
-            index++;
         }
     }
 
