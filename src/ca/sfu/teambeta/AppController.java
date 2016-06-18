@@ -178,15 +178,15 @@ public class AppController {
         for (Pair current : ladder) {
             int position = current.getPosition();
             List<Player> team = current.getPlayers();
-            String player_1 = team.get(0).getName();
-            String player_2 = team.get(1).getName();
+            String player1 = team.get(0).getName();
+            String player2 = team.get(1).getName();
             Boolean isPlaying = current.isPlaying();
 
             JsonObject jsonOfPair = Json.createObjectBuilder()
                     .add(POSITION, position)
                     .add(PLAYERS, Json.createArrayBuilder()
-                            .add(player_1)
-                            .add(player_2)
+                            .add(player1)
+                            .add(player2)
                     )
                     .add(IS_PLAYING, isPlaying)
                     .build();

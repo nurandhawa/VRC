@@ -34,6 +34,20 @@ public class LadderManager {
         passivePairs = findPairs(ladder.getLadder(), false);
     }
 
+    public LadderManager(Ladder loadedLadder) {
+        if (loadedLadder.getLadder().size() == 0) {
+            ladder = new Ladder(new ArrayList<Pair>());
+        } else {
+            ladder = loadedLadder;
+        }
+        activePairs = new ArrayList<>();
+        passivePairs = new ArrayList<>();
+    }
+
+    public int ladderSize() {
+        return ladder.getLadderLength();
+    }
+
     public List<Pair> getLadder() {
         List<Pair> list =  ladder.getLadder();
         Comparator<Pair> makeSorter = getPairPositionComparator();
@@ -81,9 +95,10 @@ public class LadderManager {
 
         return false;
     }
-    public Pair searchPairById(String id){
-        for (Pair current : ladder.getLadder()){
-            if (current.getId() == id){
+
+    public Pair searchPairById(String id) {
+        for (Pair current : ladder.getLadder()) {
+            if (current.getId() == id) {
                 return current;
             }
         }
@@ -307,7 +322,7 @@ public class LadderManager {
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
 
-        for(Pair current : ladder.getLadder()){
+        for (Pair current : ladder.getLadder()) {
             players.addAll(current.getPlayers());
         }
 
