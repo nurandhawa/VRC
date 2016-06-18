@@ -250,7 +250,7 @@ public class LadderManager {
             }
         }
     }
-    
+
     private void swapPlayers(List<Pair> firstGroup, List<Pair> secondGroup) {
         // This method swaps the last member of 'firstGroup' with the first member of 'secondGroup'
 
