@@ -35,7 +35,11 @@ public class LadderManager {
     }
 
     public List<Pair> getLadder() {
-        return ladder.getLadder();
+        List<Pair> list =  ladder.getLadder();
+        Comparator<Pair> makeSorter = getPairPositionComparator();
+
+        Collections.sort(list, makeSorter);
+        return list;
     }
 
     public List<Pair> getActivePairs() {
@@ -242,9 +246,7 @@ public class LadderManager {
                 if (newPosition > size) {
                     newPosition = size;
                 }
-                for (int i = actualPosition; i < newPosition; i++) {
-                    swapPair(i - 1, i);
-                }
+                movePair(actualPosition, newPosition);
             }
         }
     }
