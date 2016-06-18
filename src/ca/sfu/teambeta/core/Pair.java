@@ -46,10 +46,6 @@ public class Pair {
         return id;
     }
 
-    public void setId(String id){
-        this.id = id;
-    }
-
     public List<Player> getPlayers() {
         return team;
     }
