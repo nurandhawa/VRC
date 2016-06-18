@@ -42,7 +42,7 @@ public class Pair {
         this.isPlaying = isPlaying;
     }
 
-    public String getId(){
+    public String getId() {
         return id;
     }
 
