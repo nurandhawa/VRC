@@ -96,15 +96,6 @@ public class LadderManager {
         return false;
     }
 
-    public Pair searchPairById(String id) {
-        for (Pair current : ladder.getLadder()) {
-            if (current.getId() == id) {
-                return current;
-            }
-        }
-        return null;
-    }
-
     public Pair searchPairById(String id){
         for (Pair current : ladder.getLadder()){
             if (current.getId() == id){
@@ -331,7 +322,7 @@ public class LadderManager {
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
 
-        for (Pair current : ladder.getLadder()) {
+        for(Pair current : ladder.getLadder()){
             players.addAll(current.getPlayers());
         }
 
