@@ -65,7 +65,7 @@ public class Pair extends Persistable {
         this.isPlaying = isPlaying;
     }
 
-    public String getId(){
+    public String getId() {
         return id;
     }
 
