@@ -322,7 +322,7 @@ public class LadderManager {
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
 
-        for(Pair current : ladder.getLadder()){
+        for (Pair current : ladder.getLadder()) {
             players.addAll(current.getPlayers());
         }
 
