@@ -32,7 +32,7 @@ public class AppController {
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
 
-    public AppController(LadderManager ladderManager, GameManager gameManager){
+    public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
 
@@ -47,17 +47,17 @@ public class AppController {
             String id = request.queryParams(ID);
             String status = request.queryParams(STATUS);
             Pair pair = ladderManager.searchPairById(id);
-            if (pair == null){ //Wrong ID
+            if (pair == null) { //Wrong ID
                 response.status(BAD_REQUEST);
                 return response;
             }
 
-            if(status == "playing"){
+            if (status == "playing") {
                 ladderManager.setNotPlaying(pair);
                 response.status(OK);
             } else if (status == "not playing") {
                 boolean changed = ladderManager.setIsPlaying(pair);
-                if(changed){
+                if (changed) {
                     response.status(OK);
                 } else {
                     //One of the players is already in the game
@@ -78,7 +78,7 @@ public class AppController {
             String id = request.queryParams(ID);
             Pair pair = ladderManager.searchPairById(id);
 
-            if (pair == null){ //Wrong ID
+            if (pair == null) { //Wrong ID
                 response.status(BAD_REQUEST);
                 return response;
             }
@@ -93,7 +93,7 @@ public class AppController {
             int index = Integer.parseInt(position) - 1;
             boolean removed = ladderManager.removePairAtIndex(index);
 
-            if (removed){
+            if (removed) {
                 response.status(OK);
             } else {
                 //Index out of bound
@@ -130,11 +130,11 @@ public class AppController {
             String penaltyType = request.queryParams("penType");
             response.status(OK);
 
-            if(penaltyType == "late"){
+            if (penaltyType == "late") {
                 //call late penalty function in ladderManager
-            } else if (penaltyType == "miss"){
+            } else if (penaltyType == "miss") {
                 //call miss penalty function in ladderManager
-            } else if (penaltyType == "absent"){
+            } else if (penaltyType == "absent") {
                 //call absent penalty function in ladderManager
             } else {
                 response.status(BAD_REQUEST);
@@ -160,7 +160,7 @@ public class AppController {
             String id = request.queryParams("id");
             Pair pair = ladderManager.searchPairById(id);
 
-            if (pair == null || !pair.isPlaying()){ //Wrong ID
+            if (pair == null || !pair.isPlaying()) { //Wrong ID
                 response.status(BAD_REQUEST);
                 return response;
             }
@@ -172,10 +172,10 @@ public class AppController {
     }
 
 
-    private JsonArray toJSON(List<Pair> ladder){
+    private JsonArray toJSON(List<Pair> ladder) {
         JsonArrayBuilder builder = Json.createArrayBuilder();
 
-        for(Pair current : ladder) {
+        for (Pair current : ladder) {
             int position = current.getPosition();
             List<Player> team = current.getPlayers();
             String player_1 = team.get(0).getName();
