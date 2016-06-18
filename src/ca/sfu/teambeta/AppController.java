@@ -42,7 +42,30 @@ public class AppController {
 
         //updates a pair's playing status
         put("/api/index", (request, response) -> {
-            return "";
+            String id = request.queryParams(ID);
+            String status = request.queryParams(STATUS);
+            Pair pair = ladderManager.searchPairById(id);
+            if (pair == null){ //Wrong ID
+                response.status(BAD_REQUEST);
+                return response;
+            }
+
+            if(status == "playing"){
+                ladderManager.setNotPlaying(pair);
+                response.status(OK);
+            } else if (status == "not playing") {
+                boolean changed = ladderManager.setIsPlaying(pair);
+                if(changed){
+                    response.status(OK);
+                } else {
+                    //One of the players is already in the game
+                    response.status(NOT_FOUND);
+                }
+            } else {
+                response.status(BAD_REQUEST);
+            }
+
+            return response;
         });
 
         //add pair to ladder
