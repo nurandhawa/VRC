@@ -71,9 +71,20 @@ public class AppController {
         });
 
         //add pair to ladder
+        //in case of adding a player at the end of ladder, position is length of ladder
         post("/api/index/add", (request, response) -> {
-            //call addNewPair
-            return "Adding player";
+            String position = request.queryParams(POSITION);
+            int index = Integer.parseInt(position) - 1;
+            String id = request.queryParams(ID);
+            Pair pair = ladderManager.searchPairById(id);
+
+            if (pair == null){ //Wrong ID
+                response.status(BAD_REQUEST);
+                return response;
+            }
+            ladderManager.addNewPairAtIndex(pair, index);
+            response.status(OK);
+            return response;
         });
 
         //remove player from ladder
@@ -133,8 +144,16 @@ public class AppController {
         delete("/api/matches/remove", (request, response) -> {
 
             request.queryParams("matchIndex");
-            request.queryParams("id");
-            return "Hello, We are the matches";
+            String id = request.queryParams("id");
+            Pair pair = ladderManager.searchPairById(id);
+
+            if (pair == null || !pair.isPlaying()){ //Wrong ID
+                response.status(BAD_REQUEST);
+                return response;
+            }
+            gameManager.removePlayingPair(pair);
+            response.status(OK);
+            return response;
         });
 
     }
