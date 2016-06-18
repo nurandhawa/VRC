@@ -91,10 +91,14 @@ public class LadderManager {
     }
 
     public boolean removePairAtIndex(int index) {
-        Pair pairToRemove = ladder.getPairAtIndex(index);
-        return ladder.removePair(pairToRemove);
-    }
+        if (index >= 0 && index < ladder.getLadderLength()) {
+            Pair pairToRemove = ladder.getPairAtIndex(index);
+            ladder.removePair(pairToRemove);
+            return true;
+        }
 
+        return false;
+    }
     public Pair searchPairById(String id){
         for (Pair current : ladder.getLadder()){
             if (current.getId() == id){
