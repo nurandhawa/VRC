@@ -1,10 +1,8 @@
 package ca.sfu.teambeta.core;
 
 //Pair should have information about pairs activity
-//Ladder shoud return the size of itself
+//Ladder should return the size of itself
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -25,23 +23,21 @@ import javax.persistence.Transient;
 @Entity(name = "Pair")
 @Embeddable
 public class Pair extends Persistable {
+    private static final boolean DEFAULT_PLAYING_STATUS = true;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    @Expose
+
     private List<Player> team = new ArrayList<>();
+
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;
 
-    //@Transient
-    @Expose
+    @Transient
     private int position;
     @Transient
-    private int oldPosition;
-    @Transient
     private int penalty;
-    //@Transient
-    @Expose
+    @Transient
     private boolean isPlaying;
 
     public Pair() {
@@ -52,9 +48,8 @@ public class Pair extends Persistable {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
-        this.isPlaying = true;
+        this.isPlaying = DEFAULT_PLAYING_STATUS;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -62,7 +57,6 @@ public class Pair extends Persistable {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
     }
@@ -81,17 +75,6 @@ public class Pair extends Persistable {
 
     public void setPosition(int position) {
         this.position = position;
-        if (oldPosition == 0) {
-            this.oldPosition = position;
-        }
-    }
-
-    public int getOldPosition() {
-        return oldPosition;
-    }
-
-    public void establishPosition() {
-        this.oldPosition = position;
     }
 
     public int getPenalty() {
@@ -114,14 +97,9 @@ public class Pair extends Persistable {
         return isPlaying;
     }
 
-    public int positionAfterPenalty() {
-        int newPosition = position + penalty;
-        penalty = 0;
-        return newPosition;
-    }
-
     public boolean hasPlayer(Player searchPlayer) {
-        return (getPlayers().get(0).equals(searchPlayer) || getPlayers().get(1).equals(searchPlayer));
+        return (getPlayers().get(0).equals(searchPlayer)
+                || getPlayers().get(1).equals(searchPlayer));
     }
 
     @Override
@@ -141,8 +119,9 @@ public class Pair extends Persistable {
     }
 
     public String toString() {
-        return getPlayers().get(0).getFirstName()
+        return position
+                + ") " +  getPlayers().get(0).getFirstName()
                 + " & " + getPlayers().get(1).getFirstName()
-                + "  Playing? " + isPlaying;
+                + " " + isPlaying;
     }
 }
