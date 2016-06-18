@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class Pair {
     private List<Player> team = new ArrayList<>();
+    private String id;
     private Date dateCreated;
     private int position;
     private int oldPosition;
@@ -20,6 +21,7 @@ public class Pair {
     private boolean isPlaying;
 
     public Pair(Player firstPlayer, Player secondPlayer) {
+        id = "";
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -30,6 +32,7 @@ public class Pair {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
+        id = "";
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -37,6 +40,14 @@ public class Pair {
         oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setId(String id){
+        this.id = id;
     }
 
     public List<Player> getPlayers() {

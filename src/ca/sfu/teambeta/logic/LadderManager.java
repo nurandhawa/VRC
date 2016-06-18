@@ -73,6 +73,15 @@ public class LadderManager {
         return ladder.removePair(pairToRemove);
     }
 
+    public Pair searchPairById(String id){
+        for (Pair current : ladder.getLadder()){
+            if (current.getId() == id){
+                return current;
+            }
+        }
+        return null;
+    }
+
     public boolean setIsPlaying(Pair pair) {
         //Set pair to playing if players are unique(returns true)
         if (ladder.getLadder().contains(pair)) {
