@@ -69,10 +69,6 @@ public class Pair extends Persistable {
         return id;
     }
 
-    public void setId(String id){
-        this.id = id;
-    }
-
     public List<Player> getPlayers() {
         return new ArrayList<>(team);
     }
