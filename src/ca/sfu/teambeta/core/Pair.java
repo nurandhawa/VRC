@@ -44,7 +44,7 @@ public class Pair extends Persistable {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer) {
-        id = "";
+        id = "" + firstPlayer.getPlayerID() + secondPlayer.getPlayerID();
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -55,7 +55,7 @@ public class Pair extends Persistable {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
-        id = "";
+        id = "" + firstPlayer.getPlayerID() + secondPlayer.getPlayerID();
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -67,10 +67,6 @@ public class Pair extends Persistable {
 
     public String getId(){
         return id;
-    }
-
-    public void setId(String id){
-        this.id = id;
     }
 
     public List<Player> getPlayers() {
