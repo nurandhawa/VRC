@@ -149,7 +149,7 @@ public class AppController {
 
         //Input match results
         post("/api/matches/input", (request, response) -> {
-            //call input results passing array
+            //need to figure out how results would be passed
             return "Input Results";
         });
 
