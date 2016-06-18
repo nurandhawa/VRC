@@ -1,7 +1,7 @@
 package ca.sfu.teambeta.core;
 
 //Pair should have information about pairs activity
-//Ladder shoud return the size of itself
+//Ladder should return the size of itself
 
 import org.hibernate.annotations.Type;
 
@@ -137,8 +137,9 @@ public class Pair extends Persistable {
     }
 
     public String toString() {
-        return getPlayers().get(0).getFirstName()
+        return position
+                + ") " +  getPlayers().get(0).getFirstName()
                 + " & " + getPlayers().get(1).getFirstName()
-                + "  Playing? " + isPlaying;
+                + " " + isPlaying;
     }
 }
