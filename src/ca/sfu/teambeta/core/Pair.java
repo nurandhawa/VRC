@@ -1,8 +1,5 @@
 package ca.sfu.teambeta.core;
 
-//Pair should have information about pairs activity
-//Ladder shoud return the size of itself
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,10 +9,11 @@ import java.util.List;
  * Created by Gordon Shieh on 25/05/16.
  */
 public class Pair {
+    private static final boolean DEFAULT_PLAYING_STATUS = true;
+
     private List<Player> team = new ArrayList<>();
     private Date dateCreated;
     private int position;
-    private int oldPosition;
     private int penalty;
     private boolean isPlaying;
 
@@ -24,9 +22,8 @@ public class Pair {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
-        this.isPlaying = true;
+        this.isPlaying = DEFAULT_PLAYING_STATUS;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -34,7 +31,6 @@ public class Pair {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
     }
@@ -53,17 +49,6 @@ public class Pair {
 
     public void setPosition(int position) {
         this.position = position;
-        if (oldPosition == 0) {
-            this.oldPosition = position;
-        }
-    }
-
-    public int getOldPosition() {
-        return oldPosition;
-    }
-
-    public void establishPosition() {
-        this.oldPosition = position;
     }
 
     public int getPenalty() {
@@ -86,19 +71,8 @@ public class Pair {
         return isPlaying;
     }
 
-    public int positionAfterPenalty() {
-        int newPosition = position + penalty;
-        penalty = 0;
-        return newPosition;
-    }
-
     public boolean hasPlayer(Player searchPlayer) {
         return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
-    }
-
-    public boolean hasPlayer(Player firstPlayer, Player secondPlayer) {
-        return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
-                && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
     }
 
     @Override
@@ -118,8 +92,9 @@ public class Pair {
     }
 
     public String toString() {
-        return team.get(0).getName()
+        return position
+                + ") " + team.get(0).getName()
                 + " & " + team.get(1).getName()
-                + "  Playing? " + isPlaying;
+                + " " + isPlaying;
     }
 }
