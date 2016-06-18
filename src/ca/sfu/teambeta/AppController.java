@@ -124,9 +124,22 @@ public class AppController {
 
         //add a penalty to a pair
         post("/api/index/penalty", (request, response) -> {
-            request.queryParams("id");
-            request.queryParams("penIndex");
-            return "Add penalty";
+            String id = request.queryParams("id");
+            Pair pair = ladderManager.searchPairById(id);
+            int pairIndex = pair.getPosition() - 1;
+            String penaltyType = request.queryParams("penType");
+            response.status(OK);
+
+            if(penaltyType == "late"){
+                //call late penalty function in ladderManager
+            } else if (penaltyType == "miss"){
+                //call miss penalty function in ladderManager
+            } else if (penaltyType == "absent"){
+                //call absent penalty function in ladderManager
+            } else {
+                response.status(BAD_REQUEST);
+            }
+            return response;
         });
 
         //Show a list of matches
