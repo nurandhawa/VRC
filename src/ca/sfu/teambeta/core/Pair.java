@@ -34,8 +34,6 @@ public class Pair extends Persistable {
     @Transient
     private int position;
     @Transient
-    private int oldPosition;
-    @Transient
     private int penalty;
     @Transient
     private boolean isPlaying;
@@ -48,7 +46,6 @@ public class Pair extends Persistable {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
         this.isPlaying = true;
     }
@@ -58,7 +55,6 @@ public class Pair extends Persistable {
         team.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
-        oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
     }
@@ -77,17 +73,6 @@ public class Pair extends Persistable {
 
     public void setPosition(int position) {
         this.position = position;
-        if (oldPosition == 0) {
-            this.oldPosition = position;
-        }
-    }
-
-    public int getOldPosition() {
-        return oldPosition;
-    }
-
-    public void establishPosition() {
-        this.oldPosition = position;
     }
 
     public int getPenalty() {
