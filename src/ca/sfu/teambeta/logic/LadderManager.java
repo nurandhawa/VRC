@@ -30,8 +30,22 @@ public class LadderManager {
             index++;
         }
         ladder = new Ladder(dbLadder);
-        activePairs = findPairs(ladder.getPairs(), true);
-        passivePairs = findPairs(ladder.getPairs(), false);
+        activePairs = findPairs(ladder.getLadder(), true);
+        passivePairs = findPairs(ladder.getLadder(), false);
+    }
+
+    public LadderManager(Ladder loadedLadder) {
+        if (loadedLadder.getLadder().size() == 0) {
+            ladder = new Ladder(new ArrayList<Pair>());
+        } else {
+            ladder = loadedLadder;
+        }
+        activePairs = new ArrayList<>();
+        passivePairs = new ArrayList<>();
+    }
+
+    public int ladderSize(){
+        return ladder.getLadderLength();
     }
 
     public List<Pair> getLadder() {
@@ -242,9 +256,7 @@ public class LadderManager {
                 if (newPosition > size) {
                     newPosition = size;
                 }
-                for (int i = actualPosition; i < newPosition; i++) {
-                    swapPair(i - 1, i);
-                }
+                movePair(actualPosition, newPosition);
             }
         }
     }
