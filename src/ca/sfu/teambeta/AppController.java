@@ -4,6 +4,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
+import com.google.gson.JsonElement;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import javax.json.Json;
@@ -76,8 +77,18 @@ public class AppController {
 
         //remove player from ladder
         delete("/api/index/remove", (request, response) -> {
-            request.queryParams("id");
-            return "Remove player from ladder";
+            String position = request.queryParams(POSITION);
+            int index = Integer.parseInt(position) - 1;
+            boolean removed = ladderManager.removePairAtIndex(index);
+
+            if (removed){
+                response.status(OK);
+            } else {
+                //Index out of bound
+                response.status(BAD_REQUEST);
+            }
+
+            return response;
         });
 
         //update a pair's position in the ladder
