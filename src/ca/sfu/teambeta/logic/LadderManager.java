@@ -321,12 +321,11 @@ public class LadderManager {
 
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
-        for (Pair pair : activePairs) {
-            players.addAll(pair.getPlayers());
+
+        for (Pair current : ladder.getLadder()) {
+            players.addAll(current.getPlayers());
         }
-        for (Pair pair : passivePairs) {
-            players.addAll(pair.getPlayers());
-        }
+
         return players;
     }
 
@@ -340,9 +339,11 @@ public class LadderManager {
         return false;
     }
 
+
     public void movePair(int oldPosition, int newPosition) {
         for (int i = oldPosition; i < newPosition; i++) {
             swapPair(i - 1, i);
         }
     }
 }
+
