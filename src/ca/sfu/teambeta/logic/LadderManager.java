@@ -96,9 +96,9 @@ public class LadderManager {
         return false;
     }
 
-    public Pair searchPairById(String id){
-        for (Pair current : ladder.getLadder()){
-            if (current.getId() == id){
+    public Pair searchPairById(String id) {
+        for (Pair current : ladder.getLadder()) {
+            if (current.getId() == id) {
                 return current;
             }
         }
