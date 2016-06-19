@@ -6,6 +6,7 @@ stages:
   - build
   - test
   - jshint
+  - jstest
 
 build:
   script: gradle assemble
@@ -21,3 +22,7 @@ jshint:
     - npm install
     - grunt jshint
   stage: jshint
+
+jstest:
+  script: grunt jasmine:api
+  stage: jstest
