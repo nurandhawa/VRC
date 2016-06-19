@@ -29,7 +29,6 @@ public class Pair extends Persistable {
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
     private List<Player> team = new ArrayList<>();
-    private String id;
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;
@@ -49,7 +48,6 @@ public class Pair extends Persistable {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer) {
-        id = "" + firstPlayer.getPlayerID() + secondPlayer.getPlayerID();
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -60,7 +58,6 @@ public class Pair extends Persistable {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
-        id = "" + firstPlayer.getPlayerID() + secondPlayer.getPlayerID();
         team.add(firstPlayer);
         team.add(secondPlayer);
         dateCreated = new Date();
@@ -68,10 +65,6 @@ public class Pair extends Persistable {
         oldPosition = 0;
         penalty = 0;
         this.isPlaying = isPlaying;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public List<Player> getPlayers() {

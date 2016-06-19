@@ -61,7 +61,7 @@ public class AppController {
 
         //updates a pair's playing status
         patch("/api/:id/:newStatus", (request, response) -> {
-            String id = request.params(":" + ID);
+            int id = Integer.parseInt(request.params(":" + ID));
             String status = request.params(":" + STATUS);
             Pair pair = ladderManager.searchPairById(id);
             if (pair == null) { //Wrong ID
@@ -92,7 +92,7 @@ public class AppController {
         post("/api/index/add", (request, response) -> {
             String position = request.queryParams(POSITION);
             int index = Integer.parseInt(position) - 1;
-            String id = request.queryParams(ID);
+            int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
 
             if (pair == null) { //Wrong ID
@@ -124,7 +124,7 @@ public class AppController {
         patch("/api/:id/:position/:newPosition", (request, response) -> {
             String oldPositionStr = request.params(":" + POSITION);
             String newPositionStr = request.params(":" + NEW_POSITION);
-            String id = request.params(":id");
+            int id = Integer.parseInt(request.params(":id"));
             int oldPosition = Integer.parseInt(oldPositionStr);
             int newPosition = Integer.parseInt(newPositionStr);
             boolean validOldPos = 0 < oldPosition && oldPosition < ladderManager.ladderSize();
@@ -147,7 +147,7 @@ public class AppController {
 
         //add a penalty to a pair
         post("/api/index/penalty", (request, response) -> {
-            String id = request.queryParams("id");
+            int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
             int pairIndex = pair.getPosition() - 1;
             String penaltyType = request.queryParams("penType");
@@ -185,7 +185,7 @@ public class AppController {
         delete("/api/matches/remove", (request, response) -> {
 
             request.queryParams("matchIndex");
-            String id = request.queryParams("id");
+            int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
 
             if (pair == null || !pair.isPlaying()) { //Wrong ID
