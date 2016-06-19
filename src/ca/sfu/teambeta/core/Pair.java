@@ -23,8 +23,10 @@ import javax.persistence.Transient;
 @Entity(name = "Pair")
 @Embeddable
 public class Pair extends Persistable {
+    private static final boolean DEFAULT_PLAYING_STATUS = true;
 
     @ManyToMany(cascade = CascadeType.ALL)
+
     private List<Player> team = new ArrayList<>();
 
     @Column(name = "date_created")
@@ -47,7 +49,7 @@ public class Pair extends Persistable {
         dateCreated = new Date();
         position = 0;
         penalty = 0;
-        this.isPlaying = true;
+        this.isPlaying = DEFAULT_PLAYING_STATUS;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -95,14 +97,9 @@ public class Pair extends Persistable {
         return isPlaying;
     }
 
-    public int positionAfterPenalty() {
-        int newPosition = position + penalty;
-        penalty = 0;
-        return newPosition;
-    }
-
     public boolean hasPlayer(Player searchPlayer) {
-        return (getPlayers().get(0).equals(searchPlayer) || getPlayers().get(1).equals(searchPlayer));
+        return (getPlayers().get(0).equals(searchPlayer)
+                || getPlayers().get(1).equals(searchPlayer));
     }
 
     @Override
