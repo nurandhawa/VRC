@@ -9,9 +9,9 @@ public class Main {
     public static void main(String[] args) {
 
         /*Ladder loadedLadder = DBManager.loadFromDB();
-        LadderManager ladderManager = new LadderManager(loadedLadder.getLadder());
+        LadderManager ladderManager = new LadderManager(loadedLadder.getPairs());
 
-        ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
+        ladderManager.getPairs().forEach(ladderManager::setIsPlaying);
 
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
 

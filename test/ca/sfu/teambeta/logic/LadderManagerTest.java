@@ -119,7 +119,7 @@ public class LadderManagerTest {
             position++;
             p.setPosition(position);
         }
-        List<Pair> ladder = ladderManager.getLadder();
+        List<Pair> ladder = ladderManager.getPairs();
         //Assert.assertEquals(ladder, expectedLadder);
 
     }
