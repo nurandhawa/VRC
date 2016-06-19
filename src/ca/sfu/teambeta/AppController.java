@@ -4,6 +4,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
@@ -22,7 +23,7 @@ import static spark.Spark.*;
  */
 public class AppController {
     private static final String ID = "id";
-    private static final String STATUS = "playingStatus";
+    private static final String STATUS = "newStatus";
     private static final String POSITION = "Position";
     private static final String NEW_POSITION = "newPosition";
     private static final String PLAYERS = "Players";
@@ -31,6 +32,8 @@ public class AppController {
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
+
+    private static Gson gson = new Gson();
 
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
@@ -45,13 +48,19 @@ public class AppController {
         //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
         get("/api/index", (request, response) -> {
-            return toJSON(ladderManager.getLadder());
+            if(ladderManager.getLadder() != null) {
+                response.status(OK);
+            } else {
+                response.status(BAD_REQUEST);
+                return response;
+            }
+            return gson.toJson(ladderManager.getLadder());
         });
 
         //updates a pair's playing status
-        put("/api/index", (request, response) -> {
-            String id = request.queryParams(ID);
-            String status = request.queryParams(STATUS);
+        patch("/api/:id/:newStatus", (request, response) -> {
+            String id = request.params(":" + ID);
+            String status = request.params(":" + STATUS);
             Pair pair = ladderManager.searchPairById(id);
             if (pair == null) { //Wrong ID
                 response.status(BAD_REQUEST);
@@ -110,13 +119,19 @@ public class AppController {
         });
 
         //update a pair's position in the ladder
-        put("/api/index/position", (request, response) -> {
-            String oldPositionStr = request.queryParams(POSITION);
-            String newPositionStr = request.queryParams(NEW_POSITION);
+        patch("/api/:id/:position/:newPosition", (request, response) -> {
+            String oldPositionStr = request.params(":" + POSITION);
+            String newPositionStr = request.params(":" + NEW_POSITION);
+            String id = request.params(":id");
             int oldPosition = Integer.parseInt(oldPositionStr);
             int newPosition = Integer.parseInt(newPositionStr);
             boolean validOldPos = 0 < oldPosition && oldPosition < ladderManager.ladderSize();
             boolean validNewPos = 0 < newPosition && oldPosition < ladderManager.ladderSize();
+
+            if(ladderManager.searchPairById(id).getPosition() != oldPosition) {
+                response.status(BAD_REQUEST);
+                return response;
+            }
 
             if (validOldPos && validNewPos) {
                 ladderManager.movePair(oldPosition, newPosition);
@@ -150,7 +165,12 @@ public class AppController {
 
         //Show a list of matches
         get("/api/matches", (request, response) -> {
-            return gameManager.getScorecards();
+            if(gameManager.getScorecards() != null) {
+                response.status(OK);
+            } else {
+                response.status(BAD_REQUEST);
+            }
+            return gson.toJson(gameManager.getScorecards());
         });
 
         //Input match results
