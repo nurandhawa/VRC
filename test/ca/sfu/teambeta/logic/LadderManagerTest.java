@@ -1,6 +1,9 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -90,9 +93,12 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
         int newPairPosition = 2;
 
-        ladderManager.addNewPairAtIndex(new Pair(new Player(21, "P21"), new Player(22, "P22"), true), 1);
+        ladderManager.addNewPairAtIndex(new Pair
+                (new Player(21, "P21"), new Player(22, "P22"), true), 1);
 
-        Assert.assertEquals(ladderManager.getLadder().get(1).getPosition(), newPairPosition);
+        Pair pair = ladderManager.getLadder().get(1);
+        int position = pair.getPosition();
+        Assert.assertEquals(position, newPairPosition);
     }
 
     private List<Pair> testData() {
@@ -126,20 +132,13 @@ public class LadderManagerTest {
         Pair pair1 = activePairs.get(0);
         Pair pair2 = activePairs.get(1);
         Pair pair3 = activePairs.get(2);
-        Pair pair4 = activePairs.get(3);
-        Pair pair5 = activePairs.get(4);
-        Pair pair6 = activePairs.get(5);
+        //First Group
+        List<Pair> group1 = new ArrayList<>();
+        group1.add(pair1);
+        group1.add(pair2);
+        group1.add(pair3);
 
-        List<Pair> group_1 = new ArrayList<>();
-        List<Pair> group_2 = new ArrayList<>();
-        group_1.add(pair1);
-        group_1.add(pair2);
-        group_1.add(pair3);
-        group_2.add(pair4);
-        group_2.add(pair5);
-        group_2.add(pair6);
-
-        Scorecard<Pair> scorecards1 = new Scorecard<>(group_1, null);
+        Scorecard<Pair> scorecards1 = new Scorecard<>(group1, null);
         scorecards1.setWin(pair3, 0);
         scorecards1.setWin(pair3, 1);
 
@@ -150,7 +149,17 @@ public class LadderManagerTest {
         scorecards1.setWin(pair1, 1);
         scorecards1.setLose(pair1, 2);
 
-        Scorecard<Pair> scorecards2 = new Scorecard<>(group_2, null);
+        Pair pair4 = activePairs.get(3);
+        Pair pair5 = activePairs.get(4);
+        Pair pair6 = activePairs.get(5);
+        //Second Group
+        List<Pair> group2 = new ArrayList<>();
+
+        group2.add(pair4);
+        group2.add(pair5);
+        group2.add(pair6);
+
+        Scorecard<Pair> scorecards2 = new Scorecard<>(group2, null);
         scorecards2.setWin(pair6, 0);
         scorecards2.setWin(pair6, 1);
 
