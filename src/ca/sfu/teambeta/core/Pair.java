@@ -108,19 +108,19 @@ public class Pair extends Persistable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object other) {
+        if (this == other) return true;
 
-        Pair pair = (Pair) o;
+        if (other == null || getClass() != other.getClass()) return false;
 
-        return team.equals(pair.getPlayers())
-                && position == pair.getPosition()
-                && isPlaying == pair.isPlaying();
+        Pair otherPair = (Pair) other;
+
+        return team.equals(otherPair.getPlayers());
+    }
+
+    @Override
+    public int hashCode() {
+        return getPlayers().hashCode();
     }
 
     public String toString() {
