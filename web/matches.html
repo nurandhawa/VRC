@@ -93,7 +93,7 @@
 
       <div id="matches" div class="matches">
         <div class="matches-left">
-          <div class="panel panel-success" v-for="match in matches">
+          <div class="panel panel-info" v-for="match in matchesLeft">
             <div class="panel-heading">
               <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
@@ -101,44 +101,6 @@
               <div class="pair-name match-pair" v-for="pair in match.pairs">
                 <span class="label label-info position">{{ pair.matchRanking }}</span>
                   {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 7</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 10</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
               </div>
             </div>
           </div>
@@ -150,15 +112,15 @@
                     <div class="panel-body">
                         <div class="pair-name match-pair">
                             <span class="label label-info position">1</span>
-                            Alex Land and David Li
+                            Goon Squad 1
                         </div>
                         <div class="pair-name match-pair">
                             <span class="label label-info position">2</span>
-                            Noor and Gordon
+                            Goon Squad 2
                         </div>
                         <div class="pair-name match-pair">
                             <span class="label label-info position">3</span>
-                            Sam and Raymond
+                            Goon Squad 3
                         </div>
                     </div>
                 </div>
@@ -168,157 +130,27 @@
             </div>
         </div>
         <div class="matches-mid">
-          <div class="panel panel-success">
+          <div class="panel panel-info" v-for="match in matchesMid">
             <div class="panel-heading">
-              <h3 class="panel-title">Match 2</h3>
+              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
             <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 5</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 8</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 11</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
+              <div class="pair-name match-pair" v-for="pair in match.pairs">
+                <span class="label label-info position">{{ pair.matchRanking }}</span>
+                {{ pair.name }}
               </div>
             </div>
           </div>
         </div>
         <div class="matches-right">
-          <div class="panel panel-info">
+          <div class="panel panel-info" v-for="match in matchesRight">
             <div class="panel-heading">
-              <h3 class="panel-title">Match 3</h3>
+              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
             <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 6</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 9</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 12</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
+              <div class="pair-name match-pair" v-for="pair in match.pairs">
+                <span class="label label-info position">{{ pair.matchRanking }}</span>
+                {{ pair.name }}
               </div>
             </div>
           </div>
