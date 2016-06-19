@@ -24,5 +24,8 @@ jshint:
   stage: jshint
 
 jstest:
-  script: grunt jasmine:api
+  script: 
+  - cd web
+  - npm install
+  - grunt jasmine
   stage: jstest
