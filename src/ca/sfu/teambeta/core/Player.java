@@ -1,6 +1,8 @@
 package ca.sfu.teambeta.core;
 
 
+import com.google.gson.annotations.SerializedName;
+
 import javax.persistence.Entity;
 
 /**
@@ -8,7 +10,10 @@ import javax.persistence.Entity;
  */
 @Entity(name = "Player")
 public class Player extends Persistable {
+
+    @SerializedName("firstName")
     private String firstName;
+    @SerializedName("lastName")
     private String lastName;
     private String phoneNumber;
 

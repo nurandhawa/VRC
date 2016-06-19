@@ -3,6 +3,7 @@ package ca.sfu.teambeta.core;
 //Pair should have information about pairs activity
 //Ladder shoud return the size of itself
 
+import com.google.gson.annotations.SerializedName;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -31,13 +32,15 @@ public class Pair extends Persistable {
     @Type(type = "timestamp")
     private Date dateCreated;
 
-    @Transient
+    //@Transient
+    @SerializedName("postion")
     private int position;
     @Transient
     private int oldPosition;
     @Transient
     private int penalty;
-    @Transient
+    //@Transient
+    @SerializedName("isPlaying")
     private boolean isPlaying;
 
     public Pair() {

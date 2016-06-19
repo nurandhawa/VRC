@@ -5,6 +5,7 @@ import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import org.omg.CosNaming.NamingContextPackage.NotFound;
 
@@ -33,11 +34,12 @@ public class AppController {
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
 
-    private static Gson gson = new Gson();
+    private static Gson gson;
 
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
+        gson = new GsonBuilder().create();
 
         /* Still has to decide on URLs for each of them and what
         excatly would be passed from the front end.
