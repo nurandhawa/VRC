@@ -107,9 +107,9 @@ public class LadderManager {
 
         return false;
     }
-    public Pair searchPairById(String id){
-        for (Pair current : ladder.getLadder()){
-            if (current.getId() == id){
+    public Pair searchPairById(String id) {
+        for (Pair current : ladder.getLadder()) {
+            if (current.getId() == id) {
                 return current;
             }
         }
@@ -277,6 +277,12 @@ public class LadderManager {
         }
     }
 
+    public void movePair(int oldPosition, int newPosition) {
+        for (int i = oldPosition; i < newPosition; i++) {
+            swapPair(i - 1, i);
+        }
+    }
+
     private void savePositions() {
         List<Pair> listPairs = ladder.getLadder();
         for (Pair current : listPairs) {
@@ -332,11 +338,12 @@ public class LadderManager {
 
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
-
-        for (Pair current : ladder.getLadder()) {
-            players.addAll(current.getPlayers());
+        for (Pair pair : activePairs) {
+            players.addAll(pair.getPlayers());
         }
-
+        for (Pair pair : passivePairs) {
+            players.addAll(pair.getPlayers());
+        }
         return players;
     }
 
