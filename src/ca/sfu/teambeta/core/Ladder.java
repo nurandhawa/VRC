@@ -72,6 +72,10 @@ public class Ladder extends Persistable {
         pairs.get(pairs.size() - 1).setPosition(pairs.size());
     }
 
+    public List<Pair> getLadder() {
+        return pairs;
+    }
+
     public List<Pair> getPairs() {
         return pairs;
     }

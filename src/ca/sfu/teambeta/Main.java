@@ -9,14 +9,14 @@ import ca.sfu.teambeta.ui.UserInterface;
 public class Main {
     public static void main(String[] args) {
 
-        Ladder loadedLadder = DBManager.loadFromDB();
+        /*Ladder loadedLadder = DBManager.loadFromDB();
         LadderManager ladderManager = new LadderManager(loadedLadder.getLadder());
 
         ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
 
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
 
-        AppController appController = new AppController(ladderManager,gameManager);
+        AppController appController = new AppController(ladderManager,gameManager);*/
 
     }
 }
