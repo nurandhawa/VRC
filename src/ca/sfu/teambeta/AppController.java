@@ -48,7 +48,7 @@ public class AppController {
         //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
         get("/api/index", (request, response) -> {
-            if(ladderManager.getLadder() != null) {
+            if (ladderManager.getLadder() != null) {
                 response.status(OK);
             } else {
                 response.status(BAD_REQUEST);
@@ -128,7 +128,7 @@ public class AppController {
             boolean validOldPos = 0 < oldPosition && oldPosition < ladderManager.ladderSize();
             boolean validNewPos = 0 < newPosition && oldPosition < ladderManager.ladderSize();
 
-            if(ladderManager.searchPairById(id).getPosition() != oldPosition) {
+            if (ladderManager.searchPairById(id).getPosition() != oldPosition) {
                 response.status(BAD_REQUEST);
                 return response;
             }
@@ -165,7 +165,7 @@ public class AppController {
 
         //Show a list of matches
         get("/api/matches", (request, response) -> {
-            if(gameManager.getScorecards() != null) {
+            if (gameManager.getScorecards() != null) {
                 response.status(OK);
             } else {
                 response.status(BAD_REQUEST);
