@@ -105,17 +105,6 @@ public class LadderManager {
         return null;
     }
 
-        return false;
-    }
-    public Pair searchPairById(String id) {
-        for (Pair current : ladder.getLadder()) {
-            if (current.getId() == id) {
-                return current;
-            }
-        }
-        return null;
-    }
-
     public boolean setIsPlaying(Pair pair) {
         //Set pair to playing if players are unique(returns true)
         if (ladder.getLadder().contains(pair)) {
@@ -274,12 +263,6 @@ public class LadderManager {
                 }
                 movePair(actualPosition, newPosition);
             }
-        }
-    }
-
-    public void movePair(int oldPosition, int newPosition) {
-        for (int i = oldPosition; i < newPosition; i++) {
-            swapPair(i - 1, i);
         }
     }
 
