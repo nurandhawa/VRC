@@ -3,7 +3,7 @@ package ca.sfu.teambeta;
 class Main {
     public static void main(String[] args) {
 
-        /*Ladder loadedLadder = DBManager.loadFromDB();*/
+        /*Laddgiter loadedLadder = DBManager.loadFromDB();*/
 
         //List<Pair> pairs = new ArrayList<>();
 
