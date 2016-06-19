@@ -93,8 +93,10 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
         int newPairPosition = 2;
 
-        ladderManager.addNewPairAtIndex(new Pair
-                (new Player(21, "P21"), new Player(22, "P22"), true), 1);
+        Player player1 = new Player(21, "P21");
+        Player player2 = new Player(22, "P22");
+        Pair newPair = new Pair(player1, player2);
+        ladderManager.addNewPairAtIndex(newPair, 1);
 
         Pair pair = ladderManager.getLadder().get(1);
         int position = pair.getPosition();
@@ -117,7 +119,8 @@ public class LadderManagerTest {
                 isPlaying = false;
             }
 
-            Pair pair = new Pair(new Player((i * 2) - 1, playerOne), new Player((i * 2), playerTwo), isPlaying);
+            Pair pair = new Pair(new Player((i * 2) - 1, playerOne),
+                    new Player((i * 2), playerTwo), isPlaying);
             pair.setPosition(i);
             ladder.add(pair);
         }
