@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.persistence;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,7 +11,6 @@ import org.hibernate.criterion.Property;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Persistable;
 import ca.sfu.teambeta.core.Player;
 
 /**

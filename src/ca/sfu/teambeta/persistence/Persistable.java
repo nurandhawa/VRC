@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.core;
+package ca.sfu.teambeta.persistence;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

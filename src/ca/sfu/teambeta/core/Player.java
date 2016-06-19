@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import ca.sfu.teambeta.persistence.Persistable;
+
 /**
  * Created by Gordon Shieh on 25/05/16.
  */

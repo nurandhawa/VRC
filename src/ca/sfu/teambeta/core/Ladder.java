@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 
+import ca.sfu.teambeta.persistence.Persistable;
+
 /**
  * Ladder ranking object. Contains a List of pairs to indicate the ranking of each pair
  */
