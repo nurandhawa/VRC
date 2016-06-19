@@ -95,7 +95,7 @@ public class LadderManagerTest {
 
         Player player1 = new Player(21, "P21", "Test", "");
         Player player2 = new Player(22, "P22", "Test", "");
-
+        
         Pair newPair = new Pair(player1, player2);
         ladderManager.addNewPairAtIndex(newPair, 1);
         
@@ -122,6 +122,7 @@ public class LadderManagerTest {
 
             Pair pair = new Pair(new Player((i * 2) - 1, playerOne, "Test", ""),
                     new Player((i * 2), playerTwo, "Test", ""), isPlaying);
+
             pair.setPosition(i);
             ladder.add(pair);
         }
