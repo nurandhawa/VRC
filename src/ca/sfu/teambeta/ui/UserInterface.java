@@ -214,7 +214,7 @@ public class UserInterface {
                 input = scanner.nextLine();
 
                 int playerID = ladderManager.getAllPlayers().size() + pair.size() + 1;
-                pair.add(new Player(playerID, input));
+//                pair.add(new Player(playerID, input));
             }
         }
 
@@ -224,7 +224,7 @@ public class UserInterface {
     private static void listPlayers(List<Player> players) {
         int index = 1;
         for (Player player : players) {
-            System.out.println(index + ". " + player.getName());
+            System.out.println(index + ". " + player.getFirstName());
             index++;
         }
     }

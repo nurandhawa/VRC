@@ -30,12 +30,12 @@ public class LadderManager {
             index++;
         }
         ladder = new Ladder(dbLadder);
-        activePairs = findPairs(ladder.getLadder(), true);
-        passivePairs = findPairs(ladder.getLadder(), false);
+        activePairs = findPairs(ladder.getPairs(), true);
+        passivePairs = findPairs(ladder.getPairs(), false);
     }
 
     public List<Pair> getLadder() {
-        return ladder.getLadder();
+        return ladder.getPairs();
     }
 
     public List<Pair> getActivePairs() {
@@ -49,7 +49,7 @@ public class LadderManager {
     }
 
     public boolean addNewPair(Pair newPair) {
-        boolean pairExists = ladder.getLadder().contains(newPair);
+        boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
             newPair.setPosition(ladder.getLadderLength());
             setIsPlaying(newPair);
@@ -59,7 +59,7 @@ public class LadderManager {
     }
 
     public boolean addNewPairAtIndex(Pair newPair, int index) {
-        boolean pairExists = ladder.getLadder().contains(newPair);
+        boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
             newPair.setPosition(ladder.getLadderLength());
             setIsPlaying(newPair);
@@ -75,7 +75,7 @@ public class LadderManager {
 
     public boolean setIsPlaying(Pair pair) {
         //Set pair to playing if players are unique(returns true)
-        if (ladder.getLadder().contains(pair)) {
+        if (ladder.getPairs().contains(pair)) {
             List<Player> team = pair.getPlayers();
             Player first = team.get(0);
             Player second = team.get(1);
@@ -89,7 +89,7 @@ public class LadderManager {
     }
 
     public void setNotPlaying(Pair pair) {
-        if (ladder.getLadder().contains(pair)) {
+        if (ladder.getPairs().contains(pair)) {
             pair.deActivate();
             getActivePairs();
         }
@@ -106,7 +106,7 @@ public class LadderManager {
     }
 
     private void split() {
-        List<Pair> fullLadder = ladder.getLadder();
+        List<Pair> fullLadder = ladder.getPairs();
 
         activePairs = findPairs(fullLadder, true);
         passivePairs = findPairs(fullLadder, false);
@@ -210,7 +210,7 @@ public class LadderManager {
     }
 
     private void applyLateMissPenalty() {
-        List<Pair> pairList = ladder.getLadder();
+        List<Pair> pairList = ladder.getPairs();
         int size = ladder.getLadderLength();
 
         for (Pair current : pairList) {
@@ -237,7 +237,7 @@ public class LadderManager {
     }
 
     private void savePositions() {
-        List<Pair> listPairs = ladder.getLadder();
+        List<Pair> listPairs = ladder.getPairs();
         for (Pair current : listPairs) {
             current.establishPosition();
         }
@@ -276,7 +276,7 @@ public class LadderManager {
     }
 
     private void swapPair(int firstIndex, int secondIndex) {
-        List<Pair> listPairs = ladder.getLadder();
+        List<Pair> listPairs = ladder.getPairs();
         Pair first = listPairs.get(firstIndex);
         Pair second = listPairs.get(secondIndex);
 

@@ -3,21 +3,45 @@ package ca.sfu.teambeta.core;
 //Pair should have information about pairs activity
 //Ladder shoud return the size of itself
 
+import org.hibernate.annotations.Type;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-public class Pair {
+@Entity(name = "Pair")
+@Embeddable
+public class Pair extends Persistable {
+
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Player> team = new ArrayList<>();
+
+    @Column(name = "date_created")
+    @Type(type = "timestamp")
     private Date dateCreated;
+
+    @Transient
     private int position;
+    @Transient
     private int oldPosition;
+    @Transient
     private int penalty;
+    @Transient
     private boolean isPlaying;
+
+    public Pair() {
+    }
 
     public Pair(Player firstPlayer, Player secondPlayer) {
         team.add(firstPlayer);
@@ -40,7 +64,7 @@ public class Pair {
     }
 
     public List<Player> getPlayers() {
-        return team;
+        return new ArrayList<>(team);
     }
 
     public Date getDateCreated() {
@@ -93,12 +117,7 @@ public class Pair {
     }
 
     public boolean hasPlayer(Player searchPlayer) {
-        return (team.get(0).equals(searchPlayer) || team.get(1).equals(searchPlayer));
-    }
-
-    public boolean hasPlayer(Player firstPlayer, Player secondPlayer) {
-        return (team.get(0).equals(firstPlayer) || team.get(1).equals(firstPlayer))
-                && (team.get(0).equals(secondPlayer) || team.get(1).equals(secondPlayer));
+        return (getPlayers().get(0).equals(searchPlayer) || getPlayers().get(1).equals(searchPlayer));
     }
 
     @Override
@@ -118,8 +137,8 @@ public class Pair {
     }
 
     public String toString() {
-        return team.get(0).getName()
-                + " & " + team.get(1).getName()
+        return getPlayers().get(0).getFirstName()
+                + " & " + getPlayers().get(1).getFirstName()
                 + "  Playing? " + isPlaying;
     }
 }

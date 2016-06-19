@@ -1,99 +1,142 @@
 package ca.sfu.teambeta.logic;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Persistable;
 import ca.sfu.teambeta.core.Player;
 
 /**
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
-    private static final String DEFAULT_FILENAME = "ladder.csv";
-    private static final int PLAYERID_INDEX = 0;
-    private static final int PLAYERNAME_INDEX = 1;
-    private static String OVERRIDDEN_FILENAME = null;
+    private SessionFactory factory;
+    private Session session;
 
-    /**
-     * Saves values to the database.
-     *
-     * Schema: PlayerID, Player Name
-     *
-     * @param ladder: A Ladder object
-     */
-    public static void saveToDB(Ladder ladder) {
-        List<String[]> values = new ArrayList<>();
+    DBManager(SessionFactory factory) {
+        this.factory = factory;
+        this.session = factory.openSession();
+    }
 
-        for (Pair pair : ladder.getLadder()) {
-            List<Player> players = pair.getPlayers();
-            for (Player player : players) {
-                String[] playerData = {String.valueOf(player.getPlayerID()), player.getName()};
-                values.add(playerData);
-            }
-        }
+    private static Configuration getDefaultConfiguration() {
+        Configuration config = new Configuration();
+        config.addAnnotatedClass(Player.class);
+        config.addAnnotatedClass(Pair.class);
+        config.addAnnotatedClass(Ladder.class);
+        return config;
+    }
 
-        String filename = OVERRIDDEN_FILENAME != null ? OVERRIDDEN_FILENAME : DEFAULT_FILENAME;
-        try (CSVWriter writer = new CSVWriter(new FileWriter(filename))) {
-            for (String[] nextLine : values) {
-                writer.writeNext(nextLine);
-            }
-        } catch (IOException e) {
+    public static SessionFactory getTestingSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.connection.url", "jdbc:h2:file:/home/freeman/prj/resources/database.db");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
+        return config.buildSessionFactory();
+    }
+
+    public static SessionFactory getHSQLSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.connection.username", "");
+        config.setProperty("hibernate.connection.password", "");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:hsqldb:file:/home/freeman/prj/resources/database/test");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
+        return config.buildSessionFactory();
+    }
+
+    public static SessionFactory getMySQLSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
+        config.setProperty("hibernate.connection.username", "sql3124016");
+        config.setProperty("hibernate.connection.password", "kTZ23wYIQq");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql3124016");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        return config.buildSessionFactory();
+    }
+
+    public static void main(String[] args) {
+        SessionFactory factory = getMySQLSession();
+        DBManager dbMan = new DBManager(factory);
+        Player p1 = new Player("Bobby", "Chan", "");
+        Player p2 = new Player("Wing", "Man", "");
+        dbMan.persistEntity(new Pair(p1, p2));
+
+        Player p3 = new Player("Hello", "World!", "");
+        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
+
+        Player test = dbMan.getPlayerFromID(5);
+
+        System.out.println(test.getFirstName());
+
+        Ladder lad = dbMan.getLatestLadder();
+
+        System.out.println(lad);
+    }
+
+    public int persistEntity(Persistable entity) {
+        Transaction tx = null;
+        int key = 0;
+        try {
+            tx = session.beginTransaction();
+            key = (int) session.save(entity);
+            tx.commit();
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
             e.printStackTrace();
         }
+        return key;
     }
 
-    public static void saveToDB(Ladder ladder, String filename) {
-        OVERRIDDEN_FILENAME = filename;
-        saveToDB(ladder);
-        OVERRIDDEN_FILENAME = null;
-    }
-
-    /**
-     * Loads values from the database.
-     *
-     * @return Ladder
-     */
-    public static Ladder loadFromDB() {
-        String filename = OVERRIDDEN_FILENAME != null ? OVERRIDDEN_FILENAME : DEFAULT_FILENAME;
-        try (CSVReader reader = new CSVReader(new FileReader(filename))) {
-            List<String[]> ladderEntries = reader.readAll();
-            List<Pair> pairs = new ArrayList<>();
-
-            Iterator<String[]> ladderIter = ladderEntries.iterator();
-            while (ladderIter.hasNext()) {
-                String[] player1Data = ladderIter.next();
-                String[] player2Data = ladderIter.next();
-                Player player1 = new Player(
-                        Integer.parseInt(player1Data[PLAYERID_INDEX]),
-                        player1Data[PLAYERNAME_INDEX]
-                );
-                Player player2 = new Player(
-                        Integer.parseInt(player2Data[PLAYERID_INDEX]),
-                        player2Data[PLAYERNAME_INDEX]
-                );
-                Pair pair = new Pair(player1, player2);
-                pairs.add(pair);
-            }
-
-            return new Ladder(pairs);
-        } catch (IOException e) {
-            return new Ladder(new ArrayList<>());
+    private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
+        Transaction tx = null;
+        Persistable entity = null;
+        try {
+            tx = session.beginTransaction();
+            entity = (Persistable) session.get(persistable, id);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
         }
+        return entity;
     }
 
-    public static Ladder loadFromDB(String filename) {
-        OVERRIDDEN_FILENAME = filename;
-        Ladder ladder = loadFromDB();
-        OVERRIDDEN_FILENAME = null;
+    public Player getPlayerFromID(int id) {
+        Player player = null;
+        try {
+            player = (Player) getEntityFromID(Player.class, id);
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+        return player;
+    }
+
+    public Ladder getLatestLadder() {
+        Transaction tx = null;
+        Ladder ladder = null;
+        try {
+            tx = session.beginTransaction();
+            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+                    .setProjection(Projections.max("id"));
+            ladder = (Ladder) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
         return ladder;
     }
 }

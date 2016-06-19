@@ -1,41 +1,54 @@
 package ca.sfu.teambeta.core;
 
+
+import javax.persistence.Entity;
+
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
-public class Player {
-    private int playerID;
-    private String name;
+@Entity(name = "Player")
+public class Player extends Persistable {
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
 
-    public Player(int id, String name) {
-        this.playerID = id;
-        this.name = name;
+    public Player() {
     }
 
-    public int getPlayerID() {
-        return playerID;
+    public Player(int id, String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        setID(id);
     }
 
-    public String getName() {
-        return name;
+    public Player(String firstName, String lastName, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Player player = (Player) o;
-        return playerID == player.playerID;
+    public String getFirstName() {
+        return firstName;
     }
 
-    @Override
-    // Once we get a database setup, the playerID attribute will be guaranteed unique
-    public int hashCode() {
-        return name.hashCode();
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
