@@ -36,6 +36,12 @@ public class AppController {
         port(8000);
         staticFiles.location(".");
 
+        /* Still has to decide on URLs for each of them and what
+        excatly would be passed from the front end.
+        Some of the functions are incomplete but require minimal change once
+        we decide how front end is going to interact with it. 
+         */
+
         //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
         get("/api/index", (request, response) -> {
