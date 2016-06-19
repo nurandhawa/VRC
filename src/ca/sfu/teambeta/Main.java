@@ -4,7 +4,6 @@ import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.logic.DBManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
-import ca.sfu.teambeta.ui.UserInterface;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,6 +16,7 @@ public class Main {
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
 
         AppController appController = new AppController(ladderManager,gameManager);*/
+
 
     }
 }
