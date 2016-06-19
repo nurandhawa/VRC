@@ -39,7 +39,7 @@ public class AppController {
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
-        gson = new GsonBuilder().create();
+        gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         /* Still has to decide on URLs for each of them and what
         excatly would be passed from the front end.

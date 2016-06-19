@@ -6,12 +6,14 @@ import java.util.List;
 import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
+import com.google.gson.annotations.Expose;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 public class GameManager {
     private List<Pair> ladder;
+    @Expose
     private List<Scorecard<Pair>> groups;
     private Observer observer = null;
     private int groupsDone = 0;
