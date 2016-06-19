@@ -198,30 +198,4 @@ public class AppController {
         });
 
     }
-
-
-    private JsonArray toJSON(List<Pair> ladder) {
-        JsonArrayBuilder builder = Json.createArrayBuilder();
-
-        for (Pair current : ladder) {
-            int position = current.getPosition();
-            List<Player> team = current.getPlayers();
-            String player1 = team.get(0).getName();
-            String player2 = team.get(1).getName();
-            Boolean isPlaying = current.isPlaying();
-
-            JsonObject jsonOfPair = Json.createObjectBuilder()
-                    .add(POSITION, position)
-                    .add(PLAYERS, Json.createArrayBuilder()
-                            .add(player1)
-                            .add(player2)
-                    )
-                    .add(IS_PLAYING, isPlaying)
-                    .build();
-            builder.add(jsonOfPair);
-        }
-        JsonArray result = builder.build();
-
-        return result;
-    }
 }

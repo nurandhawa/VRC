@@ -34,26 +34,12 @@ public class LadderManager {
         passivePairs = findPairs(ladder.getPairs(), false);
     }
 
-    public LadderManager(Ladder loadedLadder) {
-        if (loadedLadder.getPairs().size() == 0) {
-            ladder = new Ladder(new ArrayList<Pair>());
-        } else {
-            ladder = loadedLadder;
-        }
-        activePairs = new ArrayList<>();
-        passivePairs = new ArrayList<>();
-    }
-
     public int ladderSize() {
         return ladder.getLadderLength();
     }
 
     public List<Pair> getLadder() {
-        List<Pair> list =  ladder.getPairs();
-        Comparator<Pair> makeSorter = getPairPositionComparator();
-
-        Collections.sort(list, makeSorter);
-        return list;
+        return ladder.getPairs();
     }
 
     public List<Pair> getActivePairs() {
