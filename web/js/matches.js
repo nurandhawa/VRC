@@ -22,10 +22,31 @@ new Vue({
 
 var Matches = (function() {
     function Matches(matchData) {
+        var matchHolderLeft = [];
+        var matchHolderMid = [];
+        var matchHolderRight = [];
+        for (var match in matchData){
+            var thisMatch = matchData[match];
+            var matchColumn = thisMatch.matchNum % 3;
+            switch(matchColumn){
+                case 0:
+                    matchHolderRight.push(thisMatch);
+                    break;
+                case 1:
+                    matchHolderLeft.push(thisMatch);
+                    break;
+                case 2:
+                    matchHolderMid.push(thisMatch);
+            }
+        }
+
+
         this.component = new Vue({
             el: '#matches',
             data: {
-                matches: matchData
+                matchesLeft: matchHolderLeft,
+                matchesMid: matchHolderMid,
+                matchesRight: matchHolderRight
             }
         });
     };
