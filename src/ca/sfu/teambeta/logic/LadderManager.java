@@ -119,34 +119,10 @@ public class LadderManager {
     public void processLadder(List<Scorecard<Pair>> scorecards) {
         split();
         applyAbsentPenalty();
-        List<Pair> newActivePairs = swapBetweenGroups(scorecards);
-
-        System.out.println("-----------Swapped Groups----------------");
-        for (Pair current : newActivePairs) {
-            System.out.println(current);
-        }
-
+        swapBetweenGroups(scorecards);
         assignNewPositionsToActivePairs();
-
-        System.out.println("-----------New Pos for Active------------");
-        for (Pair current : activePairs) {
-            System.out.println(current);
-        }
-
         combineActivePassive();
-
-        System.out.println("-----------Combined Ladder---------------");
-        for (Pair current : ladder.getLadder()) {
-            System.out.println(current);
-        }
-
         applyLateMissPenalty();
-
-        System.out.println("-----------Final Ladder------------------");
-        for (Pair current : ladder.getLadder()) {
-            System.out.println(current);
-        }
-
     }
 
     private void split() {
@@ -258,7 +234,7 @@ public class LadderManager {
     }
 
     private void applyPenalty(int penalization) {
-        List<Pair> pairList = ladder.getLadder();
+        List<Pair> pairList = ladder.getPairs();
         int size = ladder.getLadderLength();
         for (Pair current : pairList) {
             int penalty = current.getPenalty();
