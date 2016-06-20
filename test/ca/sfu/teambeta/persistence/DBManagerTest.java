@@ -2,7 +2,6 @@ package ca.sfu.teambeta.persistence;
 
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -23,6 +22,7 @@ public class DBManagerTest {
 
         SessionFactory sessionFactory = DBManager.getMySQLSession();
         DBManager dbManager = new DBManager(sessionFactory);
+        dbManager.persistEntity(playerExpected);
         Player playerActual = dbManager.getPlayerFromID(1);
 
         Assert.assertEquals(playerExpected, playerActual);
@@ -40,7 +40,6 @@ public class DBManagerTest {
     }
 
     @Test
-    @Ignore
     public void testGetLatestLadder() {
         List<Pair> ladderPairs = Arrays.asList(
                 new Pair(new Player("Bobby", "Chan", null), new Player("Wing", "Man", null), false),
@@ -49,8 +48,11 @@ public class DBManagerTest {
                 new Pair(new Player("Bobby", "Chan", null), new Player("Big", "Head", null), false)
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
+
         SessionFactory sessionFactory = DBManager.getMySQLSession();
         DBManager dbManager = new DBManager(sessionFactory);
+
+        dbManager.persistEntity(ladderExpected);
         Ladder ladderActual = dbManager.getLatestLadder();
 
         Assert.assertEquals(ladderExpected, ladderActual);
