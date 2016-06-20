@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.core;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import org.hibernate.annotations.Type;
 
 import java.util.Date;
@@ -26,6 +28,7 @@ public class Ladder extends Persistable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @OrderColumn
+    @Expose
     private List<Pair> pairs;
 
     public Ladder() {

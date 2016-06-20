@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.core;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +18,7 @@ public class Scorecard<T> {
     private static final int LOSE = -1;
     private static final int NUM_GAMES = 4;
 
+    @Expose
     private Map<T, List<Integer>> scoreMap;
     private Observer observer = null;
     private int setCount = 0;

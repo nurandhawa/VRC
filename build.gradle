@@ -3,6 +3,9 @@ version '0.1'
 
 apply plugin: 'java'
 apply plugin: 'checkstyle'
+apply plugin: 'application'
+
+mainClassName = "ca.sfu.teambeta.Main"
 
 checkstyle {
     toolVersion = "6.19"
@@ -38,11 +41,12 @@ dependencies {
     compile 'com.h2database:h2:1.4.192'
     compile 'mysql:mysql-connector-java:6.0.2'
     compile 'org.hsqldb:hsqldb:2.0.0'
+    compile 'com.sparkjava:spark-core:2.5'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.1'
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+    compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
+    compile files('web')
 }
 
-// Code copied from:
-// https://stackoverflow.com/questions/21814652/how-to-download-dependencies-in-gradle
-task getDeps(type: Copy) {
-    from sourceSets.main.runtimeClasspath
-    into 'lib/'
-}
+
+

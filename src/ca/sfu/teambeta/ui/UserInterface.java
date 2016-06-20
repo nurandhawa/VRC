@@ -213,8 +213,8 @@ public class UserInterface {
                 System.out.println("Enter name of new player: ");
                 input = scanner.nextLine();
 
-                int playerID = ladderManager.getAllPlayers().size() + pair.size() + 1;
-//                pair.add(new Player(playerID, input));
+                int playerID = ladderManager.ladderSize() + pair.size() + 1;
+                pair.add(new Player(playerID, input, "null", "778-923-0000"));
             }
         }
 

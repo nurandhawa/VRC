@@ -34,6 +34,10 @@ public class LadderManager {
         passivePairs = findPairs(ladder.getPairs(), false);
     }
 
+    public int ladderSize() {
+        return ladder.getLadderLength();
+    }
+
     public List<Pair> getLadder() {
         return ladder.getPairs();
     }
@@ -69,8 +73,22 @@ public class LadderManager {
     }
 
     public boolean removePairAtIndex(int index) {
-        Pair pairToRemove = ladder.getPairAtIndex(index);
-        return ladder.removePair(pairToRemove);
+        if (index >= 0 && index < ladder.getLadderLength()) {
+            Pair pairToRemove = ladder.getPairAtIndex(index);
+            ladder.removePair(pairToRemove);
+            return true;
+        }
+
+        return false;
+    }
+
+    public Pair searchPairById(int id) {
+        for (Pair current : ladder.getPairs()) {
+            if (current.getID() == id) {
+                return current;
+            }
+        }
+        return null;
     }
 
     public boolean setIsPlaying(Pair pair) {
@@ -229,9 +247,7 @@ public class LadderManager {
                 if (newPosition > size) {
                     newPosition = size;
                 }
-                for (int i = actualPosition; i < newPosition; i++) {
-                    swapPair(i - 1, i);
-                }
+                movePair(actualPosition, newPosition);
             }
         }
     }
@@ -291,12 +307,11 @@ public class LadderManager {
 
     public List<Player> getAllPlayers() {
         List<Player> players = new ArrayList<>();
-        for (Pair pair : activePairs) {
-            players.addAll(pair.getPlayers());
+
+        for (Pair current : ladder.getPairs()) {
+            players.addAll(current.getPlayers());
         }
-        for (Pair pair : passivePairs) {
-            players.addAll(pair.getPlayers());
-        }
+
         return players;
     }
 
@@ -309,4 +324,13 @@ public class LadderManager {
         }
         return false;
     }
+
+    public void movePair(int oldPosition, int newPosition) {
+        for (int i = oldPosition; i < newPosition; i++) {
+            swapPair(i - 1, i);
+        }
+    }
+
 }
+
+

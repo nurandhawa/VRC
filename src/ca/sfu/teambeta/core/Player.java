@@ -1,19 +1,24 @@
 package ca.sfu.teambeta.core;
 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
 @Entity(name = "Player")
 public class Player extends Persistable {
-    private String firstName;
-    private String lastName;
-    private String phoneNumber;
 
-    public Player() {
-    }
+    @Expose
+    private String firstName;
+    @Expose
+    private String lastName;
+    @Transient
+    private String phoneNumber;
 
     public Player(int id, String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;

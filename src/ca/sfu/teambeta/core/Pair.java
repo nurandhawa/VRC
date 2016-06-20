@@ -3,6 +3,8 @@ package ca.sfu.teambeta.core;
 //Pair should have information about pairs activity
 //Ladder shoud return the size of itself
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -25,19 +27,21 @@ import javax.persistence.Transient;
 public class Pair extends Persistable {
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @Expose
     private List<Player> team = new ArrayList<>();
-
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;
 
-    @Transient
+    //@Transient
+    @Expose
     private int position;
     @Transient
     private int oldPosition;
     @Transient
     private int penalty;
-    @Transient
+    //@Transient
+    @Expose
     private boolean isPlaying;
 
     public Pair() {
