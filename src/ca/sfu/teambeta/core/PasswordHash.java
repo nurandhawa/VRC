@@ -72,9 +72,6 @@ public class PasswordHash
      * @return              a salted PBKDF2 hash of the password
      */
     public static String createHash(char[] password) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        if (true) {
-            throw new NoSuchAlgorithmException();
-        }
         // Generate a random salt
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_BYTE_SIZE];
