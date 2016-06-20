@@ -27,12 +27,13 @@ public class AccountManager {
     // MARK: - Database Methods
     private static User getUserFromDB(String username) throws Exception {
         // TODO: Check the real MySQL Database if the user exists
+
         if (!username.equals(DEMO_USERNAME)) {
             // Note: In the case the username is not found in the database, throw an Exception,
             //  and let the front-end handle that. We can choose to handle this specifically or display a
             //  generic error message for security reasons.
 
-            throw new Exception("User does not exist");
+            throw new Exception("Error: User does not exist");
         }
 
         String demoUsername = DEMO_USERNAME;
@@ -43,8 +44,7 @@ public class AccountManager {
             demoPasswordHash = PasswordHash.createHash(demoPassword);
         } catch (Exception e) {
             // Take the abstract Exceptions thrown by ".createHash()" and throw a new simpler-general Exception
-            //e.printStackTrace();
-            throw new Exception("Error with hashing password");
+            throw new Exception("Error: Could not hash password");
         }
 
         User demoUser = new User(demoUsername, demoPasswordHash);
@@ -54,16 +54,7 @@ public class AccountManager {
 
 
     // MARK: - The Core User Methods
-    public static boolean authenticateUser(String username, String password) throws Exception {
-        // Check that the input is valid
-        boolean usernameTooLong = username.length() > MAX_USERNAME_LENGTH;
-        boolean usernameNotAlphaNumeric = !isAlphaNumeric(username);
-
-        if (username.isEmpty() || password.isEmpty() || usernameTooLong || usernameNotAlphaNumeric) {
-            throw new InvalidParameterException();
-        }
-
-
+    private static boolean authenticateUser(String username, String password) throws Exception {
         // Grab the user from the database
         User user = getUserFromDB(username);
 
@@ -75,17 +66,35 @@ public class AccountManager {
             isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
         } catch (Exception e) {
             // Take the abstract Exceptions thrown by ".validatePassword()" and throw a new simpler-general Exception
-            e.printStackTrace();
-            throw new Exception("Error in hashing method. Password cannot be determined as correct or incorrect.");
+            throw new Exception("Error: Error with hashing method. Password cannot be determined as correct or incorrect.");
         }
 
         return isPasswordCorrect;
+    }
+
+    public static boolean login(String username, String password) throws Exception {
+        // Check that the input is valid
+        boolean usernameTooLong = username.length() > MAX_USERNAME_LENGTH;
+        boolean usernameNotAlphaNumeric = !isAlphaNumeric(username);
+
+        if (username.isEmpty() || password.isEmpty() || usernameTooLong || usernameNotAlphaNumeric) {
+            throw new InvalidParameterException();
+        }
+
+
+        // Look the user up, and authenticate the password
+        boolean authenticated = authenticateUser(username, password);
+
+
+        // TODO: CC @Alex, Return a HTTP Session. For now return a boolean.
+        return authenticated;
     }
 
 
     // MARK: - Miscellaneous Methods
     private static boolean isAlphaNumeric(String str) {
         // See citations.txt for source
+        // Note: If we decide to use email's as usernames, then this will fail the alphanumeric check.
 
         String pattern= "^[a-zA-Z0-9]*$";
         return str.matches(pattern);
@@ -97,11 +106,12 @@ public class AccountManager {
         boolean authenticated = false;
         
         try {
-            authenticated = authenticateUser("admin", "demoPass");
+            authenticated = login("admin", "demoPass");
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
         
-        System.out.println("AUTH STATUS: " + authenticated);
+        System.out.println("User Authentication Status: " + authenticated);
     }
 }
