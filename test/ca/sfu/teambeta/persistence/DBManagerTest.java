@@ -42,10 +42,10 @@ public class DBManagerTest {
     @Test
     public void testGetLatestLadder() {
         List<Pair> ladderPairs = Arrays.asList(
-                new Pair(new Player("Bobby", "Chan", null), new Player("Wing", "Man", null), false),
-                new Pair(new Player("Ken", "Hazen", null), new Player("Brian", "Fraser", null), false),
-                new Pair(new Player("Simon", "Fraser", null), new Player("Dwight", "Howard", null), false),
-                new Pair(new Player("Bobby", "Chan", null), new Player("Big", "Head", null), false)
+                new Pair(new Player("Bobby", "Chan", ""), new Player("Wing", "Man", ""), false),
+                new Pair(new Player("Ken", "Hazen", ""), new Player("Brian", "Fraser", ""), false),
+                new Pair(new Player("Simon", "Fraser", ""), new Player("Dwight", "Howard", ""), false),
+                new Pair(new Player("Bobby", "Chan", ""), new Player("Big", "Head", ""), false)
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
