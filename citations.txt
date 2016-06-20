@@ -2,3 +2,5 @@ Gradle task to fetch dependencies from https://stackoverflow.com/questions/21814
 Found method to improve CI build times from here https://stackoverflow.com/questions/33940384/gitlab-8-2-1-how-to-use-cache-in-gitlab-ci-yml/35478988#35478988
 Found method for loading Node onto Docker image from https://github.com/nodejs/docker-node/blob/466e418a117f33c1cd550414ae1b39423319a265/6.2/Dockerfile
 Found way to fetch object with max ID from https://stackoverflow.com/questions/23477258/issue-with-get-max-id-in-criteria
+Used a wrapper library for password hashing from: https://github.com/ghostfreak3000/password-hash
+Found a regex to check for alphanumeric characters from: http://stackoverflow.com/questions/11241690/regex-for-checking-if-a-string-is-strictly-alphanumeric
