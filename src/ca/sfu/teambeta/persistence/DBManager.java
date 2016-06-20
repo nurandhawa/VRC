@@ -56,11 +56,11 @@ public class DBManager {
 
     public static SessionFactory getMySQLSession() {
         Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "update");
-        config.setProperty("hibernate.connection.username", "sql3124016");
-        config.setProperty("hibernate.connection.password", "kTZ23wYIQq");
+        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.connection.username", "beta-test");
+        config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql3124016");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         return config.buildSessionFactory();
