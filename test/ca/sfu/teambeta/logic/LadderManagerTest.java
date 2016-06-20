@@ -98,7 +98,7 @@ public class LadderManagerTest {
         
         Pair newPair = new Pair(player1, player2);
         ladderManager.addNewPairAtIndex(newPair, 1);
-        
+
         Pair pair = ladderManager.getLadder().get(1);
         int position = pair.getPosition();
         Assert.assertEquals(position, newPairPosition);
@@ -289,3 +289,5 @@ public class LadderManagerTest {
         return db;
     }
 }
+
+
