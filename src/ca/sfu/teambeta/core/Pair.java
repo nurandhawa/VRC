@@ -8,7 +8,9 @@ import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -26,12 +28,10 @@ import ca.sfu.teambeta.persistence.Persistable;
 @Entity(name = "Pair")
 @Embeddable
 public class Pair extends Persistable {
-    private static final boolean DEFAULT_PLAYING_STATUS = true;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
-    private List<Player> team = new ArrayList<>();
-
+    private Set<Player> players = new HashSet<>();
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;
@@ -49,17 +49,17 @@ public class Pair extends Persistable {
     }
 
     public Pair(Player firstPlayer, Player secondPlayer) {
-        team.add(firstPlayer);
-        team.add(secondPlayer);
+        players.add(firstPlayer);
+        players.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
         penalty = 0;
-        this.isPlaying = DEFAULT_PLAYING_STATUS;
+        this.isPlaying = true;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
-        team.add(firstPlayer);
-        team.add(secondPlayer);
+        players.add(firstPlayer);
+        players.add(secondPlayer);
         dateCreated = new Date();
         position = 0;
         penalty = 0;
@@ -67,7 +67,7 @@ public class Pair extends Persistable {
     }
 
     public List<Player> getPlayers() {
-        return new ArrayList<>(team);
+        return new ArrayList<>(players);
     }
 
     public Date getDateCreated() {
@@ -115,7 +115,7 @@ public class Pair extends Persistable {
 
         Pair otherPair = (Pair) other;
 
-        return team.equals(otherPair.getPlayers());
+        return players.equals(otherPair.players);
     }
 
     @Override
