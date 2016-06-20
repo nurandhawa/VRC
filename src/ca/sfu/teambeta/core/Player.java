@@ -19,23 +19,6 @@ public class Player extends Persistable {
     private String lastName;
     @Transient
     private String phoneNumber;
-    @Transient
-    private int playerID;
-    @Transient
-    private String name;
-
-    public Player(int id, String name) {
-        this.playerID = id;
-        this.name = name;
-    }
-
-    public int getPlayerID() {
-        return playerID;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public Player(int id, String firstName, String lastName, String phoneNumber) {
         this.firstName = firstName;

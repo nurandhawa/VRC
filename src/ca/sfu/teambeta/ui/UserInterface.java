@@ -214,7 +214,7 @@ public class UserInterface {
                 input = scanner.nextLine();
 
                 int playerID = ladderManager.ladderSize() + pair.size() + 1;
-                pair.add(new Player(playerID, input));
+                pair.add(new Player(playerID, input, "null", "778-923-0000"));
             }
         }
 
