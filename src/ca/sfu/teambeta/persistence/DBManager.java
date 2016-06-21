@@ -67,7 +67,11 @@ public class DBManager {
         config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        return config.buildSessionFactory();
+        try {
+            return config.buildSessionFactory();
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
     }
 
     public static void main(String[] args) {
