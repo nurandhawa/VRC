@@ -14,20 +14,20 @@ var API = (function() {
         .done(function(response) {
             callback(JSON.parse(response));
         });
-    }
+    };
 
     // newStatus must be "playing" or "not playing"
     API.prototype.updatePairStatus = function(pairId, newStatus, callback) {
         $.ajax({
             method: "PATCH",
-            url: SERVER_URL + "/" + pairId + "/" + newStatus;
+            url: SERVER_URL + "/" + pairId + "/" + newStatus
         })
         .done(function(response) {
             if (callback) {
                 callback(JSON.parse(response));
             }
         });
-    }
+    };
 
     API.prototype.addPair = function(pairId, position, callback) {
         $.ajax({
@@ -43,7 +43,7 @@ var API = (function() {
                 callback(JSON.parse(response));
             }
         });
-    }
+    };
 
     return API;
 
