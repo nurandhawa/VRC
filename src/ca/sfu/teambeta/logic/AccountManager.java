@@ -4,8 +4,6 @@ import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
 
 import java.security.InvalidParameterException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 /**
  * AccountManager handles
@@ -14,29 +12,87 @@ import java.security.spec.InvalidKeySpecException;
  *
  * Coming Soon to a VRC Server Near You
  * - Password Reset
+ * -- Via Email
+ * -- Via Text Message (Pass back last 2 digits of phone)
+ * -- Via Security Questions (Hash answer)
+ *
+ * - Anonymous Users
  *
  */
 
 public class AccountManager {
-    private static final int MAX_USERNAME_LENGTH = 25;
+    public static final int MAX_EMAIL_LENGTH = 30;
+    private static final int MAX_PASSWORD_LENGTH = 20;
 
-    private static final String DEMO_USERNAME = "admin";
+    private static final String DEMO_EMAIL = "admin@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
 
 
-    // MARK: - Database Methods
-    private static User getUserFromDB(String username) throws Exception {
-        // TODO: Check the real MySQL Database if the user exists
+    // MARK: - The Core Login/Registration Methods
+    public static boolean login(String email, String password) throws Exception {
+        validateUserInput(email, password);
 
-        if (!username.equals(DEMO_USERNAME)) {
+        // Authenticate the user
+        boolean authenticated = authenticateUser(email, password);
+
+        // TODO: Create a session. For now return a boolean.
+        return authenticated;
+    }
+
+    public static boolean register(String email, String password) throws Exception {
+        validateUserInput(email, password);
+
+        checkIfUserExists(email);
+
+        // Hash the user's password
+        String passwordHash;
+
+        try {
+            passwordHash = PasswordHash.createHash(password);
+        } catch (Exception e) {
+            // Take the abstract Exceptions thrown by ".createHash()" and throw a new simpler-general Exception
+            throw new Exception("Error: Could not hash password");
+        }
+
+        boolean success = saveNewUser(email, passwordHash);
+
+        return success;
+    }
+
+
+    // MARK: - Helper Methods
+    private static boolean authenticateUser(String email, String password) throws Exception {
+        // Get the user from the database
+        User user = getUserFromDB(email);
+
+        // Validate the entered password with the hash
+        boolean isPasswordCorrect;
+
+        try {
+            isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
+        } catch (Exception e) {
+            // Take the abstract Exceptions thrown by ".validatePassword()" and throw a new simpler-general Exception
+            throw new Exception("Error: Error with hashing method. Password cannot be determined as correct or incorrect.");
+        }
+
+        return isPasswordCorrect;
+    }
+
+
+    // MARK: - Database Methods
+    private static User getUserFromDB(String email) throws Exception {
+        // TODO: Check the real MySQL Database if the user exists
+        // TODO: Login should only be allowed to read - fix DB permissions
+
+        if (!email.equals(DEMO_EMAIL)) {
             // Note: In the case the username is not found in the database, throw an Exception,
-            //  and let the front-end handle that. We can choose to handle this specifically or display a
+            //  and let the AppController handle that. We can choose to handle this specifically or display a
             //  generic error message for security reasons.
 
             throw new Exception("Error: User does not exist");
         }
 
-        String demoUsername = DEMO_USERNAME;
+        String demoUsername = DEMO_EMAIL;
         String demoPassword = DEMO_PASSWORD;
         String demoPasswordHash;
 
@@ -52,52 +108,35 @@ public class AccountManager {
         return demoUser;
     }
 
+    private static boolean saveNewUser(String email, String passwordHash) {
 
-    // MARK: - The Core User Methods
-    private static boolean authenticateUser(String username, String password) throws Exception {
-        // Grab the user from the database
-        User user = getUserFromDB(username);
-
-
-        // Validate the entered password with the hash
-        boolean isPasswordCorrect;
-
-        try {
-            isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
-        } catch (Exception e) {
-            // Take the abstract Exceptions thrown by ".validatePassword()" and throw a new simpler-general Exception
-            throw new Exception("Error: Error with hashing method. Password cannot be determined as correct or incorrect.");
-        }
-
-        return isPasswordCorrect;
+        return true;
     }
 
-    public static boolean login(String username, String password) throws Exception {
-        // Check that the input is valid
-        boolean usernameTooLong = username.length() > MAX_USERNAME_LENGTH;
-        boolean usernameNotAlphaNumeric = !isAlphaNumeric(username);
+    private static boolean checkIfUserExists(String email) {
 
-        if (username.isEmpty() || password.isEmpty() || usernameTooLong || usernameNotAlphaNumeric) {
-            throw new InvalidParameterException();
-        }
-
-
-        // Look the user up, and authenticate the password
-        boolean authenticated = authenticateUser(username, password);
-
-
-        // TODO: CC @Alex, Return a HTTP Session. For now return a boolean.
-        return authenticated;
+        return false;
     }
 
 
     // MARK: - Miscellaneous Methods
-    private static boolean isAlphaNumeric(String str) {
+    private static boolean isValidEmail(String email) {
         // See citations.txt for source
-        // Note: If we decide to use email's as usernames, then this will fail the alphanumeric check.
 
-        String pattern= "^[a-zA-Z0-9]*$";
-        return str.matches(pattern);
+        String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
+        return email.matches(emailPattern);
+    }
+
+    private static void validateUserInput(String email, String password) throws InvalidParameterException {
+        // Check that the input is valid
+        boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
+        boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
+        boolean emailNotValid = !isValidEmail(email);
+
+        if (email.isEmpty() || password.isEmpty() || emailTooLong || passwordTooLong || emailNotValid) {
+            throw new InvalidParameterException("The email or password field is empty.");
+        }
     }
 
 
@@ -106,7 +145,7 @@ public class AccountManager {
         boolean authenticated = false;
         
         try {
-            authenticated = login("admin", "demoPass");
+            authenticated = login("admin@vrc.com", "demoPass");
         } catch (Exception e) {
             e.printStackTrace();
             return;
