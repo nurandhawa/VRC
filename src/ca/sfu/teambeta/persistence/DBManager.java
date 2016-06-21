@@ -44,7 +44,7 @@ public class DBManager {
 
     public static SessionFactory getHSQLSession() {
         Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
         config.setProperty("hibernate.connection.username", "");
         config.setProperty("hibernate.connection.password", "");
         config.setProperty("hibernate.connection.pool_size", "1");
@@ -54,9 +54,13 @@ public class DBManager {
         return config.buildSessionFactory();
     }
 
-    public static SessionFactory getMySQLSession() {
+    public static SessionFactory getMySQLSession(boolean create) {
         Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        if (create) {
+            config.setProperty("hibernate.hbm2ddl.auto", "create");
+        } else {
+            config.setProperty("hibernate.hbm2ddl.auto", "update");
+        }
         config.setProperty("hibernate.connection.username", "beta-test");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
@@ -67,18 +71,18 @@ public class DBManager {
     }
 
     public static void main(String[] args) {
-        SessionFactory factory = getMySQLSession();
+        SessionFactory factory = getMySQLSession(false);
         DBManager dbMan = new DBManager(factory);
-        Player p1 = new Player("Bobby", "Chan", "");
-        Player p2 = new Player("Wing", "Man", "");
-        dbMan.persistEntity(new Pair(p1, p2));
+//        Player p1 = new Player("Bobby", "Chan", "");
+//        Player p2 = new Player("Wing", "Man", "");
+//        dbMan.persistEntity(new Pair(p1, p2));
+//
+//        Player p3 = new Player("Hello", "World!", "");
+//        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
+//
+//        Player test = dbMan.getPlayerFromID(5);
 
-        Player p3 = new Player("Hello", "World!", "");
-        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
-
-        Player test = dbMan.getPlayerFromID(5);
-
-        System.out.println(test.getFirstName());
+//        System.out.println(test.getFirstName());
 
         Ladder lad = dbMan.getLatestLadder();
 

@@ -5,7 +5,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.Persistable;
 

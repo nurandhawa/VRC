@@ -10,7 +10,7 @@ public class PersistenceTest {
 
     @Before
     public void setupDatabase() {
-        SessionFactory factory = DBManager.getMySQLSession();
+        SessionFactory factory = DBManager.getMySQLSession(true);
         this.session = factory.openSession();
     }
 
