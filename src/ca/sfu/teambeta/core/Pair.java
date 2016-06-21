@@ -3,6 +3,7 @@ package ca.sfu.teambeta.core;
 //Pair should have information about pairs activity
 //Ladder should return the size of itself
 
+import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class Pair extends Persistable {
     private static final boolean DEFAULT_PLAYING_STATUS = true;
 
     @ManyToMany(cascade = CascadeType.ALL)
-
+    @Expose
     private List<Player> team = new ArrayList<>();
 
     @Column(name = "date_created")
@@ -34,10 +35,12 @@ public class Pair extends Persistable {
     private Date dateCreated;
 
     @Transient
+    @Expose
     private int position;
     @Transient
     private int penalty;
     @Transient
+    @Expose
     private boolean isPlaying;
 
     public Pair() {
