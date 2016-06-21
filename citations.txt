@@ -3,4 +3,4 @@ Found method to improve CI build times from here https://stackoverflow.com/quest
 Found method for loading Node onto Docker image from https://github.com/nodejs/docker-node/blob/466e418a117f33c1cd550414ae1b39423319a265/6.2/Dockerfile
 Found way to fetch object with max ID from https://stackoverflow.com/questions/23477258/issue-with-get-max-id-in-criteria
 Used a wrapper library for password hashing from: https://github.com/ghostfreak3000/password-hash
-Found a regex to check for alphanumeric characters from: http://stackoverflow.com/questions/11241690/regex-for-checking-if-a-string-is-strictly-alphanumeric
+Found a regex to check for valid email addresses from: http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/

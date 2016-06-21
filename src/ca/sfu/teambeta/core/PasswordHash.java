@@ -26,6 +26,10 @@ package ca.sfu.teambeta.core;
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ * See citations.txt for source
+
  */
 
 import java.security.SecureRandom;
