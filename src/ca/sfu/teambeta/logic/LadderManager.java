@@ -1,5 +1,8 @@
 package ca.sfu.teambeta.logic;
 
+//TODO SUGGESTIONS to distinguish ABSENT and (Accident)???
+//Now ABSENT penalty has to be set from outside
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -120,7 +123,6 @@ public class LadderManager {
         assignNewPositionsToActivePairs();
         combineActivePassive();
         applyLateMissPenalty();
-        savePositions();
     }
 
     private void split() {
@@ -134,22 +136,28 @@ public class LadderManager {
         int previousTakenPosition = ladder.getLadderLength();
         int size = passivePairs.size();
 
+        //Move pairs starting from the worse pair to the best
         for (int i = size - 1; i >= 0; i--) {
             Pair pair = passivePairs.get(i);
-            int position = pair.getPosition();
-            int possibleShift = previousTakenPosition - position;
+            if (pair.getPenalty() != Penalty.ACCIDENT.getPenalty()) {
+                int position = pair.getPosition();
+                int possibleShift = previousTakenPosition - position;
 
-            switch (possibleShift) {
-                case 0:
-                    break;
-                case 1:
-                    pair.setPosition(position + 1);
-                    break;
-                default:
-                    pair.setPosition(position + Penalty.ABSENT.getPenalty());
+                switch (possibleShift) {
+                    case 0: //Do not move the pair
+                        break;
+                    case 1: //Move pair on 1 position
+                        pair.setPosition(position + 1);
+                        break;
+                    default: //Move pair on 2 positions
+                        pair.setPosition(position + Penalty.ABSENT.getPenalty());
+                }
+                pair.setPenalty(Penalty.ZERO.getPenalty());
+                previousTakenPosition = pair.getPosition() - 1;
+
+            } else {
+                pair.setPenalty(Penalty.ZERO.getPenalty());
             }
-
-            previousTakenPosition = pair.getPosition() - 1;
         }
     }
 
@@ -180,7 +188,6 @@ public class LadderManager {
 
     private void assignNewPositionsToActivePairs() {
         int size = ladder.getLadderLength();
-        int[] emptyPositions = new int[activePairs.size()];
         int[] takenPositions = new int[passivePairs.size()];
 
         //Fill in takenPositions
@@ -192,23 +199,17 @@ public class LadderManager {
 
         //Fill in emptyPositions
         int takenIndex = 0;
-        int emptyIndex = 0;
+        int activeIndex = 0;
         for (int position = 1; position <= size; position++) {
-            if (takenPositions[takenIndex] != position) {
-                emptyPositions[emptyIndex] = position;
-                emptyIndex++;
+            if (takenPositions.length == 0 || takenPositions[takenIndex] != position) {
+                Pair pair = activePairs.get(activeIndex);
+                pair.setPosition(position);
+                activeIndex++;
             } else {
                 if (takenIndex != passivePairs.size() - 1) { //Not last possible index
                     takenIndex++;
                 }
             }
-        }
-
-        //Give activePairs new positions
-        index = 0;
-        for (Pair current : activePairs) {
-            current.setPosition(emptyPositions[index]);
-            index++;
         }
     }
 
@@ -228,34 +229,25 @@ public class LadderManager {
     }
 
     private void applyLateMissPenalty() {
+        applyPenalty(Penalty.LATE.getPenalty());
+        applyPenalty(Penalty.MISSING.getPenalty());
+    }
+
+    private void applyPenalty(int penalization) {
         List<Pair> pairList = ladder.getPairs();
         int size = ladder.getLadderLength();
-
         for (Pair current : pairList) {
             int penalty = current.getPenalty();
-            if (penalty != Penalty.ZERO.getPenalty()) {
+            if (penalty == penalization) {
                 current.setPenalty(Penalty.ZERO.getPenalty());
                 int actualPosition = current.getPosition();
-                int newPosition = 0;
-
-                if (penalty == Penalty.LATE.getPenalty()) {
-                    newPosition = actualPosition + penalty;
-                } else if (penalty == Penalty.MISSING.getPenalty()) {
-                    newPosition = current.getOldPosition() + penalty;
-                }
+                int newPosition = actualPosition + penalty;
 
                 if (newPosition > size) {
                     newPosition = size;
                 }
                 movePair(actualPosition, newPosition);
             }
-        }
-    }
-
-    private void savePositions() {
-        List<Pair> listPairs = ladder.getPairs();
-        for (Pair current : listPairs) {
-            current.establishPosition();
         }
     }
 
@@ -274,13 +266,7 @@ public class LadderManager {
         return new Comparator<Pair>() {
             @Override
             public int compare(Pair p1, Pair p2) {
-                int result;
-                if (p1.getPosition() == p2.getPosition()) {
-                    result = p1.getOldPosition() - p2.getOldPosition();
-                } else {
-                    result = p1.getPosition() - p2.getPosition();
-                }
-                return result;
+                return p1.getPosition() - p2.getPosition();
             }
         };
     }

@@ -6,7 +6,7 @@ package ca.sfu.teambeta.core;
  */
 
 public enum Penalty {
-    ZERO(0), ABSENT(2), LATE(4), MISSING(10);
+    ACCIDENT(-1), ZERO(0), ABSENT(2), LATE(4), MISSING(10);
 
     private int penalty;
 
@@ -18,19 +18,4 @@ public enum Penalty {
         return penalty;
     }
 
-    public static int fromString(String text) {
-        if (text != null) {
-            if (text.contains("zero")) {
-                return ZERO.getPenalty();
-            } else if (text.contains("absent")) {
-                return ABSENT.getPenalty();
-            } else if (text.contains("late")) {
-                return LATE.getPenalty();
-            } else if (text.contains("missing")) {
-                return MISSING.getPenalty();
-            }
-        }
-
-        throw new IllegalArgumentException("No penalty of type " + text + " is found");
-    }
 }

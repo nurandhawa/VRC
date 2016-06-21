@@ -66,7 +66,8 @@ public class ScorecardTest {
 
     @Test(expected = RuntimeException.class)
     public void testObserverFourTeams() {
-        List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina", "Bobby Chan");
+        List<String> teams = Arrays.asList(
+                "Jerome Karen", "Peter Aby", "Ben Katrina", "Bobby Chan");
         Observer observer = () -> {
             throw new RuntimeException();
         };
