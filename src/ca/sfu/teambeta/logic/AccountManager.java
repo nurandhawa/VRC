@@ -2,6 +2,8 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 import java.security.InvalidParameterException;
 
@@ -29,17 +31,17 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public static boolean login(String email, String password) throws Exception {
+    public static boolean login(String email, String password) throws InternalHashingException, NoSuchUserException {
         validateUserInput(email, password);
 
         // Authenticate the user
-        boolean authenticated = authenticateUser(email, password);
+        boolean successfullyAuthenticated = authenticateUser(email, password);
 
         // TODO: Create a session. For now return a boolean.
-        return authenticated;
+        return successfullyAuthenticated;
     }
 
-    public static boolean register(String email, String password) throws Exception {
+    public static boolean register(String email, String password) throws InternalHashingException {
         validateUserInput(email, password);
 
         checkIfUserExists(email);
@@ -50,8 +52,8 @@ public class AccountManager {
         try {
             passwordHash = PasswordHash.createHash(password);
         } catch (Exception e) {
-            // Take the abstract Exceptions thrown by ".createHash()" and throw a new simpler-general Exception
-            throw new Exception("Error: Could not hash password");
+            // Rethrow a simpler Exception following from the abstract Exceptions thrown by ".createHash()"
+            throw new InternalHashingException("Could not create password hash");
         }
 
         boolean success = saveNewUser(email, passwordHash);
@@ -61,7 +63,7 @@ public class AccountManager {
 
 
     // MARK: - Helper Methods
-    private static boolean authenticateUser(String email, String password) throws Exception {
+    private static boolean authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException {
         // Get the user from the database
         User user = getUserFromDB(email);
 
@@ -71,8 +73,9 @@ public class AccountManager {
         try {
             isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
         } catch (Exception e) {
-            // Take the abstract Exceptions thrown by ".validatePassword()" and throw a new simpler-general Exception
-            throw new Exception("Error: Error with hashing method. Password cannot be determined as correct or incorrect.");
+            // Rethrow a simpler Exception following from the abstract Exceptions thrown by ".validatePassword()"
+            throw new InternalHashingException("Password cannot be determined as correct or incorrect, " +
+                    "please contact an administrator.");
         }
 
         return isPasswordCorrect;
@@ -80,7 +83,7 @@ public class AccountManager {
 
 
     // MARK: - Database Methods
-    private static User getUserFromDB(String email) throws Exception {
+    private static User getUserFromDB(String email) throws NoSuchUserException, InternalHashingException {
         // TODO: Check the real MySQL Database if the user exists
         // TODO: Login should only be allowed to read - fix DB permissions
 
@@ -89,7 +92,7 @@ public class AccountManager {
             //  and let the AppController handle that. We can choose to handle this specifically or display a
             //  generic error message for security reasons.
 
-            throw new Exception("Error: User does not exist");
+            throw new NoSuchUserException();
         }
 
         String demoUsername = DEMO_EMAIL;
@@ -99,8 +102,9 @@ public class AccountManager {
         try {
             demoPasswordHash = PasswordHash.createHash(demoPassword);
         } catch (Exception e) {
-            // Take the abstract Exceptions thrown by ".createHash()" and throw a new simpler-general Exception
-            throw new Exception("Error: Could not hash password");
+            // TODO: Delete this exception from function header
+            // Rethrow a simpler Exception following from the abstract Exceptions thrown by ".createHash()"
+            throw new InternalHashingException("Could not create password hash");
         }
 
         User demoUser = new User(demoUsername, demoPasswordHash);
@@ -109,7 +113,7 @@ public class AccountManager {
     }
 
     private static boolean saveNewUser(String email, String passwordHash) {
-
+        // Check if the user exists, or better yet if the database does so then handle that.
         return true;
     }
 
@@ -134,8 +138,12 @@ public class AccountManager {
         boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
         boolean emailNotValid = !isValidEmail(email);
 
-        if (email.isEmpty() || password.isEmpty() || emailTooLong || passwordTooLong || emailNotValid) {
-            throw new InvalidParameterException("The email or password field is empty.");
+        if (email.isEmpty() || password.isEmpty()) {
+            throw new InvalidParameterException("The email or password field cannot be empty");
+        } else if (emailTooLong || passwordTooLong) {
+            throw new InvalidParameterException("The email or password exceed the allowed length");
+        } else if (emailNotValid) {
+            throw new InvalidParameterException("The email address is not in valid format");
         }
     }
 
@@ -143,10 +151,13 @@ public class AccountManager {
     // MARK: - Main Function
     public static void main(String[] args) {
         boolean authenticated = false;
-        
+
         try {
-            authenticated = login("admin@vrc.com", "demoPass");
-        } catch (Exception e) {
+            authenticated = login("a", "d");
+        } catch (InternalHashingException e) {
+            e.printStackTrace();
+            return;
+        } catch (NoSuchUserException e) {
             e.printStackTrace();
             return;
         }
