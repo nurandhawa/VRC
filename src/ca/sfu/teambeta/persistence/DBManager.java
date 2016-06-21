@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.persistence;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,7 +11,6 @@ import org.hibernate.criterion.Property;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Persistable;
 import ca.sfu.teambeta.core.Player;
 
 /**
@@ -45,7 +44,7 @@ public class DBManager {
 
     public static SessionFactory getHSQLSession() {
         Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "create");
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
         config.setProperty("hibernate.connection.username", "");
         config.setProperty("hibernate.connection.password", "");
         config.setProperty("hibernate.connection.pool_size", "1");
@@ -55,31 +54,39 @@ public class DBManager {
         return config.buildSessionFactory();
     }
 
-    public static SessionFactory getMySQLSession() {
+    public static SessionFactory getMySQLSession(boolean create) {
         Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "update");
-        config.setProperty("hibernate.connection.username", "sql3124016");
-        config.setProperty("hibernate.connection.password", "kTZ23wYIQq");
+        if (create) {
+            config.setProperty("hibernate.hbm2ddl.auto", "create");
+        } else {
+            config.setProperty("hibernate.hbm2ddl.auto", "update");
+        }
+        config.setProperty("hibernate.connection.username", "beta-test");
+        config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://sql3.freemysqlhosting.net:3306/sql3124016");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        return config.buildSessionFactory();
+        try {
+            return config.buildSessionFactory();
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
     }
 
     public static void main(String[] args) {
-        SessionFactory factory = getMySQLSession();
+        SessionFactory factory = getMySQLSession(false);
         DBManager dbMan = new DBManager(factory);
-        Player p1 = new Player("Bobby", "Chan", "");
-        Player p2 = new Player("Wing", "Man", "");
-        dbMan.persistEntity(new Pair(p1, p2));
+//        Player p1 = new Player("Bobby", "Chan", "");
+//        Player p2 = new Player("Wing", "Man", "");
+//        dbMan.persistEntity(new Pair(p1, p2));
+//
+//        Player p3 = new Player("Hello", "World!", "");
+//        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
+//
+//        Player test = dbMan.getPlayerFromID(5);
 
-        Player p3 = new Player("Hello", "World!", "");
-        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
-
-        Player test = dbMan.getPlayerFromID(5);
-
-        System.out.println(test.getFirstName());
+//        System.out.println(test.getFirstName());
 
         Ladder lad = dbMan.getLatestLadder();
 

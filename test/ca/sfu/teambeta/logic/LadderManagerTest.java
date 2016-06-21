@@ -1,15 +1,16 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Scorecard;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by David Li on 30/05/16.
@@ -22,11 +23,11 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
 
         List<Pair> expectedActivePairs = Arrays.asList(
-                new Pair(new Player(3, "P3", "Test", ""), new Player(4, "P4", "Test", ""), true),
-                new Pair(new Player(7, "P7", "Test", ""), new Player(8, "P8", "Test", ""), true),
-                new Pair(new Player(11, "P11", "Test", ""), new Player(12, "P12", "Test", ""), true),
-                new Pair(new Player(15, "P15", "Test", ""), new Player(16, "P16", "Test", ""), true),
-                new Pair(new Player(19, "P19", "Test", ""), new Player(20, "P20", "Test", ""), true)
+                new Pair(new Player("P3", "Test", ""), new Player("P4", "Test", ""), true),
+                new Pair(new Player("P7", "Test", ""), new Player("P8", "Test", ""), true),
+                new Pair(new Player("P11", "Test", ""), new Player("P12", "Test", ""), true),
+                new Pair(new Player("P15", "Test", ""), new Player("P16", "Test", ""), true),
+                new Pair(new Player("P19", "Test", ""), new Player("P20", "Test", ""), true)
         );
 
         int position = 2;
@@ -44,11 +45,11 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
 
         List<Pair> expectedPassivePairs = Arrays.asList(
-                new Pair(new Player(1, "P1", "Test", ""), new Player(2, "P2", "Test", ""), false),
-                new Pair(new Player(5, "P5", "Test", ""), new Player(6, "P6", "Test", ""), false),
-                new Pair(new Player(9, "P9", "Test", ""), new Player(10, "P10", "Test", ""), false),
-                new Pair(new Player(13, "P13", "Test", ""), new Player(14, "P14", "Test", ""), false),
-                new Pair(new Player(17, "P17", "Test", ""), new Player(18, "P18", "Test", ""), false)
+                new Pair(new Player("P1", "Test", ""), new Player("P2", "Test", ""), false),
+                new Pair(new Player("P5", "Test", ""), new Player("P6", "Test", ""), false),
+                new Pair(new Player("P9", "Test", ""), new Player("P10", "Test", ""), false),
+                new Pair(new Player("P13", "Test", ""), new Player("P14", "Test", ""), false),
+                new Pair(new Player("P17", "Test", ""), new Player("P18", "Test", ""), false)
         );
 
         int position = 1;
@@ -63,20 +64,20 @@ public class LadderManagerTest {
     @Test
     public void testAddPair() {
         LadderManager ladderManager = new LadderManager(testData());
-        ladderManager.addNewPair(new Pair(new Player(21, "P21", "Test", ""), new Player(22, "P22", "Test", "")));
+        ladderManager.addNewPair(new Pair(new Player("P21", "Test", ""), new Player("P22", "Test", "")));
 
         List<Pair> expectedLadder = Arrays.asList(
-                new Pair(new Player(1, "P1", "Test", ""), new Player(2, "P2", "Test", ""), false),
-                new Pair(new Player(3, "P3", "Test", ""), new Player(4, "P4", "Test", ""), true),
-                new Pair(new Player(5, "P5", "Test", ""), new Player(6, "P6", "Test", ""), false),
-                new Pair(new Player(7, "P7", "Test", ""), new Player(8, "P8", "Test", ""), true),
-                new Pair(new Player(9, "P9", "Test", ""), new Player(10, "P10", "Test", ""), false),
-                new Pair(new Player(11, "P11", "Test", ""), new Player(12, "P12", "Test", ""), true),
-                new Pair(new Player(13, "P13", "Test", ""), new Player(14, "P14", "Test", ""), false),
-                new Pair(new Player(15, "P15", "Test", ""), new Player(16, "P16", "Test", ""), true),
-                new Pair(new Player(17, "P17", "Test", ""), new Player(18, "P18", "Test", ""), false),
-                new Pair(new Player(19, "P19", "Test", ""), new Player(20, "P20", "Test", ""), true),
-                new Pair(new Player(21, "P21", "Test", ""), new Player(22, "P22", "Test", ""), true)
+                new Pair(new Player("P1", "Test", ""), new Player("P2", "Test", ""), false),
+                new Pair(new Player("P3", "Test", ""), new Player("P4", "Test", ""), true),
+                new Pair(new Player("P5", "Test", ""), new Player("P6", "Test", ""), false),
+                new Pair(new Player("P7", "Test", ""), new Player("P8", "Test", ""), true),
+                new Pair(new Player("P9", "Test", ""), new Player("P10", "Test", ""), false),
+                new Pair(new Player("P11", "Test", ""), new Player("P12", "Test", ""), true),
+                new Pair(new Player("P13", "Test", ""), new Player("P14", "Test", ""), false),
+                new Pair(new Player("P15", "Test", ""), new Player("P16", "Test", ""), true),
+                new Pair(new Player("P17", "Test", ""), new Player("P18", "Test", ""), false),
+                new Pair(new Player("P19", "Test", ""), new Player("P20", "Test", ""), true),
+                new Pair(new Player("P21", "Test", ""), new Player("P22", "Test", ""), true)
         );
 
         int position = 0;
@@ -93,8 +94,8 @@ public class LadderManagerTest {
         LadderManager ladderManager = new LadderManager(testData());
         int newPairPosition = 2;
 
-        Player player1 = new Player(21, "P21", "Test", "");
-        Player player2 = new Player(22, "P22", "Test", "");
+        Player player1 = new Player("P21", "Test", "");
+        Player player2 = new Player("P22", "Test", "");
         
         Pair newPair = new Pair(player1, player2);
         ladderManager.addNewPairAtIndex(newPair, 1);
@@ -114,15 +115,10 @@ public class LadderManagerTest {
             playerOne = "P" + ((i * 2) - 1);
             playerTwo = "P" + (i * 2);
 
-            if (i % 2 == 0) {
-                isPlaying = true;
-            } else {
-                isPlaying = false;
-            }
+            isPlaying = i % 2 == 0;
 
-            Pair pair = new Pair(new Player((i * 2) - 1, playerOne, "Test", ""),
-                    new Player((i * 2), playerTwo, "Test", ""), isPlaying);
-
+            Pair pair = new Pair(new Player(playerOne, "Test", ""),
+                    new Player(playerTwo, "Test", ""), isPlaying);
             pair.setPosition(i);
             ladder.add(pair);
         }
@@ -188,50 +184,50 @@ public class LadderManagerTest {
     private List<Pair> fakeDB() {
         List<Pair> db = new ArrayList<>();
 
-        Pair pair = new Pair(new Player(1, "Kate", "Test", ""),
-                new Player(2, "Nick", "Test", ""), false);
+        Pair pair = new Pair(new Player("Kate", "Test", ""),
+                new Player("Nick", "Test", ""), false);
         pair.setPosition(1);
         db.add(pair);
 
-        pair = new Pair(new Player(3, "Jim", "Test", ""),
-                new Player(4, "Ryan", "Test", ""), false);
+        pair = new Pair(new Player("Jim", "Test", ""),
+                new Player("Ryan", "Test", ""), false);
         pair.setPosition(2);
         db.add(pair);
 
-        pair = new Pair(new Player(5, "David", "Test", ""),
-                new Player(6, "Bob", "Test", ""), true);
+        pair = new Pair(new Player("David", "Test", ""),
+                new Player("Bob", "Test", ""), true);
         pair.setPosition(3);
         pair.setPenalty(Penalty.MISSING.getPenalty());
         db.add(pair);
 
-        pair = new Pair(new Player(7, "Richard", "Test", ""),
-                new Player(8, "Robin", "Test", ""), true);
+        pair = new Pair(new Player("Richard", "Test", ""),
+                new Player("Robin", "Test", ""), true);
         pair.setPosition(4);
         pair.setPenalty(Penalty.LATE.getPenalty());
         db.add(pair);
 
-        pair = new Pair(new Player(9, "Kevin", "Test", ""),
-                new Player(10, "Jasmin", "Test", ""), true);
+        pair = new Pair(new Player("Kevin", "Test", ""),
+                new Player("Jasmin", "Test", ""), true);
         pair.setPosition(5);
         db.add(pair);
 
-        pair = new Pair(new Player(11, "Amy", "Test", ""),
-                new Player(12, "Maria", "Test", ""), false);
+        pair = new Pair(new Player("Amy", "Test", ""),
+                new Player("Maria", "Test", ""), false);
         pair.setPosition(6);
         db.add(pair);
 
-        pair = new Pair(new Player(13, "Tony", "Test", ""),
-                new Player(14, "Angelica", "Test", ""), true);
+        pair = new Pair(new Player("Tony", "Test", ""),
+                new Player("Angelica", "Test", ""), true);
         pair.setPosition(7);
         db.add(pair);
 
-        pair = new Pair(new Player(15, "Anastasia", "Test", ""),
-                new Player(16, "Victoria", "Test", ""), true);
+        pair = new Pair(new Player("Anastasia", "Test", ""),
+                new Player("Victoria", "Test", ""), true);
         pair.setPosition(8);
         db.add(pair);
 
-        pair = new Pair(new Player(17, "Ian", "Test", ""),
-                new Player(18, "Camden", "Test", ""), true);
+        pair = new Pair(new Player("Ian", "Test", ""),
+                new Player("Camden", "Test", ""), true);
         pair.setPosition(9);
         db.add(pair);
 
@@ -241,53 +237,51 @@ public class LadderManagerTest {
     private List<Pair> processedFakeDB() {
         List<Pair> db = new ArrayList<>();
 
-        Pair pair = new Pair(new Player(9, "Kevin", "Test", ""),
-                new Player(10, "Jasmin", "Test", ""), false);
+        Pair pair = new Pair(new Player("Kevin", "Test", ""),
+                new Player("Jasmin", "Test", ""), false);
         pair.setPosition(1);
         db.add(pair);
 
-        pair = new Pair(new Player(1, "Kate", "Test", ""),
-                new Player(2, "Nick", "Test", ""), false);
+        pair = new Pair(new Player("Kate", "Test", ""),
+                new Player("Nick", "Test", ""), false);
         pair.setPosition(2);
         db.add(pair);
 
-        pair = new Pair(new Player(3, "Jim", "Test", ""),
-                new Player(4, "Ryan", "Test", ""), false);
+        pair = new Pair(new Player("Jim", "Test", ""),
+                new Player("Ryan", "Test", ""), false);
         pair.setPosition(3);
         db.add(pair);
 
-        pair = new Pair(new Player(17, "Ian", "Test", ""),
-                new Player(18, "Camden", "Test", ""), false);
+        pair = new Pair(new Player("Ian", "Test", ""),
+                new Player("Camden", "Test", ""), false);
         pair.setPosition(4);
         db.add(pair);
 
-        pair = new Pair(new Player(13, "Tony", "Test", ""),
-                new Player(14, "Angelica", "Test", ""), false);
+        pair = new Pair(new Player("Tony", "Test", ""),
+                new Player("Angelica", "Test", ""), false);
         pair.setPosition(5);
         db.add(pair);
 
-        pair = new Pair(new Player(11, "Amy", "Test", ""),
-                new Player(12, "Maria", "Test", ""), false);
+        pair = new Pair(new Player("Amy", "Test", ""),
+                new Player("Maria", "Test", ""), false);
         pair.setPosition(6);
         db.add(pair);
 
-        pair = new Pair(new Player(15, "Anastasia", "Test", ""),
-                new Player(16, "Victoria", "Test", ""), false);
+        pair = new Pair(new Player("Anastasia", "Test", ""),
+                new Player("Victoria", "Test", ""), false);
         pair.setPosition(7);
         db.add(pair);
 
-        pair = new Pair(new Player(7, "Richard", "Test", ""),
-                new Player(8, "Robin", "Test", ""), false);
+        pair = new Pair(new Player("Richard", "Test", ""),
+                new Player("Robin", "Test", ""), false);
         pair.setPosition(8);
         db.add(pair);
 
-        pair = new Pair(new Player(5, "David", "Test", ""),
-                new Player(6, "Bob", "Test", ""), false);
+        pair = new Pair(new Player("David", "Test", ""),
+                new Player("Bob", "Test", ""), false);
         pair.setPosition(9);
         db.add(pair);
 
         return db;
     }
 }
-
-
