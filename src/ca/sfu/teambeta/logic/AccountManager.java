@@ -41,8 +41,10 @@ public class AccountManager {
         // Authenticate and if successful get the user from the database
         User user = authenticateUser(email, password);
 
-        // TODO: Create a session and return it. For now return a fake Session ID
-        return "DI4J59JEN2XC39XFJJ30ASD3";
+        // Create a session for the user
+        String sessionID = UserSessionManager.createNewSession(user);
+
+        return sessionID;
     }
 
     public static void register(String email, String password) throws InternalHashingException, InvalidUserInputException, AccountRegistrationException {
@@ -110,7 +112,7 @@ public class AccountManager {
     private static void saveNewUser(User newUser) throws AccountRegistrationException {
         for (User user : dummyUsers) {
             if (user.getEmail().equals(newUser.getEmail())) {
-                throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' already exists");
+                throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
             }
         }
 
@@ -156,11 +158,14 @@ public class AccountManager {
     private static void validatePasswordFormat(String password) throws InvalidUserInputException {
         // Check that the input is valid
         boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
+        boolean passwordTooShort = password.length() < MIN_PASSWORD_LENGTH;
 
         if (password.isEmpty()) {
             throw new InvalidUserInputException("The password field cannot be empty");
         } else if (passwordTooLong) {
             throw new InvalidUserInputException("The password cannot exceed the allowed length of " + MAX_PASSWORD_LENGTH);
+        } else if (passwordTooShort) {
+            throw new InvalidUserInputException("The password cannot be less than " + MIN_PASSWORD_LENGTH + " characters");
         }
 
     }
