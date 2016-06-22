@@ -9,6 +9,7 @@ rm gradle-2.9-all.zip
 
 ENV GRADLE_HOME /usr/bin/gradle
 ENV PATH $PATH:$GRADLE_HOME/bin
+ENV TESTING im_just_here_so_that_the_value_is_not_null
 
 # Node installation
 # This uses the method shown in the official Node Dockerfile

@@ -22,7 +22,7 @@ public class DBManagerTest {
     public void testGetPlayerFromID() {
         Player playerExpected = new Player("Zara", "Ali", "1234");
 
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(playerExpected);
         Player playerActual = dbManager.getPlayerFromID(1);
@@ -34,7 +34,7 @@ public class DBManagerTest {
     public void testGetPlayerFromIDNotFound() {
         Player playerExpected = null;
 
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
         Player playerActual = dbManager.getPlayerFromID(99);
 
@@ -51,7 +51,7 @@ public class DBManagerTest {
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
 
         dbManager.persistEntity(ladderExpected);
@@ -72,7 +72,7 @@ public class DBManagerTest {
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
 
         dbManager.persistEntity(ladderExpected);

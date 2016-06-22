@@ -1,3 +1,9 @@
+services:
+  - mysql:latest
+
+variables:
+  MYSQL_DATABASE: test
+  MYSQL_ROOT_PASSWORD: b3ta
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
