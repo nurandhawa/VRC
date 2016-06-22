@@ -26,7 +26,7 @@ import static spark.Spark.*;
 public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
-    private static final String POSITION = "Position";
+    private static final String POSITION = "position";
     private static final String NEW_POSITION = "newPosition";
     private static final String FIRST_NAME = "firstName";
     private static final String LAST_NAME = "lastName";
@@ -59,19 +59,45 @@ public class AppController {
         patch("/api/ladder/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
             String status = request.queryParams(STATUS);
+            System.out.println("Status: " + status);
+            int newPosition = Integer.parseInt(request.queryParams(POSITION));
+            System.out.println("Position: " + newPosition);
+
+            boolean validNewPos = 0 < newPosition && newPosition <= ladderManager.ladderSize();
+            boolean validStatus = status.equals("playing") || status.equals("not playing");
+            System.out.println(validStatus + "  +  "+ validNewPos);
+
             Pair pair = ladderManager.searchPairById(id);
+            System.out.println(pair);
+
             if (pair == null) { //Wrong ID
                 response.status(NOT_FOUND);
                 return response;
             }
 
-            if (status.equals("playing")) {
-                ladderManager.setIsPlaying(pair);
+            if(!validStatus && !validNewPos) {
+                response.body("Specify what to update: position or status");
+                response.status(BAD_REQUEST);
+            } else if (validStatus && !validNewPos) {
+                System.out.println("hello");
+                if (status.equals("playing")) {
+                    ladderManager.setIsPlaying(pair);
+                    response.status(OK);
+                } else if (status.equals("not playing")) {
+                    ladderManager.setNotPlaying(pair);
+                    response.status(OK);
+                } else {
+                    response.status(BAD_REQUEST);
+                }
+            } else if (!validStatus && validNewPos) {
+                int currentPosition = pair.getPosition();
+                System.out.println("current: " + currentPosition);
+                ladderManager.movePair(currentPosition,newPosition);
+                System.out.println(pair.getPosition());
                 response.status(OK);
-            } else if (status.equals("not playing")) {
-                ladderManager.setNotPlaying(pair);
-                response.status(OK);
+
             } else {
+                response.body("Cannot change both: position and status");
                 response.status(BAD_REQUEST);
             }
 
