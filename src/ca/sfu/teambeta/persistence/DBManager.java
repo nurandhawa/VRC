@@ -17,6 +17,7 @@ import ca.sfu.teambeta.core.Player;
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
+    private static String TESTING_ENV_VAR = "TESTING";
     private SessionFactory factory;
     private Session session;
 
@@ -31,15 +32,6 @@ public class DBManager {
         config.addAnnotatedClass(Pair.class);
         config.addAnnotatedClass(Ladder.class);
         return config;
-    }
-
-    public static SessionFactory getTestingSession() {
-        Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "create");
-        config.setProperty("hibernate.connection.url", "jdbc:h2:file:/home/freeman/prj/resources/database.db");
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
-        return config.buildSessionFactory();
     }
 
     public static SessionFactory getHSQLSession() {
@@ -71,6 +63,35 @@ public class DBManager {
             return config.buildSessionFactory();
         } catch (Exception ex) {
             throw new RuntimeException();
+        }
+    }
+
+    public static SessionFactory getDockerSession(boolean create) {
+        Configuration config = getDefaultConfiguration();
+        if (create) {
+            config.setProperty("hibernate.hbm2ddl.auto", "create");
+        } else {
+            config.setProperty("hibernate.hbm2ddl.auto", "update");
+        }
+        config.setProperty("hibernate.connection.username", "root");
+        config.setProperty("hibernate.connection.password", "b3ta");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql:3306/test?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        try {
+            return config.buildSessionFactory();
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        }
+    }
+
+    public static SessionFactory getTestingSession(boolean create) {
+        boolean isTesting = System.getenv(TESTING_ENV_VAR) != null;
+        if (isTesting) {
+            return getDockerSession(create);
+        } else {
+            return getMySQLSession(create);
         }
     }
 

@@ -1,17 +1,18 @@
 
+variables:
+  MYSQL_DATABASE: test
+  MYSQL_ROOT_PASSWORD: b3ta
+
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 stages:
-  - build
   - test
   - jshint
 
-build:
-  script: gradle assemble
-  stage: build
-
 test:
+  services:
+    - mysql:latest
   script: gradle check
   stage: test
 
