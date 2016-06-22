@@ -14,6 +14,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,8 +28,10 @@ public class AppController {
     private static final String STATUS = "newStatus";
     private static final String POSITION = "Position";
     private static final String NEW_POSITION = "newPosition";
-    private static final String PLAYERS = "Players";
-    private static final String IS_PLAYING = "IsPlaying";
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -41,15 +44,8 @@ public class AppController {
         staticFiles.location(".");
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-        /* Still has to decide on URLs for each of them and what
-        excatly would be passed from the front end.
-        Some of the functions are incomplete but require minimal change once
-        we decide how front end is going to interact with it. 
-         */
-
-        //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
-        get("/api/index", (request, response) -> {
+        get("/api/ladder", (request, response) -> {
             if (ladderManager.getLadder() != null) {
                 response.status(OK);
             } else {
@@ -60,26 +56,21 @@ public class AppController {
         });
 
         //updates a pair's playing status
-        patch("/api/:id/:newStatus", (request, response) -> {
-            int id = Integer.parseInt(request.params(":" + ID));
-            String status = request.params(":" + STATUS);
+        patch("/api/ladder/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            String status = request.queryParams(STATUS);
             Pair pair = ladderManager.searchPairById(id);
             if (pair == null) { //Wrong ID
-                response.status(BAD_REQUEST);
+                response.status(NOT_FOUND);
                 return response;
             }
 
-            if (status == "playing") {
+            if (status.equals("playing")) {
+                ladderManager.setIsPlaying(pair);
+                response.status(OK);
+            } else if (status.equals("not playing")) {
                 ladderManager.setNotPlaying(pair);
                 response.status(OK);
-            } else if (status == "not playing") {
-                boolean changed = ladderManager.setIsPlaying(pair);
-                if (changed) {
-                    response.status(OK);
-                } else {
-                    //One of the players is already in the game
-                    response.status(NOT_FOUND);
-                }
             } else {
                 response.status(BAD_REQUEST);
             }
@@ -88,10 +79,24 @@ public class AppController {
         });
 
         //add pair to ladder
-        //in case of adding a player at the end of ladder, position is length of ladder
-        post("/api/index/add", (request, response) -> {
-            String position = request.queryParams(POSITION);
-            int index = Integer.parseInt(position) - 1;
+        //in case of adding a pair at the end of ladder, position is length of ladder
+        post("/api/ladder", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            //ArrayList players = gson.fromJson(request.body(), ArrayList.class);
+
+            /*
+            String firstName = request.params(FIRST_NAME);
+            String lastName = request.params(LAST_NAME);
+            String email = request.params(EMAIL);
+            String pwd = request.params(PASSWORD);
+            String position = request.params(POSITION);
+
+            if(position == null) {
+
+            } else {
+                int index = Integer.parseInt(position) - 1;
+            }
+
             int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
 
@@ -100,7 +105,7 @@ public class AppController {
                 return response;
             }
             ladderManager.addNewPairAtIndex(pair, index);
-            response.status(OK);
+            response.status(OK);*/
             return response;
         });
 
