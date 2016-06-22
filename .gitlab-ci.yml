@@ -1,5 +1,3 @@
-services:
-  - mysql:latest
 
 variables:
   MYSQL_DATABASE: test
@@ -13,6 +11,8 @@ stages:
   - jshint
 
 test:
+  services:
+    - mysql:latest
   script: gradle check
   stage: test
 
