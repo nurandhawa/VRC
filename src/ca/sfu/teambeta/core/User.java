@@ -9,24 +9,31 @@ package ca.sfu.teambeta.core;
 public class User {
     private String email;
     private String passwordHash;
-    private String phoneNumber;
+    private String firstName = "";
+    private String lastName = "";
+    private String phoneNumber = "";
 
 
     // MARK: - Constructors
-    public User(String email, String passwordHash, String phoneNumber) {
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.phoneNumber = phoneNumber;
-    }
-
-    public User(String email, String passwordHash, int phoneNumber) {
-        this(email, passwordHash, Integer.toString(phoneNumber));
-    }
-
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
-        this.phoneNumber = "";
+    }
+
+    public User(String email, String passwordHash, String phoneNumber) {
+        this(email, passwordHash);
+        this.phoneNumber = phoneNumber;
+    }
+
+    public User(String email, String passwordHash, String firstName, String lastName) {
+        this(email, passwordHash);
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public User(String email, String passwordHash, String firstName, String lastName, String phoneNumber) {
+        this(email, passwordHash, firstName, lastName);
+        this.phoneNumber = phoneNumber;
     }
 
 
@@ -37,6 +44,14 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public String getPhoneNumber() {
