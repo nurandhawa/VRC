@@ -81,9 +81,10 @@ public class AppController {
         //add pair to ladder
         //in case of adding a pair at the end of ladder, position is length of ladder
         post("/api/ladder", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
+            //int id = Integer.parseInt(request.queryParams(ID));
+            response.status(OK);
             //ArrayList players = gson.fromJson(request.body(), ArrayList.class);
-
+            //System.out.println(players);
             /*
             String firstName = request.params(FIRST_NAME);
             String lastName = request.params(LAST_NAME);
@@ -110,9 +111,11 @@ public class AppController {
         });
 
         //remove player from ladder
-        delete("/api/index/remove", (request, response) -> {
-            String position = request.queryParams(POSITION);
-            int index = Integer.parseInt(position) - 1;
+        delete("/api/ladder/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            Pair pair = ladderManager.searchPairById(id);
+            System.out.println(pair);
+            int index = pair.getPosition() - 1;
             boolean removed = ladderManager.removePairAtIndex(index);
 
             if (removed) {
