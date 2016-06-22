@@ -133,48 +133,6 @@ var matchData = [
                 name: "Roy Mustang and Mayes Hughes",
             }
         ]
-    },
-    {
-        matchNum: 5,
-        pairs: [
-            {
-                        matchRanking: 1,
-                        name: "Matt Murdock and Luke Cage",
-            },
-            {
-                        matchRanking: 2,
-                        name: "James Bond and Jason Bourne",
-            },
-            {
-                        matchRanking: 3,
-                        name: "Lisa Simpson and Bart Simpson",
-            },
-            {
-                        matchRanking: 4,
-                        name: "Edward Elric and Alphonse Elric",
-            }
-        ]
-    },
-    {
-        matchNum: 6,
-        pairs: [
-             {
-                        matchRanking: 1,
-                        name: "Harry Potter and Ron Weasley",
-             },
-             {
-                        matchRanking: 2,
-                        name: "Jon Snow and Ygritte Wildling",
-             },
-             {
-                        matchRanking: 3,
-                        name: "Khal Drogo and Daenerys Targaryen",
-             },
-             {
-                        matchRanking: 4,
-                        name: "Roy Mustang and Mayes Hughes",
-             }
-        ]
     }
 ];
 
