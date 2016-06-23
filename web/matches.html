@@ -19,43 +19,37 @@
     <!-- Custom styles for this template -->
     <link href="css/prj-web.css" rel="stylesheet">
 
-    <script src="js/jquery-1.12.4.js"></script>
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="bootstrap-material/dist/js/material.js"></script>
-    <script src="js/app.js"></script>
-      <script src="js/vue.js"></script>
+    <script type="x/template" id="matches-template">
+      <div class="mymodal-mask" v-show="show" transition="matches">
+          <div class="mymodal-wrapper">
+              <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
+                  <div class="mymodal-header">
+                      <slot name="header">
+                          default header
+                      </slot>
+                  </div>
 
-
-      <script type="x/template" id="modal-template">
-          <div class="mymodal-mask" v-show="show" transition="mymodal">
-              <div class="mymodal-wrapper">
-                  <div class="mymodal-container">
-
-                      <div class="mymodal-header">
-                          <slot name="header">
-                              default header
-                          </slot>
+                  <div class="mymodal-body">
+                      <div class="pair-name match-pair" v-for="pair in match.pairs">
+                          <span class="label label-info position">{{ pair.matchRanking }}</span>
+                          {{ pair.name }}
                       </div>
+                  </div>
 
-                      <div class="mymodal-body">
-                          <slot name="body">
-                              default body
-                          </slot>
-                      </div>
-
-                      <div class="mymodal-footer">
-                          <slot name="footer">
-                              default footer
-                              <button class="mymodal-default-button"
-                                      @click="show = false">
-                                  OK
-                              </button>
-                          </slot>
-                      </div>
+                  <div class="mymodal-footer">
+                      <slot name="footer">
+                          default footer
+                          <button v-if="modalActiveContent($index)" class="mymodal-default-button"
+                                  @click="setModalClose()" data-dismiss="modal">
+                              Close me please
+                          </button>
+                      </slot>
                   </div>
               </div>
           </div>
-      </script>
+      </div>
+  </script>
+
 
   </head>
 
@@ -91,9 +85,9 @@
         </div>
       </div>
 
-      <div id="matches" div class="matches">
-        <div class="matches-left">
-          <div class="panel panel-info" v-for="match in matchesLeft">
+      <div id="matches" class="matches">
+        <div id="show-matches-left" class="matches-left">
+          <div class="panel panel-info" v-for="match in matchesLeft" @click="modalOpen($index)">
             <div class="panel-heading">
               <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
@@ -104,30 +98,7 @@
               </div>
             </div>
           </div>
-            <div id="myDiv">
-                <div id="show-modal" @click="showModal = true" class="panel panel-info">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Match other</h3>
-                    </div>
-                    <div class="panel-body">
-                        <div class="pair-name match-pair">
-                            <span class="label label-info position">1</span>
-                            Goon Squad 1
-                        </div>
-                        <div class="pair-name match-pair">
-                            <span class="label label-info position">2</span>
-                            Goon Squad 2
-                        </div>
-                        <div class="pair-name match-pair">
-                            <span class="label label-info position">3</span>
-                            Goon Squad 3
-                        </div>
-                    </div>
-                </div>
-                <mymodal :show.sync="showModal">
-                    <h3 slot="header">custom header</h3>
-                </mymodal>
-            </div>
+          <matches :show.sync="showModal" :matchlist="matchesLeft" :active.sync="active"></matches>
         </div>
         <div class="matches-mid">
           <div class="panel panel-info" v-for="match in matchesMid">
@@ -202,12 +173,14 @@
       </div>
 
   </body>
-  <script src="js/matches.js"></script>
   <script src="js/jquery-1.12.4.js"></script>
   <script src="js/vue.js"></script>
   <script src="bootstrap/js/bootstrap.js"></script>
   <script src="bootstrap-material/dist/js/material.js"></script>
+  <script src="bootstrap-material/dist/js/ripples.js"></script>
   <script src="js/header.js"></script>
-  <script src="js/ladder.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/matches.js"></script>
+  <script src="js/matchloader.js"></script>
+
+
 </html>
