@@ -60,7 +60,7 @@ public class AppController {
                 return response;
             }
 
-            if(!validStatus && !validNewPos) {
+            if (!validStatus && !validNewPos) {
                 response.body("Specify what to update: position or status");
                 response.status(BAD_REQUEST);
             } else if (validStatus && !validNewPos) {
@@ -75,7 +75,7 @@ public class AppController {
                 }
             } else if (!validStatus && validNewPos) {
                 int currentPosition = pair.getPosition();
-                ladderManager.movePair(currentPosition,newPosition);
+                ladderManager.movePair(currentPosition, newPosition);
                 response.status(OK);
 
             } else {
@@ -93,20 +93,20 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
 
             boolean validPos = 0 < extractedData.getPosition()
-                                && extractedData.getPosition() <= ladderManager.ladderSize();
+                    && extractedData.getPosition() <= ladderManager.ladderSize();
             List<Player> playerData = extractedData.getPlayers();
 
-            if(playerData.size() != 2) {
+            if (playerData.size() != 2) {
                 response.status(BAD_REQUEST);
                 response.body("A Pair cannot have more than 2 players.");
                 return response;
             }
-            Player p1 = new Player(playerData.get(0).getFirstName(),playerData.get(0).getLastName(),"");
-            Player p2 = new Player(playerData.get(1).getFirstName(),playerData.get(1).getLastName(),"");
+            Player p1 = new Player(playerData.get(0).getFirstName(), playerData.get(0).getLastName(), "");
+            Player p2 = new Player(playerData.get(1).getFirstName(), playerData.get(1).getLastName(), "");
             Pair pair = new Pair(p1, p2);
 
             if (validPos) {
-                ladderManager.addNewPairAtIndex(pair,extractedData.getPosition()-1);
+                ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
                 ladderManager.addNewPair(pair);
@@ -183,7 +183,7 @@ public class AppController {
             }
 
             input = extractedData.results.clone();
-            gameManager.inputMatchResults(group,input);
+            gameManager.inputMatchResults(group, input);
             response.status(OK);
             return response;
         });
