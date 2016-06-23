@@ -15,11 +15,14 @@ class Main {
 
         /*Laddgiter loadedLadder = DBManager.loadFromDB();*/
 
-        /* -----FOR TESTING
+        /* -----FOR TESTING*/
         List<Pair> pairs = new ArrayList<>();
 
+        pairs.add(new Pair(new Player("P1", "Test", ""), new Player("P2", "Test", ""), true));
         pairs.add(new Pair(new Player("P3", "Test", ""), new Player("P4", "Test", ""), true));
+        pairs.add(new Pair(new Player("P5", "Test", ""), new Player("P6", "Test", ""), true));
         pairs.add(new Pair(new Player("P7", "Test", ""), new Player("P8", "Test", ""), true));
+        pairs.add(new Pair(new Player("P9", "Test", ""), new Player("P10", "Test", ""), true));
         pairs.add(new Pair(new Player("P11", "Test", ""), new Player("P12", "Test", ""), true));
 
         Ladder loadedLadder = new Ladder(pairs);

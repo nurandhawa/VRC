@@ -172,8 +172,8 @@ public class AppController {
         //Input match results
         patch("/api/matches/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
-            Scorecard<Pair> group = gameManager.getGroupByIndex(id);
-            int numTeams = group.getTeamRankings().size();
+            Scorecard group = gameManager.getGroupByIndex(id);
+            int numTeams = group.getReorderedPairs().size();
             String[][] input = new String[numTeams][numTeams];
 
             String body = request.body();

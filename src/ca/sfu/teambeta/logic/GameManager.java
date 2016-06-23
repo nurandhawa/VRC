@@ -25,15 +25,18 @@ public class GameManager {
         observer = () -> {
             groupsDone++;
             if (groupsDone == groups.size()) {
+                for (Scorecard s : groups) {
+                    List<Pair> pairs = s.getReorderedPairs();
+                    for(Pair p : pairs) {
+                        p.setPairScore(s.getPairScore(p));
+                    }
+                }
                 ladderManager.processLadder(groups);
             }
         };
 
         splitLadderIntoGroups();
-    }
-
-    public List<Scorecard> getScorecards() {
-        return groups;
+        setScorecardIndex();
     }
 
     private void splitLadderIntoGroups() {
@@ -120,6 +123,16 @@ public class GameManager {
         }
     }
 
+    private void setScorecardIndex() {
+        for(int i=0; i < groups.size(); i++) {
+            groups.get(i).setScorecardIndex(i);
+        }
+    }
+
+    public List<Scorecard> getScorecards() {
+        return groups;
+    }
+
     public void removePlayingPair(Pair pair) {
         ladder.remove(pair);
         groups.clear();
@@ -132,7 +145,7 @@ public class GameManager {
         splitLadderIntoGroups();
     }
 
-    public Scorecard<Pair> getGroupByIndex(int index) {
+    public Scorecard getGroupByIndex(int index) {
         return groups.get(index);
     }
 }
