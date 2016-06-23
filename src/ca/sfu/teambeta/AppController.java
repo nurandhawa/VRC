@@ -5,7 +5,6 @@ import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import spark.utils.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,11 +109,11 @@ public class AppController {
             List<Player> newPlayers = new ArrayList<Player>();
 
             for (int i = 0; i < MAX_SIZE; i++) {
-                if (playerData.get(i).getExistingID() == null) {
+                if (playerData.get(i).getExistingId() == null) {
                     newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
                             playerData.get(i).getPhoneNumber()));
                 } else {
-                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingID()));
+                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingId()));
                 }
             }
 

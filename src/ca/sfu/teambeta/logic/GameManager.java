@@ -27,7 +27,7 @@ public class GameManager {
             if (groupsDone == groups.size()) {
                 for (Scorecard s : groups) {
                     List<Pair> pairs = s.getReorderedPairs();
-                    for(Pair p : pairs) {
+                    for (Pair p : pairs) {
                         p.setPairScore(s.getPairScore(p));
                     }
                 }
@@ -124,7 +124,7 @@ public class GameManager {
     }
 
     private void setScorecardIndex() {
-        for(int i=0; i < groups.size(); i++) {
+        for (int i = 0; i < groups.size(); i++) {
             groups.get(i).setScorecardIndex(i);
         }
     }

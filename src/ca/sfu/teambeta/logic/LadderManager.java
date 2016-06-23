@@ -92,7 +92,7 @@ public class LadderManager {
 
     public Player searchPlayerById(int id) {
         for (Pair current : ladder.getPairs()) {
-            for(Player p : current.getPlayers()) {
+            for (Player p : current.getPlayers()) {
                 if (p.getID() == id) {
                     return p;
                 }
