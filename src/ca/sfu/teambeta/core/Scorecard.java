@@ -1,11 +1,6 @@
 package ca.sfu.teambeta.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -28,7 +23,7 @@ public class Scorecard extends Persistable {
     Set<Game> games = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
-    List<Pair> pairs = new ArrayList<>();
+    List<Pair> pairs;
 
     @Transient
     Observer observer = null;
@@ -40,7 +35,7 @@ public class Scorecard extends Persistable {
 
     public Scorecard(List<Pair> pairs, Observer obs) {
         // Better make a copy of pairs, just in case it changes
-        this.pairs = Collections.unmodifiableList(pairs);
+        this.pairs = new ArrayList<>(pairs);
         this.observer = obs;
     }
 
@@ -86,6 +81,17 @@ public class Scorecard extends Persistable {
         List<Pair> orderedPairs = new ArrayList<>(pairs);
         Collections.sort(orderedPairs, (pair1, pair2) -> getPairScore(pair2) - getPairScore(pair1));
         return orderedPairs;
+    }
+
+    @Override
+    public String toString(){
+        List<Pair> teams = this.getReorderedPairs();
+        String s = "";
+        for (Pair p : teams) {
+            s += p.toString();
+            s += "\n";
+        }
+        return s;
     }
 
     @Override
