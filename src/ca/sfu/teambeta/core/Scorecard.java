@@ -86,12 +86,12 @@ public class Scorecard extends Persistable {
     @Override
     public String toString() {
         List<Pair> teams = this.getReorderedPairs();
-        String s = "";
+        String scString = "";
         for (Pair p : teams) {
-            s += p.toString();
-            s += "\n";
+            scString += p.toString();
+            scString += "\n";
         }
-        return s;
+        return scString;
     }
 
     @Override
