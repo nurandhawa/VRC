@@ -1,24 +1,30 @@
 /**
  * Created by David on 2016-06-15.
  */
-Vue.component('mymodal', {
-    template: '#modal-template',
+
+Vue.component('matches', {
+    template: '#matches-template',
     props: {
+        active: "active",
+        isActive: "isActive",
+        matchlist: "matchlist",
         show: {
             type: Boolean,
             required: true,
             twoWay: true
         }
-    }
-})
+    },
+    methods: {
+        modalActiveContent: function(i) {
+            return this.active === i;
+        },
+        setModalClose: function() {
+            this.show = false;
+            this.active = false;
 
-// start app
-new Vue({
-    el: '#myDiv',
-    data: {
-        showModal: false
+        }
     }
-})
+});
 
 var Matches = (function() {
     function Matches(matchData) {
@@ -40,13 +46,20 @@ var Matches = (function() {
             }
         }
 
-
         this.component = new Vue({
             el: '#matches',
             data: {
+                active: 0,
+                showModal: false,
                 matchesLeft: matchHolderLeft,
                 matchesMid: matchHolderMid,
                 matchesRight: matchHolderRight
+            },
+            methods: {
+                modalOpen: function(i) {
+                    this.showModal = true;
+                    return this.active = i;
+                }
             }
         });
     };
