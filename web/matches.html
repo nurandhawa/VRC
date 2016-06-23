@@ -101,7 +101,7 @@
           <matches :show.sync="showModal" :matchlist="matchesLeft" :active.sync="active"></matches>
         </div>
         <div class="matches-mid">
-          <div class="panel panel-info" v-for="match in matchesMid">
+          <div class="panel panel-info" v-for="match in matchesMid" @click="modalOpen($index)">
             <div class="panel-heading">
               <h3 class="panel-title">Match {{ match.matchNum }}</h3>
             </div>
@@ -134,6 +134,7 @@
               </div>
             </div>
           </div>
+          <matches :show.sync="showModal" :matchlist="matchesMid" :active.sync="active"></matches>
         </div>
         <div class="matches-right">
           <div class="panel panel-info" v-for="match in matchesRight">
