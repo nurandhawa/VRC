@@ -10,7 +10,7 @@ import java.util.List;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.ScorecardAdapter;
 
 /**
  * Created by David Li on 30/05/16.
@@ -139,7 +139,7 @@ public class LadderManagerTest {
         group1.add(pair2);
         group1.add(pair3);
 
-        Scorecard<Pair> scorecards1 = new Scorecard<>(group1, null);
+        ScorecardAdapter scorecards1 = new ScorecardAdapter(group1, null);
         scorecards1.setWin(pair3, 0);
         scorecards1.setWin(pair3, 1);
 
@@ -160,7 +160,7 @@ public class LadderManagerTest {
         group2.add(pair5);
         group2.add(pair6);
 
-        Scorecard<Pair> scorecards2 = new Scorecard<>(group2, null);
+        ScorecardAdapter scorecards2 = new ScorecardAdapter(group2, null);
         scorecards2.setWin(pair6, 0);
         scorecards2.setWin(pair6, 1);
 
@@ -171,7 +171,7 @@ public class LadderManagerTest {
         scorecards2.setWin(pair4, 1);
         scorecards2.setLose(pair4, 2);
 
-        List<Scorecard<Pair>> cards = new ArrayList<>();
+        List<ScorecardAdapter> cards = new ArrayList<>();
         cards.add(scorecards1);
         cards.add(scorecards2);
 
