@@ -167,9 +167,9 @@ public class LadderManagerTest {
         scorecards2.setLose(pair5, 0);
         scorecards2.setLose(pair5, 2);
 
-        scorecards2.setWin(pair4, 0);
-        scorecards2.setWin(pair4, 1);
-        scorecards2.setLose(pair4, 2);
+        scorecards2.setWin(pair4, 2);
+        scorecards2.setLose(pair4, 1);
+//        scorecards2.setLose(pair4, 2);
 
         List<ScorecardAdapter> cards = new ArrayList<>();
         cards.add(scorecards1);
