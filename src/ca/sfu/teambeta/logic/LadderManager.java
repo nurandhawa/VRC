@@ -90,6 +90,17 @@ public class LadderManager {
         return null;
     }
 
+    public Player searchPlayerById(int id) {
+        for (Pair current : ladder.getPairs()) {
+            for(Player p : current.getPlayers()) {
+                if (p.getID() == id) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean setIsPlaying(Pair pair) {
         //Set pair to playing if players are unique(returns true)
         if (ladder.getPairs().contains(pair)) {

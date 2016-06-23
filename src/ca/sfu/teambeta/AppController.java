@@ -5,7 +5,9 @@ import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import spark.utils.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static spark.Spark.*;
@@ -32,6 +34,7 @@ public class AppController {
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
+
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         //homepage: return ladder
@@ -92,20 +95,30 @@ public class AppController {
         post("/api/ladder", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            final int MAX_SIZE = 2;
 
             boolean validPos = 0 < extractedData.getPosition()
                     && extractedData.getPosition() <= ladderManager.ladderSize();
             List<Player> playerData = extractedData.getPlayers();
 
-            if (playerData.size() != 2) {
+            if (playerData.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
                 response.body("A Pair cannot have more than 2 players.");
                 return response;
             }
-            Player p1 = new Player(playerData.get(0).getFirstName(), playerData.get(0).getLastName(), "");
-            Player p2 = new Player(playerData.get(1).getFirstName(), playerData.get(1).getLastName(), "");
-            Pair pair = new Pair(p1, p2);
 
+            List<Player> newPlayers = new ArrayList<Player>();
+
+            for (int i = 0; i < MAX_SIZE; i++) {
+                if (playerData.get(i).getExistingID() == null) {
+                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
+                            playerData.get(i).getPhoneNumber()));
+                } else {
+                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingID()));
+                }
+            }
+
+            Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
             if (validPos) {
                 ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
                 response.status(OK);
@@ -138,7 +151,7 @@ public class AppController {
         post("/api/matches/:id", (request, response) -> {
             int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
-            if(pair == null){
+            if (pair == null) {
                 response.status(BAD_REQUEST);
                 response.body("Pair with the following id " + id + "wasn't found");
                 return response;

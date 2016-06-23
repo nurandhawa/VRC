@@ -15,7 +15,7 @@ class Main {
 
         /*Laddgiter loadedLadder = DBManager.loadFromDB();*/
 
-        /* -----FOR TESTING*/
+        /* -----FOR TESTING
         List<Pair> pairs = new ArrayList<>();
 
         pairs.add(new Pair(new Player("P1", "Test", ""), new Player("P2", "Test", ""), true));
@@ -33,7 +33,7 @@ class Main {
 
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
         //UserInterface.start(gameManager,ladderManager);
-        AppController appController = new AppController(ladderManager,gameManager);
+        AppController appController = new AppController(ladderManager,gameManager);*/
 
 
     }
