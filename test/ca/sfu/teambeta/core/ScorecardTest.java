@@ -20,17 +20,12 @@ public class ScorecardTest {
 
     @Test
     public void testFirstExample() {
-        ScorecardAdapter sc = new ScorecardAdapter(threePairs, null);
-        sc.setWin(victorJoyce, 0);
-        sc.setWin(victorJoyce, 1);
+        Scorecard sc = new Scorecard(threePairs, null);
+        sc.setGameResults(victorJoyce,vickyDavid);
+        sc.setGameResults(victorJoyce,rosStevie);
+        sc.setGameResults(rosStevie,vickyDavid);
 
-        sc.setLose(vickyDavid, 0);
-        sc.setLose(vickyDavid, 2);
-
-        sc.setWin(rosStevie, 1);
-        sc.setLose(rosStevie, 2);
-
-        List<Pair> reOrdered = sc.getTeamRankings();
+        List<Pair> reOrdered = sc.getReorderedPairs();
         List<Pair> expectedOrder = Arrays.asList(victorJoyce, rosStevie, vickyDavid);
         Assert.assertEquals(reOrdered, expectedOrder);
     }
@@ -38,18 +33,12 @@ public class ScorecardTest {
     @Test
     public void testLastExample() {
         Arrays.asList(rosStevie, vickyDavid, victorJoyce);
-        ScorecardAdapter sc = new ScorecardAdapter(threePairs, null);
-        sc.setWin(rosStevie, 0);
-        sc.setWin(rosStevie, 1);
+        Scorecard sc = new Scorecard(threePairs, null);
+        sc.setGameResults(rosStevie,vickyDavid);
+        sc.setGameResults(rosStevie,victorJoyce);
+        sc.setGameResults(victorJoyce,vickyDavid);
 
-        sc.setLose(vickyDavid, 0);
-        sc.setLose(vickyDavid, 2);
-
-        sc.setWin(rosStevie, 0);
-        sc.setWin(rosStevie, 1);
-        sc.setLose(rosStevie, 2);
-
-        List<Pair> reOrdered = sc.getTeamRankings();
+        List<Pair> reOrdered = sc.getReorderedPairs();
         List<Pair> expectedOrder = Arrays.asList(rosStevie, victorJoyce, vickyDavid);
         Assert.assertEquals(reOrdered, expectedOrder);
     }
@@ -59,15 +48,10 @@ public class ScorecardTest {
         Observer observer = () -> {
             throw new RuntimeException();
         };
-        ScorecardAdapter sc = new ScorecardAdapter(threePairs, observer);
-        sc.setWin(victorJoyce, 0);
-        sc.setLose(victorJoyce, 1);
-
-        sc.setLose(vickyDavid, 0);
-        sc.setLose(vickyDavid, 2);
-
-        sc.setWin(rosStevie, 2);
-        sc.setWin(rosStevie, 1);
+        Scorecard sc = new Scorecard(threePairs, observer);
+        sc.setGameResults(victorJoyce, vickyDavid);
+        sc.setGameResults(rosStevie, vickyDavid);
+        sc.setGameResults(rosStevie, victorJoyce);
     }
 
     @Test(expected = RuntimeException.class)
@@ -75,17 +59,10 @@ public class ScorecardTest {
         Observer observer = () -> {
             throw new RuntimeException();
         };
-        ScorecardAdapter sc = new ScorecardAdapter(threePairs, observer);
-        sc.setWin(victorJoyce, 0);
-        sc.setLose(vickyDavid, 0);
-
-        sc.setWin(victorJoyce, 1);
-        sc.setLose(rosStevie, 1);
-
-        sc.setWin(bobbyChan, 2);
-        sc.setLose(vickyDavid, 2);
-
-        sc.setWin(rosStevie, 3);
-        sc.setLose(bobbyChan, 3);
+        Scorecard sc = new Scorecard(threePairs, observer);
+        sc.setGameResults(victorJoyce, vickyDavid);
+        sc.setGameResults(victorJoyce, rosStevie);
+        sc.setGameResults(bobbyChan, vickyDavid);
+        sc.setGameResults(rosStevie, bobbyChan);
     }
 }

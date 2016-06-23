@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.ScorecardAdapter;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 
@@ -67,7 +67,7 @@ public class UserInterface {
     }
 
     private static void editMatches(GameManager gameManager) {
-        List<ScorecardAdapter> scorecards = gameManager.getScorecards();
+        List<Scorecard> scorecards = gameManager.getScorecards();
         listMatches(scorecards);
         System.out.println("Enter the match number you want to edit: ");
         String input;
@@ -75,7 +75,7 @@ public class UserInterface {
 
         int matchSelection = Integer.parseInt(input);
         int matchIndex = matchSelection - 1;
-        ScorecardAdapter match = scorecards.get(matchIndex);
+        Scorecard match = scorecards.get(matchIndex);
         System.out.println(match.toString());
 
         System.out.println("Choose an action:");
@@ -84,7 +84,7 @@ public class UserInterface {
         input = scanner.nextLine();
 
         int index = 1;
-        for (Pair pair : match.getTeamRankings()) {
+        for (Pair pair : match.getReorderedPairs()) {
             System.out.println(index + ". " + pair.toString());
             index++;
         }
@@ -97,18 +97,18 @@ public class UserInterface {
         }
     }
 
-    private static void removePairFromMatch(ScorecardAdapter match, GameManager gameManager) {
+    private static void removePairFromMatch(Scorecard match, GameManager gameManager) {
         String input;
         System.out.println("Enter the pair number to remove: ");
         input = scanner.nextLine();
         int pairSelection = Integer.parseInt(input);
         int pairIndex = pairSelection - 1;
-        gameManager.removePlayingPair(match.getTeamRankings().get(pairIndex));
+        gameManager.removePlayingPair(match.getReorderedPairs().get(pairIndex));
     }
 
-    private static void inputMatchResults(ScorecardAdapter match, GameManager gameManager) {
+    private static void inputMatchResults(Scorecard match, GameManager gameManager) {
         String input;
-        int numTeams = match.getTeamRankings().size();
+        int numTeams = match.getReorderedPairs().size();
         String[][] results = new String[numTeams][numTeams];
 
         System.out.println("Enter match results (W for win, L for loss, - for bye,"
@@ -150,10 +150,10 @@ public class UserInterface {
         }
     }
 
-    private static void listMatches(List<ScorecardAdapter> scorecards) {
+    private static void listMatches(List<Scorecard> scorecards) {
         System.out.println("Matches: ");
         int index = 1;
-        for (ScorecardAdapter scorecard : scorecards) {
+        for (Scorecard scorecard : scorecards) {
             System.out.println("****************** MATCH " + index + " ******************");
             System.out.println(scorecard.toString());
             index++;

@@ -1,16 +1,12 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.*;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.ScorecardAdapter;
 
 /**
  * Created by David Li on 30/05/16.
@@ -139,16 +135,11 @@ public class LadderManagerTest {
         group1.add(pair2);
         group1.add(pair3);
 
-        ScorecardAdapter scorecards1 = new ScorecardAdapter(group1, null);
-        scorecards1.setWin(pair3, 0);
-        scorecards1.setWin(pair3, 1);
+        Scorecard scorecards1 = new Scorecard(group1, null);
+        scorecards1.setGameResults(pair3, pair2);
+        scorecards1.setGameResults(pair3,pair1);
+        scorecards1.setGameResults(pair1,pair2);
 
-        scorecards1.setLose(pair2, 0);
-        scorecards1.setLose(pair2, 2);
-
-        scorecards1.setWin(pair1, 0);
-        scorecards1.setWin(pair1, 1);
-        scorecards1.setLose(pair1, 2);
 
         Pair pair4 = activePairs.get(3);
         Pair pair5 = activePairs.get(4);
@@ -160,18 +151,12 @@ public class LadderManagerTest {
         group2.add(pair5);
         group2.add(pair6);
 
-        ScorecardAdapter scorecards2 = new ScorecardAdapter(group2, null);
-        scorecards2.setWin(pair6, 0);
-        scorecards2.setWin(pair6, 1);
+        Scorecard scorecards2 = new Scorecard(group2, null);
+        scorecards2.setGameResults(pair6, pair5);
+        scorecards2.setGameResults(pair4, pair5);
+        scorecards2.setGameResults(pair6, pair4);
 
-        scorecards2.setLose(pair5, 0);
-        scorecards2.setLose(pair5, 2);
-
-        scorecards2.setWin(pair4, 2);
-        scorecards2.setLose(pair4, 1);
-//        scorecards2.setLose(pair4, 2);
-
-        List<ScorecardAdapter> cards = new ArrayList<>();
+        List<Scorecard> cards = new ArrayList<>();
         cards.add(scorecards1);
         cards.add(scorecards2);
 
