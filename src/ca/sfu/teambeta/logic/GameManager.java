@@ -127,4 +127,8 @@ public class GameManager {
         groups.clear();
         splitLadderIntoGroups();
     }
+
+    public Scorecard<Pair> getGroupByIndex(int index) {
+        return groups.get(index);
+    }
 }
