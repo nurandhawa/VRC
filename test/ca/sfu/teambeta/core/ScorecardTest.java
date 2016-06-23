@@ -10,78 +10,59 @@ import java.util.List;
  * Created by Gordon Shieh on 26/05/16.
  */
 public class ScorecardTest {
+    private Pair victorJoyce = new Pair(new Player("Victor", ""), new Player("Joyce", ""));
+    private Pair vickyDavid = new Pair(new Player("Vicky", ""), new Player("David", ""));
+    private Pair rosStevie = new Pair(new Player("Ros", ""), new Player("Stevie", ""));
+    private Pair bobbyChan = new Pair(new Player("Bobby", ""), new Player("Chan", ""));
+
+    private List<Pair> threePairs = Arrays.asList(victorJoyce, vickyDavid, rosStevie);
+    private List<Pair> fourPairs = Arrays.asList(victorJoyce, vickyDavid, rosStevie, bobbyChan);
+
     @Test
     public void testFirstExample() {
-        List<String> teams = Arrays.asList("Victor Joyce", "Vicky David", "Ros Stevie");
-        Scorecard<String> sc = new Scorecard<>(teams, null);
-        sc.setWin("Victor Joyce", 0);
-        sc.setWin("Victor Joyce", 1);
+        Scorecard sc = new Scorecard(threePairs, null);
+        sc.setGameResults(victorJoyce,vickyDavid);
+        sc.setGameResults(victorJoyce,rosStevie);
+        sc.setGameResults(rosStevie,vickyDavid);
 
-        sc.setLose("Vicky David", 0);
-        sc.setLose("Vicky David", 2);
-
-        sc.setWin("Ros Stevie", 1);
-        sc.setLose("Ros Stevie", 2);
-
-        List<String> reOrdered = sc.getTeamRankings();
-        List<String> expectedOrder = Arrays.asList("Victor Joyce", "Ros Stevie", "Vicky David");
+        List<Pair> reOrdered = sc.getReorderedPairs();
+        List<Pair> expectedOrder = Arrays.asList(victorJoyce, rosStevie, vickyDavid);
         Assert.assertEquals(reOrdered, expectedOrder);
     }
 
     @Test
     public void testLastExample() {
-        List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina");
-        Scorecard<String> sc = new Scorecard<>(teams, null);
-        sc.setWin("Ben Katrina", 0);
-        sc.setWin("Ben Katrina", 1);
+        Arrays.asList(rosStevie, vickyDavid, victorJoyce);
+        Scorecard sc = new Scorecard(threePairs, null);
+        sc.setGameResults(rosStevie,vickyDavid);
+        sc.setGameResults(rosStevie,victorJoyce);
+        sc.setGameResults(victorJoyce,vickyDavid);
 
-        sc.setLose("Peter Aby", 0);
-        sc.setLose("Peter Aby", 2);
-
-        sc.setWin("Jerome Karen", 0);
-        sc.setWin("Jerome Karen", 1);
-        sc.setLose("Jerome Karen", 2);
-
-        List<String> reOrdered = sc.getTeamRankings();
-        List<String> expectedOrder = Arrays.asList("Ben Katrina", "Jerome Karen", "Peter Aby");
+        List<Pair> reOrdered = sc.getReorderedPairs();
+        List<Pair> expectedOrder = Arrays.asList(rosStevie, victorJoyce, vickyDavid);
         Assert.assertEquals(reOrdered, expectedOrder);
     }
 
     @Test(expected = RuntimeException.class)
     public void testObserverThreeTeams() {
-        List<String> teams = Arrays.asList("Jerome Karen", "Peter Aby", "Ben Katrina");
         Observer observer = () -> {
             throw new RuntimeException();
         };
-        Scorecard<String> sc = new Scorecard<>(teams, observer);
-        sc.setWin("Ben Katrina", 0);
-        sc.setWin("Ben Katrina", 1);
-
-        sc.setLose("Peter Aby", 0);
-        sc.setLose("Peter Aby", 2);
-
-        sc.setWin("Jerome Karen", 0);
-        sc.setWin("Jerome Karen", 1);
+        Scorecard sc = new Scorecard(threePairs, observer);
+        sc.setGameResults(victorJoyce, vickyDavid);
+        sc.setGameResults(rosStevie, vickyDavid);
+        sc.setGameResults(rosStevie, victorJoyce);
     }
 
     @Test(expected = RuntimeException.class)
     public void testObserverFourTeams() {
-        List<String> teams = Arrays.asList(
-                "Jerome Karen", "Peter Aby", "Ben Katrina", "Bobby Chan");
         Observer observer = () -> {
             throw new RuntimeException();
         };
-        Scorecard<String> sc = new Scorecard<>(teams, observer);
-        sc.setWin("Ben Katrina", 0);
-        sc.setLose("Peter Aby", 0);
-
-        sc.setWin("Ben Katrina", 1);
-        sc.setLose("Jerome Karen", 1);
-
-        sc.setWin("Bobby Chan", 2);
-        sc.setLose("Peter Aby", 2);
-
-        sc.setWin("Jerome Karen", 3);
-        sc.setLose("Bobby Chan", 3);
+        Scorecard sc = new Scorecard(threePairs, observer);
+        sc.setGameResults(victorJoyce, vickyDavid);
+        sc.setGameResults(victorJoyce, rosStevie);
+        sc.setGameResults(bobbyChan, vickyDavid);
+        sc.setGameResults(rosStevie, bobbyChan);
     }
 }

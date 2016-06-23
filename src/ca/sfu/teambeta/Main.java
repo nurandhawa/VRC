@@ -29,7 +29,7 @@ class Main {
         ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
 
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
-        //UserInterface.start(gameManager,ladderManager);
+        UserInterface.start(gameManager,ladderManager);
         AppController appController = new AppController(ladderManager,gameManager);*/
 
 

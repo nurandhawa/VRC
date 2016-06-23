@@ -9,11 +9,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 
 /**
  * Created by constantin on 27/05/16. <p> <p> USAGE: After all of the games took place
@@ -116,7 +112,7 @@ public class LadderManager {
         }
     }
 
-    public void processLadder(List<Scorecard<Pair>> scorecards) {
+    public void processLadder(List<Scorecard> scorecards) {
         split();
         applyAbsentPenalty();
         swapBetweenGroups(scorecards);
@@ -161,18 +157,18 @@ public class LadderManager {
         }
     }
 
-    private List<Pair> swapBetweenGroups(List<Scorecard<Pair>> scorecards) {
+    private List<Pair> swapBetweenGroups(List<Scorecard> scorecards) {
         // SWAPPING between groups and saving result in activePairs
 
         // Setup a list to hold the decompiled Scorecard's and
         //  one to hold the first group
         List<Pair> completedPairs = new ArrayList<Pair>();
-        List<Pair> firstGroup = scorecards.get(0).getTeamRankings();
+        List<Pair> firstGroup = scorecards.get(0).getReorderedPairs();
         List<Pair> previousGroup = firstGroup;
 
         for (int i = 1; i < scorecards.size(); i++) {
             // Swap the player's in the first and last position of subsequent groups
-            List<Pair> currentGroup = scorecards.get(i).getTeamRankings();
+            List<Pair> currentGroup = scorecards.get(i).getReorderedPairs();
             swapPlayers(previousGroup, currentGroup);
 
             completedPairs.addAll(previousGroup);

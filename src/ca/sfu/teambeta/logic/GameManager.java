@@ -1,12 +1,13 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Scorecard;
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Scorecard;
-import com.google.gson.annotations.Expose;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
@@ -14,7 +15,7 @@ import com.google.gson.annotations.Expose;
 public class GameManager {
     private List<Pair> ladder;
     @Expose
-    private List<Scorecard<Pair>> groups;
+    private List<Scorecard> groups;
     private Observer observer = null;
     private int groupsDone = 0;
 
@@ -28,11 +29,10 @@ public class GameManager {
             }
         };
 
-
         splitLadderIntoGroups();
     }
 
-    public List<Scorecard<Pair>> getScorecards() {
+    public List<Scorecard> getScorecards() {
         return groups;
     }
 
@@ -64,9 +64,8 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 4) {
-                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                Scorecard sc = new Scorecard(groupings, observer);
                 groups.add(sc);
-                System.out.println();
                 groupings.clear();
             }
         }
@@ -80,7 +79,7 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 3) {
-                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                Scorecard sc = new Scorecard(groupings, observer);
                 groups.add(sc);
                 System.out.println();
                 groupings.clear();
@@ -94,30 +93,35 @@ public class GameManager {
         return indexPosition;
     }
 
-    public void inputMatchResults(Scorecard<Pair> s, String[][] results) {
-        List<Pair> teams = s.getTeamRankings();
+    public void inputMatchResults(Scorecard s, String[][] results) {
+        List<Pair> teams = s.getReorderedPairs();
         int rows = results.length;
         int cols = teams.size();
+        Pair teamWon = null;
+        Pair teamLost = null;
+        int winCount = 0;
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (results[i][j].equals("W")) {
-                    s.setWin(teams.get(j), i);
+                    teamWon = teams.get(j);
+                    winCount++;
                 } else if (results[i][j].equals("L")) {
-                    s.setLose(teams.get(j), i);
+                    teamLost = teams.get(j);
+                    winCount--;
                 }
             }
+            if (winCount == 0 && teamWon != null && teamLost != null) {
+                s.setGameResults(teamWon, teamLost);
+            }
+            winCount = 0;
+            teamLost = null;
+            teamWon = null;
         }
     }
 
     public void removePlayingPair(Pair pair) {
         ladder.remove(pair);
-        groups.clear();
-        splitLadderIntoGroups();
-    }
-
-    public void addPlayingPair(Pair pair) {
-        ladder.add(pair);
         groups.clear();
         splitLadderIntoGroups();
     }

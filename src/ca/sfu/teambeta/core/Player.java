@@ -2,7 +2,6 @@ package ca.sfu.teambeta.core;
 
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import javax.persistence.Entity;
 
@@ -18,9 +17,14 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
-    private String phoneNumber;
+    private String phoneNumber = "";
 
     public Player() {
+    }
+
+    public Player(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public Player(String firstName, String lastName, String phoneNumber) {
