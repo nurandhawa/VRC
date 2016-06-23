@@ -1,12 +1,13 @@
 package ca.sfu.teambeta.logic;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Scorecard;
-import com.google.gson.annotations.Expose;
+import ca.sfu.teambeta.core.ScorecardAdapter;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
@@ -14,7 +15,7 @@ import com.google.gson.annotations.Expose;
 public class GameManager {
     private List<Pair> ladder;
     @Expose
-    private List<Scorecard<Pair>> groups;
+    private List<ScorecardAdapter> groups;
     private Observer observer = null;
     private int groupsDone = 0;
 
@@ -32,7 +33,7 @@ public class GameManager {
         splitLadderIntoGroups();
     }
 
-    public List<Scorecard<Pair>> getScorecards() {
+    public List<ScorecardAdapter> getScorecards() {
         return groups;
     }
 
@@ -64,7 +65,7 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 4) {
-                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                ScorecardAdapter sc = new ScorecardAdapter(groupings, observer);
                 groups.add(sc);
                 System.out.println();
                 groupings.clear();
@@ -80,7 +81,7 @@ public class GameManager {
             groupings.add(ladder.get(i));
 
             if (groupings.size() == 3) {
-                Scorecard<Pair> sc = new Scorecard<>(groupings, observer);
+                ScorecardAdapter sc = new ScorecardAdapter(groupings, observer);
                 groups.add(sc);
                 System.out.println();
                 groupings.clear();
@@ -94,7 +95,7 @@ public class GameManager {
         return indexPosition;
     }
 
-    public void inputMatchResults(Scorecard<Pair> s, String[][] results) {
+    public void inputMatchResults(ScorecardAdapter s, String[][] results) {
         List<Pair> teams = s.getTeamRankings();
         int rows = results.length;
         int cols = teams.size();
