@@ -111,8 +111,8 @@ public class GameManager {
                     winCount--;
                 }
             }
-            if(winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon,teamLost);
+            if (winCount == 0 && teamWon != null && teamLost != null) {
+                s.setGameResults(teamWon, teamLost);
             }
         }
     }
