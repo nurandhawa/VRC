@@ -1,9 +1,6 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import com.google.gson.Gson;
@@ -20,7 +17,11 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+
     private static final String PENALTY = "penalty";
+    private static final String LATE = "late";
+    private static final String MISS = "miss";
+    private static final String ACCIDENT = "accident";
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -137,17 +138,23 @@ public class AppController {
         post("/api/matches/:id", (request, response) -> {
             int id = Integer.parseInt(request.queryParams(ID));
             Pair pair = ladderManager.searchPairById(id);
+            if(pair == null){
+                response.status(BAD_REQUEST);
+                response.body("Pair with the following id " + id + "wasn't found");
+                return response;
+            }
 
             String penaltyType = request.queryParams(PENALTY);
 
-            if (penaltyType == "late") {
-                //call late penalty function in ladderManager
-            } else if (penaltyType == "miss") {
-                //call miss penalty function in ladderManager
-            } else if (penaltyType == "absent") {
-                //call absent penalty function in ladderManager
+            if (penaltyType == LATE) {
+                pair.setPenalty(Penalty.LATE.getPenalty());
+            } else if (penaltyType == MISS) {
+                pair.setPenalty(Penalty.MISSING.getPenalty());
+            } else if (penaltyType == ACCIDENT) {
+                pair.setPenalty(Penalty.ACCIDENT.getPenalty());
             } else {
                 response.status(BAD_REQUEST);
+                response.body("Invalid Penalty Type");
             }
             return response;
         });
