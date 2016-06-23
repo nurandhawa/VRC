@@ -58,10 +58,11 @@ var Matches = (function() {
             methods: {
                 modalOpen: function(i) {
                     this.showModal = true;
-                    return this.active = i;
+                    this.active = i;
+                    return this.active;
                 }
             }
-        });
+        })
     };
     return Matches;
 })();

@@ -22,7 +22,7 @@
     <script type="x/template" id="matches-template">
       <div class="mymodal-mask" v-show="show" transition="matches">
           <div class="mymodal-wrapper">
-              <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
+              <div id="modal{{ $index}}"  class="mymodal-container modal-content" v-for="match in matchlist" v-if="modalActiveContent($index)">
                   <div class="mymodal-header">
                       <slot name="header">
                           default header
@@ -36,14 +36,12 @@
                       </div>
                   </div>
 
-                  <div class="mymodal-footer">
-                      <slot name="footer">
-                          default footer
-                          <button v-if="modalActiveContent($index)" class="mymodal-default-button"
-                                  @click="setModalClose()" data-dismiss="modal">
-                              Close me please
-                          </button>
-                      </slot>
+                  <div class="modal-footer">
+                      <button v-if="modalActiveContent($index)" class="btn btn-default"
+                              @click="setModalClose()" data-dismiss="modal">
+                          Close
+                      </button>
+                      <button class="btn btn-primary">Save changes</button>
                   </div>
               </div>
           </div>
