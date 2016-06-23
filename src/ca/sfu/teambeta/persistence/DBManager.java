@@ -9,9 +9,11 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 
+import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Utility class that reads and writes data to the database
@@ -21,7 +23,7 @@ public class DBManager {
     private SessionFactory factory;
     private Session session;
 
-    DBManager(SessionFactory factory) {
+    public DBManager(SessionFactory factory) {
         this.factory = factory;
         this.session = factory.openSession();
     }
@@ -31,6 +33,8 @@ public class DBManager {
         config.addAnnotatedClass(Player.class);
         config.addAnnotatedClass(Pair.class);
         config.addAnnotatedClass(Ladder.class);
+        config.addAnnotatedClass(Scorecard.class);
+        config.addAnnotatedClass(Game.class);
         return config;
     }
 
@@ -62,6 +66,7 @@ public class DBManager {
         try {
             return config.buildSessionFactory();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException();
         }
     }
