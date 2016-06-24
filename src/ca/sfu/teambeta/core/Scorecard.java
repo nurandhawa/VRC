@@ -1,6 +1,13 @@
 package ca.sfu.teambeta.core;
 
-import java.util.*;
+import com.google.gson.annotations.Expose;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -10,7 +17,6 @@ import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.persistence.Persistable;
-import com.google.gson.annotations.Expose;
 
 
 @Entity(name = "Scorecard")
@@ -26,12 +32,11 @@ public class Scorecard extends Persistable {
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
     List<Pair> pairs;
-    @Expose
-    private int scorecardIndex;
-
     @Transient
     Observer observer = null;
     int finishedGameCount = 0;
+    @Expose
+    private int scorecardIndex;
 
     public Scorecard() {
 
@@ -87,6 +92,10 @@ public class Scorecard extends Persistable {
         List<Pair> orderedPairs = new ArrayList<>(pairs);
         Collections.sort(orderedPairs, (pair1, pair2) -> getPairScore(pair2) - getPairScore(pair1));
         return orderedPairs;
+    }
+
+    public boolean hasPair(Pair p) {
+        return pairs.contains(p);
     }
 
     @Override
