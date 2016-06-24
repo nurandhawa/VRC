@@ -2,6 +2,8 @@
  * Created by David on 2016-06-15.
  */
 
+var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
+
 Vue.component('matches', {
     template: '#matches-template',
     props: {
@@ -44,6 +46,20 @@ var Matches = (function() {
                 case 2:
                     matchHolderMid.push(thisMatch);
             }
+
+            var editButton = Vue.extend({
+                 template: EDIT_BUTTON_HTML,
+                 methods: {
+                     editMatch: function() {
+                  //   console.log("dsffds");
+                     }
+                 }
+             });
+             Vue.component('edit-button', editButton);
+
+             var blankButton = Vue.extend({
+                template: "<a></a>"
+            });
         }
 
         this.component = new Vue({
@@ -53,15 +69,30 @@ var Matches = (function() {
                 showModal: false,
                 matchesLeft: matchHolderLeft,
                 matchesMid: matchHolderMid,
-                matchesRight: matchHolderRight
+                matchesRight: matchHolderRight,
+                mode: 'read'
             },
             methods: {
                 modalOpen: function(i) {
                     this.showModal = true;
                     return this.active = i;
                 }
+            },
+            components: {
+                edit: editButton,
+                read: blankButton
             }
         });
     };
+
+    Matches.prototype.changeMode = function() {
+        if (this.mode === 'read') {
+            this.mode = 'edit';
+        }
+        else {
+            this.mode = 'read';
+        }
+    };
+
     return Matches;
 })();
