@@ -11,6 +11,10 @@
 
     <title>Vancouver Racquets Club</title>
 
+      <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+      <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+
+
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap-material/dist/css/bootstrap-material-design.css" rel="stylesheet">
@@ -76,18 +80,21 @@
         </div>
       </nav>
 
-      <div class="header">
-        <h1 class="header-initial">Matches</h1>
-        <div class="header-right">
-          <a onclick="test()" class="btn btn-raised btn-info toggle-button">Edit Matches</a>
-        </div>
+      <div id="header" class="header">
+        <h1 class="header-initial">{{ title }}</h1>
+          <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
+          <div class="header-right">
+              <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
+          </div>
       </div>
 
       <div id="matches" class="matches">
         <div id="show-matches-left" class="matches-left">
           <div class="panel panel-info" v-for="match in matchesLeft" @click="modalOpen($index)">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
+            <div class="match-heading panel-heading">
+              <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
+                <component :is="mode" transition="fade" transition-mode="out-in">
+                </component>
             </div>
             <div class="panel-body">
               <div class="pair-name match-pair" v-for="pair in match.pairs">

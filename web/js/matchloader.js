@@ -121,4 +121,10 @@
 
     var matches = new Matches(matchData);
 
+    var editFunction = function() {
+        matches.changeMode.call(matches.component);
+    };
+
+    var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
+
 })();
