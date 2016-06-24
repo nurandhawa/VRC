@@ -14,6 +14,7 @@ import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.logic.GameSession;
 
 /**
  * Utility class that reads and writes data to the database
@@ -35,6 +36,7 @@ public class DBManager {
         config.addAnnotatedClass(Ladder.class);
         config.addAnnotatedClass(Scorecard.class);
         config.addAnnotatedClass(Game.class);
+        config.addAnnotatedClass(GameSession.class);
         return config;
     }
 
@@ -171,5 +173,41 @@ public class DBManager {
             tx.rollback();
         }
         return ladder;
+    }
+
+    public void addPairToLatestLadder(Pair pair) {
+        Transaction tx = null;
+        Ladder ladder = null;
+        try {
+            tx = session.beginTransaction();
+            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+                    .setProjection(Projections.max("id"));
+            ladder = (Ladder) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            ladder.insertAtEnd(pair);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public void removePairFromLatestLadder(int pairID) {
+        Transaction tx = null;
+        Pair pair = null;
+        Ladder ladder = null;
+        try {
+            tx = session.beginTransaction();
+            pair = session.get(Pair.class, pairID);
+            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+                    .setProjection(Projections.max("id"));
+            ladder = (Ladder) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            ladder.removePair(pair);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
     }
 }

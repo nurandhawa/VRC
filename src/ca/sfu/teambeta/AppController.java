@@ -15,7 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static spark.Spark.*;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.logic.GameManager;
+import ca.sfu.teambeta.logic.LadderManager;
+import ca.sfu.teambeta.persistence.DBManager;
+
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -36,7 +50,7 @@ public class AppController {
 
     private static Gson gson;
 
-    public AppController(LadderManager ladderManager, GameManager gameManager) {
+    public AppController(LadderManager ladderManager, GameManager gameManager, DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
 
@@ -139,12 +153,15 @@ public class AppController {
                 response.status(OK);
             }
 
-            return getOkResponse("");
+            dbManager.addPairToLatestLadder(pair);
+
+            return response;
         });
 
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
+            dbManager.removePairFromLatestLadder(id);
             Pair pair = ladderManager.searchPairById(id);
             int index = pair.getPosition() - 1;
             boolean removed = ladderManager.removePairAtIndex(index);
