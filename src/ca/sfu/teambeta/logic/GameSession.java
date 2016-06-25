@@ -88,6 +88,14 @@ public class GameSession extends Persistable {
         return new ArrayList<>(scorecards);
     }
 
+    public List<Pair> getReorderedLadder() {
+        if (reorderedLadder != null) {
+            return new ArrayList<>(reorderedLadder.getPairs());
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
     private void makeQuadGroup(int num, List<Pair> activePairList) {
         List<Pair> groupings = new ArrayList<>();
         for (int i = num; i < activePairList.size(); i++) {

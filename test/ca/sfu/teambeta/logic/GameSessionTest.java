@@ -17,6 +17,8 @@ import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.persistence.PersistenceTest;
 
+import static org.junit.Assert.assertEquals;
+
 public class GameSessionTest extends PersistenceTest {
     private final Pair kateNick = new Pair(
             new Player("Kate", "Test"),
@@ -139,6 +141,37 @@ public class GameSessionTest extends PersistenceTest {
         Game testGame1 = session.get(Game.class, 2);
         session.close();
         assert (testGame1.getWinner().equals(pair3));
+    }
+
+    @Test
+    public void testReordering() {
+        int key = saveGameSession();
+        Session session = getSession();
+
+        List<Scorecard> scorecards = gameSession.getScorecards();
+
+        List<Pair> activePairs = gameSession.getActivePairs();
+        Pair pair1 = activePairs.get(0);
+        Pair pair2 = activePairs.get(1);
+        Pair pair3 = activePairs.get(2);
+
+        Scorecard firstCard = scorecards.get(0);
+        firstCard.setGameResults(pair3, pair2);
+        firstCard.setGameResults(pair3, pair1);
+        firstCard.setGameResults(pair1, pair2);
+
+        Pair pair4 = activePairs.get(3);
+        Pair pair5 = activePairs.get(4);
+        Pair pair6 = activePairs.get(5);
+
+        Scorecard secondCard = scorecards.get(1);
+        secondCard.setGameResults(pair6, pair5);
+        secondCard.setGameResults(pair4, pair5);
+        secondCard.setGameResults(pair6, pair4);
+
+        gameSession.reorderLadder();
+
+        assertEquals(gameSession.getReorderedLadder(), reorderedList);
     }
 
     private int saveGameSession() {
