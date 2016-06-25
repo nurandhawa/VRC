@@ -97,7 +97,7 @@ public class GameSessionTest extends PersistenceTest {
         }
 
         GameSession newGameSession = session.get(GameSession.class, key);
-
+        session.close();
         assert (newGameSession.getActivePairs().contains(kateNick));
     }
 
@@ -120,6 +120,8 @@ public class GameSessionTest extends PersistenceTest {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
+        GameSession newGameSession = session.get(GameSession.class, key);
         session.close();
+        assert (newGameSession.getScorecards().equals(gameSession.getScorecards()));
     }
 }
