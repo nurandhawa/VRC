@@ -206,30 +206,35 @@ public class GameSession extends Persistable {
                 .filter(pairPenaltyEntry -> pairPenaltyEntry.getValue() == Penalty.MISSING)
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
-        for (int i = 0; i < activeReorderedPairs.size(); i++) {
-            Pair pair = activeReorderedPairs.get(i);
-            if (passivePairs.contains(pair)) {
-                activeReorderedPairs.remove(i);
-                int penaltyPosition = i + Penalty.ABSENT.getPenalty();
-                if (penaltyPosition > activeReorderedPairs.size()) {
-                    penaltyPosition = activeReorderedPairs.size();
-                }
-                activeReorderedPairs.add(penaltyPosition, pair);
-            } else if (latePairs.contains(pair)) {
-                activeReorderedPairs.remove(i);
-                int penaltyPosition = i + Penalty.LATE.getPenalty();
-                if (penaltyPosition > activeReorderedPairs.size()) {
-                    penaltyPosition = activeReorderedPairs.size();
-                }
-                activeReorderedPairs.add(penaltyPosition, pair);
-            } else if (missing.contains(pair)) {
-                activeReorderedPairs.remove(i);
-                int penaltyPosition = i + Penalty.MISSING.getPenalty();
-                if (penaltyPosition > activeReorderedPairs.size()) {
-                    penaltyPosition = activeReorderedPairs.size();
-                }
-                activeReorderedPairs.add(penaltyPosition, pair);
+        for (Pair pair : passivePairs) {
+            int index = activeReorderedPairs.indexOf(pair);
+            int newIndex = index + 2;
+            if (newIndex > activeReorderedPairs.size() - 1) {
+                newIndex = activeReorderedPairs.size() - 1;
             }
+
+            activeReorderedPairs.remove(index);
+            activeReorderedPairs.add(newIndex, pair);
+        }
+        for (Pair pair : latePairs) {
+            int index = activeReorderedPairs.indexOf(pair);
+            int newIndex = index + 4;
+            if (newIndex > activeReorderedPairs.size() - 1) {
+                newIndex = activeReorderedPairs.size() - 1;
+            }
+
+            activeReorderedPairs.remove(index);
+            activeReorderedPairs.add(newIndex, pair);
+        }
+        for (Pair pair : missing) {
+            int index = activeReorderedPairs.indexOf(pair);
+            int newIndex = index + 10;
+            if (newIndex > activeReorderedPairs.size() - 1) {
+                newIndex = activeReorderedPairs.size() - 1;
+            }
+
+            activeReorderedPairs.remove(index);
+            activeReorderedPairs.add(newIndex, pair);
         }
 
         return activeReorderedPairs;
