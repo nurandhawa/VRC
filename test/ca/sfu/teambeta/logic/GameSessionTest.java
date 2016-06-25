@@ -116,7 +116,7 @@ public class GameSessionTest extends PersistenceTest {
 
     @Test
     public void testModifyScorecard() {
-//        saveGameSession();
+        saveGameSession();
         Session session = getSession();
         Scorecard firstCard = session.get(Scorecard.class, 1);
         Scorecard secondCard = session.get(Scorecard.class, 2);
