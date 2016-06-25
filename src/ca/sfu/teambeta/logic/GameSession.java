@@ -3,6 +3,7 @@ package ca.sfu.teambeta.logic;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class GameSession extends Persistable {
     }
 
     public List<Pair> getAllPairs() {
-        return new ArrayList<>(ladder.getPairs());
+        return new LinkedList<>(ladder.getPairs());
     }
 
     public List<Pair> getActivePairs() {
@@ -152,46 +153,86 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder() {
-        int position = 1;
-        for (Pair pair : ladder.getPairs()) {
-            pair.setPosition(position);
-            position++;
-        }
-        applyAbsentPenalty();
-//        swapBetweenGroups(scorecards);
-//        assignNewPositionsToActivePairs();
-//        combineActivePassive();
-//        applyLateMissPenalty();
-
+        List<Pair> intermediateOrdering = swapBetweenGroups();
+        intermediateOrdering = assignNewPositionsToActivePairs(intermediateOrdering);
+        intermediateOrdering = applyPenalties(intermediateOrdering);
+        reorderedLadder = new Ladder(intermediateOrdering);
     }
 
-    private void applyAbsentPenalty() {
-        int previousTakenPosition = ladder.getLadderLength();
-        List<Pair> passivePairs = getPassivePairs();
+    private List<Pair> swapBetweenGroups() {
+        List<Pair> completedPairs = new ArrayList<>();
+        List<Pair> previousGroup = scorecards.get(0).getReorderedPairs();
 
-        //Move pairs starting from the worse pair to the best
-        for (int i = passivePairs.size() - 1; i >= 0; i--) {
-            Pair pair = passivePairs.get(i);
-            if (pair.getPenalty() != Penalty.ACCIDENT.getPenalty()) {
-                int position = pair.getPosition();
-                int possibleShift = previousTakenPosition - position;
+        for (int i = 1; i < scorecards.size(); i++) {
+            // Swap the player's in the first and last position of subsequent groups
+            List<Pair> currentGroup = scorecards.get(i).getReorderedPairs();
+            int lastIndexOfFirstGroup = previousGroup.size() - 1;
 
-                switch (possibleShift) {
-                    case 0: //Do not move the pair
-                        break;
-                    case 1: //Move pair on 1 position
-                        pair.setPosition(position + 1);
-                        break;
-                    default: //Move pair on 2 positions
-                        pair.setPosition(position + Penalty.ABSENT.getPenalty());
-                }
-                pair.setPenalty(Penalty.ZERO.getPenalty());
-                previousTakenPosition = pair.getPosition() - 1;
+            Pair temp = previousGroup.get(lastIndexOfFirstGroup);
 
-            } else {
-                pair.setPenalty(Penalty.ZERO.getPenalty());
+            previousGroup.set(lastIndexOfFirstGroup, currentGroup.get(0));
+            currentGroup.set(0, temp);
+
+            completedPairs.addAll(previousGroup);
+            previousGroup = currentGroup;
+        }
+
+        // The for loop omits the last group, thus add it now:
+        completedPairs.addAll(previousGroup);
+
+        return completedPairs;
+    }
+
+    private List<Pair> assignNewPositionsToActivePairs(List<Pair> activeReorderedPairs) {
+        List<Pair> allPairs = getAllPairs();
+        int activePairIndex = 0;
+        for (int i = 0; i < allPairs.size(); i++) {
+            Pair pair = allPairs.get(i);
+            if (activePairs.contains(pair)) {
+                allPairs.set(i, activeReorderedPairs.get(activePairIndex));
+                activePairIndex++;
             }
         }
+        return allPairs;
+    }
+
+    private List<Pair> applyPenalties(List<Pair> activeReorderedPairs) {
+        Set<Pair> passivePairs = new HashSet<>(getPassivePairs());
+        Set<Pair> latePairs = penalties.entrySet().stream()
+                .filter(pairPenaltyEntry -> pairPenaltyEntry.getValue() == Penalty.LATE)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        Set<Pair> missing = penalties.entrySet().stream()
+                .filter(pairPenaltyEntry -> pairPenaltyEntry.getValue() == Penalty.MISSING)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+        for (int i = 0; i < activeReorderedPairs.size(); i++) {
+            Pair pair = activeReorderedPairs.get(i);
+            if (passivePairs.contains(pair)) {
+                activeReorderedPairs.remove(i);
+                int penaltyPosition = i + Penalty.ABSENT.getPenalty();
+                if (penaltyPosition > activeReorderedPairs.size()) {
+                    penaltyPosition = activeReorderedPairs.size();
+                }
+                activeReorderedPairs.add(penaltyPosition, pair);
+            } else if (latePairs.contains(pair)) {
+                activeReorderedPairs.remove(i);
+                int penaltyPosition = i + Penalty.LATE.getPenalty();
+                if (penaltyPosition > activeReorderedPairs.size()) {
+                    penaltyPosition = activeReorderedPairs.size();
+                }
+                activeReorderedPairs.add(penaltyPosition, pair);
+            } else if (missing.contains(pair)) {
+                activeReorderedPairs.remove(i);
+                int penaltyPosition = i + Penalty.MISSING.getPenalty();
+                if (penaltyPosition > activeReorderedPairs.size()) {
+                    penaltyPosition = activeReorderedPairs.size();
+                }
+                activeReorderedPairs.add(penaltyPosition, pair);
+            }
+        }
+
+        return activeReorderedPairs;
     }
 
 
