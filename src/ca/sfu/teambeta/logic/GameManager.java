@@ -1,6 +1,5 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Scorecard;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
@@ -8,10 +7,12 @@ import java.util.List;
 
 import ca.sfu.teambeta.core.Observer;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by Gordon Shieh on 25/05/16.
  */
+@Deprecated
 public class GameManager {
     private List<Pair> ladder;
     @Expose
