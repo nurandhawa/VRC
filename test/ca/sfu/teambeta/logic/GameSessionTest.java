@@ -96,9 +96,13 @@ public class GameSessionTest extends PersistenceTest {
     }
 
     @Test
-    public void testScorecardSize() {
+    public void testScorecardOrder() {
         List<Scorecard> scorecards = gameSession.getScorecards();
-        assert (scorecards.size() == 2);
+        Scorecard first = scorecards.get(0);
+        assertEquals(first.getReorderedPairs(), Arrays.asList(davidBob, richardRobin, kevinJasmin));
+        Scorecard second = scorecards.get(1);
+        assertEquals(second.getReorderedPairs(), Arrays.asList(tonyAngelica, anastasiaVictoria, ianCamden));
+
     }
 
     @Test
