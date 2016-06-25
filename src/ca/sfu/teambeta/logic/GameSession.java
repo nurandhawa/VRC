@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -26,11 +27,11 @@ import ca.sfu.teambeta.persistence.Persistable;
  */
 @Entity(name = "session")
 public class GameSession extends Persistable {
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Ladder ladder;
 
     @OneToOne
-    private Ladder reorderedLadder;
+    private Ladder reorderedLadder = null;
 
     @ManyToMany
     private Set<Pair> activePairs = new HashSet<>();
@@ -40,7 +41,11 @@ public class GameSession extends Persistable {
     private List<Scorecard> scorecards = new ArrayList<>();
 
     @ElementCollection
-    private Map<Pair, Integer> penalties = new HashMap<>();
+    private Map<Pair, Penalty> penalties = new HashMap<>();
+
+    GameSession(Ladder ladder) {
+        this.ladder = ladder;
+    }
 
     public void splitLadder() {
         List<Pair> activePairList = getActivePairs();
@@ -70,6 +75,12 @@ public class GameSession extends Persistable {
     public List<Pair> getActivePairs() {
         return ladder.getPairs().stream()
                 .filter(pair -> activePairs.contains(pair))
+                .collect(Collectors.toList());
+    }
+
+    public List<Pair> getPassivePairs() {
+        return ladder.getPairs().stream()
+                .filter(pair -> !activePairs.contains(pair))
                 .collect(Collectors.toList());
     }
 
@@ -121,7 +132,7 @@ public class GameSession extends Persistable {
     }
 
     public void setPenaltyToPair(Pair pair, Penalty penalty) {
-        penalties.put(pair, penalty.getPenalty());
+        penalties.put(pair, penalty);
     }
 
     public void removePenaltyFromPair(Pair pair) {
@@ -129,8 +140,48 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder() {
+        int position = 1;
+        for (Pair pair : ladder.getPairs()) {
+            pair.setPosition(position);
+            position++;
+        }
+        applyAbsentPenalty();
+//        swapBetweenGroups(scorecards);
+//        assignNewPositionsToActivePairs();
+//        combineActivePassive();
+//        applyLateMissPenalty();
 
     }
+
+    private void applyAbsentPenalty() {
+        int previousTakenPosition = ladder.getLadderLength();
+        List<Pair> passivePairs = getPassivePairs();
+
+        //Move pairs starting from the worse pair to the best
+        for (int i = passivePairs.size() - 1; i >= 0; i--) {
+            Pair pair = passivePairs.get(i);
+            if (pair.getPenalty() != Penalty.ACCIDENT.getPenalty()) {
+                int position = pair.getPosition();
+                int possibleShift = previousTakenPosition - position;
+
+                switch (possibleShift) {
+                    case 0: //Do not move the pair
+                        break;
+                    case 1: //Move pair on 1 position
+                        pair.setPosition(position + 1);
+                        break;
+                    default: //Move pair on 2 positions
+                        pair.setPosition(position + Penalty.ABSENT.getPenalty());
+                }
+                pair.setPenalty(Penalty.ZERO.getPenalty());
+                previousTakenPosition = pair.getPosition() - 1;
+
+            } else {
+                pair.setPenalty(Penalty.ZERO.getPenalty());
+            }
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {

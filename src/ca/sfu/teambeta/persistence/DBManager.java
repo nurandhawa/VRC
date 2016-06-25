@@ -12,6 +12,7 @@ import org.hibernate.criterion.Property;
 import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameSession;
@@ -37,6 +38,7 @@ public class DBManager {
         config.addAnnotatedClass(Scorecard.class);
         config.addAnnotatedClass(Game.class);
         config.addAnnotatedClass(GameSession.class);
+        config.addAnnotatedClass(Penalty.class);
         return config;
     }
 
@@ -192,13 +194,13 @@ public class DBManager {
         }
     }
 
-    public void removePairFromLatestLadder(int pairID) {
+    public void removePairFromLatestLadder(int pairId) {
         Transaction tx = null;
         Pair pair = null;
         Ladder ladder = null;
         try {
             tx = session.beginTransaction();
-            pair = session.get(Pair.class, pairID);
+            pair = session.get(Pair.class, pairId);
             DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
                     .setProjection(Projections.max("id"));
             ladder = (Ladder) session.createCriteria(Ladder.class)
