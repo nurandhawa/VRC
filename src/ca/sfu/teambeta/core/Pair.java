@@ -44,6 +44,8 @@ public class Pair extends Persistable {
     @Transient
     @Expose
     private boolean isPlaying;
+    @Expose
+    private int pairScore;
 
     public Pair() {
     }
@@ -128,5 +130,13 @@ public class Pair extends Persistable {
                 + ") " +  getPlayers().get(0).getFirstName()
                 + " & " + getPlayers().get(1).getFirstName()
                 + " " + isPlaying;
+    }
+
+    public int getPairScore() {
+        return pairScore;
+    }
+
+    public void setPairScore(int pairScore) {
+        this.pairScore = pairScore;
     }
 }

@@ -10,6 +10,7 @@ import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.persistence.Persistable;
+import com.google.gson.annotations.Expose;
 
 
 @Entity(name = "Scorecard")
@@ -23,7 +24,10 @@ public class Scorecard extends Persistable {
     Set<Game> games = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
+    @Expose
     List<Pair> pairs;
+    @Expose
+    private int scorecardIndex;
 
     @Transient
     Observer observer = null;
@@ -62,11 +66,12 @@ public class Scorecard extends Persistable {
         games.add(new Game(winner, loser));
         finishedGameCount++;
         if (observer != null && finishedGameCount == pairs.size()) {
+            this.pairs = getReorderedPairs();
             observer.done();
         }
     }
 
-    private int getPairScore(Pair pair) {
+    public int getPairScore(Pair pair) {
         int winCount = (int) games.stream()
                 .filter(game -> game.isWinner(pair))
                 .count();
@@ -76,6 +81,7 @@ public class Scorecard extends Persistable {
                 .count();
         return winCount - loseCount;
     }
+
 
     public List<Pair> getReorderedPairs() {
         List<Pair> orderedPairs = new ArrayList<>(pairs);
@@ -106,5 +112,13 @@ public class Scorecard extends Persistable {
     @Override
     public int hashCode() {
         return 47 * pairs.hashCode();
+    }
+
+    public int getScorecardIndex() {
+        return scorecardIndex;
+    }
+
+    public void setScorecardIndex(int scorecardIndex) {
+        this.scorecardIndex = scorecardIndex;
     }
 }

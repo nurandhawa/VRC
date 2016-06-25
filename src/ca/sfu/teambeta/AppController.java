@@ -1,21 +1,13 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static spark.Spark.*;
 
@@ -25,10 +17,12 @@ import static spark.Spark.*;
 public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
-    private static final String POSITION = "Position";
-    private static final String NEW_POSITION = "newPosition";
-    private static final String PLAYERS = "Players";
-    private static final String IS_PLAYING = "IsPlaying";
+    private static final String POSITION = "position";
+
+    private static final String PENALTY = "penalty";
+    private static final String LATE = "late";
+    private static final String MISS = "miss";
+    private static final String ACCIDENT = "accident";
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -39,17 +33,11 @@ public class AppController {
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
+
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-        /* Still has to decide on URLs for each of them and what
-        excatly would be passed from the front end.
-        Some of the functions are incomplete but require minimal change once
-        we decide how front end is going to interact with it. 
-         */
-
-        //EVERYTHING HAS TO BE CONVERTED INTO JSON
         //homepage: return ladder
-        get("/api/index", (request, response) -> {
+        get("/api/ladder", (request, response) -> {
             if (ladderManager.getLadder() != null) {
                 response.status(OK);
             } else {
@@ -59,28 +47,42 @@ public class AppController {
             return gson.toJson(ladderManager.getLadder());
         });
 
-        //updates a pair's playing status
-        patch("/api/:id/:newStatus", (request, response) -> {
-            int id = Integer.parseInt(request.params(":" + ID));
-            String status = request.params(":" + STATUS);
+        //updates a pair's playing status or position
+        patch("/api/ladder/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            String status = request.queryParams(STATUS);
+            int newPosition = Integer.parseInt(request.queryParams(POSITION));
+
+            boolean validNewPos = 0 < newPosition && newPosition <= ladderManager.ladderSize();
+            boolean validStatus = status.equals("playing") || status.equals("not playing");
+
             Pair pair = ladderManager.searchPairById(id);
-            if (pair == null) { //Wrong ID
-                response.status(BAD_REQUEST);
+
+            if (pair == null) {
+                response.status(NOT_FOUND);
                 return response;
             }
 
-            if (status == "playing") {
-                ladderManager.setNotPlaying(pair);
-                response.status(OK);
-            } else if (status == "not playing") {
-                boolean changed = ladderManager.setIsPlaying(pair);
-                if (changed) {
+            if (!validStatus && !validNewPos) {
+                response.body("Specify what to update: position or status");
+                response.status(BAD_REQUEST);
+            } else if (validStatus && !validNewPos) {
+                if (status.equals("playing")) {
+                    ladderManager.setIsPlaying(pair);
+                    response.status(OK);
+                } else if (status.equals("not playing")) {
+                    ladderManager.setNotPlaying(pair);
                     response.status(OK);
                 } else {
-                    //One of the players is already in the game
-                    response.status(NOT_FOUND);
+                    response.status(BAD_REQUEST);
                 }
+            } else if (!validStatus && validNewPos) {
+                int currentPosition = pair.getPosition();
+                ladderManager.movePair(currentPosition, newPosition);
+                response.status(OK);
+
             } else {
+                response.body("Cannot change both: position and status");
                 response.status(BAD_REQUEST);
             }
 
@@ -88,26 +90,50 @@ public class AppController {
         });
 
         //add pair to ladder
-        //in case of adding a player at the end of ladder, position is length of ladder
-        post("/api/index/add", (request, response) -> {
-            String position = request.queryParams(POSITION);
-            int index = Integer.parseInt(position) - 1;
-            int id = Integer.parseInt(request.queryParams(ID));
-            Pair pair = ladderManager.searchPairById(id);
+        //in case of adding a pair at the end of ladder, position is length of ladder
+        post("/api/ladder", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            final int MAX_SIZE = 2;
 
-            if (pair == null) { //Wrong ID
+            boolean validPos = 0 < extractedData.getPosition()
+                    && extractedData.getPosition() <= ladderManager.ladderSize();
+            List<Player> playerData = extractedData.getPlayers();
+
+            if (playerData.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
+                response.body("A Pair cannot have more than 2 players.");
                 return response;
             }
-            ladderManager.addNewPairAtIndex(pair, index);
-            response.status(OK);
+
+            List<Player> newPlayers = new ArrayList<Player>();
+
+            for (int i = 0; i < MAX_SIZE; i++) {
+                if (playerData.get(i).getExistingId() == null) {
+                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
+                            playerData.get(i).getPhoneNumber()));
+                } else {
+                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingId()));
+                }
+            }
+
+            Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+            if (validPos) {
+                ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
+                response.status(OK);
+            } else {
+                ladderManager.addNewPair(pair);
+                response.status(OK);
+            }
+
             return response;
         });
 
         //remove player from ladder
-        delete("/api/index/remove", (request, response) -> {
-            String position = request.queryParams(POSITION);
-            int index = Integer.parseInt(position) - 1;
+        delete("/api/ladder/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            Pair pair = ladderManager.searchPairById(id);
+            int index = pair.getPosition() - 1;
             boolean removed = ladderManager.removePairAtIndex(index);
 
             if (removed) {
@@ -120,47 +146,27 @@ public class AppController {
             return response;
         });
 
-        //update a pair's position in the ladder
-        patch("/api/:id/:position/:newPosition", (request, response) -> {
-            String oldPositionStr = request.params(":" + POSITION);
-            String newPositionStr = request.params(":" + NEW_POSITION);
-            int id = Integer.parseInt(request.params(":id"));
-            int oldPosition = Integer.parseInt(oldPositionStr);
-            int newPosition = Integer.parseInt(newPositionStr);
-            boolean validOldPos = 0 < oldPosition && oldPosition < ladderManager.ladderSize();
-            boolean validNewPos = 0 < newPosition && oldPosition < ladderManager.ladderSize();
-
-            if (ladderManager.searchPairById(id).getPosition() != oldPosition) {
+        //add a penalty to a pair
+        post("/api/matches/:id", (request, response) -> {
+            int id = Integer.parseInt(request.queryParams(ID));
+            Pair pair = ladderManager.searchPairById(id);
+            if (pair == null) {
                 response.status(BAD_REQUEST);
+                response.body("Pair with the following id " + id + "wasn't found");
                 return response;
             }
 
-            if (validOldPos && validNewPos) {
-                ladderManager.movePair(oldPosition, newPosition);
-                response.status(OK);
+            String penaltyType = request.queryParams(PENALTY);
+
+            if (penaltyType == LATE) {
+                pair.setPenalty(Penalty.LATE.getPenalty());
+            } else if (penaltyType == MISS) {
+                pair.setPenalty(Penalty.MISSING.getPenalty());
+            } else if (penaltyType == ACCIDENT) {
+                pair.setPenalty(Penalty.ACCIDENT.getPenalty());
             } else {
                 response.status(BAD_REQUEST);
-            }
-
-            return response;
-        });
-
-        //add a penalty to a pair
-        post("/api/index/penalty", (request, response) -> {
-            int id = Integer.parseInt(request.queryParams(ID));
-            Pair pair = ladderManager.searchPairById(id);
-            int pairIndex = pair.getPosition() - 1;
-            String penaltyType = request.queryParams("penType");
-            response.status(OK);
-
-            if (penaltyType == "late") {
-                //call late penalty function in ladderManager
-            } else if (penaltyType == "miss") {
-                //call miss penalty function in ladderManager
-            } else if (penaltyType == "absent") {
-                //call absent penalty function in ladderManager
-            } else {
-                response.status(BAD_REQUEST);
+                response.body("Invalid Penalty Type");
             }
             return response;
         });
@@ -176,19 +182,37 @@ public class AppController {
         });
 
         //Input match results
-        post("/api/matches/input", (request, response) -> {
-            //need to figure out how results would be passed
-            return "Input Results";
+        patch("/api/matches/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            Scorecard group = gameManager.getGroupByIndex(id);
+            int numTeams = group.getReorderedPairs().size();
+            String[][] input = new String[numTeams][numTeams];
+
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+
+            int rows = extractedData.results.length;
+            int cols = extractedData.results[0].length;
+            boolean isValidResult = (rows == numTeams) && (cols == numTeams);
+
+            if (!isValidResult) {
+                response.status(BAD_REQUEST);
+                response.body("Invalid result format.");
+                return response;
+            }
+
+            input = extractedData.results.clone();
+            gameManager.inputMatchResults(group, input);
+            response.status(OK);
+            return response;
         });
 
         //Remove a pair from a match
-        delete("/api/matches/remove", (request, response) -> {
-
-            request.queryParams("matchIndex");
-            int id = Integer.parseInt(request.queryParams(ID));
+        delete("/api/matches/:id", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
             Pair pair = ladderManager.searchPairById(id);
 
-            if (pair == null || !pair.isPlaying()) { //Wrong ID
+            if (pair == null || !pair.isPlaying()) {
                 response.status(BAD_REQUEST);
                 return response;
             }
