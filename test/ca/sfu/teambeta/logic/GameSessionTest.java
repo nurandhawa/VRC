@@ -82,19 +82,10 @@ public class GameSessionTest extends PersistenceTest {
 
 
     @Test
-    public void persistSimpleSession() {
+    public void testPersistSimpleSession() {
         gameSession.setPairActive(kateNick);
         Session session = getSession();
-        Transaction tx = null;
-        int key = 0;
-        try {
-            tx = session.beginTransaction();
-            key = (int) session.save(gameSession);
-            tx.commit();
-        } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        }
+        int key = saveGameSession();
 
         GameSession newGameSession = session.get(GameSession.class, key);
         session.close();
@@ -108,7 +99,42 @@ public class GameSessionTest extends PersistenceTest {
     }
 
     @Test
-    public void persistActiveSession() {
+    public void testPersistActiveSession() {
+        int key = saveGameSession();
+        Session session = getSession();
+        GameSession newGameSession = session.get(GameSession.class, key);
+        session.close();
+        assert (newGameSession.getScorecards().equals(gameSession.getScorecards()));
+    }
+
+    @Test
+    public void testReordering() {
+        int key = saveGameSession();
+        Session session = getSession();
+        Scorecard firstCard = session.get(Scorecard.class, 1);
+        Scorecard secondCard = session.get(Scorecard.class, 2);
+        session.close();
+
+        List<Pair> activePairs = gameSession.getActivePairs();
+        Pair pair1 = activePairs.get(0);
+        Pair pair2 = activePairs.get(1);
+        Pair pair3 = activePairs.get(2);
+
+        firstCard.setGameResults(pair3, pair2);
+        firstCard.setGameResults(pair3, pair1);
+        firstCard.setGameResults(pair1, pair2);
+
+        Pair pair4 = activePairs.get(3);
+        Pair pair5 = activePairs.get(4);
+        Pair pair6 = activePairs.get(5);
+
+        secondCard.setGameResults(pair6, pair5);
+        secondCard.setGameResults(pair4, pair5);
+        secondCard.setGameResults(pair6, pair4);
+
+    }
+
+    private int saveGameSession() {
         Session session = getSession();
         Transaction tx = null;
         int key = 0;
@@ -120,8 +146,6 @@ public class GameSessionTest extends PersistenceTest {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
-        GameSession newGameSession = session.get(GameSession.class, key);
-        session.close();
-        assert (newGameSession.getScorecards().equals(gameSession.getScorecards()));
+        return key;
     }
 }
