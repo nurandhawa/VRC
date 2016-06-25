@@ -36,7 +36,7 @@ public class GameSession extends Persistable {
     @ManyToMany
     private Set<Pair> activePairs = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @OrderColumn
     private List<Scorecard> scorecards = new ArrayList<>();
 
@@ -47,7 +47,7 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
     }
 
-    public void splitLadder() {
+    public void createGroups() {
         List<Pair> activePairList = getActivePairs();
         int playingCount = activePairList.size();
 
@@ -82,6 +82,10 @@ public class GameSession extends Persistable {
         return ladder.getPairs().stream()
                 .filter(pair -> !activePairs.contains(pair))
                 .collect(Collectors.toList());
+    }
+
+    public List<Scorecard> getScorecards() {
+        return new ArrayList<>(scorecards);
     }
 
     private void makeQuadGroup(int num, List<Pair> activePairList) {
