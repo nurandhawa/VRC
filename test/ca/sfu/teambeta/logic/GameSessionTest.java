@@ -116,29 +116,23 @@ public class GameSessionTest extends PersistenceTest {
 
     @Test
     public void testModifyScorecard() {
-        saveGameSession();
+//        saveGameSession();
         Session session = getSession();
         Scorecard firstCard = session.get(Scorecard.class, 1);
         Scorecard secondCard = session.get(Scorecard.class, 2);
 
         List<Pair> activePairs = gameSession.getActivePairs();
-        Pair pair1 = activePairs.get(0);
-        Pair pair2 = activePairs.get(1);
         Pair pair3 = activePairs.get(2);
 
-        firstCard.setGameResults(pair3, pair2);
-        firstCard.setGameResults(pair3, pair1);
-        firstCard.setGameResults(pair1, pair2);
+        firstCard.setGameResults(davidBob, richardRobin);
+        firstCard.setGameResults(kevinJasmin, richardRobin);
+        firstCard.setGameResults(kevinJasmin, davidBob);
         Transaction tx = session.beginTransaction();
         session.update(firstCard);
 
-        Pair pair4 = activePairs.get(3);
-        Pair pair5 = activePairs.get(4);
-        Pair pair6 = activePairs.get(5);
-
-        secondCard.setGameResults(pair6, pair5);
-        secondCard.setGameResults(pair4, pair5);
-        secondCard.setGameResults(pair6, pair4);
+        secondCard.setGameResults(ianCamden, anastasiaVictoria);
+        secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
+        secondCard.setGameResults(ianCamden, tonyAngelica);
         session.update(secondCard);
         tx.commit();
 
@@ -154,28 +148,21 @@ public class GameSessionTest extends PersistenceTest {
 
         List<Scorecard> scorecards = gameSession.getScorecards();
 
-        List<Pair> activePairs = gameSession.getActivePairs();
-        Pair pair1 = activePairs.get(0);
-        Pair pair2 = activePairs.get(1);
-        Pair pair3 = activePairs.get(2);
-
         Scorecard firstCard = scorecards.get(0);
-        firstCard.setGameResults(pair3, pair2);
-        firstCard.setGameResults(pair3, pair1);
-        firstCard.setGameResults(pair1, pair2);
-
-        Pair pair4 = activePairs.get(3);
-        Pair pair5 = activePairs.get(4);
-        Pair pair6 = activePairs.get(5);
-
         Scorecard secondCard = scorecards.get(1);
-        secondCard.setGameResults(pair6, pair5);
-        secondCard.setGameResults(pair4, pair5);
-        secondCard.setGameResults(pair6, pair4);
+
+        firstCard.setGameResults(davidBob, richardRobin);
+        firstCard.setGameResults(kevinJasmin, richardRobin);
+        firstCard.setGameResults(kevinJasmin, davidBob);
+
+        secondCard.setGameResults(ianCamden, anastasiaVictoria);
+        secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
+        secondCard.setGameResults(ianCamden, tonyAngelica);
+        session.update(secondCard);
 
         gameSession.reorderLadder();
 
-        assertEquals(gameSession.getReorderedLadder(), reorderedList);
+        assertEquals(reorderedList, gameSession.getReorderedLadder());
     }
 
     private int saveGameSession() {
