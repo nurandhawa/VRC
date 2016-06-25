@@ -240,7 +240,6 @@ public class GameSession extends Persistable {
         return activeReorderedPairs;
     }
 
-
     @Override
     public boolean equals(Object o) {
         return false;

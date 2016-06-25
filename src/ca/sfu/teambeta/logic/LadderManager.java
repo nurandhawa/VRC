@@ -9,14 +9,18 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 
 /**
  * Created by constantin on 27/05/16. <p> <p> USAGE: After all of the games took place
  * setIsPlaying(Pair) returns false if any of players are already playing (1) pass groups to
  * LadderManager (2) call processLadder() for all the computations to be complete.
  */
-
+@Deprecated
 public class LadderManager {
     private Ladder ladder;
     private List<Pair> activePairs;
