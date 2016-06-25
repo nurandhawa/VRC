@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
@@ -108,12 +109,11 @@ public class GameSessionTest extends PersistenceTest {
     }
 
     @Test
-    public void testReordering() {
-        int key = saveGameSession();
+    public void testModifyScorecard() {
+        saveGameSession();
         Session session = getSession();
         Scorecard firstCard = session.get(Scorecard.class, 1);
         Scorecard secondCard = session.get(Scorecard.class, 2);
-        session.close();
 
         List<Pair> activePairs = gameSession.getActivePairs();
         Pair pair1 = activePairs.get(0);
@@ -123,6 +123,8 @@ public class GameSessionTest extends PersistenceTest {
         firstCard.setGameResults(pair3, pair2);
         firstCard.setGameResults(pair3, pair1);
         firstCard.setGameResults(pair1, pair2);
+        Transaction tx = session.beginTransaction();
+        session.update(firstCard);
 
         Pair pair4 = activePairs.get(3);
         Pair pair5 = activePairs.get(4);
@@ -131,7 +133,12 @@ public class GameSessionTest extends PersistenceTest {
         secondCard.setGameResults(pair6, pair5);
         secondCard.setGameResults(pair4, pair5);
         secondCard.setGameResults(pair6, pair4);
+        session.update(secondCard);
+        tx.commit();
 
+        Game testGame1 = session.get(Game.class, 2);
+        session.close();
+        assert (testGame1.getWinner().equals(pair3));
     }
 
     private int saveGameSession() {
