@@ -2,7 +2,7 @@
  * Created by David on 2016-06-15.
  */
 
-var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
+var EDIT_BUTTON_HTML = '<a v-on:click="modalOpen($index)" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
 Vue.component('matches', {
     template: '#matches-template',
@@ -48,11 +48,22 @@ var Matches = (function() {
             }
 
             var editButton = Vue.extend({
+                 props: ['column','index'],
                  template: EDIT_BUTTON_HTML,
                  methods: {
-                     editMatch: function() {
-                  //   console.log("dsffds");
-                     }
+                     modalOpen: function() {
+                        if (this.column === "left") {
+                            var modal = $("#matches-left,#modal" + this.index)[1];
+                            modal.modal("show");
+                        }
+                        else if (column === "mid") {
+
+                        }
+                        else {
+
+                        }
+                        this.$parent.modalOpen(this.index);
+                    }
                  }
              });
              Vue.component('edit-button', editButton);
@@ -77,6 +88,11 @@ var Matches = (function() {
                     this.showModal = true;
                     return this.active = i;
                 }
+//                 modalOpen2: function(i, name) {
+//                    this.showModal = true;
+//                    this.$refs[name].show = true;
+//                    return this.active = i;
+//                }
             },
             components: {
                 edit: editButton,
