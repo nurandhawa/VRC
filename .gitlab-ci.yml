@@ -9,7 +9,6 @@ before_script:
 stages:
   - test
   - jshint
-  - jstest
 
 test:
   services:
@@ -23,10 +22,3 @@ jshint:
     - npm install
     - grunt jshint
   stage: jshint
-
-jstest:
-  script: 
-  - cd web
-  - npm install
-  - grunt jasmine
-  stage: jstest
