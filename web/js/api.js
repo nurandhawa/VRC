@@ -119,7 +119,6 @@ var API = (function() {
         });
     };
 
-<<<<<<< HEAD
     API.prototype.removePair = function (pairId, doneCallback, failCallback) {
         $.ajax({
             method: "DELETE",
