@@ -1,6 +1,9 @@
 package ca.sfu.teambeta;
 
+import org.hibernate.SessionFactory;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ca.sfu.teambeta.core.Ladder;
@@ -8,6 +11,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
+import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.ui.UserInterface;
 
 
@@ -16,25 +20,32 @@ class Main {
 
         /*Laddgiter loadedLadder = DBManager.loadFromDB();*/
 
-        /* -----FOR TESTING
-        List<Pair> pairs = new ArrayList<>();
+        /* -----FOR TESTING*/
+        List<Pair> ladderPairs = Arrays.asList(
+                new Pair(new Player("Bobby", "Chan", ""), new Player("Wing", "Man", ""), false),
+                new Pair(new Player("Ken", "Hazen", ""), new Player("Brian", "Fraser", ""), false),
+                new Pair(new Player("Simon", "Fraser", ""), new Player("Dwight", "Howard", ""), false),
+                new Pair(new Player("Bobby", "Chan", ""), new Player("Big", "Head", ""), false),
+                new Pair(new Player("Alex", "Land", ""), new Player("Test", "Player", ""), false)
+        );
+        Ladder newLadder = new Ladder(ladderPairs);
 
-        pairs.add(new Pair(new Player("P1", "Test", ""), new Player("P2", "Test", ""), true));
-        pairs.add(new Pair(new Player("P3", "Test", ""), new Player("P4", "Test", ""), true));
-        pairs.add(new Pair(new Player("P5", "Test", ""), new Player("P6", "Test", ""), true));
-        pairs.add(new Pair(new Player("P7", "Test", ""), new Player("P8", "Test", ""), true));
-        pairs.add(new Pair(new Player("P9", "Test", ""), new Player("P10", "Test", ""), true));
-        pairs.add(new Pair(new Player("P11", "Test", ""), new Player("P12", "Test", ""), true));
+        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
 
-        Ladder loadedLadder = new Ladder(pairs);
+        dbManager.persistEntity(newLadder);
+        Ladder loadedLadder = dbManager.getLatestLadder();
 
-        LadderManager ladderManager = new LadderManager(loadedLadder.getPairs());
+        List<Pair> loadedLadderPairs = new ArrayList<>();
+        loadedLadderPairs.addAll(loadedLadder.getPairs());
+
+        LadderManager ladderManager = new LadderManager(loadedLadderPairs);
 
         ladderManager.getLadder().forEach(ladderManager::setIsPlaying);
 
         GameManager gameManager = new GameManager(ladderManager.getActivePairs(), ladderManager);
         //UserInterface.start(gameManager,ladderManager);
-        AppController appController = new AppController(ladderManager,gameManager);*/
+        AppController appController = new AppController(ladderManager, gameManager);
 
 
     }
