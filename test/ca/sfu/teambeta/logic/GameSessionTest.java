@@ -80,7 +80,7 @@ public class GameSessionTest extends PersistenceTest {
         gameSession.setPairActive(anastasiaVictoria);
         gameSession.setPairActive(ianCamden);
 
-        gameSession.createGroups();
+        gameSession.createGroups(new VrcScorecardGenerator());
     }
 
 

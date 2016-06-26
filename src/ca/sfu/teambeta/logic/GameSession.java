@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.logic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -48,25 +49,9 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
     }
 
-    public void createGroups() {
-        List<Pair> activePairList = getActivePairs();
-        int playingCount = activePairList.size();
-
-        if (playingCount % 3 == 0) {
-            //All 3 team groups.
-            int noOfTripleGroups = playingCount / 3;
-            makeTripleGroups(noOfTripleGroups, activePairList);
-        } else if (playingCount % 3 == 1) {
-            //One 4 team group.
-            int noOftripleGroups = playingCount / 3 - 1;
-            int currentIndex = makeTripleGroups(noOftripleGroups, activePairList);
-            makeQuadGroup(currentIndex, activePairList);
-        } else {
-            //Two 4 team groups.
-            int noOftripleGroups = playingCount / 3 - 2;
-            int currentIndex = makeTripleGroups(noOftripleGroups, activePairList);
-            makeQuadGroup(currentIndex, activePairList);
-        }
+    public List<Scorecard> createGroups(ScorecardGenerator generator) {
+        scorecards = generator.generateScorecards(getActivePairs());
+        return Collections.unmodifiableList(scorecards);
     }
 
     public List<Pair> getAllPairs() {
@@ -86,7 +71,7 @@ public class GameSession extends Persistable {
     }
 
     public List<Scorecard> getScorecards() {
-        return new ArrayList<>(scorecards);
+        return Collections.unmodifiableList(scorecards);
     }
 
     public List<Pair> getReorderedLadder() {
@@ -95,42 +80,6 @@ public class GameSession extends Persistable {
         } else {
             return new ArrayList<>();
         }
-    }
-
-    private void makeQuadGroup(int num, List<Pair> activePairList) {
-        List<Pair> groupings = new ArrayList<>();
-        for (int i = num; i < activePairList.size(); i++) {
-            groupings.add(activePairList.get(i));
-
-            if (groupings.size() == 4) {
-                Scorecard sc = new Scorecard(groupings, null);
-                scorecards.add(sc);
-                groupings.clear();
-            }
-        }
-    }
-
-    private int makeTripleGroups(int num, List<Pair> activePairList) {
-        int doneGroups = 0;
-        int indexPosition = 0;
-        List<Pair> groupings = new ArrayList<>();
-
-        for (int i = 0; i < activePairList.size(); i++) {
-            groupings.add(activePairList.get(i));
-
-            if (groupings.size() == 3) {
-                Scorecard sc = new Scorecard(groupings, null);
-                scorecards.add(sc);
-                System.out.println();
-                groupings.clear();
-                doneGroups++;
-            }
-            if (doneGroups == num) {
-                indexPosition = i + 1;
-                break;
-            }
-        }
-        return indexPosition;
     }
 
     public void setPairActive(Pair pair) {
