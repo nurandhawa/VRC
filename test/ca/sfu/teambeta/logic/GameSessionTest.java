@@ -160,7 +160,7 @@ public class GameSessionTest extends PersistenceTest {
         secondCard.setGameResults(ianCamden, tonyAngelica);
         session.update(secondCard);
 
-        gameSession.reorderLadder();
+        gameSession.reorderLadder(new VrcLadderReorderer());
 
         assertEquals(reorderedList, gameSession.getReorderedLadder());
     }

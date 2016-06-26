@@ -152,92 +152,9 @@ public class GameSession extends Persistable {
         penalties.remove(pair);
     }
 
-    public void reorderLadder() {
-        List<Pair> intermediateOrdering = swapBetweenGroups();
-        intermediateOrdering = assignNewPositionsToActivePairs(intermediateOrdering);
-        intermediateOrdering = applyPenalties(intermediateOrdering);
-        reorderedLadder = new Ladder(intermediateOrdering);
-    }
-
-    private List<Pair> swapBetweenGroups() {
-        List<Pair> completedPairs = new ArrayList<>();
-        List<Pair> previousGroup = scorecards.get(0).getReorderedPairs();
-
-        for (int i = 1; i < scorecards.size(); i++) {
-            // Swap the player's in the first and last position of subsequent groups
-            List<Pair> currentGroup = scorecards.get(i).getReorderedPairs();
-            int lastIndexOfFirstGroup = previousGroup.size() - 1;
-
-            Pair temp = previousGroup.get(lastIndexOfFirstGroup);
-
-            previousGroup.set(lastIndexOfFirstGroup, currentGroup.get(0));
-            currentGroup.set(0, temp);
-
-            completedPairs.addAll(previousGroup);
-            previousGroup = currentGroup;
-        }
-
-        // The for loop omits the last group, thus add it now:
-        completedPairs.addAll(previousGroup);
-
-        return completedPairs;
-    }
-
-    private List<Pair> assignNewPositionsToActivePairs(List<Pair> activeReorderedPairs) {
-        List<Pair> allPairs = getAllPairs();
-        int activePairIndex = 0;
-        for (int i = 0; i < allPairs.size(); i++) {
-            Pair pair = allPairs.get(i);
-            if (activePairs.contains(pair)) {
-                allPairs.set(i, activeReorderedPairs.get(activePairIndex));
-                activePairIndex++;
-            }
-        }
-        return allPairs;
-    }
-
-    private List<Pair> applyPenalties(List<Pair> activeReorderedPairs) {
-        Set<Pair> passivePairs = new HashSet<>(getPassivePairs());
-        Set<Pair> latePairs = penalties.entrySet().stream()
-                .filter(pairPenaltyEntry -> pairPenaltyEntry.getValue() == Penalty.LATE)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-        Set<Pair> missing = penalties.entrySet().stream()
-                .filter(pairPenaltyEntry -> pairPenaltyEntry.getValue() == Penalty.MISSING)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
-        for (Pair pair : passivePairs) {
-            int index = activeReorderedPairs.indexOf(pair);
-            int newIndex = index + 2;
-            if (newIndex > activeReorderedPairs.size() - 1) {
-                newIndex = activeReorderedPairs.size() - 1;
-            }
-
-            activeReorderedPairs.remove(index);
-            activeReorderedPairs.add(newIndex, pair);
-        }
-        for (Pair pair : latePairs) {
-            int index = activeReorderedPairs.indexOf(pair);
-            int newIndex = index + 4;
-            if (newIndex > activeReorderedPairs.size() - 1) {
-                newIndex = activeReorderedPairs.size() - 1;
-            }
-
-            activeReorderedPairs.remove(index);
-            activeReorderedPairs.add(newIndex, pair);
-        }
-        for (Pair pair : missing) {
-            int index = activeReorderedPairs.indexOf(pair);
-            int newIndex = index + 10;
-            if (newIndex > activeReorderedPairs.size() - 1) {
-                newIndex = activeReorderedPairs.size() - 1;
-            }
-
-            activeReorderedPairs.remove(index);
-            activeReorderedPairs.add(newIndex, pair);
-        }
-
-        return activeReorderedPairs;
+    public void reorderLadder(LadderReorderer reorderer) {
+        List<Pair> reorderedList = reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
+        reorderedLadder = new Ladder(reorderedList);
     }
 
     @Override
