@@ -3,11 +3,17 @@ package ca.sfu.teambeta;
 import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
+import spark.Filter;
+import spark.Response;
+import spark.Request;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static spark.Spark.*;
 
@@ -50,8 +56,18 @@ public class AppController {
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
+
             String status = request.queryParams(STATUS);
-            int newPosition = Integer.parseInt(request.queryParams(POSITION));
+            if (status == null) {
+                status = "";
+            }
+
+            int newPosition = -1;
+            try {
+                newPosition = Integer.parseInt(request.queryParams(POSITION));
+            } catch (NumberFormatException ignored) {
+
+            }
 
             boolean validNewPos = 0 < newPosition && newPosition <= ladderManager.ladderSize();
             boolean validStatus = status.equals("playing") || status.equals("not playing");
@@ -60,12 +76,12 @@ public class AppController {
 
             if (pair == null) {
                 response.status(NOT_FOUND);
-                return response;
+                return getErrResponse("Pair " + id + " not found");
             }
 
             if (!validStatus && !validNewPos) {
-                response.body("Specify what to update: position or status");
                 response.status(BAD_REQUEST);
+                return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
                 if (status.equals("playing")) {
                     ladderManager.setIsPlaying(pair);
@@ -75,6 +91,7 @@ public class AppController {
                     response.status(OK);
                 } else {
                     response.status(BAD_REQUEST);
+                    return getErrResponse("Invalid status");
                 }
             } else if (!validStatus && validNewPos) {
                 int currentPosition = pair.getPosition();
@@ -82,11 +99,11 @@ public class AppController {
                 response.status(OK);
 
             } else {
-                response.body("Cannot change both: position and status");
                 response.status(BAD_REQUEST);
+                return getErrResponse("Cannot change both: position and status");
             }
 
-            return response;
+            return getOkResponse("");
         });
 
         //add pair to ladder
@@ -98,22 +115,18 @@ public class AppController {
 
             boolean validPos = 0 < extractedData.getPosition()
                     && extractedData.getPosition() <= ladderManager.ladderSize();
-            List<Player> playerData = extractedData.getPlayers();
+            List<Player> newPlayers = extractedData.getPlayers();
 
-            if (playerData.size() != MAX_SIZE) {
+            if (newPlayers.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
-                response.body("A Pair cannot have more than 2 players.");
-                return response;
+                return getErrResponse("A Pair cannot have more than 2 players.");
             }
 
-            List<Player> newPlayers = new ArrayList<Player>();
-
             for (int i = 0; i < MAX_SIZE; i++) {
-                if (playerData.get(i).getExistingId() == null) {
-                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
-                            playerData.get(i).getPhoneNumber()));
-                } else {
-                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingId()));
+                Integer existingId = newPlayers.get(i).getExistingId();
+                if (existingId != null) {
+                    newPlayers.remove(i);
+                    newPlayers.add(i, ladderManager.searchPlayerById(existingId));
                 }
             }
 
@@ -126,7 +139,7 @@ public class AppController {
                 response.status(OK);
             }
 
-            return response;
+            return getOkResponse("");
         });
 
         //remove player from ladder
@@ -137,38 +150,38 @@ public class AppController {
             boolean removed = ladderManager.removePairAtIndex(index);
 
             if (removed) {
+                response.body(getOkResponse(""));
                 response.status(OK);
             } else {
-                //Index out of bound
                 response.status(BAD_REQUEST);
+                return getErrResponse("Index out of bound");
             }
 
-            return response;
+            return getOkResponse("");
         });
 
         //add a penalty to a pair
         post("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.queryParams(ID));
+            int id = Integer.parseInt(request.params(ID));
             Pair pair = ladderManager.searchPairById(id);
             if (pair == null) {
                 response.status(BAD_REQUEST);
-                response.body("Pair with the following id " + id + "wasn't found");
-                return response;
+                return getErrResponse("Pair with the following id " + id + "wasn't found");
             }
 
             String penaltyType = request.queryParams(PENALTY);
 
-            if (penaltyType == LATE) {
+            if (penaltyType.equals(LATE)) {
                 pair.setPenalty(Penalty.LATE.getPenalty());
-            } else if (penaltyType == MISS) {
+            } else if (penaltyType.equals(MISS)) {
                 pair.setPenalty(Penalty.MISSING.getPenalty());
-            } else if (penaltyType == ACCIDENT) {
+            } else if (penaltyType.equals(ACCIDENT)) {
                 pair.setPenalty(Penalty.ACCIDENT.getPenalty());
             } else {
                 response.status(BAD_REQUEST);
-                response.body("Invalid Penalty Type");
+                return getErrResponse("Invalid Penalty Type");
             }
-            return response;
+            return getOkResponse("");
         });
 
         //Show a list of matches
@@ -197,14 +210,13 @@ public class AppController {
 
             if (!isValidResult) {
                 response.status(BAD_REQUEST);
-                response.body("Invalid result format.");
-                return response;
+                return getErrResponse("Invalid result format.");
             }
 
             input = extractedData.results.clone();
             gameManager.inputMatchResults(group, input);
             response.status(OK);
-            return response;
+            return getOkResponse("");
         });
 
         //Remove a pair from a match
@@ -212,14 +224,31 @@ public class AppController {
             int id = Integer.parseInt(request.params(ID));
             Pair pair = ladderManager.searchPairById(id);
 
-            if (pair == null || !pair.isPlaying()) {
+            if (pair == null) {
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse("Pair " + id + " doesn't exist.");
+            } else if (!pair.isPlaying()) {
+                response.status(BAD_REQUEST);
+                return getErrResponse("Pair " + id + " is not playing.");
             }
             gameManager.removePlayingPair(pair);
             response.status(OK);
-            return response;
+            return getOkResponse("");
         });
 
+    }
+
+    private String getOkResponse(String message) {
+        JsonObject okResponse = new JsonObject();
+        okResponse.addProperty("status", "OK");
+        okResponse.addProperty("message", message);
+        return gson.toJson(okResponse);
+    }
+
+    private String getErrResponse(String message) {
+        JsonObject errResponse = new JsonObject();
+        errResponse.addProperty("status", "ERROR");
+        errResponse.addProperty("message", message);
+        return gson.toJson(errResponse);
     }
 }
