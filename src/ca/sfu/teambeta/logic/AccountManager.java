@@ -8,17 +8,24 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 
 /**
- * AccountManager handles
+ * AccountManager handles:
  * - User Login
  * - User Registration
  *
- * Coming Soon to a VRC Server Near You
+ *
+ * Coming Soon:
  * - Password Reset
  * -- Via Email
  * -- Via Text Message (Pass back last 2 digits of phone)
  * -- Via Security Questions (Hash answer)
  *
+ * - Logout (If needed: Right now front-end presumed to handle deletion of cookie, thus act as a logout)
  * - Anonymous Users
+ *
+ *
+ *  TODO:
+ *  - Reset password via security question. Passback list of questions.
+ *  - Caching user data in memory for increased security and faster authentication (when possible)
  *
  */
 
@@ -45,6 +52,10 @@ public class AccountManager {
         String sessionID = UserSessionManager.createNewSession(user);
 
         return sessionID;
+    }
+
+    public static void logout(String email) {
+
     }
 
     public static void register(String email, String password) throws InternalHashingException, InvalidUserInputException, AccountRegistrationException {
@@ -170,8 +181,8 @@ public class AccountManager {
 
     }
 
-    // TODO: Reset pw via security question. Passback list of questions.
-    // MARK: - Main Function
+
+    // MARK: - Main Function (Quick and dirty testing for now - will be refactored into tests)
     public static void main(String[] args) {
         // Register a user
         try {
