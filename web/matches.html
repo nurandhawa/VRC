@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,41 +24,45 @@
     <link href="css/prj-web.css" rel="stylesheet">
 
     <script type="x/template" id="matches-template">
-      <div class="mymodal-mask" v-show="show" transition="matches">
-          <div class="mymodal-wrapper">
-              <div id="modal{{ $index}}"  class="mymodal-container modal-content" v-for="match in matchlist" v-if="modalActiveContent($index)">
-                  <div class="mymodal-header">
-                      <slot name="header">
-                          default header
-                      </slot>
-                  </div>
+        <div class="mymodal-mask" v-show="show" transition="matches">
+            <div class="mymodal-wrapper">
+                <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
+                    <div class="mymodal-header">
+                        <slot name="header">
+                            default header
+                        </slot>
+                    </div>
 
-                  <div class="mymodal-body">
-                      <div class="pair-name match-pair" v-for="pair in match.pairs">
-                          <span class="label label-info position">{{ pair.matchRanking }}</span>
-                          {{ pair.name }}
-                      </div>
-                  </div>
+                    <div class="mymodal-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="label label-info position">{{ pair.matchRanking }}</span>
+                            {{ pair.name }}
+                        </div>
+                    </div>
 
-                  <div class="modal-footer">
-                      <button v-if="modalActiveContent($index)" class="btn btn-default"
-                              @click="setModalClose()" data-dismiss="modal">
-                          Close
-                      </button>
-                      <button class="btn btn-primary">Save changes</button>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </script>
-  </head>
+                    <div class="mymodal-footer">
+                        <slot name="footer">
+                            default footer
+                            <button v-if="modalActiveContent($index)" class="mymodal-default-button"
+                                @click="setModalClose()" data-dismiss="modal">
+                                Close me please
+                            </button>
+                        </slot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
 
-  <body>
 
-      <nav class="navbar navbar-info">
-        <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
+</head>
+
+<body>
+
+<nav class="navbar navbar-info">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
@@ -104,140 +106,49 @@
                             {{ pair.name }}
                         </div>
                     </div>
-                    <div id="modal{{ $index }}" class="mymodal-mask" v-show="show" transition="matches">
-                        <div class="mymodal-wrapper">
-                            <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
-                                <div class="mymodal-header">
-                                    <slot name="header">
-                                        default header
-                                    </slot>
-                                </div>
-
-                                <div class="mymodal-body">
-                                    <div class="pair-name match-pair" v-for="pair in match.pairs">
-                                        <span class="label label-info position">{{ pair.matchRanking }}</span>
-                                        {{ pair.name }}
-                                    </div>
-                                </div>
-
-                                <div class="mymodal-footer">
-                                    <slot name="footer">
-                                        default footer
-                                        <button v-if="modalActiveContent($index)" class="mymodal-default-button"
-                                                @click="setModalClose()" data-dismiss="modal">
-                                            Close me please
-                                        </button>
-                                    </slot>
-                                </div>
-                            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="matches-mid" class="matches-mid">
+        <div v-for="match in matches">
+            <div v-if = "(match.matchNum % 3) == 2">
+                <div class="panel panel-info">
+                    <div class="panel-info match-heading panel-heading ">
+                        <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="label label-info position">{{ pair.matchRanking }}</span>
+                            {{ pair.name }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="matches-mid">
-          <div class="panel panel-info" v-for="match in matchesMid" @click="modalOpen($index)">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
+    </div>
+    <div id="matches-right" class="matches-right">
+        <div v-for="match in matches">
+            <div v-if = "(match.matchNum % 3) == 0">
+                <div class="panel panel-info">
+                    <div class="panel-info match-heading panel-heading ">
+                        <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="label label-info position">{{ pair.matchRanking }}</span>
+                            {{ pair.name }}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-              <div id="modal{{ $index }}" class="mymodal-mask" v-show="show" transition="matches">
-                  <div class="mymodal-wrapper">
-                      <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
-                          <div class="mymodal-header">
-                              <slot name="header">
-                                  default header
-                              </slot>
-                          </div>
-
-                          <div class="mymodal-body">
-                              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                                  <span class="label label-info position">{{ pair.matchRanking }}</span>
-                                  {{ pair.name }}
-                              </div>
-                          </div>
-
-                          <div class="mymodal-footer">
-                              <slot name="footer">
-                                  default footer
-                                  <button v-if="modalActiveContent($index)" class="mymodal-default-button"
-                                          @click="setModalClose()" data-dismiss="modal">
-                                      Close me please
-                                  </button>
-                              </slot>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          <matches :show.sync="showModal" :matchlist="matchesMid" :active.sync="active"></matches>
         </div>
-        <div class="matches-right">
-          <div class="panel panel-info" v-for="match in matchesRight" @click="modalOpen($index)">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match {{ match.matchNum }}</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 12</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 12</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair" v-for="pair in match.pairs">
-                <span class="label label-info position">{{ pair.matchRanking }}</span>
-                {{ pair.name }}
-              </div>
-            </div>
-          </div>
-          <matches :show.sync="showModal" :matchlist="matchesRight" :active.sync="active"></matches>
-        </div>
-    <!--<matches :show.sync="showModal" :matchlist="matchesLeft" :active.sync="active"></matches>-->
+    </div>
 </div>
-
 </body>
 <script src="js/jquery-1.12.4.js"></script>
 <script src="js/vue.js"></script>
@@ -250,4 +161,3 @@
 
 
 </html>
-
