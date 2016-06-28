@@ -4,6 +4,13 @@
 
 var EDIT_BUTTON_HTML = '<a v-on:click="modalOpen($index)" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
+Vue.filter('filterLeft', function(array, matchNum) {
+    var filteredArray = [];
+    if(matchNum % 3 == 1){
+        filteredArray.add(array[matchNum])
+    }
+});
+
 Vue.component('matches', {
     template: '#matches-template',
     props: {
@@ -14,6 +21,15 @@ Vue.component('matches', {
             type: Boolean,
             required: true,
             twoWay: true
+        }
+    },
+    filters: {
+        filterLeft: function(matchNum){
+            var matches = [];
+            matches.add(1);
+            matches.add(2);
+            matches.add(3);
+            return matches;
         }
     },
     methods: {
@@ -30,23 +46,7 @@ Vue.component('matches', {
 
 var Matches = (function() {
     function Matches(matchData) {
-        var matchHolderLeft = [];
-        var matchHolderMid = [];
-        var matchHolderRight = [];
-        for (var match in matchData){
-            var thisMatch = matchData[match];
-            var matchColumn = thisMatch.matchNum % 3;
-            switch(matchColumn){
-                case 0:
-                    matchHolderRight.push(thisMatch);
-                    break;
-                case 1:
-                    matchHolderLeft.push(thisMatch);
-                    break;
-                case 2:
-                    matchHolderMid.push(thisMatch);
-            }
-
+/*        for (var match in matchData){
             var editButton = Vue.extend({
                  props: ['column','index'],
                  template: EDIT_BUTTON_HTML,
@@ -71,19 +71,20 @@ var Matches = (function() {
              var blankButton = Vue.extend({
                 template: "<a></a>"
             });
-        }
+        } */
 
         this.component = new Vue({
             el: '#matches',
             data: {
                 active: 0,
                 showModal: false,
-                matchesLeft: matchHolderLeft,
-                matchesMid: matchHolderMid,
-                matchesRight: matchHolderRight,
+                matches: matchData,
                 mode: 'read'
             },
             methods: {
+                filterLeft: function() {
+                    return 1;
+                },
                 modalOpen: function(i) {
                     this.showModal = true;
                     return this.active = i;
@@ -94,10 +95,10 @@ var Matches = (function() {
 //                    return this.active = i;
 //                }
             },
-            components: {
+    /*        components: {
                 edit: editButton,
                 read: blankButton
-            }
+            }*/
         });
     };
 
