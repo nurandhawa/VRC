@@ -249,30 +249,18 @@ public class AppController {
                 response.status(BAD_REQUEST);
                 return response;
             }
-            Pair pair = dbManager.getPairFromID(id);
-
-            int index = pair.getPosition() - 1; //TODO
-            Scorecard group = gameManager.getGroupByIndex(index); //TODO
-
-            int numTeams = group.getReorderedPairs().size();
-            String[][] input = new String[numTeams][numTeams];
-
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
 
-            int rows = extractedData.results.length;
-            int cols = extractedData.results[0].length;
-            boolean isValidResult = (rows == numTeams) && (cols == numTeams);
-
-            if (!isValidResult) {
+            try{
+                dbManager.inputMatchResults(id, extractedData.results.clone());
+                response.status(OK);
+                return getOkResponse("");
+            } catch (Exception e){
+                response.body("Invalid result format.");
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid result format.");
             }
-
-            input = extractedData.results.clone();
-            gameManager.inputMatchResults(group, input); //TODO
-            response.status(OK);
-            return getOkResponse("");
         });
 
         //Remove a pair from a match
@@ -302,6 +290,8 @@ public class AppController {
             }
 
             gameManager.removePlayingPair(dbManager.getPairFromID(id)); //TODO
+            //Remove pair from active list
+            //Regenerate groups
             response.status(OK);
             return getOkResponse("");
         });
