@@ -219,10 +219,11 @@ public class DBManager {
         submitGameSession(gameSession);
     }
 
-    public void removePair(int pairId) {
+    public boolean removePair(int pairId) {
         Transaction tx = null;
         Pair pair = null;
         Ladder ladder = null;
+        boolean removed = false;
         try {
             tx = session.beginTransaction();
             pair = session.get(Pair.class, pairId);
@@ -231,11 +232,12 @@ public class DBManager {
             ladder = (Ladder) session.createCriteria(Ladder.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            ladder.removePair(pair);
+            removed = ladder.removePair(pair);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
         }
+        return removed;
     }
 
     public boolean hasPairID(int id) {

@@ -144,7 +144,7 @@ public class AppController {
 
             List<Player> playerData = extractedData.getPlayers();
 
-            if (newPlayers.size() != MAX_SIZE) {
+            if (playerData.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("A Pair cannot have more than 2 players.");
             }
@@ -176,18 +176,15 @@ public class AppController {
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
-            dbManager.removePair(id);
-            Pair pair = ladderManager.searchPairById(id);
-            int index = pair.getPosition() - 1;
-            boolean removed = ladderManager.removePairAtIndex(index);
 
-            if (removed) {
-                response.body(getOkResponse(""));
-                response.status(OK);
-            } else {
-                response.status(BAD_REQUEST);
-                return getErrResponse("Index out of bound");
+            if (!dbManager.hasPairID(id)) {
+                response.body(PAIR_NOT_FOUND);
+                response.status(NOT_FOUND);
+                return response;
             }
+
+            dbManager.removePair(id);
+            response.status(OK);
 
             return getOkResponse("");
         });
