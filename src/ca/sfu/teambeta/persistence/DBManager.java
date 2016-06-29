@@ -313,6 +313,15 @@ public class DBManager {
         return json;
     }
 
+    public String getJSONScorecards() {
+        GameSession gameSession = getGameSessionLatest();
+        List<Scorecard> scorecards = gameSession.getScorecards();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(scorecards);
+        return json;
+    }
+
     private GameSession getGameSession(int gameSessionId){
         Transaction tx = null;
         GameSession gameSession = null;
