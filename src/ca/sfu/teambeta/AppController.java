@@ -232,10 +232,12 @@ public class AppController {
         get("/api/matches", (request, response) -> {
             if (gameManager.getScorecards() != null) {
                 response.status(OK);
+                response.body(dbManager.getJSONScorecards());
             } else {
-                response.status(BAD_REQUEST);
+                response.body("No scorecards were found");
+                response.status(NOT_FOUND);
             }
-            return gson.toJson(gameManager.getScorecards());
+            return response;
         });
 
         //Input match results
