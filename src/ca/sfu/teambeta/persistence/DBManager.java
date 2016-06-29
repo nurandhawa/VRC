@@ -1,8 +1,9 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import com.google.gson.Gson;
+
 import com.opencsv.CSVReader;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -12,6 +13,12 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -19,12 +26,7 @@ import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameSession;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -407,6 +409,35 @@ public class DBManager {
 
         String json = gson.toJson(scorecards);
         return json;
+    }
+
+    public void setGameResults(int winningPairId, int losingPairId) {
+        GameSession gameSession = getGameSessionLatest();
+        int sessionId = gameSession.getID();
+        Scorecard scorecard = (Scorecard) session.createQuery(
+                "from Scorecard sc \n" +
+                        "join session_Scorecard s_sc on (s_sc.scorecards_id = sc.id) " +
+                        "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) " +
+                        "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) " +
+                        "where sc_pwin.pairs_id = :winning_pair_id " +
+                        "and sc_plose.pairs_id = :losing_pair_id " +
+                        "and s_sc.session_id = :session_id")
+                .setInteger("winning_pair_id", winningPairId)
+                .setInteger("losing_pair_id", winningPairId)
+                .setInteger("session_id", sessionId)
+                .uniqueResult();
+        Pair winningPair = session.load(Pair.class, winningPairId);
+        Pair losingPair = session.load(Pair.class, losingPairId);
+        scorecard.setGameResults(winningPair, losingPair);
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(scorecard);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
     }
 
     private GameSession getGameSession(int gameSessionId){
