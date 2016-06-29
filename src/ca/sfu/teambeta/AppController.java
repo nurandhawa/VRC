@@ -58,13 +58,15 @@ public class AppController {
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
-            if (ladderManager.getLadder() != null) {
+            String json = dbManager.getJSONLadder();
+            if (!json.isEmpty()) {
                 response.status(OK);
+                return gson.toJson(ladderManager.getLadder());
             } else {
+                response.body("No ladder was found");
                 response.status(BAD_REQUEST);
                 return response;
             }
-            return gson.toJson(ladderManager.getLadder());
         });
 
         //updates a pair's playing status or position

@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import com.google.gson.Gson;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,6 +17,8 @@ import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameSession;
+
+import java.util.List;
 
 /**
  * Utility class that reads and writes data to the database
@@ -207,6 +210,58 @@ public class DBManager {
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             ladder.removePair(pair);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public String getJSONLadder() {
+        GameSession gameSession = getGameSessionLatest();
+        List<Pair> ladder = gameSession.getAllPairs();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(ladder);
+        return json;
+    }
+
+    private GameSession getGameSession(int gameSessionId){
+        Transaction tx = null;
+        GameSession gameSession = null;
+        try {
+            tx = session.beginTransaction();
+            gameSession = (GameSession) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(gameSessionId))
+                    .uniqueResult();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return gameSession;
+    }
+
+    private GameSession getGameSessionLatest(){
+        Transaction tx = null;
+        GameSession gameSession = null;
+        try {
+            tx = session.beginTransaction();
+            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+                    .setProjection(Projections.max("id"));
+            gameSession = (GameSession) session.createCriteria(Ladder.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return gameSession;
+    }
+
+    private void submitGameSession(GameSession newSession){
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(newSession);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
