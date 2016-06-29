@@ -2,6 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import com.google.gson.Gson;
+import com.opencsv.CSVReader;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -19,12 +20,17 @@ import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameSession;
 
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
+    private static final String DEFAULT_FILENAME = "ladder.csv";
     private static String TESTING_ENV_VAR = "TESTING";
     private SessionFactory factory;
     private Session session;
@@ -125,6 +131,32 @@ public class DBManager {
         Ladder lad = dbMan.getLatestLadder();
 
         System.out.println(lad);
+    }
+
+    public static List<Player> getInformationAboutPlayers() throws Exception{
+        List<Player> players;
+        try (CSVReader reader = new CSVReader(new FileReader(DEFAULT_FILENAME))) {
+            List<String[]> entries = reader.readAll();
+            Iterator<String[]> iterator = entries.iterator();
+            players = new ArrayList<>();
+
+            String[] pairInfo;
+            while (iterator.hasNext()) {
+                pairInfo = iterator.next();
+
+                String lastName = pairInfo[0];
+                String firstName = pairInfo[1];
+                String id = pairInfo[2];
+
+                Player player = new Player(lastName, firstName, id);
+                players.add(player);
+            }
+            reader.close();
+        } catch (IOException e) {
+            throw new Exception("Error reading file " + DEFAULT_FILENAME);
+        }
+
+        return players;
     }
 
     public int persistEntity(Persistable entity) {
