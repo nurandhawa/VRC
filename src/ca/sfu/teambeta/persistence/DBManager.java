@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import com.google.gson.Gson;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -339,6 +340,7 @@ public class DBManager {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         gameSession.setPairInactive(pair);
+        gameSession.createGroups(new VrcScorecardGenerator());
         submitGameSession(gameSession);
     }
 

@@ -262,7 +262,7 @@ public class AppController {
         delete("/api/matches/:id", (request, response) -> {
             int id;
             try {
-                id = Integer.parseInt(request.params(ID));
+                id = Integer.parseInt(request.queryParams(ID));
             } catch (Exception e) {
                 response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
@@ -281,9 +281,8 @@ public class AppController {
                 return response;
             }
 
-            gameManager.removePlayingPair(dbManager.getPairFromID(id)); //TODO
-            //Remove pair from active list
-            //Regenerate groups
+            dbManager.setPairInactive(id);
+
             response.status(OK);
             return response;
         });
