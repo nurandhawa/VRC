@@ -61,3 +61,6 @@ Directory Structure:
 
 Build & Run Instructions:
 
+    Clone the repo
+    cd prj
+    ./gradlew run
