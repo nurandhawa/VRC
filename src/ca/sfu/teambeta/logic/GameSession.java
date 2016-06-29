@@ -18,10 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.persistence.Persistable;
 
 /**
@@ -82,8 +79,34 @@ public class GameSession extends Persistable {
         }
     }
 
-    public void setPairActive(Pair pair) {
-        activePairs.add(pair);
+    public boolean setPairActive(Pair pair) {
+        try {
+            if (getAlreadyActivePlayer(pair) == null) {
+                activePairs.add(pair);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Player getAlreadyActivePlayer(Pair pair) throws Exception {
+        if(ladder.getPairs().contains(pair)) {
+            List<Player> team = pair.getPlayers();
+            Player first = team.get(0);
+            Player second = team.get(1);
+            if (searchActivePlayer(first)) {
+                return first;
+            } else if (searchActivePlayer(second)) {
+                return second;
+            } else {
+                return null;
+            }
+        } else {
+            throw new Exception("Pair is not in the ladder");
+        }
     }
 
     public void setPairInactive(Pair pair) {
@@ -106,6 +129,20 @@ public class GameSession extends Persistable {
         reorderedLadder = new Ladder(reorderedList);
     }
 
+    public boolean addNewPairAtIndex(Pair newPair, int index) {
+        boolean pairExists = ladder.getPairs().contains(newPair);
+        if (!pairExists) {
+            newPair.setPosition(ladder.getLadderLength());
+            activePairs.add(newPair);
+            ladder.insertAtIndex(index, newPair);
+        }
+        return !pairExists;
+    }
+
+    public boolean addNewPairAtEnd(Pair newPair) {
+        return addNewPairAtIndex(newPair, ladder.getLadderLength() - 1);
+    }
+
     @Override
     public boolean equals(Object o) {
         return false;
@@ -115,5 +152,14 @@ public class GameSession extends Persistable {
     public int hashCode() {
         return 57 * ladder.hashCode() * reorderedLadder.hashCode() *
                 activePairs.hashCode() * scorecards.hashCode() * penalties.hashCode();
+    }
+
+    private boolean searchActivePlayer(Player player) {
+        for (Pair current : activePairs) {
+            if (current.hasPlayer(player)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
