@@ -207,6 +207,18 @@ public class DBManager {
         }
     }
 
+    public void addPair(Pair pair, int position) {
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.addNewPairAtIndex(pair, position);
+        submitGameSession(gameSession);
+    }
+
+    public void addPair(Pair pair) {
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.addNewPairAtEnd(pair);
+        submitGameSession(gameSession);
+    }
+
     public void removePair(int pairId) {
         Transaction tx = null;
         Pair pair = null;

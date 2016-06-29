@@ -129,8 +129,6 @@ public class AppController {
                 response.status(BAD_REQUEST);
             }
 
-
-
             return getOkResponse("");
         });
 
@@ -142,32 +140,35 @@ public class AppController {
             final int MAX_SIZE = 2;
 
             boolean validPos = 0 < extractedData.getPosition()
-                    && extractedData.getPosition() <= ladderManager.ladderSize();
-            List<Player> newPlayers = extractedData.getPlayers();
+                    && extractedData.getPosition() <= dbManager.getLadderSize();
+
+            List<Player> playerData = extractedData.getPlayers();
 
             if (newPlayers.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("A Pair cannot have more than 2 players.");
             }
 
+            List<Player> newPlayers = new ArrayList<>();
+
             for (int i = 0; i < MAX_SIZE; i++) {
-                Integer existingId = newPlayers.get(i).getExistingId();
-                if (existingId != null) {
-                    newPlayers.remove(i);
-                    newPlayers.add(i, ladderManager.searchPlayerById(existingId));
+                if (playerData.get(i).getExistingId() == null) {
+                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
+                            playerData.get(i).getPhoneNumber()));
+                } else {
+                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getExistingId()));
                 }
             }
 
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+
             if (validPos) {
-                ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
+                dbManager.addPair(pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
-                ladderManager.addNewPair(pair);
+                dbManager.addPair(pair);
                 response.status(OK);
             }
-
-            dbManager.addPairToLatestLadder(pair);
 
             return response;
         });
