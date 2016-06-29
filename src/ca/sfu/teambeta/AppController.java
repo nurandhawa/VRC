@@ -132,36 +132,36 @@ public class AppController {
             final int MAX_SIZE = 2;
 
             boolean validPos = 0 < extractedData.getPosition()
-                    && extractedData.getPosition() <= ladderManager.ladderSize();
+                    && extractedData.getPosition() <= dbManager.getLadderSize();
+
             List<Player> playerData = extractedData.getPlayers();
 
             if (playerData.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
-                response.body("A Pair cannot have more than 2 players.");
+                response.body("A Pair should have 2 players.");
                 return response;
             }
 
-            List<Player> newPlayers = new ArrayList<Player>();
+            List<Player> newPlayers = new ArrayList<>();
 
             for (int i = 0; i < MAX_SIZE; i++) {
                 if (playerData.get(i).getExistingId() == null) {
                     newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
                             playerData.get(i).getPhoneNumber()));
                 } else {
-                    newPlayers.add(ladderManager.searchPlayerById(playerData.get(i).getExistingId()));
+                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getExistingId()));
                 }
             }
 
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+
             if (validPos) {
-                ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
+                dbManager.addPair(pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
-                ladderManager.addNewPair(pair);
+                dbManager.addPair(pair);
                 response.status(OK);
             }
-
-            dbManager.addPairToLatestLadder(pair);
 
             return response;
         });
