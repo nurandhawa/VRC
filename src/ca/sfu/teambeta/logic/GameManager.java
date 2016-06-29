@@ -20,7 +20,8 @@ public class GameManager {
     private Observer observer = null;
     private int groupsDone = 0;
 
-    public GameManager(List<Pair> activeLadder, LadderManager ladderManager) {
+    //public GameManager(List<Pair> activeLadder, LadderManager ladderManager) {
+    public GameManager(List<Pair> activeLadder) {
         ladder = activeLadder;
         groups = new ArrayList<>();
         observer = () -> {
@@ -32,7 +33,7 @@ public class GameManager {
                         p.setPairScore(s.getPairScore(p));
                     }
                 }
-                ladderManager.processLadder(groups);
+                //ladderManager.processLadder(groups); TODO
             }
         };
 

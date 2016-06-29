@@ -1,3 +1,4 @@
+/*
 package ca.sfu.teambeta.ui;
 
 import java.util.ArrayList;
@@ -9,10 +10,11 @@ import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
-
+*/
 /**
  * Simple text-based UI to perform basic display and modification functions.
  */
+/*
 public class UserInterface {
     private static final int LIST_LADDER = 1;
     private static final int LIST_MATCHES = 2;
@@ -255,3 +257,4 @@ public class UserInterface {
         ladderManager.setNotPlaying(ladderManager.getLadder().get(index));
     }
 }
+*/

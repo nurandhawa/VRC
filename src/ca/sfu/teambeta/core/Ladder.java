@@ -40,6 +40,10 @@ public class Ladder extends Persistable {
         this.pairs = ladder;
     }
 
+    public boolean contains(Pair pair) {
+        return pairs.contains(pair);
+    }
+
     //returns false if pair was not found
     public boolean removePair(Pair pair) {
         int index = pairs.indexOf(pair);

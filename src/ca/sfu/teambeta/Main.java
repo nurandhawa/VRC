@@ -10,9 +10,7 @@ import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameManager;
-import ca.sfu.teambeta.logic.LadderManager;
 import ca.sfu.teambeta.persistence.DBManager;
-import ca.sfu.teambeta.ui.UserInterface;
 
 
 class Main {
@@ -21,7 +19,7 @@ class Main {
         /*Laddgiter loadedLadder = DBManager.loadFromDB();*/
 
         /* -----FOR TESTING*/
-        List<Pair> ladderPairs = Arrays.asList(
+ /*       List<Pair> ladderPairs = Arrays.asList(
                 new Pair(new Player("Bobby", "Chan", ""), new Player("Wing", "Man", ""), false),
                 new Pair(new Player("Ken", "Hazen", ""), new Player("Brian", "Fraser", ""), false),
                 new Pair(new Player("Simon", "Fraser", ""), new Player("Dwight", "Howard", ""), false),
@@ -47,6 +45,6 @@ class Main {
         //UserInterface.start(gameManager,ladderManager);
         AppController appController = new AppController(ladderManager, gameManager);
 
-
+*/
     }
 }

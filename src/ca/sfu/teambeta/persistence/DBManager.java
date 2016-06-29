@@ -298,6 +298,15 @@ public class DBManager {
         submitGameSession(gameSession);
     }
 
+    public boolean isActivePair(int pairId){
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+
+        boolean status = gameSession.isActivePair(pair);
+        submitGameSession(gameSession);
+        return status;
+    }
+
     public int getLadderSize() {
         GameSession gameSession = getGameSessionLatest();
         List<Pair> ladder = gameSession.getActivePairs();

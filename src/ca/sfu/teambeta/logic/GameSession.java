@@ -120,8 +120,15 @@ public class GameSession extends Persistable {
         penalties.put(pair, penalty);
     }
 
-    public void removePenaltyFromPair(Pair pair) {
+    public void removePenaltyFromPair(Pair pair) { //TODO should be automatic
         penalties.remove(pair);
+    }
+
+    public boolean isActivePair(Pair pair) {
+        List<Pair> activeList = getActivePairs();
+        boolean active = activeList.contains(pair);
+
+        return active;
     }
 
     public void reorderLadder(LadderReorderer reorderer) {
