@@ -225,6 +225,50 @@ public class DBManager {
         }
     }
 
+    public void inputMatchResults(int pairId, String[][] results) throws Exception{
+        GameSession gameSession = getGameSessionLatest();
+
+        int rows = results.length;
+        int cols = results[0].length;
+
+        Pair pair = getPairFromID(pairId);
+        int index = pair.getPosition() - 1;
+
+        List<Scorecard> scorecards = gameSession.getScorecards();
+        Scorecard group = scorecards.get(index);
+        int numTeams = group.getReorderedPairs().size();
+
+        boolean isValidResult = (rows == numTeams) && (cols == numTeams);
+        if (!isValidResult) {
+            throw new Exception();
+        }
+
+        List<Pair> teams = group.getReorderedPairs();
+        Pair teamWon = null;
+        Pair teamLost = null;
+        int winCount = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (results[i][j].equals("W")) {
+                    teamWon = teams.get(j);
+                    winCount++;
+                } else if (results[i][j].equals("L")) {
+                    teamLost = teams.get(j);
+                    winCount--;
+                }
+            }
+            if (winCount == 0 && teamWon != null && teamLost != null) {
+                group.setGameResults(teamWon, teamLost);
+            }
+            winCount = 0;
+            teamLost = null;
+            teamWon = null;
+        }
+
+        submitGameSession(gameSession);
+    }
+
     public void addPair(Pair pair, int position) {
         GameSession gameSession = getGameSessionLatest();
         gameSession.addNewPairAtIndex(pair, position);
