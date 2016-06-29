@@ -22,11 +22,17 @@
   flex: 1;
   margin: auto;
   margin-right: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.header-button {
+  float: right;
+  margin: 5px;
 }
 
 .ladder {
   padding: 20px 15px;
-  text-align: center;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -161,3 +167,10 @@
   padding: 20px 15px;
 }
 
+.modal-form-group {
+    margin: 0px;
+}
+
+.modal-button-left {
+    float: left;
+}

@@ -22,7 +22,12 @@ var API = (function() {
         })
         .done(function(response) {
             if (doneCallback) {
-                doneCallback(JSON.parse(response));
+                var ladderData = JSON.parse(response);
+                ladderData.forEach(function(pair) {
+                    pair.teamName = pair.players[0].firstName + " and " + pair.players[1].firstName;
+                    pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+                });
+                doneCallback(ladderData);
             }
         })
         .fail(function(response) {

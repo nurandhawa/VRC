@@ -53,11 +53,74 @@
         <h1 class="header-initial">{{ title }}</h1>
         <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
         <div class="header-right">
-          <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
+          <component :is="mode" transition="fade" transition-mode="out-in">
+          </component>
+          <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
         </div>
       </div>
 
       <div id="ladder" class="ladder">
+        <div id="addPairModal" class="modal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 class="modal-title">Add Pair</h3>
+              </div>
+              <div class="modal-body">
+                <div class="form-group modal-form-group">
+                  <label for="ladderPosition" class="col-md-2 control-label">Ladder Position</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="ladderPosition" v-model="newPairData.position">
+                    <p class="help-block">Leave blank to insert the pair at the end of the ladder.</p>
+                  </div>
+                </div>
+                <h4>Player 1</h4>
+                <div class="form-group modal-form-group">
+                  <label for="player1First" class="col-md-2 control-label">First Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1First" v-model="newPairData.player1.firstName">
+                  </div>
+                </div>
+                <div class="form-group modal-form-group">
+                  <label for="player1Last" class="col-md-2 control-label">Last Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1Last" v-model="newPairData.player1.lastName">
+                  </div>
+                </div>
+                <div class="form-group modal-form-group">
+                  <label for="player1Phone" class="col-md-2 control-label">Phone Number</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1Phone" v-model="newPairData.player1.phoneNumber">
+                  </div>
+                </div>
+                <h4>Player 2</h4>
+                <div class="form-group modal-form-group">
+                  <label for="player2First" class="col-md-2 control-label">First Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2First" v-model="newPairData.player2.firstName">
+                  </div>
+                </div>
+                <div class="form-group modal-form-group">
+                  <label for="player2Last" class="col-md-2 control-label">Last Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2Last" v-model="newPairData.player2.lastName">
+                  </div>
+                </div>
+                <div class="form-group modal-form-group">
+                  <label for="player2Phone" class="col-md-2 control-label">Phone Number</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2Phone" v-model="newPairData.player2.phoneNumber">
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" v-on:click="onAdd">Add pair</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="panel panel-default ladder-element" v-for="entry in ladder">
           <div class="panel-body">
             <div class="pair-name">
@@ -70,14 +133,20 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                      <h4 class="modal-title">Edit {{ entry.teamName }}</h4>
+                      <h3 class="modal-title">Edit Pair</h3>
                     </div>
                     <div class="modal-body">
-                      <p>One fine body…</p>
+                      <div class="form-group modal-form-group">
+                        <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
+                        <div class="col-md-10">
+                          <input type="text" class="form-control" id="ladderPosition" value="{{ entry.position }}">
+                        </div>
+                      </div>
                     </div>
                     <div class="modal-footer">
+                      <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete($index)">Delete pair</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Save changes</button>
+                      <button type="button" class="btn btn-success">Save changes</button>
                     </div>
                   </div>
                 </div>
@@ -96,6 +165,7 @@
   <script src="vendors/bootstrap.js"></script>
   <script src="vendors/material.js"></script>
   <script src="vendors/ripples.js"></script>
+  <script src="js/api.js"></script>
   <script src="js/header.js"></script>
   <script src="js/ladder.js"></script>
   <script src="js/ladderloader.js"></script>
