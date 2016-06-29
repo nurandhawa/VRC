@@ -190,6 +190,24 @@ public class DBManager {
         return ladder;
     }
 
+    public void addPenaltyToPairToLatestGameSession(int pairId, Penalty penalty) {
+        Transaction tx = null;
+        GameSession gameSession = null;
+        try {
+            tx = session.beginTransaction();
+            Pair pair = session.get(Pair.class, pairId);
+            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
+                    .setProjection(Projections.max("id"));
+            gameSession = (GameSession) session.createCriteria(GameSession.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            gameSession.setPenaltyToPair(pair, penalty);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
     public void addPairToLatestLadder(Pair pair) {
         Transaction tx = null;
         Ladder ladder = null;

@@ -175,7 +175,14 @@ public class AppController {
 
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
+            int id;
+            try {
+                id = Integer.parseInt(request.queryParams(ID));
+            } catch (Exception e) {
+                response.body(ID_NOT_INT);
+                response.status(BAD_REQUEST);
+                return response;
+            }
 
             if (!dbManager.hasPairID(id)) {
                 response.body(PAIR_NOT_FOUND);
@@ -191,21 +198,29 @@ public class AppController {
 
         //add a penalty to a pair
         post("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Pair pair = ladderManager.searchPairById(id);
-            if (pair == null) {
+            int id;
+            try {
+                id = Integer.parseInt(request.queryParams(ID));
+            } catch (Exception e) {
+                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
+                return response;
+            }
+
+            if (!dbManager.hasPairID(id)) {
+                response.body(PAIR_NOT_FOUND);
+                response.status(NOT_FOUND);
                 return getErrResponse("Pair with the following id " + id + "wasn't found");
             }
 
             String penaltyType = request.queryParams(PENALTY);
 
-            if (penaltyType.equals(LATE)) {
-                pair.setPenalty(Penalty.LATE.getPenalty());
-            } else if (penaltyType.equals(MISS)) {
-                pair.setPenalty(Penalty.MISSING.getPenalty());
-            } else if (penaltyType.equals(ACCIDENT)) {
-                pair.setPenalty(Penalty.ACCIDENT.getPenalty());
+            if (penaltyType == LATE) {
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.LATE);
+            } else if (penaltyType == MISS) {
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.MISSING);
+            } else if (penaltyType == ACCIDENT) {
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.ACCIDENT);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
