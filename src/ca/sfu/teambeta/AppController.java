@@ -12,7 +12,6 @@ import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameManager;
-import ca.sfu.teambeta.logic.LadderManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.delete;
@@ -47,7 +46,7 @@ public class AppController {
 
     private static Gson gson;
 
-    public AppController(LadderManager ladderManager, GameManager gameManager, DBManager dbManager) {
+    public AppController(GameManager gameManager, DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
 
@@ -223,9 +222,10 @@ public class AppController {
 
         //Show a list of matches
         get("/api/matches", (request, response) -> {
-            if (gameManager.getScorecards() != null) {
+            String json = dbManager.getJSONScorecards();
+            if (!json.isEmpty()) {
                 response.status(OK);
-                response.body(dbManager.getJSONScorecards());
+                response.body(json);
             } else {
                 response.body("No scorecards were found");
                 response.status(NOT_FOUND);
@@ -235,8 +235,19 @@ public class AppController {
 
         //Input match results
         patch("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Scorecard group = gameManager.getGroupByIndex(id);
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                response.body(ID_NOT_INT);
+                response.status(BAD_REQUEST);
+                return response;
+            }
+            Pair pair = dbManager.getPairFromID(id);
+
+            int index = pair.getPosition() - 1; //TODO
+            Scorecard group = gameManager.getGroupByIndex(index); //TODO
+
             int numTeams = group.getReorderedPairs().size();
             String[][] input = new String[numTeams][numTeams];
 
@@ -248,27 +259,41 @@ public class AppController {
             boolean isValidResult = (rows == numTeams) && (cols == numTeams);
 
             if (!isValidResult) {
-                response.status(BAD_REQUEST);
                 response.body("Invalid result format.");
+                response.status(BAD_REQUEST);
                 return response;
             }
 
             input = extractedData.results.clone();
-            gameManager.inputMatchResults(group, input);
+            gameManager.inputMatchResults(group, input); //TODO
             response.status(OK);
             return response;
         });
 
         //Remove a pair from a match
         delete("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Pair pair = ladderManager.searchPairById(id);
-
-            if (pair == null || !pair.isPlaying()) {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
                 return response;
             }
-            gameManager.removePlayingPair(pair);
+
+            if (!dbManager.hasPairID(id)) {
+                response.body(PAIR_NOT_FOUND);
+                response.status(NOT_FOUND);
+                return response;
+            }
+
+            if (!dbManager.isActivePair(id)) {
+                response.body("The pair is not on the scorecard");
+                response.status(BAD_REQUEST);
+                return response;
+            }
+
+            gameManager.removePlayingPair(dbManager.getPairFromID(id)); //TODO
             response.status(OK);
             return response;
         });
