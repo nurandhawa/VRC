@@ -4,7 +4,10 @@ import ca.sfu.teambeta.core.Session;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 
-import java.util.*;
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
  * UserSessionManager handles:
@@ -17,7 +20,6 @@ import java.util.*;
  *
  *
  * TODO:
- * - Perhaps have AccountManager hold a UserSessionManager object for increased security
  * - Have a UDID as the key to our 'sessions' dictionary so that the user may login on multiple devices
  *
  */
@@ -30,8 +32,7 @@ public class UserSessionManager {
     // MARK: - The Core Session Methods
     public static String createNewSession(User user) {
         // Create a session, if a session with the email already exists, it will be overridden
-        // TODO: Randomly generate a token
-        String sessionID = DEMO_SESSION_ID;
+        String sessionID = generateRandomToken();
         String expiryDate = "datePlaceholder";
 
         Session userSession = new Session(sessionID, expiryDate);
@@ -47,14 +48,21 @@ public class UserSessionManager {
     public static void deleteSession(String email, String token) throws NoSuchSessionException {
         Session session = getUserSession(email);
 
-        sessions.remove(email);
+        boolean tokensMatch = session.getToken().equals(token);
+        if (tokensMatch) {
+            sessions.remove(email);
+        } else {
+            throw new NoSuchSessionException("Invalid token");
+        }
+
     }
 
     public static boolean authenticateToken(String email, String token) throws NoSuchSessionException {
         Session session = getUserSession(email);
 
-        // TODO: Check expiry date, beef up security
-        if (session.getToken().equals(token)) {
+        // TODO: Check expiry date
+        boolean tokensMatch = session.getToken().equals(token);
+        if (tokensMatch) {
             return true;
         } else {
             return false;
@@ -74,6 +82,15 @@ public class UserSessionManager {
         }
     }
 
+    private static String generateRandomToken() {
+        // See citation.txt for more information
+        int MAX_BIT_LENGTH = 130;
+        int ENCODING_BASE = 32;
+
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+    }
+
 
     // MARK: Main Function (Quick and dirty testing for now - will be refactored into tests)
     public static void main(String[] args) {
@@ -86,7 +103,7 @@ public class UserSessionManager {
         createNewSession(testUser2);
 
         System.out.println(sessions.get("admin@vrc.ca").getToken());
-        System.out.println("Number of session: " + sessions.size()); // Will be 2
+        System.out.println("Number of sessions: " + sessions.size()); // Will be 2
 
 
         // Authenticating a session
@@ -109,7 +126,9 @@ public class UserSessionManager {
             return;
         }
 
-        System.out.println("Number of session: " + sessions.size()); // Will be 1
+        System.out.println("Number of sessions: " + sessions.size()); // Will be 1
+
+        System.out.println(generateRandomToken());
 
 
     }
