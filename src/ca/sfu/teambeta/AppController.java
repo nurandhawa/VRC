@@ -38,11 +38,17 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+    private static final String PLAYING = "playing";
+    private static final String NOT_PLAYING = "not playing";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
+
+    private static final String PAIR_NOT_FOUND = "No pair was found with given id";
+    private static final String ID_NOT_INT = "Id is not of integer type";
+
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -61,7 +67,8 @@ public class AppController {
             String json = dbManager.getJSONLadder();
             if (!json.isEmpty()) {
                 response.status(OK);
-                return gson.toJson(ladderManager.getLadder());
+                response.body(dbManager.getJSONLadder());
+                return response;
             } else {
                 response.body("No ladder was found");
                 response.status(BAD_REQUEST);
@@ -71,26 +78,24 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
+            int id;
+            int newPosition;
+            try {
+                id = Integer.parseInt(request.params(ID));
+                newPosition = Integer.parseInt(request.queryParams(POSITION));
+            } catch (Exception e) {
+                response.body(ID_NOT_INT + " or Position");
+                response.status(BAD_REQUEST);
+                return response;
+            }
 
             String status = request.queryParams(STATUS);
-            if (status == null) {
-                status = "";
-            }
 
-            int newPosition = -1;
-            try {
-                newPosition = Integer.parseInt(request.queryParams(POSITION));
-            } catch (NumberFormatException ignored) {
+            boolean validNewPos = 0 < newPosition && newPosition <= dbManager.getLadderSize();
+            boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
 
-            }
-
-            boolean validNewPos = 0 < newPosition && newPosition <= ladderManager.ladderSize();
-            boolean validStatus = status.equals("playing") || status.equals("not playing");
-
-            Pair pair = ladderManager.searchPairById(id);
-
-            if (pair == null) {
+            if (!dbManager.hasPairID(id)) {
+                response.body(PAIR_NOT_FOUND);
                 response.status(NOT_FOUND);
                 return getErrResponse("Pair " + id + " not found");
             }
@@ -99,25 +104,32 @@ public class AppController {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
-                if (status.equals("playing")) {
-                    ladderManager.setIsPlaying(pair);
+                if (status.equals(PLAYING)) {
+                    boolean statusChanged = dbManager.setPairActive(id);
+                    if (statusChanged) {
+                        response.status(OK);
+                    } else {
+                        Player activePlayer = dbManager.getAlreadyActivePlayer(id);
+                        String firstName = activePlayer.getFirstName();
+                        String lastName = activePlayer.getLastName();
+                        response.body("Player " + firstName + " " + lastName + " is already playing");
+                        response.status(NOT_FOUND);
+                    }
+                } else if (status.equals(NOT_PLAYING)) {
+                    dbManager.setPairInactive(id);
                     response.status(OK);
-                } else if (status.equals("not playing")) {
-                    ladderManager.setNotPlaying(pair);
-                    response.status(OK);
-                } else {
-                    response.status(BAD_REQUEST);
-                    return getErrResponse("Invalid status");
                 }
+
             } else if (!validStatus && validNewPos) {
-                int currentPosition = pair.getPosition();
-                ladderManager.movePair(currentPosition, newPosition);
+                dbManager.movePair(id, newPosition);
                 response.status(OK);
 
             } else {
+                response.body("Cannot change both: position and status");
                 response.status(BAD_REQUEST);
-                return getErrResponse("Cannot change both: position and status");
             }
+
+
 
             return getOkResponse("");
         });
@@ -163,7 +175,7 @@ public class AppController {
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
-            dbManager.removePairFromLatestLadder(id);
+            dbManager.removePair(id);
             Pair pair = ladderManager.searchPairById(id);
             int index = pair.getPosition() - 1;
             boolean removed = ladderManager.removePairAtIndex(index);

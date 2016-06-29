@@ -163,6 +163,16 @@ public class DBManager {
         return player;
     }
 
+    public Pair getPairFromID(int id) {
+        Pair pair = null;
+        try {
+            pair = (Pair) getEntityFromID(Pair.class, id);
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
+        return pair;
+    }
+
     public Ladder getLatestLadder() {
         Transaction tx = null;
         Ladder ladder = null;
@@ -197,7 +207,7 @@ public class DBManager {
         }
     }
 
-    public void removePairFromLatestLadder(int pairId) {
+    public void removePair(int pairId) {
         Transaction tx = null;
         Pair pair = null;
         Ladder ladder = null;
@@ -214,6 +224,52 @@ public class DBManager {
         } catch (HibernateException e) {
             tx.rollback();
         }
+    }
+
+    public boolean hasPairID(int id) {
+        return getPairFromID(id) != null;
+    }
+
+    public void movePair(int pairId, int newPosition){
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+
+        removePair(pairId);
+        gameSession.addNewPairAtIndex(pair, newPosition);
+        submitGameSession(gameSession);
+    }
+
+    public Player getAlreadyActivePlayer(int id) throws Exception {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(id);
+        Player player;
+        try {
+            player = gameSession.getAlreadyActivePlayer(pair);
+        } catch (Exception e){
+            throw e;
+        }
+        return player;
+    }
+
+    public boolean setPairActive(int pairId) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        boolean activated = gameSession.setPairActive(pair);
+        submitGameSession(gameSession);
+        return activated;
+    }
+
+    public void setPairInactive(int pairId) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        gameSession.setPairInactive(pair);
+        submitGameSession(gameSession);
+    }
+
+    public int getLadderSize() {
+        GameSession gameSession = getGameSessionLatest();
+        List<Pair> ladder = gameSession.getActivePairs();
+        return ladder.size();
     }
 
     public String getJSONLadder() {
