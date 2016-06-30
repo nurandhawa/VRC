@@ -176,7 +176,7 @@ var Ladder = (function() {
                 entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
-    }
+    };
 
     return Ladder;
 })();
