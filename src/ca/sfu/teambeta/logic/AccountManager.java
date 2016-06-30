@@ -53,8 +53,8 @@ public class AccountManager {
         return sessionID;
     }
 
-    public static void logout(String email) {
-
+    public static void logout(String sessionID) throws NoSuchSessionException {
+        UserSessionManager.deleteSession(sessionID);
     }
 
     public static void register(String email, String password) throws InternalHashingException,
@@ -147,7 +147,7 @@ public class AccountManager {
 
     }
 
-    private static void validateEmailFormat(String email) throws InvalidUserInputException {
+    public static void validateEmailFormat(String email) throws InvalidUserInputException {
         // Check that the input is valid
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
@@ -218,6 +218,6 @@ public class AccountManager {
             return;
         }
 
-        System.out.println("User Session ID: " + userSessionId);
+        System.out.println("User SessionInformation ID: " + userSessionId);
     }
 }
