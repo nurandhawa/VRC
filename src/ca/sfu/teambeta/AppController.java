@@ -5,6 +5,7 @@ import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import spark.Filter;
 import spark.Response;
 import spark.Request;
@@ -49,12 +50,17 @@ public class AppController {
 
         secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
 
-        before((request, response) -> {
-            String sessionToken = request.headers("token");
-            boolean authenticated = false;
-            // TODO: authenticate user
-            if (!authenticated) {
-                halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+        before("/api/:endpoint/*", (request, response) -> {
+            // Allow access to the login endpoint, so they can sign up/log in
+            String endpoint = request.params("endpoint");
+            if (!endpoint.equals("login")) {
+
+                String sessionToken = request.headers("token");
+                boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
+                if (!authenticated) {
+                    halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+                }
+
             }
         });
 
@@ -261,10 +267,10 @@ public class AppController {
 
             JsonObject successResponse = new JsonObject();
             String errMessage = "";
-            String sessionID = "";
+            String sessionToken = "";
             try {
-                sessionID = AccountManager.login(email, pwd);
-                successResponse.addProperty("sessionID", sessionID);
+                sessionToken = AccountManager.login(email, pwd);
+                successResponse.addProperty("sessionToken", sessionToken);
                 return gson.toJson(successResponse);
             } catch (InternalHashingException e) {
                 errMessage = e.getMessage();

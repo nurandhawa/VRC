@@ -53,6 +53,10 @@ public class UserSessionManager {
     }
 
     public static boolean authenticateSession(String sessionID) throws NoSuchSessionException {
+        if (sessionID == null || sessionID == "") {
+            return false;
+        }
+
         SessionInformation sessionInformation = getSessionInformation(sessionID);
 
         if (sessionInformation.isSessionExpired() == false) {
