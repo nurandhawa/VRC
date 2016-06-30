@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.core;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
@@ -14,6 +15,7 @@ import ca.sfu.teambeta.persistence.Persistable;
 
 @Entity
 public class User extends Persistable {
+    @Column(name = "email", unique = true)
     private String email;
     private String passwordHash;
     private String firstName = "";
