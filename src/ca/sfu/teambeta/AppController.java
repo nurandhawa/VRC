@@ -1,11 +1,10 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.logic.UserSessionManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.JsonExtractedData;
@@ -18,6 +17,7 @@ import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.before;
