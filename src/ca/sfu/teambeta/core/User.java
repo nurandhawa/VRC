@@ -1,18 +1,29 @@
 package ca.sfu.teambeta.core;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
+import ca.sfu.teambeta.persistence.Persistable;
+
 /**
  * The User class holds the notion of a database-user.
  *
  * A Player must hold a 1-to-1 relationship with a User; however the inverse is not true, as a
  * Administrator may not be a Player.
  */
-public class User {
+
+@Entity
+public class User extends Persistable {
+    @Column(name = "email", unique = true)
     private String email;
     private String passwordHash;
     private String firstName = "";
     private String lastName = "";
     private String phoneNumber = "";
 
+    @OneToOne
+    private Player associatedPlayer = null;
 
     // MARK: - Constructors
     public User(String email, String passwordHash) {
@@ -58,4 +69,34 @@ public class User {
         return phoneNumber;
     }
 
+    public void associatePlayer(Player player) {
+        this.associatedPlayer = player;
+    }
+
+    public void unassociatePlayer() {
+        this.associatedPlayer = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (!email.equals(user.email)) return false;
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+        return phoneNumber != null ? phoneNumber.equals(user.phoneNumber) : user.phoneNumber == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = email.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        return result;
+    }
 }

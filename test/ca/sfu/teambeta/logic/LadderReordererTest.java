@@ -89,49 +89,38 @@ public class LadderReordererTest {
 
         Pair pair = new Pair(new Player("", "Kate"),
                 new Player("", "Nick"), false);
-        pair.setPosition(1);
         db.add(pair);
 
         pair = new Pair(new Player("", "Jim"),
                 new Player("", "Ryan"), false);
-        pair.setPosition(2);
         db.add(pair);
 
         pair = new Pair(new Player("", "David"),
                 new Player("", "Bob"), true);
-        pair.setPosition(3);
-        pair.setPenalty(Penalty.MISSING.getPenalty());
         db.add(pair);
 
         pair = new Pair(new Player("", "Richard"),
                 new Player("", "Robin"), true);
-        pair.setPosition(4);
-        pair.setPenalty(Penalty.LATE.getPenalty());
         db.add(pair);
 
         pair = new Pair(new Player("", "Kevin"),
                 new Player("", "Jasmin"), true);
-        pair.setPosition(5);
         db.add(pair);
 
         pair = new Pair(new Player("", "Amy"),
                 new Player("", "Maria"), false);
-        pair.setPosition(6);
         db.add(pair);
 
         pair = new Pair(new Player("", "Tony"),
                 new Player("", "Angelica"), true);
-        pair.setPosition(7);
         db.add(pair);
 
         pair = new Pair(new Player("", "Anastasia"),
                 new Player("", "Victoria"), true);
-        pair.setPosition(8);
         db.add(pair);
 
         pair = new Pair(new Player("", "Ian"),
                 new Player("", "Camden"), true);
-        pair.setPosition(9);
         db.add(pair);
 
         return db;
@@ -142,47 +131,38 @@ public class LadderReordererTest {
 
         Pair pair = new Pair(new Player("", "Kevin"),
                 new Player("", "Jasmin"), false);
-        pair.setPosition(1);
         db.add(pair);
 
         pair = new Pair(new Player("", "Kate"),
                 new Player("", "Nick"), false);
-        pair.setPosition(2);
         db.add(pair);
 
         pair = new Pair(new Player("", "Jim"),
                 new Player("", "Ryan"), false);
-        pair.setPosition(3);
         db.add(pair);
 
         pair = new Pair(new Player("", "Ian"),
                 new Player("", "Camden"), false);
-        pair.setPosition(4);
         db.add(pair);
 
         pair = new Pair(new Player("", "Tony"),
                 new Player("", "Angelica"), false);
-        pair.setPosition(5);
         db.add(pair);
 
         pair = new Pair(new Player("", "Amy"),
                 new Player("", "Maria"), false);
-        pair.setPosition(6);
         db.add(pair);
 
         pair = new Pair(new Player("", "Anastasia"),
                 new Player("", "Victoria"), false);
-        pair.setPosition(7);
         db.add(pair);
 
         pair = new Pair(new Player("", "Richard"),
                 new Player("", "Robin"), false);
-        pair.setPosition(8);
         db.add(pair);
 
         pair = new Pair(new Player("", "David"),
                 new Player("", "Bob"), false);
-        pair.setPosition(9);
         db.add(pair);
 
         return db;

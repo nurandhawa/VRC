@@ -20,7 +20,15 @@ import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
-import static spark.Spark.*;
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.secure;
+import static spark.Spark.staticFiles;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -52,7 +60,7 @@ public class AppController {
     public AppController(DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
-        AccountManager accountManager = new AccountManager(dbManager);
+
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
@@ -154,12 +162,12 @@ public class AppController {
             }
 
             List<Player> newPlayers = new ArrayList<>();
-
+            // TODO: Make use of the database better here
             for (int i = 0; i < MAX_SIZE; i++) {
-                if (playerData.get(i).getExistingId() == null) {
+                if (playerData.get(i).getID() == 0) {
                     newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName()));
                 } else {
-                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getExistingId()));
+                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getID()));
                 }
             }
 
@@ -299,7 +307,7 @@ public class AppController {
             String errMessage = "";
             String sessionToken = "";
             try {
-                sessionToken = accountManager.login(email, pwd);
+                sessionToken = AccountManager.login(email, pwd);
                 successResponse.addProperty("sessionToken", sessionToken);
                 return gson.toJson(successResponse);
             } catch (InternalHashingException e) {
@@ -324,7 +332,7 @@ public class AppController {
 
             String message = "";
             try {
-                accountManager.register(email, pwd);
+                AccountManager.register(email, pwd);
                 return getOkResponse("Account registered");
             } catch (InternalHashingException e) {
                 message = e.getMessage();

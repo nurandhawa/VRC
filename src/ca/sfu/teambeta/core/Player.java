@@ -17,9 +17,6 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
-    //need this for extracting Json data to add an existing player.
-    @Expose
-    private Integer existingId;
 
     public Player() {
     }
@@ -59,13 +56,5 @@ public class Player extends Persistable {
     public int hashCode() {
         return 23 * getFirstName().hashCode() *
                 getLastName().hashCode();
-    }
-
-    public Integer getExistingId() {
-        return existingId;
-    }
-
-    public void setExistingId(Integer existingId) {
-        this.existingId = existingId;
     }
 }

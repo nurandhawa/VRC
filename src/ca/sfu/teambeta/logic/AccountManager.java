@@ -3,17 +3,39 @@ package ca.sfu.teambeta.logic;
 import ca.sfu.teambeta.core.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
+
 import ca.sfu.teambeta.persistence.DBManager;
 
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+
 /**
- * AccountManager handles: - User Login - User Registration <p> <p> Coming Soon: - Password Reset --
- * Via Email -- Via Text Message (Pass back last 2 digits of phone) -- Via Security Questions (Hash
- * answer) <p> - Logout (If needed: Right now front-end presumed to handle deletion of cookie, thus
- * act as a logout) - Anonymous Users <p> <p> TODO: - Reset password via security question. Passback
- * list of questions. - Caching user data in memory for increased security and faster authentication
- * (when possible)
+ * AccountManager handles:
+ * - User Login
+ * - User Registration
+ * <p>
+ * <p>
+ * Coming Soon:
+ * - Password Reset
+ * -- Via Email
+ * -- Via Text Message (Pass back last 2 digits of phone)
+ * -- Via Security Questions (Hash answer)
+ * <p>
+ * - Logout (If needed: Right now front-end presumed to handle deletion of cookie, thus act as a logout)
+ * - Anonymous Users
+ * <p>
+ * <p>
+ * TODO:
+ * - Reset password via security question. Passback list of questions.
+ * - Caching user data in memory for increased security and faster authentication (when possible)
  */
 
 public class AccountManager {
@@ -24,14 +46,10 @@ public class AccountManager {
 
     private static final String DEMO_EMAIL = "admin@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
-    private DBManager dbManager;
-
-    public AccountManager(DBManager dbManager) {
-        this.dbManager = dbManager;
-    }
+    private static ArrayList<User> dummyUsers = new ArrayList<User>();
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
+    public static String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
 
@@ -48,7 +66,7 @@ public class AccountManager {
         UserSessionManager.deleteSession(sessionId);
     }
 
-    public void register(String email, String password) throws InternalHashingException,
+    public static void register(String email, String password) throws InternalHashingException,
             InvalidUserInputException, AccountRegistrationException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
@@ -73,7 +91,7 @@ public class AccountManager {
 
 
     // MARK: - Helper Methods
-    private User authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
+    private static User authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
         // Get the user from the database
         User user = getUserFromDB(email);
 
@@ -98,27 +116,32 @@ public class AccountManager {
 
 
     // MARK: - Database Methods
-    private User getUserFromDB(String email) throws NoSuchUserException {
+    private static User getUserFromDB(String email) throws NoSuchUserException {
         // Note: Login should use a read-only database user.
-        User user = dbManager.getUser(email);
-        if (user != null) {
-            return user;
+
+        for (User user : dummyUsers) {
+            if (user.getEmail().equals(email)) {
+                return user;
+            }
         }
 
         throw new NoSuchUserException("The user '" + email + "' does not exist");
     }
 
-    private void saveNewUser(User newUser) throws AccountRegistrationException {
-        try {
-            dbManager.addNewUser(newUser);
-        } catch (Exception accountExc) {
-            throw accountExc;
+    private static void saveNewUser(User newUser) throws AccountRegistrationException {
+        for (User user : dummyUsers) {
+            if (user.getEmail().equals(newUser.getEmail())) {
+                throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
+            }
         }
+
+        dummyUsers.add(newUser);
+
     }
 
 
     // MARK: - Miscellaneous Methods
-    private void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
+    private static void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
         boolean invalidPhoneNumberLength = phoneNumber.length() != PHONE_NUMBER_LENGTH;
         boolean phoneNumberNonNumeric = !StringUtils.isNumeric(phoneNumber);
 
@@ -151,7 +174,7 @@ public class AccountManager {
 
     }
 
-    private void validatePasswordFormat(String password) throws InvalidUserInputException {
+    private static void validatePasswordFormat(String password) throws InvalidUserInputException {
         // Check that the input is valid
         boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
         boolean passwordTooShort = password.length() < MIN_PASSWORD_LENGTH;
@@ -168,7 +191,7 @@ public class AccountManager {
 
 
     // MARK: - Main Function (Quick and dirty testing for now - will be refactored into tests)
-    public void main(String[] args) {
+    public static void main(String[] args) {
         // Register a user
         try {
             register(DEMO_EMAIL, DEMO_PASSWORD);
