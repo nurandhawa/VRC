@@ -57,7 +57,6 @@ public class Ladder extends Persistable {
 
     public void insertAtIndex(int index, Pair pair) {
         pairs.add(index, pair);
-        pairs.get(index).setPosition(index + 1);
     }
 
     public void insertAtEnd(Pair pair) {
