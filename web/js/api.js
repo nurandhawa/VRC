@@ -235,8 +235,8 @@ var API = (function() {
             method: "POST",
             url: SERVER_URL + "/login",
             data: {
-                "Email": email,
-                "Password": password
+                "email": email,
+                "password": password
             }
         })
         .done(function (response) {
@@ -260,8 +260,8 @@ var API = (function() {
             method: "POST",
             url: SERVER_URL + "/login/new",
             data: {
-                "Email": email,
-                "Password": password
+                "email": email,
+                "password": password
             }
         })
         .done(function (response) {
