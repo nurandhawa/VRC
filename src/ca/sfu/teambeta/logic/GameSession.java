@@ -94,7 +94,7 @@ public class GameSession extends Persistable {
     }
 
     public Player getAlreadyActivePlayer(Pair pair) throws Exception {
-        if(ladder.getPairs().contains(pair)) {
+        if (ladder.getPairs().contains(pair)) {
             List<Player> team = pair.getPlayers();
             Player first = team.get(0);
             Player second = team.get(1);

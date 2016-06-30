@@ -3,8 +3,8 @@ package ca.sfu.teambeta.core;
 /**
  * The User class holds the notion of a database-user.
  *
- * A Player must hold a 1-to-1 relationship with a User; however the inverse is not true,
- * as a Administrator may not be a Player.
+ * A Player must hold a 1-to-1 relationship with a User; however the inverse is not true, as a
+ * Administrator may not be a Player.
  */
 public class User {
     private String email;

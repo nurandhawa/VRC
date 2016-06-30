@@ -230,7 +230,7 @@ public class DBManager {
         }
     }
 
-    public void inputMatchResults(int pairId, String[][] results) throws Exception{
+    public void inputMatchResults(int pairId, String[][] results) throws Exception {
         GameSession gameSession = getGameSessionLatest();
 
         int rows = results.length;
@@ -311,7 +311,7 @@ public class DBManager {
         return getPairFromID(id) != null;
     }
 
-    public void movePair(int pairId, int newPosition){
+    public void movePair(int pairId, int newPosition) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
 
@@ -326,7 +326,7 @@ public class DBManager {
         Player player;
         try {
             player = gameSession.getAlreadyActivePlayer(pair);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
         return player;
@@ -348,7 +348,7 @@ public class DBManager {
         submitGameSession(gameSession);
     }
 
-    public boolean isActivePair(int pairId){
+    public boolean isActivePair(int pairId) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
 
@@ -410,7 +410,7 @@ public class DBManager {
         }
     }
 
-    private GameSession getGameSession(int gameSessionId){
+    private GameSession getGameSession(int gameSessionId) {
         Transaction tx = null;
         GameSession gameSession = null;
         try {
@@ -425,7 +425,7 @@ public class DBManager {
         return gameSession;
     }
 
-    private GameSession getGameSessionLatest(){
+    private GameSession getGameSessionLatest() {
         Transaction tx = null;
         GameSession gameSession = null;
         try {
@@ -442,7 +442,7 @@ public class DBManager {
         return gameSession;
     }
 
-    private void submitGameSession(GameSession newSession){
+    private void submitGameSession(GameSession newSession) {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
@@ -466,10 +466,10 @@ public class DBManager {
         return user;
     }
 
-    public void addNewUser(User user) throws  AccountRegistrationException {
+    public void addNewUser(User user) throws AccountRegistrationException {
         String email = user.getEmail();
         boolean uniqueEmail = getUser(email) == null;
-        if (!uniqueEmail){
+        if (!uniqueEmail) {
             throw new AccountRegistrationException("The email '" + email + "' is already in use");
         }
 
@@ -483,7 +483,7 @@ public class DBManager {
         }
     }
 
-    public void addNewPlayer(Player player) throws AccountRegistrationException{
+    public void addNewPlayer(Player player) throws AccountRegistrationException {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();

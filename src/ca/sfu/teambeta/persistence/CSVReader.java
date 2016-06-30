@@ -29,8 +29,8 @@ public class CSVReader {
                 String firstName = pairInfo[1];
                 String id = pairInfo[2];
 
-                if (lastName != "*" && firstName != "*" && id != "*") {
-                    Player player = new Player(lastName, firstName, id);
+                if (lastName.equals("*") && firstName.equals("*") && id.equals("*")) {
+                    Player player = new Player(lastName, firstName);
                     players.add(player);
                 }
             }

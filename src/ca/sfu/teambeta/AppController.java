@@ -1,8 +1,5 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.logic.AccountManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -14,6 +11,12 @@ import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.delete;
@@ -139,8 +142,7 @@ public class AppController {
 
             for (int i = 0; i < MAX_SIZE; i++) {
                 if (playerData.get(i).getExistingId() == null) {
-                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName(),
-                            playerData.get(i).getPhoneNumber()));
+                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName()));
                 } else {
                     newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getExistingId()));
                 }
@@ -197,11 +199,11 @@ public class AppController {
 
             String penaltyType = request.queryParams(PENALTY);
 
-            if (penaltyType == LATE) {
+            if (penaltyType.equals(LATE)) {
                 dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.LATE);
-            } else if (penaltyType == MISS) {
+            } else if (penaltyType.equals(MISS)) {
                 dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.MISSING);
-            } else if (penaltyType == ACCIDENT) {
+            } else if (penaltyType.equals(ACCIDENT)) {
                 dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.ACCIDENT);
             } else {
                 response.status(BAD_REQUEST);

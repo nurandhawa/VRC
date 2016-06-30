@@ -1,14 +1,9 @@
 package ca.sfu.teambeta.core;
 
-import java.util.Calendar;
-
 /**
- * The Session class holds all the related information on a
- * logged in user's session.
+ * The Session class holds all the related information on a logged in user's session.
  *
- * TODO
- * - Change expiryDate to use a Calendar object
- *
+ * TODO - Change expiryDate to use a Calendar object
  */
 public class Session {
     private String token;

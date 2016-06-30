@@ -4,6 +4,7 @@ package ca.sfu.teambeta.core;
 //Ladder should return the size of itself
 
 import com.google.gson.annotations.Expose;
+
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
