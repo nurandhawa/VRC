@@ -79,11 +79,24 @@ public class User extends Persistable {
 
     @Override
     public boolean equals(Object o) {
-        return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        User user = (User) o;
+
+        if (!email.equals(user.email)) return false;
+        if (!firstName.equals(user.firstName)) return false;
+        if (!lastName.equals(user.lastName)) return false;
+        return phoneNumber != null ? phoneNumber.equals(user.phoneNumber) : user.phoneNumber == null;
+
     }
 
     @Override
     public int hashCode() {
-        return 0;
+        int result = email.hashCode();
+        result = 31 * result + firstName.hashCode();
+        result = 31 * result + lastName.hashCode();
+        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
+        return result;
     }
 }
