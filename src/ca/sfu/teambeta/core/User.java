@@ -1,18 +1,27 @@
 package ca.sfu.teambeta.core;
 
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+
+import ca.sfu.teambeta.persistence.Persistable;
+
 /**
  * The User class holds the notion of a database-user.
  *
  * A Player must hold a 1-to-1 relationship with a User; however the inverse is not true, as a
  * Administrator may not be a Player.
  */
-public class User {
+
+@Entity
+public class User extends Persistable {
     private String email;
     private String passwordHash;
     private String firstName = "";
     private String lastName = "";
     private String phoneNumber = "";
 
+    @OneToOne
+    private Player associatedPlayer = null;
 
     // MARK: - Constructors
     public User(String email, String passwordHash) {
@@ -58,4 +67,21 @@ public class User {
         return phoneNumber;
     }
 
+    public void associatePlayer(Player player) {
+        this.associatedPlayer = player;
+    }
+
+    public void unassociatePlayer() {
+        this.associatedPlayer = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

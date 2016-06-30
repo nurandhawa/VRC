@@ -3,10 +3,7 @@ package ca.sfu.teambeta.core;
 
 import com.google.gson.annotations.Expose;
 
-import com.sun.istack.internal.Nullable;
-
 import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 
 import ca.sfu.teambeta.persistence.Persistable;
 
@@ -20,10 +17,6 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
-
-    @OneToOne
-    @Nullable
-    private User userAccount = null;
 
     public Player() {
     }
