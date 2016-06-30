@@ -1,7 +1,7 @@
 var API = (function() {
     "use strict";
 
-    var SERVER_URL = "http://localhost:8000/api";
+    var SERVER_URL = "https://localhost:8000/api";
     var LADDER_ENDPOINT = "/ladder";
     var STATUS_PARAM = "?newStatus=";
     var POSITION_PARAM = "?position=";
@@ -187,11 +187,11 @@ var API = (function() {
         $.ajax({
             method: "PATCH",
             url: SERVER_URL + "/matches/" + matchId,
-            data: {
+            data: JSON.stringify({
                 results: [
                     //TODO: determine how to send results to back-end (document currently says array of ints?)
                 ]
-            }
+            })
         })
         .done(function (response) {
             if (doneCallback) {
@@ -234,10 +234,10 @@ var API = (function() {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/login",
-            data: {
+            data: JSON.stringify({
                 "email": email,
                 "password": password
-            }
+            })
         })
         .done(function (response) {
             if (doneCallback) {
@@ -259,10 +259,10 @@ var API = (function() {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/login/new",
-            data: {
+            data: JSON.stringify({
                 "email": email,
                 "password": password
-            }
+            })
         })
         .done(function (response) {
             if (doneCallback) {
