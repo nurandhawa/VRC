@@ -36,6 +36,9 @@ public class AppController {
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
 
+    private static final String KEYSTORE_LOCATION = "testkeystore.jks";
+    private static final String KEYSTORE_PASSWORD = "password";
+
     private static Gson gson;
 
     public AppController(LadderManager ladderManager, GameManager gameManager) {
@@ -43,6 +46,8 @@ public class AppController {
         staticFiles.location(".");
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+        secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
@@ -244,32 +249,25 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
-            boolean isErrorResponse = false;
-            String message = null;
-            String sessionID = null;
 
+            JsonObject successResponse = new JsonObject();
+            String errMessage = "";
+            String sessionID = "";
             try {
                 sessionID = AccountManager.login(email, pwd);
-                message = "sessionID: " + sessionID;
+                successResponse.addProperty("sessionID", sessionID);
+                return gson.toJson(successResponse);
             } catch (InternalHashingException e) {
-                message = e.getMessage();
-                isErrorResponse = true;
+                errMessage = e.getMessage();
             } catch (NoSuchUserException e) {
-                message = e.getMessage();
-                isErrorResponse = true;
+                errMessage = e.getMessage();
             } catch (InvalidUserInputException e) {
-                message = e.getMessage();
-                isErrorResponse = true;
+                errMessage = e.getMessage();
             } catch (InvalidCredentialsException e) {
-                message = e.getMessage();
-                isErrorResponse = true;
+                errMessage = e.getMessage();
             }
 
-            if (isErrorResponse) {
-                return getErrResponse(message);
-            }
-
-            return getOkResponse(message);
+            return getErrResponse(errMessage);
         });
 
         //registers a new user
@@ -278,27 +276,20 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
-            boolean isErrorResponse = false;
-            String message = null;
 
+            String message = "";
             try {
                 AccountManager.register(email, pwd);
+                return getOkResponse("Account registered");
             } catch (InternalHashingException e) {
                 message = e.getMessage();
-                isErrorResponse = true;
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();
-                isErrorResponse = true;
             } catch (InvalidUserInputException e) {
                 message = e.getMessage();
-                isErrorResponse = true;
             }
 
-            if (isErrorResponse) {
-                return getErrResponse(message);
-            }
-
-            return getOkResponse("");
+            return getErrResponse(message);
         });
 
     }
