@@ -58,7 +58,8 @@ public class AccountManager {
 
     }
 
-    public static void register(String email, String password) throws InternalHashingException, InvalidUserInputException, AccountRegistrationException {
+    public static void register(String email, String password) throws InternalHashingException,
+                                        InvalidUserInputException, AccountRegistrationException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
 
