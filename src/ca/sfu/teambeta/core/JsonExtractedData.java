@@ -15,6 +15,10 @@ public class JsonExtractedData {
     private int position;
     @Expose
     public String[][] results;
+    @Expose
+    private String email;
+    @Expose
+    private String password;
 
 
     public JsonExtractedData() {
@@ -33,4 +37,19 @@ public class JsonExtractedData {
         this.position = position;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

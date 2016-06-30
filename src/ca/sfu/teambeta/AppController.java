@@ -1,5 +1,8 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.logic.AccountManager;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -232,11 +235,11 @@ public class AppController {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
 
-            try{
+            try {
                 dbManager.inputMatchResults(id, extractedData.results.clone());
                 response.status(OK);
                 return getOkResponse("");
-            } catch (Exception e){
+            } catch (Exception e) {
                 response.body("Invalid result format.");
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid result format.");
@@ -266,6 +269,69 @@ public class AppController {
             dbManager.setPairInactive(id);
 
             response.status(OK);
+            return getOkResponse("");
+        });
+
+        //logging in an existing users
+        post("/api/login", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+            boolean isErrorResponse = false;
+            String message = null;
+            String sessionID = null;
+
+            try {
+                sessionID = AccountManager.login(email, pwd);
+                message = "sessionID: " + sessionID;
+            } catch (InternalHashingException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            } catch (NoSuchUserException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            } catch (InvalidUserInputException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            } catch (InvalidCredentialsException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            }
+
+            if (isErrorResponse) {
+                return getErrResponse(message);
+            }
+
+            return getOkResponse(message);
+        });
+
+        //registers a new user
+        post("/api/login/new", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+            boolean isErrorResponse = false;
+            String message = null;
+
+            try {
+                AccountManager.register(email, pwd);
+            } catch (InternalHashingException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            } catch (AccountRegistrationException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            } catch (InvalidUserInputException e) {
+                message = e.getMessage();
+                isErrorResponse = true;
+            }
+
+            if (isErrorResponse) {
+                return getErrResponse(message);
+            }
+
             return getOkResponse("");
         });
 

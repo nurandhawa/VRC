@@ -2,3 +2,6 @@ Gradle task to fetch dependencies from https://stackoverflow.com/questions/21814
 Found method to improve CI build times from here https://stackoverflow.com/questions/33940384/gitlab-8-2-1-how-to-use-cache-in-gitlab-ci-yml/35478988#35478988
 Found method for loading Node onto Docker image from https://github.com/nodejs/docker-node/blob/466e418a117f33c1cd550414ae1b39423319a265/6.2/Dockerfile
 Found way to fetch object with max ID from https://stackoverflow.com/questions/23477258/issue-with-get-max-id-in-criteria
+Used a wrapper library for password hashing from: https://github.com/ghostfreak3000/password-hash
+Found a regex to check for valid email addresses from: http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/
+Found method to generate random cryptographically strong session id: http://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string
