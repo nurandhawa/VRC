@@ -49,9 +49,9 @@ public class Scorecard extends Persistable {
     }
 
     public static void main(String[] args) {
-        Pair p1 = new Pair(new Player("A", "A", ""), new Player("B", "B", ""));
-        Pair p2 = new Pair(new Player("C", "C", ""), new Player("D", "D", ""));
-        Pair p3 = new Pair(new Player("E", "E", ""), new Player("F", "F", ""));
+        Pair p1 = new Pair(new Player("A", "A"), new Player("B", "B"));
+        Pair p2 = new Pair(new Player("C", "C"), new Player("D", "D"));
+        Pair p3 = new Pair(new Player("E", "E"), new Player("F", "F"));
         List<Pair> pairs = Arrays.asList(p1, p2, p3);
         Scorecard sc = new Scorecard(pairs, null);
 

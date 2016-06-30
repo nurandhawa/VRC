@@ -18,12 +18,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.persistence.Persistable;
 
-/**
- * Created by Gordon Shieh on 23/06/16.
- */
 @Entity(name = "session")
 public class GameSession extends Persistable {
     @OneToOne(cascade = CascadeType.ALL)
