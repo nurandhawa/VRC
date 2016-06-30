@@ -248,7 +248,7 @@ public class AppController {
             String message = null;
             String sessionID = null;
 
-            try{
+            try {
                 sessionID = AccountManager.login(email, pwd);
                 message = "sessionID: " + sessionID;
             } catch (InternalHashingException e) {
@@ -265,7 +265,7 @@ public class AppController {
                 isErrorResponse = true;
             }
 
-            if(isErrorResponse) {
+            if (isErrorResponse) {
                 return getErrResponse(message);
             }
 
@@ -281,7 +281,7 @@ public class AppController {
             boolean isErrorResponse = false;
             String message = null;
 
-            try{
+            try {
                 AccountManager.register(email, pwd);
             } catch (InternalHashingException e) {
                 message = e.getMessage();
@@ -294,7 +294,7 @@ public class AppController {
                 isErrorResponse = true;
             }
 
-            if(isErrorResponse) {
+            if (isErrorResponse) {
                 return getErrResponse(message);
             }
 

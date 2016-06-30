@@ -11,22 +11,21 @@ import java.util.ArrayList;
  * AccountManager handles:
  * - User Login
  * - User Registration
- *
- *
+ * <p>
+ * <p>
  * Coming Soon:
  * - Password Reset
  * -- Via Email
  * -- Via Text Message (Pass back last 2 digits of phone)
  * -- Via Security Questions (Hash answer)
- *
+ * <p>
  * - Logout (If needed: Right now front-end presumed to handle deletion of cookie, thus act as a logout)
  * - Anonymous Users
- *
- *
- *  TODO:
- *  - Reset password via security question. Passback list of questions.
- *  - Caching user data in memory for increased security and faster authentication (when possible)
- *
+ * <p>
+ * <p>
+ * TODO:
+ * - Reset password via security question. Passback list of questions.
+ * - Caching user data in memory for increased security and faster authentication (when possible)
  */
 
 public class AccountManager {
@@ -59,7 +58,7 @@ public class AccountManager {
     }
 
     public static void register(String email, String password) throws InternalHashingException,
-                                        InvalidUserInputException, AccountRegistrationException {
+            InvalidUserInputException, AccountRegistrationException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
 

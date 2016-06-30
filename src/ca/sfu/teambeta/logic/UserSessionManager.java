@@ -13,15 +13,14 @@ import java.util.Hashtable;
  * UserSessionManager handles:
  * - Creating a new session
  * - Authenticating an existing session token
- *
- *
+ * <p>
+ * <p>
  * Coming Soon:
  * - Backing session's up to database
- *
- *
+ * <p>
+ * <p>
  * TODO:
  * - Have a UDID as the key to our 'sessions' dictionary so that the user may login on multiple devices
- *
  */
 
 public class UserSessionManager {
@@ -84,8 +83,8 @@ public class UserSessionManager {
 
     private static String generateRandomToken() {
         // See citation.txt for more information
-        int MAX_BIT_LENGTH = 130;
-        int ENCODING_BASE = 32;
+        final int MAX_BIT_LENGTH = 130;
+        final int ENCODING_BASE = 32;
 
         SecureRandom random = new SecureRandom();
         return new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
