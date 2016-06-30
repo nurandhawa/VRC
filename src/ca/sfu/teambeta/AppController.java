@@ -1,11 +1,11 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.logic.UserSessionManager;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.JsonExtractedData;
@@ -56,6 +56,7 @@ public class AppController {
     private static final String KEYSTORE_PASSWORD = "password";
 
     private static Gson gson;
+    private final String SESSION_TOKEN_KEY = "sessionToken";
 
     public AppController(DBManager dbManager) {
         port(8000);
@@ -70,7 +71,7 @@ public class AppController {
             String endpoint = request.params("endpoint");
             if (!endpoint.equals("login")) {
 
-                String sessionToken = request.headers("sessionToken");
+                String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
                 if (!authenticated) {
                     halt(getNotAuthenticatedResponse("You must be logged in view this page."));
@@ -308,7 +309,7 @@ public class AppController {
             String sessionToken = "";
             try {
                 sessionToken = AccountManager.login(email, pwd);
-                successResponse.addProperty("sessionToken", sessionToken);
+                successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
             } catch (InternalHashingException e) {
                 errMessage = e.getMessage();
