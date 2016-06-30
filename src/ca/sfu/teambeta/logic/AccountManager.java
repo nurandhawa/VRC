@@ -1,15 +1,11 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-
-import ca.sfu.teambeta.persistence.DBManager;
-
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
@@ -62,7 +58,7 @@ public class AccountManager {
         return sessionId;
     }
 
-    public void logout(String sessionId) throws NoSuchSessionException {
+    public static void logout(String sessionId) throws NoSuchSessionException {
         UserSessionManager.deleteSession(sessionId);
     }
 
@@ -138,7 +134,6 @@ public class AccountManager {
         dummyUsers.add(newUser);
 
     }
-
 
     // MARK: - Miscellaneous Methods
     private static void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
