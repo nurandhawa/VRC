@@ -1,14 +1,14 @@
 CMPT 373 Project Team Beta
 ================
 Team Members:
-        Alex Land
-        Constantin Koval
-        David Li
-        Gordon Shieh
-        Jasdeep Jassal
-        NoorUllah Randhawa
-        Raymond Huang
-        Samuel Kim
+        Alex Land,
+        Constantin Koval,
+        David Li,
+        Gordon Shieh,
+        Jasdeep Jassal,
+        NoorUllah Randhawa,
+        Raymond Huang,
+        Samuel Kim,
 
 PROJECT INTRO:
 
@@ -40,6 +40,10 @@ PROJECT INTRO:
                     - Removing a player from a match
                     - Apply penalties to a player
 
+    Each player would have their own accounts where they can login and see the ladder and upcoming matches for the
+    week. This would need them to enter their email and password at the time of registration and then that can be
+    used for logging in. Users would be able to change their playing status to specify if they would be playing
+    for the upcoming week.
 
 
 
