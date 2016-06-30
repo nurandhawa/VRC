@@ -230,6 +230,7 @@ public class DBManager {
         }
     }
 
+    // TODO: This method definitely does not work
     public void inputMatchResults(int pairId, String[][] results) throws Exception {
         GameSession gameSession = getGameSessionLatest();
 
@@ -237,7 +238,7 @@ public class DBManager {
         int cols = results[0].length;
 
         Pair pair = getPairFromID(pairId);
-        int index = pair.getPosition() - 1;
+        int index = gameSession.getActivePairs().indexOf(pair);
 
         List<Scorecard> scorecards = gameSession.getScorecards();
         Scorecard group = scorecards.get(index);
