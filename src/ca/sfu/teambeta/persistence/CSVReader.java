@@ -1,12 +1,12 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.Player;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import ca.sfu.teambeta.core.Player;
 
 /**
  * Created by constantin on 29/06/16.
@@ -14,7 +14,7 @@ import java.util.List;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static List<Player> getInformationAboutPlayers() throws Exception{
+    public static List<Player> getInformationAboutPlayers() throws Exception {
         List<Player> players;
         try (com.opencsv.CSVReader reader = new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
             List<String[]> entries = reader.readAll();
@@ -29,7 +29,7 @@ public class CSVReader {
                 String firstName = pairInfo[1];
                 String id = pairInfo[2];
 
-                if(lastName != "*" && firstName != "*" && id != "*") {
+                if (lastName != "*" && firstName != "*" && id != "*") {
                     Player player = new Player(lastName, firstName, id);
                     players.add(player);
                 }

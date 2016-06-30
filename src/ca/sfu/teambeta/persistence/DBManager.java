@@ -1,10 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import com.google.gson.Gson;
-
-import com.opencsv.CSVReader;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -15,22 +11,23 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Game;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
-
-import javax.jws.soap.SOAPBinding;
 
 /**
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
-    private static final String DEFAULT_FILENAME = "ladder.csv";
     private static String TESTING_ENV_VAR = "TESTING";
     private SessionFactory factory;
     private Session session;
@@ -132,32 +129,6 @@ public class DBManager {
         Ladder lad = dbMan.getLatestLadder();
 
         System.out.println(lad);
-    }
-
-    public static List<Player> getInformationAboutPlayers() throws Exception{
-        List<Player> players;
-        try (CSVReader reader = new CSVReader(new FileReader(DEFAULT_FILENAME))) {
-            List<String[]> entries = reader.readAll();
-            Iterator<String[]> iterator = entries.iterator();
-            players = new ArrayList<>();
-
-            String[] pairInfo;
-            while (iterator.hasNext()) {
-                pairInfo = iterator.next();
-
-                String lastName = pairInfo[0];
-                String firstName = pairInfo[1];
-                String id = pairInfo[2];
-
-                Player player = new Player(lastName, firstName, id);
-                players.add(player);
-            }
-            reader.close();
-        } catch (IOException e) {
-            throw new Exception("Error reading file " + DEFAULT_FILENAME);
-        }
-
-        return players;
     }
 
     public int persistEntity(Persistable entity) {
