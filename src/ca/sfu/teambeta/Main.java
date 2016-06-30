@@ -1,17 +1,5 @@
 package ca.sfu.teambeta;
 
-import org.hibernate.SessionFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.logic.GameManager;
-import ca.sfu.teambeta.persistence.DBManager;
-
 
 class Main {
     public static void main(String[] args) {

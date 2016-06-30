@@ -1,6 +1,6 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Session;
+import ca.sfu.teambeta.core.SessionInformation;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 
@@ -13,6 +13,7 @@ import java.util.Hashtable;
  * UserSessionManager handles:
  * - Creating a new session
  * - Authenticating an existing session token
+ * - Deleting a session
  * <p>
  * <p>
  * Coming Soon:
@@ -24,112 +25,125 @@ import java.util.Hashtable;
  */
 
 public class UserSessionManager {
-    private static Dictionary<String, Session> sessions = new Hashtable<>();
-    private static final String DEMO_SESSION_ID = "T3STS355IONID";
+    private static Dictionary<String, SessionInformation> sessions = new Hashtable<>();
+    //private static final String DEMO_SESSION_ID = "T3STS355IONID";
 
 
-    // MARK: - The Core Session Methods
+    // MARK: - The Core SessionInformation Methods
     public static String createNewSession(User user) {
-        // Create a session, if a session with the email already exists, it will be overridden
-        String sessionID = generateRandomToken();
+        String sessionId = generateRandomSessionID();
+        String userEmail = user.getEmail();
         String expiryDate = "datePlaceholder";
 
-        Session userSession = new Session(sessionID, expiryDate);
+        SessionInformation userSessionInformation = new SessionInformation(userEmail, expiryDate);
 
-        String userEmail = user.getEmail();
+        sessions.put(sessionId, userSessionInformation);
 
-        sessions.put(userEmail, userSession);
-
-        return sessionID;
+        return sessionId;
 
     }
 
-    public static void deleteSession(String email, String token) throws NoSuchSessionException {
-        Session session = getUserSession(email);
-
-        boolean tokensMatch = session.getToken().equals(token);
-        if (tokensMatch) {
-            sessions.remove(email);
+    public static void deleteSession(String sessionId) throws NoSuchSessionException {
+        if (sessions.get(sessionId) != null) {
+            sessions.remove(sessionId);
         } else {
-            throw new NoSuchSessionException("Invalid token");
+            throw new NoSuchSessionException("Invalid SessionID");
         }
 
     }
 
-    public static boolean authenticateToken(String email, String token) throws NoSuchSessionException {
-        Session session = getUserSession(email);
-
-        // TODO: Check expiry date
-        boolean tokensMatch = session.getToken().equals(token);
-        if (tokensMatch) {
-            return true;
-        } else {
+    public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
+        if (sessionId == null || sessionId == "") {
             return false;
         }
 
+        SessionInformation sessionInformation = getSessionInformation(sessionId);
+
+        if (sessionInformation.isSessionExpired() == false) {
+            return true;
+        } else {
+            deleteSession(sessionId);
+            return false;
+        }
     }
 
 
     // MARK: Helper Methods
-    private static Session getUserSession(String email) throws NoSuchSessionException {
-        Session session = sessions.get(email);
+    private static SessionInformation getSessionInformation(String sessionId) throws NoSuchSessionException {
+        SessionInformation sessionInformation = sessions.get(sessionId);
 
-        if (session == null) {
-            throw new NoSuchSessionException("No session exists for user: " + email);
+        if (sessionInformation == null) {
+            throw new NoSuchSessionException("Invalid SessionID");
         } else {
-            return session;
+            return sessionInformation;
         }
     }
 
-    private static String generateRandomToken() {
+    private static String generateRandomSessionID() {
         // See citation.txt for more information
         final int MAX_BIT_LENGTH = 130;
         final int ENCODING_BASE = 32;
 
         SecureRandom random = new SecureRandom();
-        return new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+        String sessionId = "";
+
+        sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+
+        // Make sure we don't have two of the same sessionId's
+        while (sessions.get(sessionId) != null) {
+            sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+        }
+
+        return sessionId;
+    }
+
+
+    // MARK: Misc Methods
+    public static int numUsersLoggedIn() {
+        return sessions.size();
     }
 
 
     // MARK: Main Function (Quick and dirty testing for now - will be refactored into tests)
+    /*
     public static void main(String[] args) {
         // Creating a session
         User testUser1 = new User("admin@vrc.ca", "pwHash1");
         User testUser2 = new User("john@vrc.ca", "pwHash2");
 
-        createNewSession(testUser1);
-        createNewSession(testUser1); // Will update previous entry
-        createNewSession(testUser2);
+        String user1SessionID = createNewSession(testUser1);
+        String user2SessionID = createNewSession(testUser2);
 
-        System.out.println(sessions.get("admin@vrc.ca").getToken());
-        System.out.println("Number of sessions: " + sessions.size()); // Will be 2
+        System.out.println(user1SessionID);
+        System.out.println(user2SessionID);
+
+        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 2
 
 
-        // Authenticating a session
-        boolean tokenStatus;
+        // Authenticating SessionID's
+        boolean sessionIDStatus;
+
         try {
-            tokenStatus = authenticateToken("admin@vrc.ca", DEMO_SESSION_ID);
+            sessionIDStatus = authenticateSession(user1SessionID);
         } catch (NoSuchSessionException e) {
             System.out.println(e.getMessage());
             return;
         }
 
-        System.out.println("Session exists?: " + tokenStatus);
+        System.out.println(sessionIDStatus);
 
 
         // Deleting a session
         try {
-            deleteSession("admin@vrc.ca", DEMO_SESSION_ID);
+            UserSessionManager.deleteSession(user1SessionID);
         } catch (NoSuchSessionException e) {
             System.out.println(e.getMessage());
             return;
         }
 
-        System.out.println("Number of sessions: " + sessions.size()); // Will be 1
-
-        System.out.println(generateRandomToken());
-
+        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 1 now
 
     }
+    */
 
 }

@@ -1,14 +1,10 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.persistence.DBManager;
 
 /**
@@ -43,13 +39,13 @@ public class AccountManager {
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        String sessionID = UserSessionManager.createNewSession(user);
+        String sessionId = UserSessionManager.createNewSession(user);
 
-        return sessionID;
+        return sessionId;
     }
 
-    public void logout(String email) {
-
+    public void logout(String sessionId) throws NoSuchSessionException {
+        UserSessionManager.deleteSession(sessionId);
     }
 
     public void register(String email, String password) throws InternalHashingException,
@@ -136,7 +132,7 @@ public class AccountManager {
 
     }
 
-    private void validateEmailFormat(String email) throws InvalidUserInputException {
+    public static void validateEmailFormat(String email) throws InvalidUserInputException {
         // Check that the input is valid
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
@@ -207,6 +203,6 @@ public class AccountManager {
             return;
         }
 
-        System.out.println("User Session ID: " + userSessionId);
+        System.out.println("User SessionInformation ID: " + userSessionId);
     }
 }
