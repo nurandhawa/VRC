@@ -48,13 +48,13 @@ public class AccountManager {
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        String sessionID = UserSessionManager.createNewSession(user);
+        String sessionId = UserSessionManager.createNewSession(user);
 
-        return sessionID;
+        return sessionId;
     }
 
-    public static void logout(String sessionID) throws NoSuchSessionException {
-        UserSessionManager.deleteSession(sessionID);
+    public static void logout(String sessionId) throws NoSuchSessionException {
+        UserSessionManager.deleteSession(sessionId);
     }
 
     public static void register(String email, String password) throws InternalHashingException,

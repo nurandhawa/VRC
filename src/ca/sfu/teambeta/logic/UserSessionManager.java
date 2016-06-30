@@ -31,46 +31,46 @@ public class UserSessionManager {
 
     // MARK: - The Core SessionInformation Methods
     public static String createNewSession(User user) {
-        String sessionID = generateRandomSessionID();
+        String sessionId = generateRandomSessionID();
         String userEmail = user.getEmail();
         String expiryDate = "datePlaceholder";
 
         SessionInformation userSessionInformation = new SessionInformation(userEmail, expiryDate);
 
-        sessions.put(sessionID, userSessionInformation);
+        sessions.put(sessionId, userSessionInformation);
 
-        return sessionID;
+        return sessionId;
 
     }
 
-    public static void deleteSession(String sessionID) throws NoSuchSessionException {
-        if (sessions.get(sessionID) != null) {
-            sessions.remove(sessionID);
+    public static void deleteSession(String sessionId) throws NoSuchSessionException {
+        if (sessions.get(sessionId) != null) {
+            sessions.remove(sessionId);
         } else {
             throw new NoSuchSessionException("Invalid SessionID");
         }
 
     }
 
-    public static boolean authenticateSession(String sessionID) throws NoSuchSessionException {
-        if (sessionID == null || sessionID == "") {
+    public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
+        if (sessionId == null || sessionId == "") {
             return false;
         }
 
-        SessionInformation sessionInformation = getSessionInformation(sessionID);
+        SessionInformation sessionInformation = getSessionInformation(sessionId);
 
         if (sessionInformation.isSessionExpired() == false) {
             return true;
         } else {
-            deleteSession(sessionID);
+            deleteSession(sessionId);
             return false;
         }
     }
 
 
     // MARK: Helper Methods
-    private static SessionInformation getSessionInformation(String sessionID) throws NoSuchSessionException {
-        SessionInformation sessionInformation = sessions.get(sessionID);
+    private static SessionInformation getSessionInformation(String sessionId) throws NoSuchSessionException {
+        SessionInformation sessionInformation = sessions.get(sessionId);
 
         if (sessionInformation == null) {
             throw new NoSuchSessionException("Invalid SessionID");
@@ -85,16 +85,16 @@ public class UserSessionManager {
         final int ENCODING_BASE = 32;
 
         SecureRandom random = new SecureRandom();
-        String sessionID = "";
+        String sessionId = "";
 
-        sessionID = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+        sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
 
-        // Make sure we don't have two of the same sessionID's
-        while (sessions.get(sessionID) != null) {
-            sessionID = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+        // Make sure we don't have two of the same sessionId's
+        while (sessions.get(sessionId) != null) {
+            sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
         }
 
-        return sessionID;
+        return sessionId;
     }
 
 
