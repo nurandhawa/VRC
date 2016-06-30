@@ -49,6 +49,15 @@ public class AppController {
 
         secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
 
+        before((request, response) -> {
+            String sessionToken = request.headers("token");
+            boolean authenticated = false;
+            // TODO: authenticate user
+            if (!authenticated) {
+                halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+            }
+        });
+
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
             if (ladderManager.getLadder() != null) {
@@ -306,5 +315,12 @@ public class AppController {
         errResponse.addProperty("status", "ERROR");
         errResponse.addProperty("message", message);
         return gson.toJson(errResponse);
+    }
+
+    private String getNotAuthenticatedResponse(String message) {
+        JsonObject authResponse = new JsonObject();
+        authResponse.addProperty("status", "AUTH_ERROR");
+        authResponse.addProperty("message", message);
+        return gson.toJson(authResponse);
     }
 }
