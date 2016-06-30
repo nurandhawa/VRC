@@ -28,18 +28,26 @@
     <script type="x/template" id="matches-template">
         <div class="mymodal-mask" v-show="show" transition="matches">
             <div class="mymodal-wrapper">
-                <div class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
+                <div id="modal{{$index}}" class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
                     <div class="mymodal-header">
                         <slot name="header">
-                            default header
+                            default header1
                         </slot>
                     </div>
 
                     <div class="mymodal-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
                             <span class="label label-info position">{{ pair.matchRanking }}</span>
-                            {{ pair.name }}
+                            <span style="width:200px">{{ pair.name }}</span>
+                            <div class="pair-name match-pair" v-for="pair in match.pairs" style="position: relative; display: inline-block">
+                                <select class="dropdown" >
+                                    <option>N/A</option>
+                                    <option>Win</option>
+                                    <option>Lose</option>
+                                </select>
+                            </div>
                         </div>
+
                     </div>
 
                     <div class="mymodal-footer">
@@ -97,7 +105,7 @@
         <div v-for="match in matches">
             <div v-if = "(match.matchNum % 3) == 1">
                 <div class="panel panel-info">
-                    <div class="panel-info match-heading panel-heading ">
+                    <div id="match{{match.matchNum}}" class="panel-info match-heading panel-heading ">
                         <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
                         </component>
@@ -115,7 +123,7 @@
     <div id="matches-mid" class="matches-mid">
         <div v-for="match in matches">
             <div v-if = "(match.matchNum % 3) == 2">
-                <div class="panel panel-info">
+                <div id="match{{match.matchNum}}" class="panel panel-info">
                     <div class="panel-info match-heading panel-heading ">
                         <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
@@ -134,7 +142,7 @@
     <div id="matches-right" class="matches-right">
         <div v-for="match in matches">
             <div v-if = "(match.matchNum % 3) == 0">
-                <div class="panel panel-info">
+                <div id="match{{match.matchNum}}" class="panel panel-info">
                     <div class="panel-info match-heading panel-heading ">
                         <h3 class="match-title panel-title">Match {{ match.matchNum }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">

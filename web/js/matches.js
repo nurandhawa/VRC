@@ -7,7 +7,7 @@ var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-i
 Vue.filter('filterLeft', function (array, matchNum) {
     var filteredArray = [];
     if (matchNum % 3 == 1) {
-        filteredArray.add(array[matchNum])
+        filteredArray.add(array[matchNum]);
     }
 });
 
@@ -82,11 +82,11 @@ var Matches = (function () {
                 }
             },
             components: {
-             edit: editButton,
-             read: blankButton
-             }
+                edit: editButton,
+                read: blankButton
+            }
         });
-    };
+    }
 
     Matches.prototype.changeMode = function () {
         if (this.mode === 'read') {
