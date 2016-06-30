@@ -35,7 +35,7 @@ public class AppController {
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
 
-    private static final String PAIR_NOT_FOUND = "No pair was found with given id: ";
+    private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
 
 
