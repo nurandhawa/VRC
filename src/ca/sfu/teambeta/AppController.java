@@ -1,25 +1,16 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.logic.GameManager;
-import spark.Filter;
-import spark.Response;
-import spark.Request;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.delete;
@@ -44,7 +35,7 @@ public class AppController {
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
 
-    private static final String PAIR_NOT_FOUND = "No pair was found with given id";
+    private static final String PAIR_NOT_FOUND = "No pair was found with given id: ";
     private static final String ID_NOT_INT = "Id is not of integer type";
 
 
@@ -54,7 +45,7 @@ public class AppController {
 
     private static Gson gson;
 
-    public AppController(GameManager gameManager, DBManager dbManager) {
+    public AppController(DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
 
@@ -64,13 +55,10 @@ public class AppController {
         get("/api/ladder", (request, response) -> {
             String json = dbManager.getJSONLadder();
             if (!json.isEmpty()) {
-                response.status(OK);
-                response.body(dbManager.getJSONLadder());
-                return response;
+                return dbManager.getJSONLadder();
             } else {
-                response.body("No ladder was found");
-                response.status(BAD_REQUEST);
-                return response;
+                response.status(NOT_FOUND);
+                return getErrResponse("No ladder was found");
             }
         });
 
@@ -82,9 +70,8 @@ public class AppController {
                 id = Integer.parseInt(request.params(ID));
                 newPosition = Integer.parseInt(request.queryParams(POSITION));
             } catch (Exception e) {
-                response.body(ID_NOT_INT + " or Position");
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse(ID_NOT_INT + " or Position");
             }
 
             String status = request.queryParams(STATUS);
@@ -93,9 +80,8 @@ public class AppController {
             boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
 
             if (!dbManager.hasPairID(id)) {
-                response.body(PAIR_NOT_FOUND);
                 response.status(NOT_FOUND);
-                return getErrResponse("Pair " + id + " not found");
+                return getErrResponse(PAIR_NOT_FOUND + id);
             }
 
             if (!validStatus && !validNewPos) {
@@ -105,26 +91,26 @@ public class AppController {
                 if (status.equals(PLAYING)) {
                     boolean statusChanged = dbManager.setPairActive(id);
                     if (statusChanged) {
-                        response.status(OK);
+                        return getOkResponse("");
                     } else {
                         Player activePlayer = dbManager.getAlreadyActivePlayer(id);
                         String firstName = activePlayer.getFirstName();
                         String lastName = activePlayer.getLastName();
-                        response.body("Player " + firstName + " " + lastName + " is already playing");
                         response.status(NOT_FOUND);
+                        return getErrResponse("Player " + firstName + " " + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING)) {
                     dbManager.setPairInactive(id);
-                    response.status(OK);
+                    return getOkResponse("");
                 }
 
             } else if (!validStatus && validNewPos) {
                 dbManager.movePair(id, newPosition);
-                response.status(OK);
+                return getOkResponse("");
 
             } else {
-                response.body("Cannot change both: position and status");
                 response.status(BAD_REQUEST);
+                return getErrResponse("Cannot change both: position and status");
             }
 
             return getOkResponse("");
@@ -168,7 +154,7 @@ public class AppController {
                 response.status(OK);
             }
 
-            return response;
+            return getOkResponse("");
         });
 
         //remove player from ladder
@@ -177,15 +163,13 @@ public class AppController {
             try {
                 id = Integer.parseInt(request.queryParams(ID));
             } catch (Exception e) {
-                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse(ID_NOT_INT);
             }
 
             if (!dbManager.hasPairID(id)) {
-                response.body(PAIR_NOT_FOUND);
                 response.status(NOT_FOUND);
-                return response;
+                return getErrResponse(PAIR_NOT_FOUND + id);
             }
 
             dbManager.removePair(id);
@@ -200,15 +184,13 @@ public class AppController {
             try {
                 id = Integer.parseInt(request.queryParams(ID));
             } catch (Exception e) {
-                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse(ID_NOT_INT);
             }
 
             if (!dbManager.hasPairID(id)) {
-                response.body(PAIR_NOT_FOUND);
                 response.status(NOT_FOUND);
-                return getErrResponse("Pair with the following id " + id + "wasn't found");
+                return getErrResponse(PAIR_NOT_FOUND + id);
             }
 
             String penaltyType = request.queryParams(PENALTY);
@@ -231,12 +213,11 @@ public class AppController {
             String json = dbManager.getJSONScorecards();
             if (!json.isEmpty()) {
                 response.status(OK);
-                response.body(json);
+                return json;
             } else {
-                response.body("No scorecards were found");
                 response.status(NOT_FOUND);
+                return getErrResponse("No scorecards were found");
             }
-            return response;
         });
 
         //Input match results
@@ -245,9 +226,8 @@ public class AppController {
             try {
                 id = Integer.parseInt(request.params(ID));
             } catch (Exception e) {
-                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse(ID_NOT_INT);
             }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
@@ -269,24 +249,18 @@ public class AppController {
             try {
                 id = Integer.parseInt(request.queryParams(ID));
             } catch (Exception e) {
-                response.body(ID_NOT_INT);
                 response.status(BAD_REQUEST);
-                return response;
+                return getErrResponse(ID_NOT_INT);
             }
 
             if (!dbManager.hasPairID(id)) {
-                response.body(PAIR_NOT_FOUND);
                 response.status(NOT_FOUND);
-                return response;
+                return getErrResponse(PAIR_NOT_FOUND);
             }
 
             if (!dbManager.isActivePair(id)) {
-                response.body("The pair is not on the scorecard");
                 response.status(BAD_REQUEST);
-                return getErrResponse("Pair " + id + " doesn't exist.");
-            } else if (!dbManager.isActivePair(id)) {
-                response.status(BAD_REQUEST);
-                return getErrResponse("Pair " + id + " is not playing.");
+                return getErrResponse("The pair is not on the scorecard " + id);
             }
 
             dbManager.setPairInactive(id);
