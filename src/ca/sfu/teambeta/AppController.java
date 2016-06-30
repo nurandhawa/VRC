@@ -46,10 +46,10 @@ public class AppController {
 
         secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
 
-        before("/api/:endpoint/*", (request, response) -> {
+        before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in
-            String endpoint = request.params("endpoint");
-            if (!endpoint.equals("login")) {
+            String endpoint = request.splat()[0];
+            if (!endpoint.contains("login")) {
 
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
