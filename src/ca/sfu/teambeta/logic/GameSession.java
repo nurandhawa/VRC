@@ -62,6 +62,10 @@ public class GameSession extends Persistable {
                 .collect(Collectors.toList());
     }
 
+    public Set<Pair> getActivePairSet() {
+        return new HashSet<>(activePairs);
+    }
+
     public List<Pair> getPassivePairs() {
         return ladder.getPairs().stream()
                 .filter(pair -> !activePairs.contains(pair))

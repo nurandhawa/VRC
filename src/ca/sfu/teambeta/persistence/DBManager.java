@@ -367,10 +367,9 @@ public class DBManager {
     public String getJSONLadder() {
         GameSession gameSession = getGameSessionLatest();
         List<Pair> ladder = gameSession.getAllPairs();
-        Gson gson = new Gson();
-
-        String json = gson.toJson(ladder);
-        return json;
+        JSONSerializer serializer = new LadderJSONSerializer(ladder,
+                gameSession.getActivePairSet());
+        return serializer.toJson();
     }
 
     public String getJSONScorecards() {
