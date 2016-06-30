@@ -15,7 +15,8 @@ import ca.sfu.teambeta.core.Scorecard;
  */
 public class VrcLadderReorderer implements LadderReorderer {
     @Override
-    public List<Pair> reorder(List<Pair> originalPairs, List<Scorecard> scorecards, Set<Pair> activePairs, Map<Pair, Penalty> penalties) {
+    public List<Pair> reorder(List<Pair> originalPairs, List<Scorecard> scorecards,
+                              Set<Pair> activePairs, Map<Pair, Penalty> penalties) {
         List<Pair> intermediateOrdering = swapBetweenGroups(scorecards);
         intermediateOrdering = mergeActivePairs(originalPairs, intermediateOrdering);
         intermediateOrdering = applyPassivePenalty(originalPairs, intermediateOrdering, activePairs);
