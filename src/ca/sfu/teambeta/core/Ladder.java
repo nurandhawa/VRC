@@ -1,7 +1,7 @@
 package ca.sfu.teambeta.core;
 
 import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+
 import org.hibernate.annotations.Type;
 
 import java.util.Date;
@@ -49,44 +49,23 @@ public class Ladder extends Persistable {
         int index = pairs.indexOf(pair);
         if (index != -1) { //pair was found
             pairs.remove(index);
-            shiftPositions(SHIFT_LEFT, index);
         } else {
             return false;
         }
         return true;
     }
 
-    private void shiftPositions(int direction, int index) {
-        if (direction == SHIFT_LEFT) {
-            for (int i = index; i < pairs.size(); i++) {
-                int position = pairs.get(i).getPosition();
-                pairs.get(i).setPosition(position - 1);
-            }
-        } else if (direction == SHIFT_RIGHT) {
-            for (int i = index; i < pairs.size(); i++) {
-                int position = pairs.get(i).getPosition();
-                pairs.get(i).setPosition(position + 1);
-            }
-        }
-    }
-
     public void insertAtIndex(int index, Pair pair) {
         pairs.add(index, pair);
         pairs.get(index).setPosition(index + 1);
-        shiftPositions(SHIFT_RIGHT, index + 1);
     }
 
     public void insertAtEnd(Pair pair) {
         pairs.add(pair);
-        pairs.get(pairs.size() - 1).setPosition(pairs.size());
     }
 
     public List<Pair> getPairs() {
         return pairs;
-    }
-
-    public void assignNewLadder(List<Pair> newLadder) {
-        pairs = newLadder;
     }
 
     public Pair getPairAtIndex(int index) {
