@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import com.google.gson.Gson;
 
 import com.opencsv.CSVReader;
@@ -19,14 +21,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import ca.sfu.teambeta.core.Game;
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
+
+import javax.jws.soap.SOAPBinding;
 
 /**
  * Utility class that reads and writes data to the database
@@ -51,6 +49,7 @@ public class DBManager {
         config.addAnnotatedClass(Game.class);
         config.addAnnotatedClass(GameSession.class);
         config.addAnnotatedClass(Penalty.class);
+        config.addAnnotatedClass(User.class);
         return config;
     }
 
@@ -477,6 +476,47 @@ public class DBManager {
         try {
             tx = session.beginTransaction();
             session.saveOrUpdate(newSession);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public User getUser(String email) throws HibernateException {
+        Transaction tx = null;
+        User user = null;
+        try {
+            tx = session.beginTransaction();
+            user = session.get(User.class, email);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return user;
+    }
+
+    public void addNewUser(User user) throws  AccountRegistrationException {
+        String email = user.getEmail();
+        boolean uniqueEmail = getUser(email) == null;
+        if (!uniqueEmail){
+            throw new AccountRegistrationException("The email '" + email + "' is already in use");
+        }
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(user);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public void addNewPlayer(Player player) throws AccountRegistrationException{
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(player);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();

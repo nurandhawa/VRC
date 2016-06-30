@@ -3,6 +3,7 @@ package ca.sfu.teambeta.logic;
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.persistence.DBManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -36,11 +37,14 @@ public class AccountManager {
 
     private static final String DEMO_EMAIL = "admin@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
-    private static ArrayList<User> dummyUsers = new ArrayList<User>();
+    private DBManager dbManager;
 
+    public AccountManager(DBManager dbManager){
+        this.dbManager = dbManager;
+    }
 
     // MARK: - The Core Login/Registration Methods
-    public static String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
+    public String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
 
@@ -53,11 +57,11 @@ public class AccountManager {
         return sessionID;
     }
 
-    public static void logout(String email) {
+    public void logout(String email) {
 
     }
 
-    public static void register(String email, String password) throws InternalHashingException,
+    public void register(String email, String password) throws InternalHashingException,
             InvalidUserInputException, AccountRegistrationException {
         validateEmailFormat(email);
         validatePasswordFormat(password);
@@ -82,7 +86,7 @@ public class AccountManager {
 
 
     // MARK: - Helper Methods
-    private static User authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
+    private User authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
         // Get the user from the database
         User user = getUserFromDB(email);
 
@@ -107,33 +111,27 @@ public class AccountManager {
 
 
     // MARK: - Database Methods
-    private static User getUserFromDB(String email) throws NoSuchUserException {
+    private User getUserFromDB(String email) throws NoSuchUserException {
         // Note: Login should use a read-only database user.
-
-        for (User user : dummyUsers) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
+        User user = dbManager.getUser(email);
+        if(user != null){
+            return user;
         }
 
         throw new NoSuchUserException("The user '" + email + "' does not exist");
-
     }
 
-    private static void saveNewUser(User newUser) throws AccountRegistrationException {
-        for (User user : dummyUsers) {
-            if (user.getEmail().equals(newUser.getEmail())) {
-                throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
-            }
+    private void saveNewUser(User newUser) throws AccountRegistrationException {
+        try {
+            dbManager.addNewUser(newUser);
+        } catch (Exception AccountExc){
+            throw AccountExc;
         }
-
-        dummyUsers.add(newUser);
-
     }
 
 
     // MARK: - Miscellaneous Methods
-    private static void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
+    private void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
         boolean invalidPhoneNumberLength = phoneNumber.length() != PHONE_NUMBER_LENGTH;
         boolean phoneNumberNonNumeric = !StringUtils.isNumeric(phoneNumber);
 
@@ -147,7 +145,7 @@ public class AccountManager {
 
     }
 
-    private static void validateEmailFormat(String email) throws InvalidUserInputException {
+    private void validateEmailFormat(String email) throws InvalidUserInputException {
         // Check that the input is valid
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
@@ -166,7 +164,7 @@ public class AccountManager {
 
     }
 
-    private static void validatePasswordFormat(String password) throws InvalidUserInputException {
+    private void validatePasswordFormat(String password) throws InvalidUserInputException {
         // Check that the input is valid
         boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
         boolean passwordTooShort = password.length() < MIN_PASSWORD_LENGTH;
@@ -183,7 +181,7 @@ public class AccountManager {
 
 
     // MARK: - Main Function (Quick and dirty testing for now - will be refactored into tests)
-    public static void main(String[] args) {
+    public void main(String[] args) {
         // Register a user
         try {
             register(DEMO_EMAIL, DEMO_PASSWORD);

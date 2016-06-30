@@ -41,7 +41,6 @@ public class AppController {
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
 
-
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
@@ -51,7 +50,7 @@ public class AppController {
     public AppController(DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
-
+        AccountManager accountManager = new AccountManager(dbManager);
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         //homepage: return ladder
@@ -283,7 +282,7 @@ public class AppController {
             String sessionID = null;
 
             try {
-                sessionID = AccountManager.login(email, pwd);
+                sessionID = accountManager.login(email, pwd);
                 message = "sessionID: " + sessionID;
             } catch (InternalHashingException e) {
                 message = e.getMessage();
@@ -316,7 +315,7 @@ public class AppController {
             String message = null;
 
             try {
-                AccountManager.register(email, pwd);
+                accountManager.register(email, pwd);
             } catch (InternalHashingException e) {
                 message = e.getMessage();
                 isErrorResponse = true;
