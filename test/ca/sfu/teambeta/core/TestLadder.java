@@ -19,19 +19,19 @@ public class TestLadder {
         Ladder testLadder = new Ladder(someList);
 
         System.out.println("Adding pair at end Hughes/Mayes");
-        Pair thisPair = new Pair(new Player("Hugh", "Jass", ""), new Player("Mayes", "Weather", ""));
+        Pair thisPair = new Pair(new Player("Hugh", "Jass"), new Player("Mayes", "Weather"));
         testLadder.insertAtEnd(thisPair);
         Assert.assertEquals(testLadder.getPairAtIndex(0), thisPair);
         System.out.println("Adding pair at end Joan/Mario");
-        thisPair = new Pair(new Player("Princess", "Peach", ""), new Player("Mario", "Mario", ""));
+        thisPair = new Pair(new Player("Princess", "Peach"), new Player("Mario", "Mario"));
         testLadder.insertAtEnd(thisPair);
         Assert.assertEquals(testLadder.getPairAtIndex(1), thisPair);
         System.out.println("Adding pair at end Luke/Heather");
-        thisPair = new Pair(new Player("Luke", "Skywalker", ""), new Player("Heather", "Seawalker", ""));
+        thisPair = new Pair(new Player("Luke", "Skywalker"), new Player("Heather", "Seawalker"));
         testLadder.insertAtEnd(thisPair);
         Assert.assertEquals(testLadder.getPairAtIndex(2), thisPair);
         System.out.println("Adding pair at index 1 Jack/Ethan");
-        thisPair = new Pair(new Player("Jack", "Sparrow", ""), new Player("Daniel", "Damnn", ""));
+        thisPair = new Pair(new Player("Jack", "Sparrow"), new Player("Daniel", "Damnn"));
         testLadder.insertAtIndex(1, thisPair);
         Assert.assertEquals(testLadder.getPairAtIndex(1), thisPair);
         Assert.assertEquals(testLadder.getLadderLength(), 4);

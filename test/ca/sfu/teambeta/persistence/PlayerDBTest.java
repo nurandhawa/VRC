@@ -17,7 +17,7 @@ public class PlayerDBTest extends PersistenceTest {
         Transaction tx;
         Session session = getSession();
         tx = session.beginTransaction();
-        session.save(new Player("Big", "Head", ""));
+        session.save(new Player("Big", "Head"));
         tx.commit();
     }
 
@@ -26,8 +26,8 @@ public class PlayerDBTest extends PersistenceTest {
         Transaction tx;
         Session session = getSession();
         tx = session.beginTransaction();
-        int id1 = (int) session.save(new Player("Big", "Head", ""));
-        int id2 = (int) session.save(new Player("Big", "Head", ""));
+        int id1 = (int) session.save(new Player("Big", "Head"));
+        int id2 = (int) session.save(new Player("Big", "Head"));
         tx.commit();
         assertNotEquals(id1, id2);
     }
@@ -37,7 +37,7 @@ public class PlayerDBTest extends PersistenceTest {
         Transaction tx;
         Session session = getSession();
         tx = session.beginTransaction();
-        Player player = new Player("Big", "Head", "");
+        Player player = new Player("Big", "Head");
         int id1 = (int) session.save(player);
         int id2 = (int) session.save(player);
         tx.commit();

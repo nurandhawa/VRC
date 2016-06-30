@@ -115,8 +115,8 @@ public class AccountManager {
     private void saveNewUser(User newUser) throws AccountRegistrationException {
         try {
             dbManager.addNewUser(newUser);
-        } catch (Exception AccountExc) {
-            throw AccountExc;
+        } catch (Exception accountExc) {
+            throw accountExc;
         }
     }
 

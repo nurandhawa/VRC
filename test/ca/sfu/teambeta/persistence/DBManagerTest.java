@@ -20,7 +20,7 @@ public class DBManagerTest {
 
     @Test
     public void testGetPlayerFromID() {
-        Player playerExpected = new Player("Zara", "Ali", "1234");
+        Player playerExpected = new Player("Zara", "Ali");
 
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
@@ -44,10 +44,10 @@ public class DBManagerTest {
     @Test
     public void testNotNullLadder() {
         List<Pair> ladderPairs = Arrays.asList(
-                new Pair(new Player("Bobby", "Chan", ""), new Player("Wing", "Man", ""), false),
-                new Pair(new Player("Ken", "Hazen", ""), new Player("Brian", "Fraser", ""), false),
-                new Pair(new Player("Simon", "Fraser", ""), new Player("Dwight", "Howard", ""), false),
-                new Pair(new Player("Bobby", "Chan", ""), new Player("Big", "Head", ""), false)
+                new Pair(new Player("Bobby", "Chan"), new Player("Wing", "Man"), false),
+                new Pair(new Player("Ken", "Hazen"), new Player("Brian", "Fraser"), false),
+                new Pair(new Player("Simon", "Fraser"), new Player("Dwight", "Howard"), false),
+                new Pair(new Player("Bobby", "Chan"), new Player("Big", "Head"), false)
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
@@ -65,10 +65,10 @@ public class DBManagerTest {
     @Test
     public void testGetLatestLadder() {
         List<Pair> ladderPairs = Arrays.asList(
-                new Pair(new Player("Bobby", "Chan", ""), new Player("Wing", "Man", ""), false),
-                new Pair(new Player("Ken", "Hazen", ""), new Player("Brian", "Fraser", ""), false),
-                new Pair(new Player("Simon", "Fraser", ""), new Player("Dwight", "Howard", ""), false),
-                new Pair(new Player("Bobby", "Chan", ""), new Player("Big", "Head", ""), false)
+                new Pair(new Player("Bobby", "Chan"), new Player("Wing", "Man"), false),
+                new Pair(new Player("Ken", "Hazen"), new Player("Brian", "Fraser"), false),
+                new Pair(new Player("Simon", "Fraser"), new Player("Dwight", "Howard"), false),
+                new Pair(new Player("Bobby", "Chan"), new Player("Big", "Head"), false)
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
