@@ -55,7 +55,7 @@ public class AppController {
             String endpoint = request.params("endpoint");
             if (!endpoint.equals("login")) {
 
-                String sessionToken = request.headers("token");
+                String sessionToken = request.headers("sessionToken");
                 boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
                 if (!authenticated) {
                     halt(getNotAuthenticatedResponse("You must be logged in view this page."));
