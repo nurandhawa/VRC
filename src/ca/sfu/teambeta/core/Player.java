@@ -3,7 +3,10 @@ package ca.sfu.teambeta.core;
 
 import com.google.gson.annotations.Expose;
 
+import com.sun.istack.internal.Nullable;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToOne;
 
 import ca.sfu.teambeta.persistence.Persistable;
 
@@ -17,9 +20,10 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
-    //need this for extracting Json data to add an existing player.
-    @Expose
-    private Integer existingId;
+
+    @OneToOne
+    @Nullable
+    private User userAccount = null;
 
     public Player() {
     }
@@ -59,13 +63,5 @@ public class Player extends Persistable {
     public int hashCode() {
         return 23 * getFirstName().hashCode() *
                 getLastName().hashCode();
-    }
-
-    public Integer getExistingId() {
-        return existingId;
-    }
-
-    public void setExistingId(Integer existingId) {
-        this.existingId = existingId;
     }
 }

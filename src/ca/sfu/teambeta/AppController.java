@@ -139,12 +139,12 @@ public class AppController {
             }
 
             List<Player> newPlayers = new ArrayList<>();
-
+            // TODO: Make use of the database better here
             for (int i = 0; i < MAX_SIZE; i++) {
-                if (playerData.get(i).getExistingId() == null) {
+                if (playerData.get(i).getID() == 0) {
                     newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName()));
                 } else {
-                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getExistingId()));
+                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getID()));
                 }
             }
 
