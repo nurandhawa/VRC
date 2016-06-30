@@ -4,6 +4,7 @@ package ca.sfu.teambeta.core;
 import com.google.gson.annotations.Expose;
 
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.Persistable;
 
@@ -17,9 +18,11 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
+    @Transient
     @Expose
     private String phoneNumber = "";
     //need this for extracting Json data to add an existing player.
+    @Transient
     @Expose
     private Integer existingId;
 

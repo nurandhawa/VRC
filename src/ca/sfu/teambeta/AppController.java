@@ -1,19 +1,17 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.GameManager;
 import ca.sfu.teambeta.logic.LadderManager;
-import spark.Filter;
-import spark.Response;
-import spark.Request;
+import ca.sfu.teambeta.logic.UserSessionManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static spark.Spark.*;
 
@@ -34,13 +32,33 @@ public class AppController {
     private static final int BAD_REQUEST = 400;
     private static final int OK = 200;
 
+    private static final String KEYSTORE_LOCATION = "testkeystore.jks";
+    private static final String KEYSTORE_PASSWORD = "password";
+
     private static Gson gson;
+    private final String SESSION_TOKEN_KEY = "sessionToken";
 
     public AppController(LadderManager ladderManager, GameManager gameManager) {
         port(8000);
         staticFiles.location(".");
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+        secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
+
+        before("/api/:endpoint/*", (request, response) -> {
+            // Allow access to the login endpoint, so they can sign up/log in
+            String endpoint = request.params("endpoint");
+            if (!endpoint.equals("login")) {
+
+                String sessionToken = request.cookie(SESSION_TOKEN_KEY);
+                boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
+                if (!authenticated) {
+                    halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+                }
+
+            }
+        });
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
@@ -236,6 +254,55 @@ public class AppController {
             return getOkResponse("");
         });
 
+        //logging in an existing users
+        post("/api/login", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+
+            JsonObject successResponse = new JsonObject();
+            String errMessage = "";
+            String sessionToken = "";
+            try {
+                sessionToken = AccountManager.login(email, pwd);
+                successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
+                return gson.toJson(successResponse);
+            } catch (InternalHashingException e) {
+                errMessage = e.getMessage();
+            } catch (NoSuchUserException e) {
+                errMessage = e.getMessage();
+            } catch (InvalidUserInputException e) {
+                errMessage = e.getMessage();
+            } catch (InvalidCredentialsException e) {
+                errMessage = e.getMessage();
+            }
+
+            return getErrResponse(errMessage);
+        });
+
+        //registers a new user
+        post("/api/login/new", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+
+            String message = "";
+            try {
+                AccountManager.register(email, pwd);
+                return getOkResponse("Account registered");
+            } catch (InternalHashingException e) {
+                message = e.getMessage();
+            } catch (AccountRegistrationException e) {
+                message = e.getMessage();
+            } catch (InvalidUserInputException e) {
+                message = e.getMessage();
+            }
+
+            return getErrResponse(message);
+        });
+
     }
 
     private String getOkResponse(String message) {
@@ -250,5 +317,12 @@ public class AppController {
         errResponse.addProperty("status", "ERROR");
         errResponse.addProperty("message", message);
         return gson.toJson(errResponse);
+    }
+
+    private String getNotAuthenticatedResponse(String message) {
+        JsonObject authResponse = new JsonObject();
+        authResponse.addProperty("status", "AUTH_ERROR");
+        authResponse.addProperty("message", message);
+        return gson.toJson(authResponse);
     }
 }
