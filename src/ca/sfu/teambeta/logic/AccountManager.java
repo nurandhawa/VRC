@@ -1,11 +1,17 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.PasswordHash;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+
+import ca.sfu.teambeta.core.PasswordHash;
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 /**
  * AccountManager handles:
@@ -37,7 +43,6 @@ public class AccountManager {
     private static final String DEMO_EMAIL = "admin@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
     private static ArrayList<User> dummyUsers = new ArrayList<User>();
-
 
     // MARK: - The Core Login/Registration Methods
     public static String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
@@ -117,7 +122,6 @@ public class AccountManager {
         }
 
         throw new NoSuchUserException("The user '" + email + "' does not exist");
-
     }
 
     private static void saveNewUser(User newUser) throws AccountRegistrationException {
@@ -130,7 +134,6 @@ public class AccountManager {
         dummyUsers.add(newUser);
 
     }
-
 
     // MARK: - Miscellaneous Methods
     private static void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {

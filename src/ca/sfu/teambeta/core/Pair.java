@@ -4,6 +4,7 @@ package ca.sfu.teambeta.core;
 //Ladder should return the size of itself
 
 import com.google.gson.annotations.Expose;
+
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -76,34 +77,6 @@ public class Pair extends Persistable {
         return dateCreated;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public int getPenalty() {
-        return penalty;
-    }
-
-    public void setPenalty(int penalty) {
-        this.penalty = penalty;
-    }
-
-    public void activate() {
-        this.isPlaying = true;
-    }
-
-    public void deActivate() {
-        this.isPlaying = false;
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
     public boolean hasPlayer(Player searchPlayer) {
         return (getPlayers().get(0).equals(searchPlayer)
                 || getPlayers().get(1).equals(searchPlayer));
@@ -128,8 +101,7 @@ public class Pair extends Persistable {
     public String toString() {
         return position
                 + ") " +  getPlayers().get(0).getFirstName()
-                + " & " + getPlayers().get(1).getFirstName()
-                + " " + isPlaying;
+                + " & " + getPlayers().get(1).getFirstName();
     }
 
     public int getPairScore() {
