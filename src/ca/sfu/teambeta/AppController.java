@@ -1,19 +1,31 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameManager;
-import ca.sfu.teambeta.logic.LadderManager;
-import ca.sfu.teambeta.logic.UserSessionManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import static spark.Spark.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.persistence.DBManager;
+
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.secure;
+import static spark.Spark.staticFiles;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -22,11 +34,16 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+    private static final String PLAYING = "playing";
+    private static final String NOT_PLAYING = "not playing";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
+
+    private static final String PAIR_NOT_FOUND = "No pair was found with given id";
+    private static final String ID_NOT_INT = "Id is not of integer type";
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -38,7 +55,7 @@ public class AppController {
     private static Gson gson;
     private final String SESSION_TOKEN_KEY = "sessionToken";
 
-    public AppController(LadderManager ladderManager, GameManager gameManager) {
+    public AppController(DBManager dbManager) {
         port(8000);
         staticFiles.location(".");
 
@@ -62,59 +79,63 @@ public class AppController {
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
-            if (ladderManager.getLadder() != null) {
-                response.status(OK);
+            String json = dbManager.getJSONLadder();
+            if (!json.isEmpty()) {
+                return dbManager.getJSONLadder();
             } else {
-                response.status(BAD_REQUEST);
-                return response;
+                response.status(NOT_FOUND);
+                return getErrResponse("No ladder was found");
             }
-            return gson.toJson(ladderManager.getLadder());
         });
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
+            int id;
+            int newPosition = -1;
+            try {
+                id = Integer.parseInt(request.params(ID));
+                newPosition = Integer.parseInt(request.queryParams(POSITION));
+            } catch (Exception e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(ID_NOT_INT + " or Position");
+            }
 
             String status = request.queryParams(STATUS);
             if (status == null) {
                 status = "";
             }
 
-            int newPosition = -1;
-            try {
-                newPosition = Integer.parseInt(request.queryParams(POSITION));
-            } catch (NumberFormatException ignored) {
+            boolean validNewPos = 0 < newPosition && newPosition <= dbManager.getLadderSize();
+            boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
 
-            }
-
-            boolean validNewPos = 0 < newPosition && newPosition <= ladderManager.ladderSize();
-            boolean validStatus = status.equals("playing") || status.equals("not playing");
-
-            Pair pair = ladderManager.searchPairById(id);
-
-            if (pair == null) {
+            if (!dbManager.hasPairID(id)) {
                 response.status(NOT_FOUND);
-                return getErrResponse("Pair " + id + " not found");
+                return getErrResponse(PAIR_NOT_FOUND + id);
             }
 
             if (!validStatus && !validNewPos) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
-                if (status.equals("playing")) {
-                    ladderManager.setIsPlaying(pair);
-                    response.status(OK);
-                } else if (status.equals("not playing")) {
-                    ladderManager.setNotPlaying(pair);
-                    response.status(OK);
-                } else {
-                    response.status(BAD_REQUEST);
-                    return getErrResponse("Invalid status");
+                if (status.equals(PLAYING)) {
+                    boolean statusChanged = dbManager.setPairActive(id);
+                    if (statusChanged) {
+                        return getOkResponse("");
+                    } else {
+                        Player activePlayer = dbManager.getAlreadyActivePlayer(id);
+                        String firstName = activePlayer.getFirstName();
+                        String lastName = activePlayer.getLastName();
+                        response.status(NOT_FOUND);
+                        return getErrResponse("Player " + firstName + " " + lastName + " is already playing");
+                    }
+                } else if (status.equals(NOT_PLAYING)) {
+                    dbManager.setPairInactive(id);
+                    return getOkResponse("");
                 }
+
             } else if (!validStatus && validNewPos) {
-                int currentPosition = pair.getPosition();
-                ladderManager.movePair(currentPosition, newPosition);
-                response.status(OK);
+                dbManager.movePair(id, newPosition);
+                return getOkResponse("");
 
             } else {
                 response.status(BAD_REQUEST);
@@ -132,7 +153,8 @@ public class AppController {
             final int MAX_SIZE = 2;
 
             boolean validPos = 0 < extractedData.getPosition()
-                    && extractedData.getPosition() <= ladderManager.ladderSize();
+                    && extractedData.getPosition() <= dbManager.getLadderSize();
+
             List<Player> newPlayers = extractedData.getPlayers();
 
             if (newPlayers.size() != MAX_SIZE) {
@@ -144,16 +166,17 @@ public class AppController {
                 Integer existingId = newPlayers.get(i).getExistingId();
                 if (existingId != null) {
                     newPlayers.remove(i);
-                    newPlayers.add(i, ladderManager.searchPlayerById(existingId));
+                    newPlayers.add(i, dbManager.getPlayerFromID(existingId));
                 }
             }
 
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+
             if (validPos) {
-                ladderManager.addNewPairAtIndex(pair, extractedData.getPosition() - 1);
+                dbManager.addPair(pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
-                ladderManager.addNewPair(pair);
+                dbManager.addPair(pair);
                 response.status(OK);
             }
 
@@ -162,39 +185,48 @@ public class AppController {
 
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Pair pair = ladderManager.searchPairById(id);
-            int index = pair.getPosition() - 1;
-            boolean removed = ladderManager.removePairAtIndex(index);
-
-            if (removed) {
-                response.body(getOkResponse(""));
-                response.status(OK);
-            } else {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("Index out of bound");
+                return getErrResponse(ID_NOT_INT);
             }
+
+            if (!dbManager.hasPairID(id)) {
+                response.status(NOT_FOUND);
+                return getErrResponse(PAIR_NOT_FOUND + id);
+            }
+
+            dbManager.removePair(id);
+            response.status(OK);
 
             return getOkResponse("");
         });
 
         //add a penalty to a pair
         post("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Pair pair = ladderManager.searchPairById(id);
-            if (pair == null) {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("Pair with the following id " + id + "wasn't found");
+                return getErrResponse(ID_NOT_INT);
+            }
+
+            if (!dbManager.hasPairID(id)) {
+                response.status(NOT_FOUND);
+                return getErrResponse(PAIR_NOT_FOUND + id);
             }
 
             String penaltyType = request.queryParams(PENALTY);
 
             if (penaltyType.equals(LATE)) {
-                pair.setPenalty(Penalty.LATE.getPenalty());
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.LATE);
             } else if (penaltyType.equals(MISS)) {
-                pair.setPenalty(Penalty.MISSING.getPenalty());
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.MISSING);
             } else if (penaltyType.equals(ACCIDENT)) {
-                pair.setPenalty(Penalty.ACCIDENT.getPenalty());
+                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.ACCIDENT);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
@@ -204,52 +236,62 @@ public class AppController {
 
         //Show a list of matches
         get("/api/matches", (request, response) -> {
-            if (gameManager.getScorecards() != null) {
+            String json = dbManager.getJSONScorecards();
+            if (!json.isEmpty()) {
                 response.status(OK);
+                return json;
             } else {
-                response.status(BAD_REQUEST);
+                response.status(NOT_FOUND);
+                return getErrResponse("No scorecards were found");
             }
-            return gson.toJson(gameManager.getScorecards());
         });
 
         //Input match results
         patch("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Scorecard group = gameManager.getGroupByIndex(id);
-            int numTeams = group.getReorderedPairs().size();
-            String[][] input = new String[numTeams][numTeams];
-
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(ID_NOT_INT);
+            }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            Scorecard scorecard = dbManager.getScorecardFromGame(id);
 
-            int rows = extractedData.results.length;
-            int cols = extractedData.results[0].length;
-            boolean isValidResult = (rows == numTeams) && (cols == numTeams);
-
-            if (!isValidResult) {
+            try {
+                dbManager.inputMatchResults(scorecard, extractedData.results.clone());
+                response.status(OK);
+                return getOkResponse("");
+            } catch (Exception e) {
+                response.body("Invalid result format.");
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid result format.");
             }
-
-            input = extractedData.results.clone();
-            gameManager.inputMatchResults(group, input);
-            response.status(OK);
-            return getOkResponse("");
         });
 
         //Remove a pair from a match
         delete("/api/matches/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            Pair pair = ladderManager.searchPairById(id);
-
-            if (pair == null) {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("Pair " + id + " doesn't exist.");
-            } else if (!pair.isPlaying()) {
-                response.status(BAD_REQUEST);
-                return getErrResponse("Pair " + id + " is not playing.");
+                return getErrResponse(ID_NOT_INT);
             }
-            gameManager.removePlayingPair(pair);
+
+            if (!dbManager.hasPairID(id)) {
+                response.status(NOT_FOUND);
+                return getErrResponse(PAIR_NOT_FOUND);
+            }
+
+            if (!dbManager.isActivePair(id)) {
+                response.status(BAD_REQUEST);
+                return getErrResponse("The pair is not on the scorecard " + id);
+            }
+
+            dbManager.setPairInactive(id);
+
             response.status(OK);
             return getOkResponse("");
         });

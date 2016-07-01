@@ -12,9 +12,9 @@ public class PairDBTest extends PersistenceTest {
     //Test shouldn't raise an foreign key violation error
     @Test
     public void testSimilarPairCreation() {
-        Player firstPlayer = new Player("Test", "A", "");
-        Player secondPlayer = new Player("Test", "B", "");
-        Player thirdPlayer = new Player("Test", "C", "");
+        Player firstPlayer = new Player("Test", "A");
+        Player secondPlayer = new Player("Test", "B");
+        Player thirdPlayer = new Player("Test", "C");
 
         Pair firstPair = new Pair(firstPlayer, secondPlayer);
         Pair secondPair = new Pair(secondPlayer, thirdPlayer);

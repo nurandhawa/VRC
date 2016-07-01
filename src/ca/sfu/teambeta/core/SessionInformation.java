@@ -1,12 +1,9 @@
 package ca.sfu.teambeta.core;
 
 /**
- * The SessionInformation class holds all the related information on a
- * logged in user's session.
+ * The SessionInformation class holds all the related information on a logged in user's session.
  *
- * TODO
- * - Change expiryDate to use a Calendar object
- *
+ * TODO - Change expiryDate to use a Calendar object
  */
 public class SessionInformation {
     private String email;

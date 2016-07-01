@@ -32,12 +32,13 @@ package ca.sfu.teambeta.core;
 
  */
 
-import java.security.SecureRandom;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.SecretKeyFactory;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 /*
  * PBKDF2 salted password hashing.
@@ -120,9 +121,9 @@ public class PasswordHash {
     }
 
     /**
-     * Compares two byte arrays in length-constant time. This comparison method
-     * is used so that password hashes cannot be extracted from an on-line
-     * system using a timing attack and then attacked off-line.
+     * Compares two byte arrays in length-constant time. This comparison method is used so that
+     * password hashes cannot be extracted from an on-line system using a timing attack and then
+     * attacked off-line.
      *
      * @param a the first byte array
      * @param b the second byte array
@@ -175,10 +176,11 @@ public class PasswordHash {
         BigInteger bi = new BigInteger(1, array);
         String hex = bi.toString(16);
         int paddingLength = (array.length * 2) - hex.length();
-        if (paddingLength > 0)
+        if (paddingLength > 0) {
             return String.format("%0" + paddingLength + "d", 0) + hex;
-        else
+        } else {
             return hex;
+        }
     }
 
     /**
@@ -257,5 +259,4 @@ public class PasswordHash {
         }
         */
     }
-
 }

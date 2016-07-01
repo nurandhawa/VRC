@@ -9,6 +9,10 @@ import java.security.SecureRandom;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
+import ca.sfu.teambeta.core.SessionInformation;
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+
 /**
  * UserSessionManager handles:
  * - Creating a new session
@@ -113,9 +117,17 @@ public class UserSessionManager {
 
         String user1SessionID = createNewSession(testUser1);
         String user2SessionID = createNewSession(testUser2);
+<<<<<<< HEAD
 
         System.out.println(user1SessionID);
         System.out.println(user2SessionID);
+=======
+
+        System.out.println(user1SessionID);
+        System.out.println(user2SessionID);
+
+        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 2
+>>>>>>> 61718011f903e8b0dac73380481d56170b6950fe
 
         System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 2
 
@@ -123,6 +135,12 @@ public class UserSessionManager {
         // Authenticating SessionID's
         boolean sessionIDStatus;
 
+<<<<<<< HEAD
+=======
+        // Authenticating SessionID's
+        boolean sessionIDStatus;
+
+>>>>>>> 61718011f903e8b0dac73380481d56170b6950fe
         try {
             sessionIDStatus = authenticateSession(user1SessionID);
         } catch (NoSuchSessionException e) {
