@@ -46,8 +46,13 @@ Vue.component('matches', {
 
 var Matches = (function () {
     function Matches(matchData) {
+        var editButton;
+        var blankButton;
         for (var match in matchData){
-            var editButton = Vue.extend({
+            editButton = null;
+            blankButton = null;
+            
+            editButton = Vue.extend({
                 props: ['column','index'],
                 template: EDIT_BUTTON_HTML,
                 methods: {
@@ -58,7 +63,7 @@ var Matches = (function () {
             });
             Vue.component('edit-button', editButton);
 
-            var blankButton = Vue.extend({
+            blankButton = Vue.extend({
                 template: "<a></a>"
             });
         }
