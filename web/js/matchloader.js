@@ -378,7 +378,7 @@
             "scorecardIndex": 2,
             "id": 2
         }
-    ]
+    ];
 
     var matches = new Matches(matchData2);
 
