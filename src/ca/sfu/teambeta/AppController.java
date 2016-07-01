@@ -71,7 +71,7 @@ public class AppController {
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
                 if (!authenticated) {
-                    halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+                    halt(401, getNotAuthenticatedResponse("You must be logged in view this page."));
                 }
 
             }
