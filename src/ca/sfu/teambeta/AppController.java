@@ -66,10 +66,10 @@ public class AppController {
 
         secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
 
-        before("/api/:endpoint/*", (request, response) -> {
+        before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in
-            String endpoint = request.params("endpoint");
-            if (!endpoint.equals("login")) {
+            String endpoint = request.splat()[0];
+            if (!endpoint.contains("login")) {
 
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
@@ -94,7 +94,7 @@ public class AppController {
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
             int id;
-            int newPosition;
+            int newPosition = -1;
             try {
                 id = Integer.parseInt(request.params(ID));
                 newPosition = Integer.parseInt(request.queryParams(POSITION));
@@ -104,6 +104,9 @@ public class AppController {
             }
 
             String status = request.queryParams(STATUS);
+            if (status == null) {
+                status = "";
+            }
 
             boolean validNewPos = 0 < newPosition && newPosition <= dbManager.getLadderSize();
             boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
@@ -155,20 +158,18 @@ public class AppController {
             boolean validPos = 0 < extractedData.getPosition()
                     && extractedData.getPosition() <= dbManager.getLadderSize();
 
-            List<Player> playerData = extractedData.getPlayers();
+            List<Player> newPlayers = extractedData.getPlayers();
 
-            if (playerData.size() != MAX_SIZE) {
+            if (newPlayers.size() != MAX_SIZE) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("A Pair cannot have more than 2 players.");
             }
 
-            List<Player> newPlayers = new ArrayList<>();
-            // TODO: Make use of the database better here
             for (int i = 0; i < MAX_SIZE; i++) {
-                if (playerData.get(i).getID() == 0) {
-                    newPlayers.add(new Player(playerData.get(i).getFirstName(), playerData.get(i).getLastName()));
-                } else {
-                    newPlayers.add(dbManager.getPlayerFromID(playerData.get(i).getID()));
+                Integer existingId = newPlayers.get(i).getExistingId();
+                if (existingId != null) {
+                    newPlayers.remove(i);
+                    newPlayers.add(i, dbManager.getPlayerFromID(existingId));
                 }
             }
 
@@ -189,7 +190,7 @@ public class AppController {
         delete("/api/ladder/:id", (request, response) -> {
             int id;
             try {
-                id = Integer.parseInt(request.queryParams(ID));
+                id = Integer.parseInt(request.params(ID));
             } catch (Exception e) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(ID_NOT_INT);
@@ -210,7 +211,7 @@ public class AppController {
         post("/api/matches/:id", (request, response) -> {
             int id;
             try {
-                id = Integer.parseInt(request.queryParams(ID));
+                id = Integer.parseInt(request.params(ID));
             } catch (Exception e) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(ID_NOT_INT);

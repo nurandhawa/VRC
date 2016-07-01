@@ -231,25 +231,20 @@ public class DBManager {
     }
 
     // TODO: This method definitely does not work
-    public void inputMatchResults(int pairId, String[][] results) throws Exception {
+    public void inputMatchResults(Scorecard s, String[][] results) throws Exception {
         GameSession gameSession = getGameSessionLatest();
 
+        List<Pair> teams = s.getReorderedPairs();
+        int numTeams = teams.size();
         int rows = results.length;
-        int cols = results[0].length;
-
-        Pair pair = getPairFromID(pairId);
-        int index = gameSession.getActivePairs().indexOf(pair);
-
-        List<Scorecard> scorecards = gameSession.getScorecards();
-        Scorecard group = scorecards.get(index);
-        int numTeams = group.getReorderedPairs().size();
+        int cols = teams.size();
 
         boolean isValidResult = (rows == numTeams) && (cols == numTeams);
         if (!isValidResult) {
             throw new Exception();
         }
 
-        List<Pair> teams = group.getReorderedPairs();
+
         Pair teamWon = null;
         Pair teamLost = null;
         int winCount = 0;
@@ -265,7 +260,7 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                group.setGameResults(teamWon, teamLost);
+                s.setGameResults(teamWon, teamLost);
             }
             winCount = 0;
             teamLost = null;
