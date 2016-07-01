@@ -37,15 +37,21 @@
 
                     <div class="mymodal-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="label label-info position">{{ pair.matchRanking }}</span>
-                            <span style="width:200px">{{ pair.name }}</span>
-                            <div class="pair-name match-pair" v-for="pair in match.pairs" style="position: relative; display: inline-block">
-                                <select class="dropdown" >
-                                    <option>N/A</option>
-                                    <option>Win</option>
-                                    <option>Lose</option>
-                                </select>
-                            </div>
+                            <span class="col-sm-1 label label-info position">{{ pair.matchRanking }}</span>
+                            <span class="col-lg-4">{{ pair.name }}</span>
+                            <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
+                                <span class="dropdown">
+                                    <button class="btn btn-primary" style="margin: 0;" type="button" data-toggle="dropdown">
+                                        Match {{ pair.matchRanking }}
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">N/A</a></li>
+                                        <li><a href="#">Win</a></li>
+                                        <li><a href="#">Lose</a></li>
+                                    </ul>
+                                </span>
+                            </span>
                         </div>
 
                     </div>
