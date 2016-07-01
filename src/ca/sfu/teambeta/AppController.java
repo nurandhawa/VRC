@@ -257,10 +257,10 @@ public class AppController {
             }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            Scorecard s = dbManager.getScorecardFromGame(id);
+            Scorecard scorecard = dbManager.getScorecardFromGame(id);
 
             try {
-                dbManager.inputMatchResults(s, extractedData.results.clone());
+                dbManager.inputMatchResults(scorecard, extractedData.results.clone());
                 response.status(OK);
                 return getOkResponse("");
             } catch (Exception e) {
