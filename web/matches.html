@@ -30,18 +30,20 @@
             <div class="mymodal-wrapper">
                 <div id="modal{{$index}}" class="mymodal-container" v-for="match in matchlist" v-if="modalActiveContent($index)">
                     <div class="mymodal-header">
-                        <slot name="header">
-                            default header1
-                        </slot>
+                        {{ match.scordCardIndex }}
                     </div>
 
                     <div class="mymodal-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ pair.matchRanking }}</span>
-                            <span class="col-lg-4">{{ pair.name }}</span>
+                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                            <span class="col-lg-3">ad
+                                <span v-for="player in pair.players">
+                                    {{ player.firstName }} {{ player.lastName }} <br />
+                                </span>
+                            </span>
                             <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                 <span class="dropdown">
-                                    <button class="btn btn-primary" style="margin: 0;" type="button" data-toggle="dropdown">
+                                    <button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">
                                         Match {{ pair.matchRanking }}
                                         <span class="caret"></span>
                                     </button>
@@ -107,6 +109,27 @@
 </div>
 
 <div id="matches" class="matches">
+    <div id="matches-left" class = "matches-left">
+        <div v-for="match in matches">
+            <div class="panel panel-info">
+                <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
+                    <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                    <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                    </component>
+                </div>
+                <div class="panel-body">
+                    <div class="pair-name match-pair" v-for="pair in match.pairs">
+                        <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                        <span class="col-lg-4">
+                            <span v-for="player in pair.players">
+                                {{ player.firstName }} {{ player.lastName }} <br />
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="matches-left" class = "matches-left">
         <div v-for="match in matches">
             <div v-if = "(match.matchNum % 3) == 1">
