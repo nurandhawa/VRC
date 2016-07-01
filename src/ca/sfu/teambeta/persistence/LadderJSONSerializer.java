@@ -41,7 +41,6 @@ public class LadderJSONSerializer implements JSONSerializer {
 
     @Override
     public String toJson() {
-        final JsonObject jsonObject = new JsonObject();
         JsonArray pairsArray = new JsonArray();
         int position = 1;
         for (Pair pair : pairList) {
@@ -50,6 +49,6 @@ public class LadderJSONSerializer implements JSONSerializer {
             position++;
             pairsArray.add(pairJson);
         }
-        return jsonObject.toString();
+        return pairsArray.toString();
     }
 }
