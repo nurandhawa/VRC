@@ -1,5 +1,6 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -7,10 +8,6 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
@@ -260,9 +257,10 @@ public class AppController {
             }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            Scorecard s = dbManager.getScorecardFromGame(id);
 
             try {
-                dbManager.inputMatchResults(id, extractedData.results.clone());
+                dbManager.inputMatchResults(s, extractedData.results.clone());
                 response.status(OK);
                 return getOkResponse("");
             } catch (Exception e) {
@@ -276,7 +274,7 @@ public class AppController {
         delete("/api/matches/:id", (request, response) -> {
             int id;
             try {
-                id = Integer.parseInt(request.queryParams(ID));
+                id = Integer.parseInt(request.params(ID));
             } catch (Exception e) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(ID_NOT_INT);

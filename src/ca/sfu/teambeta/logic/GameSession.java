@@ -49,6 +49,7 @@ public class GameSession extends Persistable {
 
     public List<Scorecard> createGroups(ScorecardGenerator generator) {
         scorecards = generator.generateScorecards(getActivePairs());
+        setScorecardIndex();
         return Collections.unmodifiableList(scorecards);
     }
 
@@ -172,6 +173,16 @@ public class GameSession extends Persistable {
             }
         }
         return false;
+    }
+
+    public Scorecard getScorecardByIndex(int index) {
+        return scorecards.get(index);
+    }
+
+    private void setScorecardIndex() {
+        for (int i = 0; i < scorecards.size(); i++) {
+            scorecards.get(i).setScorecardIndex(i);
+        }
     }
 
 

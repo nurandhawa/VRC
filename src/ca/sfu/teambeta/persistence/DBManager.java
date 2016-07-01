@@ -244,7 +244,6 @@ public class DBManager {
             throw new Exception();
         }
 
-
         Pair teamWon = null;
         Pair teamLost = null;
         int winCount = 0;
@@ -260,7 +259,7 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon, teamLost);
+                setGameResults(teamWon.getID(), teamLost.getID());
             }
             winCount = 0;
             teamLost = null;
@@ -487,5 +486,11 @@ public class DBManager {
         } catch (HibernateException e) {
             tx.rollback();
         }
+    }
+
+    public Scorecard getScorecardFromGame(int index) {
+        GameSession gameSession = getGameSessionLatest();
+        submitGameSession(gameSession);
+        return gameSession.getScorecardByIndex(index);
     }
 }
