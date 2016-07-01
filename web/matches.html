@@ -45,15 +45,16 @@
                                     </span>
                                     <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                         <span class="dropdown">
-                                            <button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">
-                                                Match {{ pair.matchRanking }}
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a href="#">N/A</a></li>
-                                                <li><a href="#">Win</a></li>
-                                                <li><a href="#">Lose</a></li>
-                                            </ul>
+                                            <!--<button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">-->
+                                                <!--Match {{ pair.matchRanking }}-->
+                                                <!--<span class="caret"></span>-->
+                                            <!--</button>-->
+                                            <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px">
+                                                <option selected disabled>Match{{ $index + 1 }}</option>
+                                                <option>N/A</option>
+                                                <option>Win</option>
+                                                <option>Lose</option>
+                                            </select>
                                         </span>
                                     </span>
                                 </div>
@@ -186,6 +187,7 @@
 <script src="bootstrap/js/bootstrap.js"></script>
 <script src="bootstrap-material/dist/js/material.js"></script>
 <script src="bootstrap-material/dist/js/ripples.js"></script>
+<script src="js/api.js"></script>
 <script src="js/header.js"></script>
 <script src="js/matches.js"></script>
 <script src="js/matchloader.js"></script>
