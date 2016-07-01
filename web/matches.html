@@ -1,6 +1,8 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,6 +13,10 @@
 
     <title>Vancouver Racquets Club</title>
 
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+
+
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="bootstrap-material/dist/css/bootstrap-material-design.css" rel="stylesheet">
@@ -19,224 +25,171 @@
     <!-- Custom styles for this template -->
     <link href="css/prj-web.css" rel="stylesheet">
 
-    <script src="jquery-1.12.4.js"></script>
-    <script src="bootstrap/js/bootstrap.js"></script>
-    <script src="bootstrap-material/dist/js/material.js"></script>
-    <script src="app.js"></script>
+    <script type="x/template" id="matches-template">
+        <div class="mymodal-mask" v-show="show" transition="matches">
+            <div class="mymodal-wrapper">
+                <div id="modal{{$index}}" v-for="match in matchlist" v-if="modalActiveContent($index)">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                Match {{ match.scorecardIndex }}
+                            </div>
 
-  </head>
+                            <div class="modal-body">
+                                <div class="pair-name match-pair" v-for="pair in match.pairs">
+                                    <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                                    <span class="col-lg-3">
+                                        <span v-for="player in pair.players">
+                                            {{ player.firstName }} {{ player.lastName }} <br />
+                                        </span>
+                                    </span>
+                                    <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
+                                        <span class="dropdown">
+                                            <!--<button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">-->
+                                                <!--Match {{ pair.matchRanking }}-->
+                                                <!--<span class="caret"></span>-->
+                                            <!--</button>-->
+                                            <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px">
+                                                <option selected disabled>Match{{ $index + 1 }}</option>
+                                                <option>N/A</option>
+                                                <option>Win</option>
+                                                <option>Lose</option>
+                                            </select>
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
 
-  <body>
+                            <div class="modal-footer">
+                                <button class="btn btn-default" @click="setModalClose()" data-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
 
-      <nav class="navbar navbar-info">
-        <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-info">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#">Vancouver Racquets Club</a>
-          </div>
+        </div>
 
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a href="index.html">Ladder</a></li>
-              <li class="active"><a href="matches.html">Matches</a></li>
+                <li><a href="index.html">Ladder</a></li>
+                <li class="active"><a href="matches.html">Matches</a></li>
             </ul>
-          </div>
+        </div>
 
-        </div>
-      </nav>
+    </div>
+</nav>
 
-      <div class="header">
-        <h1 class="header-initial">Matches</h1>
-        <div class="header-right">
-          <a onclick="test()" class="btn btn-raised btn-info toggle-button">Edit Matches</a>
-        </div>
-      </div>
+<div id="header" class="header">
+    <h1 class="header-initial">{{ title }}</h1>
+    <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
+    <div class="header-right">
+        <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
+    </div>
+</div>
 
-      <div class="matches">
-        <div class="matches-left">
-          <div class="panel panel-success">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 1</h3>
+<div id="matches" class="matches">
+    <div id="matches-left" class = "matches-left">
+        <div v-for="match in matches">
+            <div v-if = "(match.scorecardIndex % 3) == 0">
+                <div class="panel panel-info">
+                    <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
+                        <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                            <span class="col-lg-4">
+                                <span v-for="player in pair.players">
+                                    {{ player.firstName }} {{ player.lastName }} <br />
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 4</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 7</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="matches-mid">
-          <div class="panel panel-success">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 2</h3>
+    </div>
+    <div id="matches-mid" class = "matches-mid">
+        <div v-for="match in matches">
+            <div v-if = "(match.scorecardIndex % 3) == 1">
+                <div class="panel panel-info">
+                    <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
+                        <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                            <span class="col-lg-4">
+                                <span v-for="player in pair.players">
+                                    {{ player.firstName }} {{ player.lastName }} <br />
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 5</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 8</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
         </div>
-        <div class="matches-right">
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 3</h3>
+    </div>
+    <div id="matches-mid" class = "matches-mid">
+        <div v-for="match in matches">
+            <div v-if = "(match.scorecardIndex % 3) == 2">
+                <div class="panel panel-info">
+                    <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
+                        <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                            <span class="col-lg-4">
+                                <span v-for="player in pair.players">
+                                    {{ player.firstName }} {{ player.lastName }} <br />
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 6</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
-          <div class="panel panel-info">
-            <div class="panel-heading">
-              <h3 class="panel-title">Match 9</h3>
-            </div>
-            <div class="panel-body">
-              <div class="pair-name match-pair">
-                <span class="label label-info position">1</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">2</span>
-                Alex Land and David Li
-              </div>
-              <div class="pair-name match-pair">
-                <span class="label label-info position">3</span>
-                Alex Land and David Li
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
+    <matches :show.sync="showModal" :matchlist="matches" :active.sync="active"></matches>
+</div>
+</body>
+<script src="js/jquery-1.12.4.js"></script>
+<script src="js/vue.js"></script>
+<script src="bootstrap/js/bootstrap.js"></script>
+<script src="bootstrap-material/dist/js/material.js"></script>
+<script src="bootstrap-material/dist/js/ripples.js"></script>
+<script src="js/api.js"></script>
+<script src="js/header.js"></script>
+<script src="js/matches.js"></script>
+<script src="js/matchloader.js"></script>
 
-  </body>
 </html>
