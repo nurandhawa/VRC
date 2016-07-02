@@ -354,7 +354,7 @@ public class DBManager {
 
     public int getLadderSize() {
         GameSession gameSession = getGameSessionLatest();
-        List<Pair> ladder = gameSession.getActivePairs();
+        List<Pair> ladder = gameSession.getAllPairs();
         return ladder.size();
     }
 
