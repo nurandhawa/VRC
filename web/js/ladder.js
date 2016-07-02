@@ -167,7 +167,7 @@ var Ladder = (function() {
 
       api.updatePairPosition(pairId, newPosition, this.refreshLadder);
       hideModal(index);
-    }
+    };
 
     Ladder.prototype.refreshLadder = function() {
         var api = new API();
