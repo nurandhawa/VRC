@@ -2,6 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import com.google.gson.Gson;
 
+import com.google.gson.GsonBuilder;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -371,7 +372,7 @@ public class DBManager {
     public String getJSONScorecards() {
         GameSession gameSession = getGameSessionLatest();
         List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         String json = gson.toJson(scorecards);
         return json;

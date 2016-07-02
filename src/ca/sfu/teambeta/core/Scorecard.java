@@ -67,6 +67,8 @@ public class Scorecard extends Persistable {
 
     public void setGameResults(Pair winner, Pair loser) {
         games.add(new Game(winner, loser));
+        winner.setPairScore(winner.getPairScore() + 1);
+        loser.setPairScore(loser.getPairScore() - 1);
         finishedGameCount++;
         if (observer != null && finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
