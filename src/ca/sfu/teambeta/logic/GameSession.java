@@ -45,6 +45,7 @@ public class GameSession extends Persistable {
 
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
+        initializeActivePlayers();
     }
 
     public List<Scorecard> createGroups(ScorecardGenerator generator) {
@@ -61,6 +62,14 @@ public class GameSession extends Persistable {
         return ladder.getPairs().stream()
                 .filter(pair -> activePairs.contains(pair))
                 .collect(Collectors.toList());
+    }
+
+    public void initializeActivePlayers(){
+        for(Pair p : this.ladder.getPairs()) {
+            if(p.isPlaying()) {
+                setPairActive(p);
+            }
+        }
     }
 
     public Set<Pair> getActivePairSet() {
