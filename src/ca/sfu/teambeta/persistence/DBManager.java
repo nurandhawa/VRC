@@ -409,7 +409,7 @@ public class DBManager {
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            gameSession = (GameSession) session.createCriteria(Ladder.class)
+            gameSession = (GameSession) session.createCriteria(GameSession.class)
                     .add(Property.forName("id").eq(gameSessionId))
                     .uniqueResult();
             tx.commit();
@@ -424,9 +424,9 @@ public class DBManager {
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
+            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
                     .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(Ladder.class)
+            gameSession = (GameSession) session.createCriteria(GameSession.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             tx.commit();
