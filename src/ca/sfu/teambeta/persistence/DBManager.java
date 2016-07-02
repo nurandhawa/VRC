@@ -331,6 +331,7 @@ public class DBManager {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         boolean activated = gameSession.setPairActive(pair);
+        gameSession.createGroups(new VrcScorecardGenerator());
         submitGameSession(gameSession);
         return activated;
     }
