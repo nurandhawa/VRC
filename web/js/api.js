@@ -88,7 +88,8 @@ var API = (function() {
         return {
             "firstName": firstName,
             "lastName": lastName,
-            "phoneNumber": phoneNumber
+            "phoneNumber": phoneNumber,
+            "existingId": -1
         };
     };
 
