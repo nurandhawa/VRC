@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose;
 import org.hibernate.annotations.Type;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -45,22 +46,26 @@ public class Ladder extends Persistable {
     }
 
     //returns false if pair was not found
+    // Must create a new List and reassign to Pairs
+    // Hibernate may sometimes use an ImmutableList,
+    // so may cause exceptions when trying to remove
     public boolean removePair(Pair pair) {
-        int index = pairs.indexOf(pair);
-        if (index != -1) { //pair was found
-            pairs.remove(index);
-        } else {
-            return false;
-        }
-        return true;
+        List<Pair> newList = new LinkedList<>(pairs);
+        boolean success = newList.remove(pair);
+        pairs = newList;
+        return success;
     }
 
     public void insertAtIndex(int index, Pair pair) {
-        pairs.add(index, pair);
+        List<Pair> newList = new LinkedList<>(pairs);
+        newList.add(index, pair);
+        pairs = newList;
     }
 
     public void insertAtEnd(Pair pair) {
-        pairs.add(pair);
+        List<Pair> newList = new LinkedList<>(pairs);
+        newList.add(pair);
+        pairs = newList;
     }
 
     public List<Pair> getPairs() {
