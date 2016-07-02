@@ -57,11 +57,15 @@ public class Ladder extends Persistable {
     }
 
     public void insertAtIndex(int index, Pair pair) {
-        pairs.add(index, pair);
+        List<Pair> newList = new LinkedList<>(pairs);
+        newList.add(index, pair);
+        pairs = newList;
     }
 
     public void insertAtEnd(Pair pair) {
-        pairs.add(pair);
+        List<Pair> newList = new LinkedList<>(pairs);
+        newList.add(pair);
+        pairs = newList;
     }
 
     public List<Pair> getPairs() {
