@@ -120,5 +120,5 @@ public class Scorecard extends Persistable {
     public int hashCode() {
         return 47 * pairs.hashCode();
     }
-    
+
 }
