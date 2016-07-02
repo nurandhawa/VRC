@@ -11,8 +11,10 @@
 
     <title>Vancouver Racquets Club</title>
 
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!-- Bootstrap core CSS -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -45,7 +47,7 @@
               <li><a href="matches.html">Matches</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-              <li class="active"><a href="login.html">Login</a></li>
+              <li><a href="login.html">Login</a></li>
             </ul>
           </div>
 
@@ -142,14 +144,17 @@
                       <div class="form-group modal-form-group">
                         <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
                         <div class="col-md-10">
-                          <input type="text" class="form-control" id="ladderPosition" value="{{ entry.position }}">
+                          <input type="text" class="form-control" id="ladderPosition"
+                                 v-model="entry.newPosition">
                         </div>
                       </div>
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete($index)">Delete pair</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-success">Save changes</button>
+                      <button type="button" class="btn btn-success" v-on:click="onUpdate($index)">
+                        Save changes
+                      </button>
                     </div>
                   </div>
                 </div>

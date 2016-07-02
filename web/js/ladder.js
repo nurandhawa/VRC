@@ -90,6 +90,7 @@ var Ladder = (function() {
                 changeMode: this.changeMode,
                 onDelete: this.deletePair,
                 onAdd: this.addPair,
+                onUpdate: this.updatePair,
                 refreshLadder: this.refreshLadder,
                 refreshMode: this.refreshMode
             }
@@ -156,6 +157,17 @@ var Ladder = (function() {
         api.addPair([player1, player2], ladderPosition, this.refreshLadder);
         $("#addPairModal").modal("hide");
     };
+
+    Ladder.prototype.updatePair = function(index, event) {
+      var api = new API();
+
+      var pair = this.ladder[index];
+      var pairId = pair.id;
+      var newPosition = pair.newPosition;
+
+      api.updatePairPosition(pairId, newPosition, this.refreshLadder);
+      hideModal(index);
+    }
 
     Ladder.prototype.refreshLadder = function() {
         var api = new API();
