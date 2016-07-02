@@ -43,7 +43,7 @@ public class GameSession extends Persistable {
     @ElementCollection
     private Map<Pair, Penalty> penalties = new HashMap<>();
 
-    GameSession(Ladder ladder) {
+    public GameSession(Ladder ladder) {
         this.ladder = ladder;
     }
 
@@ -152,7 +152,7 @@ public class GameSession extends Persistable {
     }
 
     public boolean addNewPairAtEnd(Pair newPair) {
-        return addNewPairAtIndex(newPair, ladder.getLadderLength() - 1);
+        return addNewPairAtIndex(newPair, ladder.getLadderLength());
     }
 
     @Override

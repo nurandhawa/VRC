@@ -94,7 +94,7 @@ public class AppController {
             int newPosition = -1;
             try {
                 id = Integer.parseInt(request.params(ID));
-                newPosition = Integer.parseInt(request.queryParams(POSITION));
+                newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception e) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(ID_NOT_INT + " or Position");
