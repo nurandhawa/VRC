@@ -4,62 +4,45 @@
 
 var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
-Vue.filter('filterLeft', function (array, matchNum) {
-    var filteredArray = [];
-    if (matchNum % 3 == 1) {
-        filteredArray.add(array[matchNum]);
-    }
-});
-
-Vue.component('matches', {
-    template: '#matches-template',
-    props: {
-        active: "active",
-        isActive: "isActive",
-        matchlist: "matchlist",
-        show: {
-            type: Boolean,
-            required: true,
-            twoWay: true
-        }
-    },
-    filters: {
-        filterLeft: function (matchNum) {
-            var matches = [];
-            matches.add(1);
-            matches.add(2);
-            matches.add(3);
-            return matches;
-        }
-    },
-    methods: {
-        modalActiveContent: function (i) {
-            return this.active === i;
-        },
-        setModalClose: function () {
-            this.show = false;
-            this.active = false;
-
-        },
-        saveChanges: function (index) {
-            var match = this.matchlist[index];
-            var results = [];
-
-            for (var i = 0; i < match.pairs.length; i++) {
-                var resultRow = [];
-                for (var pair in match.pairs) {
-                    resultRow.push(match.pairs[pair].results[i]);
-                }
-                results.push(resultRow);
-            }
-
-            match.results = results;
-        }
-    }
-});
-
 var Matches = (function () {
     function Matches(matchData) {
+        Vue.filter('filterLeft', function (array, matchNum) {
+            var filteredArray = [];
+            if (matchNum % 3 == 1) {
+                filteredArray.add(array[matchNum]);
+            }
+        });
+
+        Vue.component('matches', {
+            template: '#matches-template',
+            props: {
+                active: "active",
+                isActive: "isActive",
+                matchlist: "matchlist",
+                show: {
+                    type: Boolean,
+                    required: true,
+                    twoWay: true
+                }
+            },
+            filters: {
+                filterLeft: function (matchNum) {
+                    var matches = [];
+                    matches.add(1);
+                    matches.add(2);
+                    matches.add(3);
+                    return matches;
+                }
+            },
+            methods: {
+                modalActiveContent: function (i) {
+                    return this.active === i;
+                },
+                closeModal: this.closeModal,
+                saveChanges: this.saveModalChanges
+            }
+        });
+
         var editButton;
         var blankButton;
         for (var match in matchData){
@@ -71,7 +54,7 @@ var Matches = (function () {
                 template: EDIT_BUTTON_HTML,
                 methods: {
                     editMatch: function() {
-                        this.$parent.modalOpen(this.index);
+                        this.$parent.openModal(this.index);
                     }
                  }
             });
@@ -94,11 +77,7 @@ var Matches = (function () {
                 filterLeft: function () {
                     return 1;
                 },
-                modalOpen: function (i) {
-                    this.showModal = true;
-                    this.active = i;
-                    return this.active;
-                }
+                openModal: this.openModal
             },
             components: {
                 edit: editButton,
@@ -106,6 +85,36 @@ var Matches = (function () {
             }
         });
     }
+
+    Matches.prototype.openModal = function(index) {
+        this.showModal = true;
+        this.active = index;
+        return this.active;
+    };
+
+    Matches.prototype.closeModal = function() {
+        this.show = false;
+        this.active = false;
+    };
+
+    Matches.prototype.saveModalChanges = function (index) {
+        var match = this.matchlist[index];
+        var results = [];
+
+        for (var i = 0; i < match.pairs.length; i++) {
+            var resultRow = [];
+            for (var pair in match.pairs) {
+                resultRow.push(match.pairs[pair].results[i]);
+            }
+            results.push(resultRow);
+        }
+
+        var api = new API();
+        api.inputMatchResults(match.id, results, function(matchData) {
+            this.matchlist = matchData;
+        });
+        this.closeModal();
+    };
 
     Matches.prototype.changeMode = function () {
         if (this.mode === 'read') {

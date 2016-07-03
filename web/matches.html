@@ -46,10 +46,10 @@
                                     <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                         <span class="dropdown">
                                             <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="pair.results[$index]">
-                                                <option selected disabled>Match{{ $index + 1 }}</option>
+                                                <option selected disabled value="-">Match{{ $index + 1 }}</option>
                                                 <option value="-">N/A</option>
-                                                <option value="w">Win</option>
-                                                <option value="l">Lose</option>
+                                                <option value="W">Win</option>
+                                                <option value="L">Lose</option>
                                             </select>
                                         </span>
                                     </span>
@@ -57,7 +57,7 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button class="btn btn-default" @click="setModalClose()" data-dismiss="modal">
+                                <button class="btn btn-default" @click="closeModal()" data-dismiss="modal">
                                     Close
                                 </button>
                                 <button type="button" class="btn btn-primary" @click="saveChanges($index)">Save changes</button>
