@@ -119,14 +119,14 @@
                         </component>
                     </div>
                     <div class="panel-body">
-                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                       <span class="pair-name match-pair" v-for="pair in match.pairs">
                             <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
+                            <span>
                                 <span v-for="player in pair.players">
                                     {{ player.firstName }} {{ player.lastName }} <br />
                                 </span>
                             </span>
-                        </div>
+                        </span>
                     </div>
                 </div>
             </div>
