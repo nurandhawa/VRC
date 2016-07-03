@@ -35,8 +35,6 @@ public class Scorecard extends Persistable {
     @Transient
     Observer observer = null;
     int finishedGameCount = 0;
-    @Expose
-    private int scorecardIndex;
 
     public Scorecard() {
 
@@ -69,6 +67,8 @@ public class Scorecard extends Persistable {
 
     public void setGameResults(Pair winner, Pair loser) {
         games.add(new Game(winner, loser));
+        winner.setPairScore(winner.getPairScore() + 1);
+        loser.setPairScore(loser.getPairScore() - 1);
         finishedGameCount++;
         if (observer != null && finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
@@ -123,11 +123,4 @@ public class Scorecard extends Persistable {
         return 47 * pairs.hashCode();
     }
 
-    public int getScorecardIndex() {
-        return scorecardIndex;
-    }
-
-    public void setScorecardIndex(int scorecardIndex) {
-        this.scorecardIndex = scorecardIndex;
-    }
 }

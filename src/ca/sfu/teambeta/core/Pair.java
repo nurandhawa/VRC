@@ -57,7 +57,7 @@ public class Pair extends Persistable {
         dateCreated = new Date();
         position = 0;
         penalty = 0;
-        this.isPlaying = true;
+        this.isPlaying = false;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -110,5 +110,13 @@ public class Pair extends Persistable {
 
     public void setPairScore(int pairScore) {
         this.pairScore = pairScore;
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
     }
 }

@@ -45,11 +45,12 @@ public class GameSession extends Persistable {
 
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
+        initializeActivePlayers();
+        createGroups(new VrcScorecardGenerator());
     }
 
     public List<Scorecard> createGroups(ScorecardGenerator generator) {
         scorecards = generator.generateScorecards(getActivePairs());
-        setScorecardIndex();
         return Collections.unmodifiableList(scorecards);
     }
 
@@ -61,6 +62,14 @@ public class GameSession extends Persistable {
         return ladder.getPairs().stream()
                 .filter(pair -> activePairs.contains(pair))
                 .collect(Collectors.toList());
+    }
+
+    public void initializeActivePlayers() {
+        for (Pair p : this.ladder.getPairs()) {
+            if (p.isPlaying()) {
+                setPairActive(p);
+            }
+        }
     }
 
     public Set<Pair> getActivePairSet() {
@@ -176,13 +185,12 @@ public class GameSession extends Persistable {
     }
 
     public Scorecard getScorecardByIndex(int index) {
-        return scorecards.get(index);
-    }
-
-    private void setScorecardIndex() {
-        for (int i = 0; i < scorecards.size(); i++) {
-            scorecards.get(i).setScorecardIndex(i);
+        for (Scorecard s : scorecards) {
+            if (s.getID() == index) {
+                return s;
+            }
         }
+        return null;
     }
 
 

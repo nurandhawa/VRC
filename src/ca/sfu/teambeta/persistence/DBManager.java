@@ -2,6 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import com.google.gson.Gson;
 
+import com.google.gson.GsonBuilder;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -259,13 +260,13 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                setGameResults(teamWon.getID(), teamLost.getID());
+                s.setGameResults(teamWon,teamLost);
+                //setGameResults(teamWon.getID(), teamLost.getID());
             }
             winCount = 0;
             teamLost = null;
             teamWon = null;
         }
-
         submitGameSession(gameSession);
     }
 
@@ -331,6 +332,7 @@ public class DBManager {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         boolean activated = gameSession.setPairActive(pair);
+        gameSession.createGroups(new VrcScorecardGenerator());
         submitGameSession(gameSession);
         return activated;
     }
@@ -369,7 +371,7 @@ public class DBManager {
     public String getJSONScorecards() {
         GameSession gameSession = getGameSessionLatest();
         List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         String json = gson.toJson(scorecards);
         return json;
