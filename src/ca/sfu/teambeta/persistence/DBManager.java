@@ -517,6 +517,10 @@ public class DBManager {
     public void reorderLadder() {
         GameSession gameSession = getGameSessionLatest();
         gameSession.reorderLadder(new VrcLadderReorderer());
+        List<Pair> reorderedPairs = gameSession.getReorderedLadder();
+        Ladder nextWeekLadder = new Ladder(reorderedPairs);
+        GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
         submitGameSession(gameSession);
+        submitGameSession(nextWeekGameSession);
     }
 }
