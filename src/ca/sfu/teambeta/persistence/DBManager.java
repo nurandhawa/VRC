@@ -1,7 +1,10 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import com.google.gson.Gson;
-
 import com.google.gson.GsonBuilder;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -11,19 +14,9 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
-
-import ca.sfu.teambeta.core.Game;
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -449,12 +442,14 @@ public class DBManager {
         }
     }
 
-    public User getUser(String email) throws HibernateException {
+    public User getUser(String email) {
         Transaction tx = null;
         User user = null;
         try {
             tx = session.beginTransaction();
-            user = session.get(User.class, email);
+            user = (User) session.createCriteria(User.class)
+                    .add(Restrictions.eq("email", email))
+                    .uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();

@@ -1,17 +1,10 @@
 package ca.sfu.teambeta.logic;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.ArrayList;
-
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.persistence.DBManager;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * AccountManager handles:
@@ -42,7 +35,8 @@ public class AccountManager {
 
     private static final String DEMO_EMAIL = "admin@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
-    private static ArrayList<User> dummyUsers = new ArrayList<User>();
+    //private static ArrayList<User> dummyUsers = new ArrayList<>();
+
 
     // MARK: - The Core Login/Registration Methods
     public static String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
@@ -114,7 +108,7 @@ public class AccountManager {
     // MARK: - Database Methods
     private static User getUserFromDB(String email) throws NoSuchUserException {
         // Note: Login should use a read-only database user.
-
+        /*
         for (User user : dummyUsers) {
             if (user.getEmail().equals(email)) {
                 return user;
@@ -122,9 +116,25 @@ public class AccountManager {
         }
 
         throw new NoSuchUserException("The user '" + email + "' does not exist");
+        */
+
+        org.hibernate.SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+
+        User user = dbManager.getUser(email);
+
+        if (user == null) {
+            throw new NoSuchUserException("The user '" + email + "' does not exist");
+        }
+
+        System.out.println(user.getEmail());
+        System.out.println(user.getPasswordHash());
+
+        return user;
     }
 
     private static void saveNewUser(User newUser) throws AccountRegistrationException {
+        /*
         for (User user : dummyUsers) {
             if (user.getEmail().equals(newUser.getEmail())) {
                 throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
@@ -132,8 +142,15 @@ public class AccountManager {
         }
 
         dummyUsers.add(newUser);
+        */
 
+        org.hibernate.SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+
+        dbManager.addNewUser(newUser);
+        System.out.println("Saved user: " + newUser.getEmail());
     }
+
 
     // MARK: - Miscellaneous Methods
     private static void validatePhoneNumberFormat(String phoneNumber) throws InvalidUserInputException {
@@ -187,6 +204,7 @@ public class AccountManager {
 
     // MARK: - Main Function (Quick and dirty testing for now - will be refactored into tests)
     public static void main(String[] args) {
+
         // Register a user
         try {
             register(DEMO_EMAIL, DEMO_PASSWORD);
@@ -201,17 +219,33 @@ public class AccountManager {
             return;
         }
 
+        /*
+        // Register the same user again (Should fail with duplicate user email)
+        try {
+            register(DEMO_EMAIL, DEMO_PASSWORD);
+        } catch (InternalHashingException e) {
+            System.out.println(e.getMessage());
+            return;
+        } catch (InvalidUserInputException e) {
+            System.out.println(e.getMessage());
+            return;
+        } catch (AccountRegistrationException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        */
 
-        // Login a user
+
+        // Login the user registered above
         String userSessionId = "";
 
         try {
-            userSessionId = login("admin@vrc.com", "demoPass");
+            userSessionId = login(DEMO_EMAIL, DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
         } catch (NoSuchUserException e) {
-            System.out.println("No such user");
+            System.out.println(e.getMessage());
             return;
         } catch (InvalidUserInputException e) {
             System.out.println(e.getMessage());
@@ -222,5 +256,7 @@ public class AccountManager {
         }
 
         System.out.println("User SessionInformation ID: " + userSessionId);
+
     }
+
 }
