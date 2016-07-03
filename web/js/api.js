@@ -174,8 +174,12 @@ var API = (function() {
             url: SERVER_URL + "/matches"
         })
         .done(function (response) {
+            var matches = JSON.parse(response);
+            matches.forEach(function(match, i) {
+                match["scorecardIndex"] = i;
+            });
             if (doneCallback) {
-                doneCallback(JSON.parse(response));
+                doneCallback(matches);
             }
         })
         .fail(function(response) {

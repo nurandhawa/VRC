@@ -267,8 +267,8 @@
         }
     ];
 
-    // var api = new API();
-    // api.getMatches(function (matchData) {
+    var api = new API();
+    api.getMatches(function (matchData) {
         var matches = new Matches(matchData);
 
         var editFunction = function() {
@@ -277,5 +277,5 @@
 
         var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
 
-  //  });
+   });
 })();
