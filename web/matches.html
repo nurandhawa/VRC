@@ -104,7 +104,9 @@
     <h1 class="header-initial">{{ title }}</h1>
     <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
     <div class="header-right">
-        <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
+        <component :is="mode" transition="fade" transition-mode="out-in">
+        </component>
+        <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
 </div>
 
@@ -181,11 +183,11 @@
     <matches :show.sync="showModal" :matchlist="matches" :active.sync="active"></matches>
 </div>
 </body>
-<script src="js/jquery-1.12.4.js"></script>
-<script src="js/vue.js"></script>
-<script src="bootstrap/js/bootstrap.js"></script>
-<script src="bootstrap-material/dist/js/material.js"></script>
-<script src="bootstrap-material/dist/js/ripples.js"></script>
+<script src="vendors/jquery-1.12.4.js"></script>
+<script src="vendors/vue.js"></script>
+<script src="vendors/bootstrap.js"></script>
+<script src="vendors/material.js"></script>
+<script src="vendors/ripples.js"></script>
 <script src="js/api.js"></script>
 <script src="js/header.js"></script>
 <script src="js/matches.js"></script>

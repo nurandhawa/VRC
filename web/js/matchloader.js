@@ -256,6 +256,15 @@
         };
 
         var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
-
+        var saveResultsButton = Vue.extend({
+            template: '<a v-on:click="saveResults()" class="btn btn-raised btn-success header-button">Save Results</a>',
+            methods: {
+                saveResults: function() {
+                    console.log("save results");
+                }
+            },
+            parent: header.component
+        });
+        header.addButton(saveResultsButton);
    });
 })();
