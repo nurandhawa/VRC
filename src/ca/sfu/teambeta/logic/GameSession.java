@@ -30,7 +30,7 @@ public class GameSession extends Persistable {
     @OneToOne(cascade = CascadeType.ALL)
     private Ladder ladder;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Ladder reorderedLadder = null;
 
     @ManyToMany
