@@ -30,9 +30,9 @@ class Main {
         Ladder newLadder = new Ladder(ladderPairs);*/
 
         Ladder newLadder = null;
-        try{
+        try {
             newLadder = CSVReader.setupLadder();
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("INVALID CSV FILE");
         }
 

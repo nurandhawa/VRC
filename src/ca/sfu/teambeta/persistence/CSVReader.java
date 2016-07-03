@@ -18,7 +18,7 @@ import org.hibernate.SessionFactory;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static Ladder setupLadder() throws Exception{
+    public static Ladder setupLadder() throws Exception {
         List<Player> players;
         try {
             players = getInformationAboutPlayers();
