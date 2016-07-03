@@ -260,7 +260,8 @@
             template: '<a v-on:click="saveResults()" class="btn btn-raised btn-success header-button">Save Results</a>',
             methods: {
                 saveResults: function() {
-                    console.log("save results");
+                    var api = new API();
+                    api.reorderLadder();
                 }
             },
             parent: header.component

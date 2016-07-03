@@ -168,6 +168,13 @@ var API = (function() {
         });
     };
 
+    API.prototype.reorderLadder = function() {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/matches"
+        });
+    }
+
     API.prototype.getMatches = function (doneCallback, failCallback) {
         $.ajax({
             method: "GET",
