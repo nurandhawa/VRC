@@ -497,14 +497,9 @@ public class DBManager {
         return gameSession.getScorecardByIndex(index);
     }
 
-    public String reorderLadder() {
+    public void reorderLadder() {
         GameSession gameSession = getGameSessionLatest();
         gameSession.reorderLadder(new VrcLadderReorderer());
-        List<Pair> ladder = gameSession.getReorderedLadder();
-        JSONSerializer serializer = new LadderJSONSerializer(ladder,
-                gameSession.getActivePairSet());
-        String json = serializer.toJson();
         submitGameSession(gameSession);
-        return json;
     }
 }

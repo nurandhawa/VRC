@@ -214,7 +214,8 @@ public class AppController {
         });
 
         post("/api/matches", ((request, response) -> {
-            return dbManager.reorderLadder();
+            dbManager.reorderLadder();
+            return OK;
         }));
 
         //add a penalty to a pair
