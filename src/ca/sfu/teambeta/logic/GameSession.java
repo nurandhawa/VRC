@@ -43,6 +43,11 @@ public class GameSession extends Persistable {
     @ElementCollection
     private Map<Pair, Penalty> penalties = new HashMap<>();
 
+    // Default constructor for Hibernate
+    public GameSession() {
+
+    }
+
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
         initializeActivePlayers();

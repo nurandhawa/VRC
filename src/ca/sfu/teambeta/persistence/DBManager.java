@@ -1,8 +1,8 @@
 package ca.sfu.teambeta.persistence;
 
 import com.google.gson.Gson;
-
 import com.google.gson.GsonBuilder;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -74,6 +74,23 @@ public class DBManager {
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
         config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        try {
+            return config.buildSessionFactory();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    public static SessionFactory getProductionSession() {
+        Configuration config = getDefaultConfiguration();
+        config.setProperty("hibernate.hbm2ddl.auto", "update");
+        config.setProperty("hibernate.connection.username", "beta-test");
+        config.setProperty("hibernate.connection.password", "b3ta");
+        config.setProperty("hibernate.connection.pool_size", "1");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/production?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
