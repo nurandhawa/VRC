@@ -48,6 +48,30 @@ public class CSVReader {
         System.out.println(db.getJSONLadder());
     }
 
+    public static Ladder setupLadder() throws Exception{
+        List<Player> players = new ArrayList<>();
+        try {
+            players = getInformationAboutPlayers();
+        } catch (Exception exception) {
+            throw exception;
+        }
+
+        List<Pair> pairs = new ArrayList<>();
+        int index = 0;
+        Player temp = null;
+        for (Player player : players) {
+            index++;
+            if (index == 2) {
+                Pair newPair = new Pair(player, temp);
+                pairs.add(newPair);
+                index = 0;
+            }
+            temp = player;
+        }
+        Ladder ladder = new Ladder(pairs);
+        return ladder;
+    }
+
     public static List<Player> getInformationAboutPlayers() throws Exception {
         List<Player> players = new ArrayList<>();
         try (com.opencsv.CSVReader reader = new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
