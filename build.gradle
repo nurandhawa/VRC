@@ -11,6 +11,15 @@ checkstyle {
     toolVersion = "6.19"
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'ca.sfu.teambeta.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 sourceSets.main {
     java {
         srcDir 'src'
