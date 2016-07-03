@@ -75,19 +75,19 @@
                             "firstName": "Alex",
                             "lastName": "Land",
                             "phoneNumber": "",
-                            "id": 9
+                            "id": 7
                         },
                         {
                             "firstName": "Test",
                             "lastName": "Player",
                             "phoneNumber": "",
-                            "id": 10
+                            "id": 8
                         }
                     ],
-                    "position": 5,
+                    "position": 4,
                     "isPlaying": true,
                     "pairScore": 0,
-                    "id": 5
+                    "id": 4
                 }
             ],
             "scorecardIndex": 0,
@@ -98,14 +98,14 @@
                 {
                     "players": [
                         {
-                            "firstName": "Bobby",
-                            "lastName": "Chan",
+                            "firstName": "Yu",
+                            "lastName": "Billy",
                             "phoneNumber": "",
                             "id": 1
                         },
                         {
-                            "firstName": "Wing",
-                            "lastName": "Man",
+                            "firstName": "Leung",
+                            "lastName": "Ben",
                             "phoneNumber": "",
                             "id": 2
                         }
@@ -118,14 +118,14 @@
                 {
                     "players": [
                         {
-                            "firstName": "Ken",
-                            "lastName": "Hazen",
+                            "firstName": "Woolfries",
+                            "lastName": "Cameron",
                             "phoneNumber": "",
                             "id": 3
                         },
                         {
-                            "firstName": "Brian",
-                            "lastName": "Fraser",
+                            "firstName": "Troung",
+                            "lastName": "Cindy",
                             "phoneNumber": "",
                             "id": 4
                         }
@@ -138,14 +138,14 @@
                 {
                     "players": [
                         {
-                            "firstName": "Simon",
-                            "lastName": "Fraser",
+                            "firstName": "Tang",
+                            "lastName": "Bonnie",
                             "phoneNumber": "",
                             "id": 5
                         },
                         {
-                            "firstName": "Dwight",
-                            "lastName": "Howard",
+                            "firstName": "Yun",
+                            "lastName": "Carol",
                             "phoneNumber": "",
                             "id": 6
                         }
@@ -155,26 +155,6 @@
                     "pairScore": 0,
                     "id": 3
                 },
-                {
-                    "players": [
-                        {
-                            "firstName": "Alex",
-                            "lastName": "Land",
-                            "phoneNumber": "",
-                            "id": 9
-                        },
-                        {
-                            "firstName": "Test",
-                            "lastName": "Player",
-                            "phoneNumber": "",
-                            "id": 10
-                        }
-                    ],
-                    "position": 5,
-                    "isPlaying": true,
-                    "pairScore": 0,
-                    "id": 5
-                }
             ],
             "scorecardIndex": 1,
             "id": 1
