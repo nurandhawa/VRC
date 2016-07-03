@@ -35,7 +35,7 @@ public class CSVReader {
         for (Player player : playersFromVRC) {
             index++;
             db.addNewPlayer(player);
-            if(index == 2) {
+            if (index == 2) {
                 Pair newPair = new Pair(player, temp);
                 pairs.add(newPair);
                 index = 0;
