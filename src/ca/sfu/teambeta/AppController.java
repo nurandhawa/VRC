@@ -12,6 +12,7 @@ import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.UserSessionManager;
@@ -69,9 +70,13 @@ public class AppController {
             if (!endpoint.contains("login")) {
 
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
-                boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
-                if (!authenticated) {
-                    halt(getNotAuthenticatedResponse("You must be logged in view this page."));
+                try {
+                    boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
+                    if (!authenticated) {
+                        halt(401, getNotAuthenticatedResponse("You must be logged in view this page."));
+                    }
+                } catch (NoSuchSessionException exception) {
+                    halt(401, getNotAuthenticatedResponse("You must be logged in view this page."));
                 }
 
             }
@@ -91,13 +96,18 @@ public class AppController {
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
             int id;
-            int newPosition = -1;
             try {
                 id = Integer.parseInt(request.params(ID));
-                newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception e) {
                 response.status(BAD_REQUEST);
-                return getErrResponse(ID_NOT_INT + " or Position");
+                return getErrResponse(ID_NOT_INT);
+            }
+
+            int newPosition = -1;
+            try {
+                newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
+            } catch (Exception ignored) {
+
             }
 
             String status = request.queryParams(STATUS);
@@ -105,7 +115,7 @@ public class AppController {
                 status = "";
             }
 
-            boolean validNewPos = 0 < newPosition && newPosition <= dbManager.getLadderSize();
+            boolean validNewPos = 0 <= newPosition && newPosition <= dbManager.getLadderSize();
             boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
 
             if (!dbManager.hasPairID(id)) {
@@ -164,7 +174,7 @@ public class AppController {
 
             for (int i = 0; i < MAX_SIZE; i++) {
                 Integer existingId = newPlayers.get(i).getExistingId();
-                if (existingId != null) {
+                if (existingId != null && existingId >= 0) {
                     newPlayers.remove(i);
                     newPlayers.add(i, dbManager.getPlayerFromID(existingId));
                 }

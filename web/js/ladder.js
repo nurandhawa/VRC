@@ -7,6 +7,16 @@ var Ladder = (function() {
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
+    var showModal = function(index) {
+        var modalId = "#modal" + index;
+        $(modalId).modal("show");
+    };
+
+    var hideModal = function(index) {
+        var modalId = "#modal" + index;
+        $(modalId).modal("hide");
+    };
+
     function Ladder(ladderData) {
 
         var playingButton;
@@ -45,8 +55,7 @@ var Ladder = (function() {
             template: EDIT_BUTTON_HTML,
             methods: {
                 editPair: function() {
-                    var modalId = "#modal" + this.index;
-                    $(modalId).modal("show");
+                    showModal(this.index);
                 }
             }
         });
@@ -56,6 +65,19 @@ var Ladder = (function() {
             el: '#ladder',
             data: {
                 ladder: ladderData,
+                newPairData: {
+                    player1: {
+                        firstName: "",
+                        lastName: "",
+                        phoneNumber: ""
+                    },
+                    player2: {
+                        firstName: "",
+                        lastName: "",
+                        phoneNumber: ""
+                    },
+                    position: ""
+                },
                 mode: 'read'
             },
             components: {
@@ -65,17 +87,30 @@ var Ladder = (function() {
             },
             methods: {
                 changeStatus: this.changeStatus,
-                changeMode: this.changeMode
+                changeMode: this.changeMode,
+                onDelete: this.deletePair,
+                onAdd: this.addPair,
+                onUpdate: this.updatePair,
+                refreshLadder: this.refreshLadder,
+                refreshMode: this.refreshMode
             }
         });
     }
 
     Ladder.prototype.changeStatus = function(index) {
-        if (this.ladder[index].playingStatus === "playing") {
-            this.ladder[index].playingStatus = "notplaying";
+        var api = new API();
+        var pair = this.ladder[index];
+        if (pair.playingStatus === "playing") {
+            api.updatePairStatus(pair.id, "not playing", function(response) {
+                pair.isPlaying = false;
+                pair.playingStatus = "notplaying";
+            });
         }
         else {
-            this.ladder[index].playingStatus = "playing";
+            api.updatePairStatus(pair.id, "playing", function(response) {
+                pair.isPlaying = true;
+                pair.playingStatus = "playing";
+            });
         }
     };
 
@@ -89,8 +124,68 @@ var Ladder = (function() {
         else {
             this.mode = 'read';
             this.ladder.forEach(function(entry) {
-                // TODO: set status to previous state
-                entry.playingStatus = 'playing';
+                entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
+            });
+        }
+    };
+
+    Ladder.prototype.deletePair = function(index) {
+        var answer = confirm("Are you sure you want to delete this pair?");
+        if (answer) {
+            var api = new API();
+            api.removePair(this.ladder[index].id, this.refreshLadder);
+            hideModal(index);
+        }
+    };
+
+    Ladder.prototype.addPair = function(event) {
+        var api = new API();
+
+        var player1Data = this.newPairData.player1;
+        var player1 = api.prepareNewPlayer(player1Data.firstName,
+            player1Data.lastName, player1Data.phoneNumber);
+
+        var player2Data = this.newPairData.player2;
+        var player2 = api.prepareNewPlayer(player2Data.firstName,
+            player2Data.lastName, player2Data.phoneNumber);
+
+        var ladderPosition = this.newPairData.position;
+        if (ladderPosition === "") {
+            ladderPosition = -1;
+        }
+
+        api.addPair([player1, player2], ladderPosition, this.refreshLadder);
+        $("#addPairModal").modal("hide");
+    };
+
+    Ladder.prototype.updatePair = function(index, event) {
+      var api = new API();
+
+      var pair = this.ladder[index];
+      var pairId = pair.id;
+      var newPosition = pair.newPosition;
+
+      api.updatePairPosition(pairId, newPosition, this.refreshLadder);
+      hideModal(index);
+    };
+
+    Ladder.prototype.refreshLadder = function() {
+        var api = new API();
+        api.getLadder(function(ladderData) {
+            this.ladder = ladderData;
+            this.refreshMode();
+        }.bind(this));
+    };
+
+    Ladder.prototype.refreshMode = function() {
+        if (this.mode === 'edit') {
+            this.ladder.forEach(function(entry) {
+                entry.playingStatus = 'edit';
+            });
+        }
+        else {
+            this.ladder.forEach(function(entry) {
+                entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
     };
