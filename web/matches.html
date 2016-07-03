@@ -13,8 +13,8 @@
 
     <title>Vancouver Racquets Club</title>
 
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 
     <!-- Bootstrap core CSS -->
@@ -43,17 +43,17 @@
                                             {{ player.firstName }} {{ player.lastName }} <br />
                                         </span>
                                     </span>
-                                    <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
+                                    <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                         <span class="dropdown">
                                             <!--<button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">-->
                                                 <!--Match {{ pair.matchRanking }}-->
                                                 <!--<span class="caret"></span>-->
                                             <!--</button>-->
-                                            <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px">
+                                            <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="pair.results[$index]">
                                                 <option selected disabled>Match{{ $index + 1 }}</option>
-                                                <option>N/A</option>
-                                                <option>Win</option>
-                                                <option>Lose</option>
+                                                <option value="-">N/A</option>
+                                                <option value="w">Win</option>
+                                                <option value="l">Lose</option>
                                             </select>
                                         </span>
                                     </span>
@@ -64,7 +64,7 @@
                                 <button class="btn btn-default" @click="setModalClose()" data-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-primary" @click="saveChanges($index)">Save changes</button>
                             </div>
                         </div>
                     </div>
@@ -95,6 +95,9 @@
             <ul class="nav navbar-nav">
                 <li><a href="index.html">Ladder</a></li>
                 <li class="active"><a href="matches.html">Matches</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="login.html">Login</a></li>
             </ul>
         </div>
 

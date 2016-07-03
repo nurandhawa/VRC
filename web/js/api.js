@@ -168,7 +168,7 @@ var API = (function() {
         });
     };
 
-    API.prototype.getMatches = function (doneCallback) {
+    API.prototype.getMatches = function (doneCallback, failCallback) {
         $.ajax({
             method: "GET",
             url: SERVER_URL + "/matches"
@@ -189,14 +189,12 @@ var API = (function() {
         });
     };
 
-    API.prototype.inputMatchResults = function (matchId, doneCallback, failCallback) {
+    API.prototype.inputMatchResults = function (matchId, results, doneCallback, failCallback) {
         $.ajax({
             method: "PATCH",
             url: SERVER_URL + "/matches/" + matchId,
             data: JSON.stringify({
-                results: [
-                    //TODO: determine how to send results to back-end (document currently says array of ints?)
-                ]
+                results: results
             })
         })
         .done(function (response) {

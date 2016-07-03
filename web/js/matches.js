@@ -40,6 +40,20 @@ Vue.component('matches', {
             this.show = false;
             this.active = false;
 
+        },
+        saveChanges: function (index) {
+            var match = this.matchlist[index];
+            var results = [];
+
+            for (var i = 0; i < match.pairs.length; i++) {
+                var resultRow = [];
+                for (var pair in match.pairs) {
+                    resultRow.push(match.pairs[pair].results[i]);
+                }
+                results.push(resultRow);
+            }
+
+            match.results = results;
         }
     }
 });
@@ -51,7 +65,7 @@ var Matches = (function () {
         for (var match in matchData){
             editButton = null;
             blankButton = null;
-            
+
             editButton = Vue.extend({
                 props: ['column','index'],
                 template: EDIT_BUTTON_HTML,
