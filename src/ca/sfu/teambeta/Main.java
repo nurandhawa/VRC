@@ -32,7 +32,6 @@ class Main {
         Ladder newLadder = null;
         try{
             newLadder = CSVReader.setupLadder();
-            System.out.print(newLadder.getLadderLength());
         } catch(Exception e) {
             System.out.println("INVALID CSV FILE");
         }
@@ -43,6 +42,5 @@ class Main {
         dbManager.persistEntity(gameSession);
 
         AppController appController = new AppController(dbManager);
-
     }
 }

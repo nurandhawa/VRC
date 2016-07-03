@@ -18,38 +18,8 @@ import org.hibernate.SessionFactory;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static void main(String[] args) throws Exception {
-        List<Player> playersFromVRC;
-        try {
-            playersFromVRC = getInformationAboutPlayers();
-        } catch (Exception exception) {
-            throw exception;
-        }
-
-        SessionFactory factory = DBManager.getMySQLSession(false);
-        DBManager db = new DBManager(factory);
-
-        List<Pair> pairs = new ArrayList<>();
-        int index = 0;
-        Player temp = null;
-        for (Player player : playersFromVRC) {
-            index++;
-            db.addNewPlayer(player);
-            if (index == 2) {
-                Pair newPair = new Pair(player, temp);
-                pairs.add(newPair);
-                index = 0;
-            }
-            temp = player;
-        }
-        Ladder ladder = new Ladder(pairs);
-        GameSession gameSession = new GameSession(ladder);
-        db.persistEntity(gameSession);
-        System.out.println(db.getJSONLadder());
-    }
-
     public static Ladder setupLadder() throws Exception{
-        List<Player> players = new ArrayList<>();
+        List<Player> players;
         try {
             players = getInformationAboutPlayers();
         } catch (Exception exception) {
