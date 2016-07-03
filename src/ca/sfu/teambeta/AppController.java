@@ -213,6 +213,11 @@ public class AppController {
             return getOkResponse("");
         });
 
+        post("/api/matches", ((request, response) -> {
+            dbManager.reorderLadder();
+            return OK;
+        }));
+
         //add a penalty to a pair
         post("/api/matches/:id", (request, response) -> {
             int id;

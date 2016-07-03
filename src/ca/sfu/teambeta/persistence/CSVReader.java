@@ -53,7 +53,7 @@ public class CSVReader {
                 String firstName = pairInfo[1];
                 //String id = pairInfo[2];
 
-                Player player = new Player(lastName, firstName);
+                Player player = new Player(firstName, lastName);
                 players.add(player);
 
             }

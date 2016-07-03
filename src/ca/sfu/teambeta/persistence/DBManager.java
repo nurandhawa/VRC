@@ -23,6 +23,7 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
@@ -511,5 +512,11 @@ public class DBManager {
         GameSession gameSession = getGameSessionLatest();
         submitGameSession(gameSession);
         return gameSession.getScorecardByIndex(index);
+    }
+
+    public void reorderLadder() {
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.reorderLadder(new VrcLadderReorderer());
+        submitGameSession(gameSession);
     }
 }
