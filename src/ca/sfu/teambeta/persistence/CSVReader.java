@@ -9,8 +9,6 @@ import java.util.List;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.logic.GameSession;
-import org.hibernate.SessionFactory;
 
 /**
  * Created by constantin on 29/06/16.
@@ -38,8 +36,7 @@ public class CSVReader {
             }
             temp = player;
         }
-        Ladder ladder = new Ladder(pairs);
-        return ladder;
+        return new Ladder(pairs);
     }
 
     public static List<Player> getInformationAboutPlayers() throws Exception {

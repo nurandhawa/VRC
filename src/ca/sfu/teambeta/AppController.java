@@ -1,27 +1,26 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
-import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
-import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.port;
 import static spark.Spark.post;
@@ -86,7 +85,7 @@ public class AppController {
         get("/api/ladder", (request, response) -> {
             String json = dbManager.getJSONLadder();
             if (!json.isEmpty()) {
-                return dbManager.getJSONLadder();
+                return json;
             } else {
                 response.status(NOT_FOUND);
                 return getErrResponse("No ladder was found");
