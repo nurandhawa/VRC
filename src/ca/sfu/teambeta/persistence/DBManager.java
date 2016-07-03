@@ -267,7 +267,6 @@ public class DBManager {
             teamLost = null;
             teamWon = null;
         }
-
         submitGameSession(gameSession);
     }
 
