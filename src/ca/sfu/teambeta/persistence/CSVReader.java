@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.logic.GameSession;
 import org.hibernate.SessionFactory;
 
 /**
@@ -25,9 +28,24 @@ public class CSVReader {
 
         SessionFactory factory = DBManager.getMySQLSession(false);
         DBManager db = new DBManager(factory);
+
+        List<Pair> pairs = new ArrayList<>();
+        int index = 0;
+        Player temp = null;
         for (Player player : playersFromVRC) {
+            index++;
             db.addNewPlayer(player);
+            if(index == 2) {
+                Pair newPair = new Pair(player, temp);
+                pairs.add(newPair);
+                index = 0;
+            }
+            temp = player;
         }
+        Ladder ladder = new Ladder(pairs);
+        GameSession gameSession = new GameSession(ladder);
+        db.persistEntity(gameSession);
+        System.out.println(db.getJSONLadder());
     }
 
     public static List<Player> getInformationAboutPlayers() throws Exception {
