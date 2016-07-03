@@ -26,6 +26,11 @@ public class User extends Persistable {
     private Player associatedPlayer = null;
 
     // MARK: - Constructors
+    // Dafault constructor for Hibernate
+    public User() {
+
+    }
+
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
