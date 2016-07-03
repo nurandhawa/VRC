@@ -176,7 +176,7 @@ var API = (function() {
         .done(function (response) {
             var matches = JSON.parse(response);
             matches.forEach(function(match, i) {
-                match["scorecardIndex"] = i;
+                match.scorecardIndex = i;
             });
             if (doneCallback) {
                 doneCallback(matches);
