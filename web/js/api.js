@@ -179,6 +179,9 @@ var API = (function() {
                 match.scorecardIndex = i;
                 match.pairs.forEach(function(pair) {
                     pair.results = [];
+                    for (var i in match.pairs) {
+                        pair.results.push("-");
+                    }
                 });
             });
             if (doneCallback) {
