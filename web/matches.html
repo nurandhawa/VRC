@@ -40,7 +40,8 @@
                                     <div class="pair-name match-pair-left">
                                         <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
                                         <div>
-                                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                            {{ pair.players[0].firstName }} {{pair.players[0].lastName }} and
+                                            {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                                         </div>
                                         <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                             <span class="dropdown">
@@ -127,7 +128,8 @@
                        <div class="pair-name match-pair" v-for="pair in match.pairs">
                             <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
                             <div>
-                                {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                {{ pair.players[0].firstName }} {{pair.players[0].lastName }} and
+                                {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                             </div>
                         </div>
                     </div>
