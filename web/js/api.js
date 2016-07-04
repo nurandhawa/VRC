@@ -1,7 +1,7 @@
 var API = (function() {
     "use strict";
 
-    var SERVER_URL = "https://localhost:8000/api";
+    var SERVER_URL = "api";
     var LADDER_ENDPOINT = "/ladder";
     var STATUS_PARAM = "?newStatus=";
     var POSITION_PARAM = "?position=";
