@@ -459,7 +459,7 @@ public class DBManager {
 
     public void addNewUser(User user) throws AccountRegistrationException {
         String email = user.getEmail();
-        boolean uniqueEmail = getUser(email) == null;
+        boolean uniqueEmail = (getUser(email) == null);
         if (!uniqueEmail) {
             throw new AccountRegistrationException("The email '" + email + "' is already in use");
         }

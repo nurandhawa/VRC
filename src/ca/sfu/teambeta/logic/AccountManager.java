@@ -1,17 +1,10 @@
 package ca.sfu.teambeta.logic;
 
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
-
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.persistence.DBManager;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * AccountManager handles:
@@ -25,13 +18,9 @@ import ca.sfu.teambeta.persistence.DBManager;
  * -- Via Text Message (Pass back last 2 digits of phone)
  * -- Via Security Questions (Hash answer)
  * <p>
- * - Logout (If needed: Right now front-end presumed to handle deletion of cookie, thus act as a logout)
  * - Anonymous Users
  * <p>
  * <p>
- * TODO:
- * - Reset password via security question. Passback list of questions.
- * - Caching user data in memory for increased security and faster authentication (when possible)
  */
 
 public class AccountManager {
@@ -40,15 +29,25 @@ public class AccountManager {
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final int PHONE_NUMBER_LENGTH = 10;
 
-    private static final String DEMO_EMAIL = "admin@vrc.com";
-    private static final String DEMO_PASSWORD = "demoPass";
-
     private DBManager dbManager;
-    //private static ArrayList<User> dummyUsers = new ArrayList<>();
 
+    /*
+    // User for testing purposes
+    private static final String DEMO_EMAIL = "testuser@vrc.com";
+    private static final String DEMO_PASSWORD = "demoPass";
+    */
+
+    /*
+    // When testing, uncomment and use this array to mimic database interaction
+    private static List<User> usersInMemory = new ArrayList<>();
+    */
+
+
+    // MARK: Constructor
     public AccountManager(DBManager dbManager) {
         this.dbManager = dbManager;
     }
+
 
     // MARK: - The Core Login/Registration Methods
     public String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
@@ -93,7 +92,8 @@ public class AccountManager {
 
 
     // MARK: - Helper Methods
-    private User authenticateUser(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
+    private User authenticateUser(String email, String password) throws InternalHashingException,
+            NoSuchUserException, InvalidCredentialsException {
         // Get the user from the database
         User user = getUserFromDB(email);
 
@@ -119,9 +119,9 @@ public class AccountManager {
 
     // MARK: - Database Methods
     private User getUserFromDB(String email) throws NoSuchUserException {
-        // Note: Login should use a read-only database user.
         /*
-        for (User user : dummyUsers) {
+        // Uncomment to retrieve users from in-memory
+        for (User user : usersInMemory) {
             if (user.getEmail().equals(email)) {
                 return user;
             }
@@ -130,31 +130,32 @@ public class AccountManager {
         throw new NoSuchUserException("The user '" + email + "' does not exist");
         */
 
+        // Get the user from the database
         User user = dbManager.getUser(email);
 
         if (user == null) {
             throw new NoSuchUserException("The user '" + email + "' does not exist");
         }
 
-        System.out.println(user.getEmail());
-        System.out.println(user.getPasswordHash());
-
         return user;
+
     }
 
     private void saveNewUser(User newUser) throws AccountRegistrationException {
         /*
-        for (User user : dummyUsers) {
+        // Uncomment to save users in-memory
+        for (User user : usersInMemory) {
             if (user.getEmail().equals(newUser.getEmail())) {
                 throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
             }
         }
 
-        dummyUsers.add(newUser);
+        usersInMemory.add(newUser);
         */
 
+        // Add the user to the database
         dbManager.addNewUser(newUser);
-        System.out.println("Saved user: " + newUser.getEmail());
+
     }
 
 
@@ -173,7 +174,7 @@ public class AccountManager {
 
     }
 
-    public void validateEmailFormat(String email) throws InvalidUserInputException {
+    private void validateEmailFormat(String email) throws InvalidUserInputException {
         // Check that the input is valid
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
@@ -208,9 +209,10 @@ public class AccountManager {
     }
 
 
-    // MARK: - Main Function (Quick and dirty testing for now - will be refactored into tests)
+    // MARK: - Main Function
+    /*
     public static void main(String[] args) {
-        SessionFactory sessionFactory = DBManager.getMySQLSession(false);
+        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
 
         AccountManager accountManager = new AccountManager(dbManager);
@@ -228,10 +230,10 @@ public class AccountManager {
             return;
         }
 
-        /*
+
         // Register the same user again (Should fail with duplicate user email)
         try {
-            register(DEMO_EMAIL, DEMO_PASSWORD);
+            accountManager.register(DEMO_EMAIL, DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
@@ -242,7 +244,7 @@ public class AccountManager {
             System.out.println(e.getMessage());
             return;
         }
-        */
+
 
 
         // Login the user registered above
@@ -267,5 +269,6 @@ public class AccountManager {
         System.out.println("User SessionInformation ID: " + userSessionId);
 
     }
+    */
 
 }
