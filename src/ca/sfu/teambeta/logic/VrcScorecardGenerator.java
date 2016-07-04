@@ -10,24 +10,27 @@ import ca.sfu.teambeta.core.Scorecard;
  * Created by Gordon Shieh on 25/06/16.
  */
 public class VrcScorecardGenerator implements ScorecardGenerator {
+    private static final int THREE_PAIR_GROUP = 3;
+    private static final int FOUR_PAIR_GROUP = 4;
+
     @Override
     public List<Scorecard> generateScorecards(List<Pair> activePairs) {
         int playingCount = activePairs.size();
 
         List<Scorecard> scorecards = new ArrayList<>();
 
-        if (playingCount % 3 == 0) {
+        if (playingCount % THREE_PAIR_GROUP == 0) {
             //All 3 team groups.
-            int noOfTripleGroups = playingCount / 3;
+            int noOfTripleGroups = playingCount / THREE_PAIR_GROUP;
             makeTripleGroups(scorecards, noOfTripleGroups, activePairs);
-        } else if (playingCount % 3 == 1) {
+        } else if (playingCount % THREE_PAIR_GROUP == 1) {
             //One 4 team group.
-            int noOftripleGroups = playingCount / 3 - 1;
+            int noOftripleGroups = playingCount / THREE_PAIR_GROUP - 1;
             int currentIndex = makeTripleGroups(scorecards, noOftripleGroups, activePairs);
             makeQuadGroup(scorecards, currentIndex, activePairs);
         } else {
             //Two 4 team groups.
-            int noOftripleGroups = playingCount / 3 - 2;
+            int noOftripleGroups = playingCount / THREE_PAIR_GROUP - 2;
             int currentIndex = makeTripleGroups(scorecards, noOftripleGroups, activePairs);
             makeQuadGroup(scorecards, currentIndex, activePairs);
         }
@@ -39,7 +42,7 @@ public class VrcScorecardGenerator implements ScorecardGenerator {
         for (int i = num; i < activePairs.size(); i++) {
             groupings.add(activePairs.get(i));
 
-            if (groupings.size() == 4) {
+            if (groupings.size() == FOUR_PAIR_GROUP) {
                 Scorecard sc = new Scorecard(groupings, null);
                 scorecards.add(sc);
                 groupings.clear();
@@ -52,13 +55,13 @@ public class VrcScorecardGenerator implements ScorecardGenerator {
         int indexPosition = 0;
         List<Pair> groupings = new ArrayList<>();
 
-        if(num == indexPosition) {
+        if (num == indexPosition) {
             return indexPosition;
         }
         for (int i = 0; i < activePairs.size(); i++) {
             groupings.add(activePairs.get(i));
 
-            if (groupings.size() == 3) {
+            if (groupings.size() == THREE_PAIR_GROUP) {
                 Scorecard sc = new Scorecard(groupings, null);
                 scorecards.add(sc);
                 System.out.println();
