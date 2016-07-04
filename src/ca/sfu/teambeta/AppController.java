@@ -60,7 +60,7 @@ public class AppController {
     public static final String JAR_STATIC_HTML_PATH = "/web";
 
     public static final int DEVELOP_SERVER_PORT = 8000;
-    public static final int JAR_SERVER_PORT = 80;
+    public static final int JAR_SERVER_PORT = 443;
 
     private static Gson gson;
     private final String SESSION_TOKEN_KEY = "sessionToken";
