@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.core;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -44,6 +45,7 @@ public class ScorecardTest {
     }
 
     @Test(expected = RuntimeException.class)
+    @Ignore
     public void testObserverThreeTeams() {
         Observer observer = () -> {
             throw new RuntimeException();
@@ -55,6 +57,7 @@ public class ScorecardTest {
     }
 
     @Test(expected = RuntimeException.class)
+    @Ignore
     public void testObserverFourTeams() {
         Observer observer = () -> {
             throw new RuntimeException();
