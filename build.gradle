@@ -13,10 +13,13 @@ checkstyle {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'ca.sfu.teambeta.Main'
+        attributes 'Main-Class': 'ca.sfu.teambeta.JarEntry'
     }
     from {
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    into('web') {
+        from 'web'
     }
 }
 
