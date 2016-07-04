@@ -21,6 +21,7 @@ jar {
     into('web') {
         from 'web'
     }
+    from 'testkeystore.jks'
 }
 
 sourceSets.main {
