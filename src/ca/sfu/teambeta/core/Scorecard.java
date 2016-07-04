@@ -32,6 +32,8 @@ public class Scorecard extends Persistable {
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
     List<Pair> pairs;
+    @Expose
+    boolean isDone;
     @Transient
     Observer observer = null;
     int finishedGameCount = 0;
@@ -43,6 +45,7 @@ public class Scorecard extends Persistable {
     public Scorecard(List<Pair> pairs, Observer obs) {
         // Better make a copy of pairs, just in case it changes
         this.pairs = new ArrayList<>(pairs);
+        this.isDone = false;
         this.observer = obs;
     }
 
@@ -70,9 +73,9 @@ public class Scorecard extends Persistable {
         winner.setPairScore(winner.getPairScore() + 1);
         loser.setPairScore(loser.getPairScore() - 1);
         finishedGameCount++;
-        if (observer != null && finishedGameCount == pairs.size()) {
+        if (finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
-            observer.done();
+            this.isDone = true;
         }
     }
 

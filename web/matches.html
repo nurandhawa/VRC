@@ -40,7 +40,8 @@
                                     <div class="pair-name match-pair-left">
                                         <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
                                         <div>
-                                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                            {{ pair.players[0].firstName }} {{pair.players[0].lastName }} and
+                                            {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                                         </div>
                                         <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                             <span class="dropdown">
@@ -53,8 +54,8 @@
                                         </span>
                                     </div>
                                     <div class="match-pair-right">
-                                        <button class="btn btn-xs btn-danger" v-bind:class="{'btn-raised': pair.latePenalty}" @click="applyPenalty(pair, 'late', $event)">Late</button>
-                                        <button class="btn btn-xs btn-danger" v-bind:class="{'btn-raised': pair.absentPenalty}" @click="applyPenalty(pair, 'miss', $event)">Absent</button>
+                                        <button class="btn btn-xs btn-danger" v-bind:class="pair.latePenalty" @click="applyPenalty(pair, 'late', $event)">Late</button>
+                                        <button class="btn btn-xs btn-danger" v-bind:class="pair.absentPenalty" @click="applyPenalty(pair, 'miss', $event)">Absent</button>
                                     </div>
                                 </div>
                             </div>
@@ -117,8 +118,8 @@
     <div id="matches-left" class = "matches-left">
         <div v-for="match in matches">
             <div v-if = "(match.scorecardIndex % 3) == 0">
-                <div class="panel panel-info">
-                    <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
+                <div class="panel" v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
+                    <div id="match{{match.scorecardIndex}}" class="match-heading panel-heading">
                         <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
                         </component>
@@ -127,7 +128,8 @@
                        <div class="pair-name match-pair" v-for="pair in match.pairs">
                             <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
                             <div>
-                                {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                {{ pair.players[0].firstName }} {{pair.players[0].lastName }} and
+                                {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                             </div>
                         </div>
                     </div>
@@ -138,7 +140,7 @@
     <div id="matches-mid" class = "matches-mid">
         <div v-for="match in matches">
             <div v-if = "(match.scorecardIndex % 3) == 1">
-                <div class="panel panel-info">
+                <div class="panel" v-bind:class="{ 'panel-info': !isDone, 'panel-success': isDone }">
                     <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
                         <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
@@ -159,7 +161,7 @@
     <div id="matches-mid" class = "matches-mid">
         <div v-for="match in matches">
             <div v-if = "(match.scorecardIndex % 3) == 2">
-                <div class="panel panel-info">
+                <div class="panel" v-bind:class.sync="{ 'panel-info': !isDone, 'panel-success': isDone }">
                     <div id="match{{match.scorecardIndex}}" class="panel-info match-heading panel-heading ">
                         <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">

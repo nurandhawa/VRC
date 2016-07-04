@@ -24,7 +24,8 @@ var API = (function() {
             if (doneCallback) {
                 var ladderData = JSON.parse(response);
                 ladderData.forEach(function(pair) {
-                    pair.teamName = pair.players[0].firstName + " and " + pair.players[1].firstName;
+                    pair.teamName = pair.players[0].firstName + " " + pair.players[0].lastName + " and " +
+                        pair.players[1].firstName + " " + pair.players[1].lastName;
                     pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
                 });
                 doneCallback(ladderData);
@@ -189,6 +190,12 @@ var API = (function() {
                     for (var i in match.pairs) {
                         pair.results.push("-");
                     }
+                    pair.absentPenalty = {
+                        'btn-raised': false
+                    };
+                    pair.latePenalty = {
+                        'btn-raised': false
+                    };
                 });
             });
             if (doneCallback) {
