@@ -59,17 +59,20 @@ public class AppController {
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
     public static final String JAR_STATIC_HTML_PATH = "/web";
 
+    public static final int DEVELOP_SERVER_PORT = 8000;
+    public static final int JAR_SERVER_PORT = 80;
+
     private static Gson gson;
     private final String SESSION_TOKEN_KEY = "sessionToken";
 
-    public AppController(DBManager dbManager, String staticFilePath) {
+    public AppController(DBManager dbManager, int port, String staticFilePath) {
         final AccountManager accountManager = new AccountManager(dbManager);
-        port(8000);
+        port(port);
         staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-        secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
+        String keystorePath = this.getClass().getClassLoader().getResource(KEYSTORE_LOCATION).toString();
+        secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
         /*before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in

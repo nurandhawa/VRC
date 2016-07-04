@@ -27,6 +27,7 @@ class Main {
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
-        AppController appController = new AppController(dbManager, AppController.DEVELOP_STATIC_HTML_PATH);
+        AppController appController = new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
+                AppController.DEVELOP_STATIC_HTML_PATH);
     }
 }
