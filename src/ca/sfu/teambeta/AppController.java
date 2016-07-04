@@ -1,26 +1,26 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
-import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
-import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.port;
 import static spark.Spark.post;
@@ -56,6 +56,7 @@ public class AppController {
     private final String SESSION_TOKEN_KEY = "sessionToken";
 
     public AppController(DBManager dbManager) {
+        final AccountManager accountManager = new AccountManager(dbManager);
         port(8000);
         staticFiles.location(".");
 
@@ -307,7 +308,7 @@ public class AppController {
             String errMessage = "";
             String sessionToken = "";
             try {
-                sessionToken = AccountManager.login(email, pwd);
+                sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
             } catch (InternalHashingException e) {
@@ -332,7 +333,7 @@ public class AppController {
 
             String message = "";
             try {
-                AccountManager.register(email, pwd);
+                accountManager.register(email, pwd);
                 return getOkResponse("Account registered");
             } catch (InternalHashingException e) {
                 message = e.getMessage();
