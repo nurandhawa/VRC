@@ -87,6 +87,22 @@
 .match-pair {
   height: 40px;
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.match-pair-left {
+    flex: 1;
+}
+
+.match-pair-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.match-pair-button {
+
 }
 
 .modal-pair {

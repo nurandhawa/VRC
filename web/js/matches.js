@@ -39,6 +39,7 @@ var Matches = (function () {
                     return this.active === i;
                 },
                 closeModal: this.closeModal,
+                applyPenalty: this.applyPenalty,
                 saveChanges: this.saveModalChanges
             }
         });
@@ -95,6 +96,19 @@ var Matches = (function () {
     Matches.prototype.closeModal = function() {
         this.show = false;
         this.active = false;
+    };
+
+    Matches.prototype.applyPenalty = function(pair, penaltyType, event) {
+        if (penaltyType === "late") {
+            pair.latePenalty = true;
+        }
+        else if (penaltyType === "miss") {
+            pair.absentPenalty = true;
+        }
+        var api = new API();
+        api.addPenalty(pair.id, penaltyType, function(response) {
+            $(event.srcElement).addClass("btn-raised");
+        });
     };
 
     Matches.prototype.saveModalChanges = function (index) {
