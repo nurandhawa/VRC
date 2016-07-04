@@ -9,10 +9,6 @@ import java.security.SecureRandom;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import ca.sfu.teambeta.core.SessionInformation;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-
 /**
  * UserSessionManager handles:
  * - Creating a new session
@@ -24,13 +20,10 @@ import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
  * - Backing session's up to database
  * <p>
  * <p>
- * TODO:
- * - Have a UDID as the key to our 'sessions' dictionary so that the user may login on multiple devices
  */
 
 public class UserSessionManager {
     private static Dictionary<String, SessionInformation> sessions = new Hashtable<>();
-    //private static final String DEMO_SESSION_ID = "T3STS355IONID";
 
 
     // MARK: - The Core SessionInformation Methods
@@ -84,7 +77,7 @@ public class UserSessionManager {
     }
 
     private static String generateRandomSessionID() {
-        // See citation.txt for more information
+        // See citations.txt for more information
         final int MAX_BIT_LENGTH = 130;
         final int ENCODING_BASE = 32;
 
@@ -106,62 +99,5 @@ public class UserSessionManager {
     public static int numUsersLoggedIn() {
         return sessions.size();
     }
-
-
-    // MARK: Main Function (Quick and dirty testing for now - will be refactored into tests)
-    /*
-    public static void main(String[] args) {
-        // Creating a session
-        User testUser1 = new User("admin@vrc.ca", "pwHash1");
-        User testUser2 = new User("john@vrc.ca", "pwHash2");
-
-        String user1SessionID = createNewSession(testUser1);
-        String user2SessionID = createNewSession(testUser2);
-<<<<<<< HEAD
-
-        System.out.println(user1SessionID);
-        System.out.println(user2SessionID);
-=======
-
-        System.out.println(user1SessionID);
-        System.out.println(user2SessionID);
-
-        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 2
->>>>>>> 61718011f903e8b0dac73380481d56170b6950fe
-
-        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 2
-
-
-        // Authenticating SessionID's
-        boolean sessionIDStatus;
-
-<<<<<<< HEAD
-=======
-        // Authenticating SessionID's
-        boolean sessionIDStatus;
-
->>>>>>> 61718011f903e8b0dac73380481d56170b6950fe
-        try {
-            sessionIDStatus = authenticateSession(user1SessionID);
-        } catch (NoSuchSessionException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
-        System.out.println(sessionIDStatus);
-
-
-        // Deleting a session
-        try {
-            UserSessionManager.deleteSession(user1SessionID);
-        } catch (NoSuchSessionException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
-        System.out.println("Number of sessions: " + UserSessionManager.numUsersLoggedIn()); // Will be 1 now
-
-    }
-    */
 
 }
