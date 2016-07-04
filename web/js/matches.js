@@ -100,14 +100,18 @@ var Matches = (function () {
 
     Matches.prototype.applyPenalty = function(pair, penaltyType, event) {
         if (penaltyType === "late") {
-            pair.latePenalty = true;
+            pair.latePenalty = {
+                'btn-raised': true
+            };
         }
         else if (penaltyType === "miss") {
-            pair.absentPenalty = true;
+            pair.absentPenalty = {
+                'btn-raised': true
+            };
         }
         var api = new API();
         api.addPenalty(pair.id, penaltyType, function(response) {
-            $(event.srcElement).addClass("btn-raised");
+            // $(event.srcElement).addClass("btn-raised");
         });
     };
 

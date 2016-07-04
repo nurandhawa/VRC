@@ -190,6 +190,12 @@ var API = (function() {
                     for (var i in match.pairs) {
                         pair.results.push("-");
                     }
+                    pair.absentPenalty = {
+                        'btn-raised': false
+                    };
+                    pair.latePenalty = {
+                        'btn-raised': false
+                    };
                 });
             });
             if (doneCallback) {
