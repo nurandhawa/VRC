@@ -52,6 +52,9 @@ public class VrcScorecardGenerator implements ScorecardGenerator {
         int indexPosition = 0;
         List<Pair> groupings = new ArrayList<>();
 
+        if(num == indexPosition) {
+            return indexPosition;
+        }
         for (int i = 0; i < activePairs.size(); i++) {
             groupings.add(activePairs.get(i));
 
