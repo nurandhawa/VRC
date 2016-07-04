@@ -168,14 +168,31 @@ var API = (function() {
         });
     };
 
-    API.prototype.getMatches = function (doneCallback) {
+    API.prototype.reorderLadder = function() {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/matches"
+        });
+    };
+
+    API.prototype.getMatches = function (doneCallback, failCallback) {
         $.ajax({
             method: "GET",
             url: SERVER_URL + "/matches"
         })
         .done(function (response) {
+            var matches = JSON.parse(response);
+            matches.forEach(function(match, i) {
+                match.scorecardIndex = i;
+                match.pairs.forEach(function(pair) {
+                    pair.results = [];
+                    for (var i in match.pairs) {
+                        pair.results.push("-");
+                    }
+                });
+            });
             if (doneCallback) {
-                doneCallback(JSON.parse(response));
+                doneCallback(matches);
             }
         })
         .fail(function(response) {
@@ -189,14 +206,12 @@ var API = (function() {
         });
     };
 
-    API.prototype.inputMatchResults = function (matchId, doneCallback, failCallback) {
+    API.prototype.inputMatchResults = function (matchId, results, doneCallback, failCallback) {
         $.ajax({
             method: "PATCH",
             url: SERVER_URL + "/matches/" + matchId,
             data: JSON.stringify({
-                results: [
-                    //TODO: determine how to send results to back-end (document currently says array of ints?)
-                ]
+                results: results
             })
         })
         .done(function (response) {

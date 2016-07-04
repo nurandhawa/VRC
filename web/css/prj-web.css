@@ -51,7 +51,8 @@
 
 .position {
   margin-right: 10px;
-  font-size: 1.2em
+  font-size: 1.2em;
+  width: 30px;
 }
 
 .toggle-button {
@@ -85,8 +86,42 @@
 
 .match-pair {
   height: 40px;
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
+.match-pair-left {
+    flex: 1;
+}
+
+.match-pair-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.match-pair-button {
+
+}
+
+.modal-pair {
+    height: 40px;
+}
+
+.modal-dropdown {
+    margin: 0; padding: 5px
+}
+
+.modal-dropdown-group {
+    position: relative; display: inline-block; vertical-align: top;
+}
+.container_row {
+    border: 1px solid red;
+    height: 50px;
+    margin: 0;
+    position: relative;
+}
 .fade-transition {
   transition: opacity .3s ease;
 }

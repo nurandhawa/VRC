@@ -251,7 +251,8 @@ public class AppController {
         //Show a list of matches
         get("/api/matches", (request, response) -> {
             String json = dbManager.getJSONScorecards();
-            if (!json.isEmpty()) {
+            final String EMPTY_JSON_ARRAY = "[]";
+            if (!json.equals(EMPTY_JSON_ARRAY)) {
                 response.status(OK);
                 return json;
             } else {

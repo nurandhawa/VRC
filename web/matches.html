@@ -13,8 +13,8 @@
 
     <title>Vancouver Racquets Club</title>
 
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 
     <!-- Bootstrap core CSS -->
@@ -32,39 +32,38 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                Match {{ match.scorecardIndex }}
+                                Edit Match {{ match.scorecardIndex + 1 }}
                             </div>
 
                             <div class="modal-body">
-                                <div class="pair-name match-pair" v-for="pair in match.pairs">
-                                    <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                                    <span class="col-lg-3">
-                                        <span v-for="player in pair.players">
-                                            {{ player.firstName }} {{ player.lastName }} <br />
+                                <div class="match-pair" v-for="pair in match.pairs">
+                                    <div class="pair-name match-pair-left">
+                                        <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
+                                        <div>
+                                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                        </div>
+                                        <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
+                                            <span class="dropdown">
+                                                <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="pair.results[$index]">
+                                                    <option value="-">N/A</option>
+                                                    <option value="W">Win</option>
+                                                    <option value="L">Lose</option>
+                                                </select>
+                                            </span>
                                         </span>
-                                    </span>
-                                    <span v-for="pair in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
-                                        <span class="dropdown">
-                                            <!--<button class="btn btn-primary" style="margin: 0; padding: 5px" type="button" data-toggle="dropdown">-->
-                                                <!--Match {{ pair.matchRanking }}-->
-                                                <!--<span class="caret"></span>-->
-                                            <!--</button>-->
-                                            <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px">
-                                                <option selected disabled>Match{{ $index + 1 }}</option>
-                                                <option>N/A</option>
-                                                <option>Win</option>
-                                                <option>Lose</option>
-                                            </select>
-                                        </span>
-                                    </span>
+                                    </div>
+                                    <div class="match-pair-right">
+                                        <button class="btn btn-xs btn-danger" v-bind:class="{'btn-raised': pair.latePenalty}" @click="applyPenalty(pair, 'late', $event)">Late</button>
+                                        <button class="btn btn-xs btn-danger" v-bind:class="{'btn-raised': pair.absentPenalty}" @click="applyPenalty(pair, 'miss', $event)">Absent</button>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="modal-footer">
-                                <button class="btn btn-default" @click="setModalClose()" data-dismiss="modal">
+                                <button class="btn btn-default" @click="closeModal()" data-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" class="btn btn-primary">Save changes</button>
+                                <button type="button" class="btn btn-primary" @click="saveChanges($index)">Save changes</button>
                             </div>
                         </div>
                     </div>
@@ -96,6 +95,9 @@
                 <li><a href="index.html">Ladder</a></li>
                 <li class="active"><a href="matches.html">Matches</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="login.html">Login</a></li>
+            </ul>
         </div>
 
     </div>
@@ -105,7 +107,9 @@
     <h1 class="header-initial">{{ title }}</h1>
     <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
     <div class="header-right">
-        <a v-on:click="onClick()" class="btn btn-raised btn-primary toggle-button">{{ buttonTitle }}</a>
+        <component :is="mode" transition="fade" transition-mode="out-in">
+        </component>
+        <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
 </div>
 
@@ -120,13 +124,11 @@
                         </component>
                     </div>
                     <div class="panel-body">
-                        <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
+                       <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                                {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -144,12 +146,10 @@
                     </div>
                     <div class="panel-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,12 +167,10 @@
                     </div>
                     <div class="panel-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -182,11 +180,11 @@
     <matches :show.sync="showModal" :matchlist="matches" :active.sync="active"></matches>
 </div>
 </body>
-<script src="js/jquery-1.12.4.js"></script>
-<script src="js/vue.js"></script>
-<script src="bootstrap/js/bootstrap.js"></script>
-<script src="bootstrap-material/dist/js/material.js"></script>
-<script src="bootstrap-material/dist/js/ripples.js"></script>
+<script src="vendors/jquery-1.12.4.js"></script>
+<script src="vendors/vue.js"></script>
+<script src="vendors/bootstrap.js"></script>
+<script src="vendors/material.js"></script>
+<script src="vendors/ripples.js"></script>
 <script src="js/api.js"></script>
 <script src="js/header.js"></script>
 <script src="js/matches.js"></script>
