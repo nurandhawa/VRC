@@ -24,7 +24,6 @@ import ca.sfu.teambeta.core.Scorecard;
 public class LadderReordererTest {
 
     @Test
-    @Ignore("Test is broken since only two pairs are active")
     public void testLogicFunctionality() {
         Pair p1 = new Pair(new Player("", "David"),
                 new Player("", "Bob"), true);
@@ -47,7 +46,7 @@ public class LadderReordererTest {
 
         Pair p6 = new Pair(new Player("", "Ian"),
                 new Player("", "Camden"), true);
-        List<Pair> pairs2 = Arrays.asList(p1, p2, p3);
+        List<Pair> pairs2 = Arrays.asList(p4, p5, p6);
         Scorecard sc2 = new Scorecard(pairs2, null);
 
         sc2.setGameResults(p4, p5);
@@ -73,10 +72,6 @@ public class LadderReordererTest {
         Map<Pair, Penalty> penalties = new HashMap<>();
         penalties.put(p1, Penalty.MISSING);
         penalties.put(p2, Penalty.LATE);
-        penalties.put(p7, Penalty.ABSENT);
-        penalties.put(p8, Penalty.ABSENT);
-        penalties.put(p9, Penalty.ABSENT);
-
 
         LadderReorderer ladderReorderer = new VrcLadderReorderer();
         List<Pair> afterProcessing = ladderReorderer.reorder(fakeDB(), scorecards, activePairs, penalties);
