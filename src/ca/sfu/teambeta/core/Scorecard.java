@@ -76,6 +76,7 @@ public class Scorecard extends Persistable {
         if (finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
             this.isDone = true;
+            this.observer.done();
         }
     }
 
