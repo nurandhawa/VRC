@@ -131,9 +131,6 @@ public class GameSession extends Persistable {
 
     public void setPairInactive(Pair pair) {
         activePairs.remove(pair);
-        if (scorecards != null) {
-            setPenaltyToPair(pair, Penalty.ABSENT);
-        }
     }
 
     public void setPenaltyToPair(Pair pair, Penalty penalty) {
