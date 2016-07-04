@@ -173,7 +173,7 @@ var API = (function() {
             method: "POST",
             url: SERVER_URL + "/matches"
         });
-    }
+    };
 
     API.prototype.getMatches = function (doneCallback, failCallback) {
         $.ajax({
