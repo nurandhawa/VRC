@@ -38,11 +38,9 @@
                             <div class="modal-body">
                                 <div class="pair-name match-pair" v-for="pair in match.pairs">
                                     <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                                    <span class="col-lg-3">
-                                        <span v-for="player in pair.players">
-                                            {{ player.firstName }} {{ player.lastName }} <br />
-                                        </span>
-                                    </span>
+                                    <div>
+                                        {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                                    </div>
                                     <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                         <span class="dropdown">
                                             <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="pair.results[$index]">
@@ -120,14 +118,12 @@
                         </component>
                     </div>
                     <div class="panel-body">
-                       <span class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span>
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
-                        </span>
+                       <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                                {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -144,12 +140,10 @@
                     </div>
                     <div class="panel-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -167,12 +161,10 @@
                     </div>
                     <div class="panel-body">
                         <div class="pair-name match-pair" v-for="pair in match.pairs">
-                            <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
-                            <span class="col-lg-4">
-                                <span v-for="player in pair.players">
-                                    {{ player.firstName }} {{ player.lastName }} <br />
-                                </span>
-                            </span>
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}</div>
+                            <div>
+                            {{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}
+                            </div>
                         </div>
                     </div>
                 </div>
