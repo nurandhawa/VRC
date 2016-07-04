@@ -169,10 +169,14 @@ var Ladder = (function() {
       hideModal(index);
     };
 
+    Ladder.prototype.updateLadder = function(ladderData) {
+        this.ladder = ladderData;
+    };
+
     Ladder.prototype.refreshLadder = function() {
         var api = new API();
         api.getLadder(function(ladderData) {
-            this.ladder = ladderData;
+            this.updateLadder(ladderData);
             this.refreshMode();
         }.bind(this));
     };
