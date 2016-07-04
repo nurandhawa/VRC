@@ -19,12 +19,16 @@ import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
+import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.port;
 import static spark.Spark.post;
@@ -74,7 +78,7 @@ public class AppController {
         String keystorePath = this.getClass().getClassLoader().getResource(KEYSTORE_LOCATION).toString();
         secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
-        /*before("/api/*", (request, response) -> {
+        before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in
             String endpoint = request.splat()[0];
             if (!endpoint.contains("login")) {
@@ -90,7 +94,7 @@ public class AppController {
                 }
 
             }
-        });*/
+        });
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {

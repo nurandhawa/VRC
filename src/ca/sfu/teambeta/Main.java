@@ -3,6 +3,7 @@ package ca.sfu.teambeta;
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
@@ -27,6 +28,9 @@ class Main {
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
+        AccountManager am = new AccountManager(dbManager);
+        am.register("testuser@vrc.com", "demoPass");
+
         AppController appController = new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
                 AppController.DEVELOP_STATIC_HTML_PATH);
     }
