@@ -10,7 +10,26 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import static spark.Spark.*;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.persistence.DBManager;
+
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.secure;
+import static spark.Spark.staticFiles;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -37,17 +56,23 @@ public class AppController {
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
 
+    public static final String DEVELOP_STATIC_HTML_PATH = ".";
+    public static final String JAR_STATIC_HTML_PATH = "/web";
+
+    public static final int DEVELOP_SERVER_PORT = 8000;
+    public static final int JAR_SERVER_PORT = 443;
+
     private static Gson gson;
     private final String SESSION_TOKEN_KEY = "sessionToken";
 
-    public AppController(DBManager dbManager) {
+    public AppController(DBManager dbManager, int port, String staticFilePath) {
         final AccountManager accountManager = new AccountManager(dbManager);
-        port(8000);
-        staticFiles.location(".");
+        port(port);
+        staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-        secure(KEYSTORE_LOCATION, KEYSTORE_PASSWORD, null, null);
+        String keystorePath = this.getClass().getClassLoader().getResource(KEYSTORE_LOCATION).toString();
+        secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
         /*before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in

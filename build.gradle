@@ -11,6 +11,19 @@ checkstyle {
     toolVersion = "6.19"
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'ca.sfu.teambeta.JarEntry'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    into('web') {
+        from 'web'
+    }
+    from 'testkeystore.jks'
+}
+
 sourceSets.main {
     java {
         srcDir 'src'
