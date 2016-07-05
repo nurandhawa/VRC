@@ -40,7 +40,8 @@ var Matches = (function () {
                 },
                 closeModal: this.closeModal,
                 applyPenalty: this.applyPenalty,
-                saveChanges: this.saveModalChanges
+                saveChanges: this.saveModalChanges,
+                refreshMatches: this.refreshMatches
             }
         });
 
@@ -128,9 +129,9 @@ var Matches = (function () {
         }
 
         var api = new API();
-        api.inputMatchResults(match.id, results, function(matchData) {
-            this.matchlist = matchData;
-        });
+        api.inputMatchResults(match.id, results, function() {
+            this.refreshMatches();
+        }.bind(this));
         this.closeModal();
     };
 
@@ -141,6 +142,13 @@ var Matches = (function () {
         else {
             this.mode = 'read';
         }
+    };
+
+    Matches.prototype.refreshMatches = function() {
+        var api = new API();
+        api.getMatches(function(matchData) {
+            this.$parent.matches = matchData;
+        }.bind(this));
     };
 
     return Matches;
