@@ -92,7 +92,8 @@ var Ladder = (function() {
                 onAdd: this.addPair,
                 onUpdate: this.updatePair,
                 refreshLadder: this.refreshLadder,
-                refreshMode: this.refreshMode
+                refreshMode: this.refreshMode,
+                updateLadder: this.updateLadder
             }
         });
     }
