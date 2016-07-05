@@ -108,6 +108,7 @@
     <h1 class="header-initial">{{ title }}</h1>
     <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
     <div class="header-right">
+        <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
         <component :is="mode" transition="fade" transition-mode="out-in">
         </component>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
