@@ -142,7 +142,7 @@ var Matches = (function () {
 
     Matches.prototype.updateMatches = function(matchData) {
         this.matches = matchData;
-    }
+    };
 
     Matches.prototype.refreshMatches = function() {
         var api = new API();
