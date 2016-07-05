@@ -47,25 +47,20 @@ var Matches = (function () {
 
         var editButton;
         var blankButton;
-        for (var match in matchData){
-            editButton = null;
-            blankButton = null;
+        editButton = Vue.extend({
+            props: ['column','index'],
+            template: EDIT_BUTTON_HTML,
+            methods: {
+                editMatch: function() {
+                    this.$parent.openModal(this.index);
+                }
+             }
+        });
+        Vue.component('edit-button', editButton);
 
-            editButton = Vue.extend({
-                props: ['column','index'],
-                template: EDIT_BUTTON_HTML,
-                methods: {
-                    editMatch: function() {
-                        this.$parent.openModal(this.index);
-                    }
-                 }
-            });
-            Vue.component('edit-button', editButton);
-
-            blankButton = Vue.extend({
-                template: "<a></a>"
-            });
-        }
+        blankButton = Vue.extend({
+            template: "<a></a>"
+        });
 
         this.component = new Vue({
             el: '#matches',
@@ -79,7 +74,8 @@ var Matches = (function () {
                 filterLeft: function () {
                     return 1;
                 },
-                openModal: this.openModal
+                openModal: this.openModal,
+                updateMatches: this.updateMatches
             },
             components: {
                 edit: editButton,
@@ -144,10 +140,14 @@ var Matches = (function () {
         }
     };
 
+    Matches.prototype.updateMatches = function(matchData) {
+        this.matches = matchData;
+    }
+
     Matches.prototype.refreshMatches = function() {
         var api = new API();
         api.getMatches(function(matchData) {
-            this.$parent.matches = matchData;
+            this.$parent.updateMatches.call(this.$parent, matchData);
         }.bind(this));
     };
 
