@@ -2,9 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -16,31 +14,34 @@ import ca.sfu.teambeta.core.Player;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static Ladder setupLadder() throws Exception {
-        List<Player> players;
+    public static void main(String args[]) throws  Exception{
         try {
-            players = getInformationAboutPlayers();
-        } catch (Exception exception) {
+            setupLadder();
+        } catch(Exception e){
+            throw e ;
+        }
+    }
+
+    public static Ladder setupLadder() throws Exception {
+        Map<Integer, Pair> pairs;
+        try {
+            pairs = getInformationAboutPairs();
+        } catch (Exception exception){
             throw exception;
         }
 
-        List<Pair> pairs = new ArrayList<>();
-        int index = 0;
-        Player temp = null;
-        for (Player player : players) {
-            index++;
-            if (index == 2) {
-                Pair newPair = new Pair(player, temp);
-                pairs.add(newPair);
-                index = 0;
-            }
-            temp = player;
+        Ladder ladder = new Ladder();
+        for(Map.Entry<Integer, Pair> entry : pairs.entrySet()){
+            Pair pair = entry.getValue();
+            ladder.insertAtEnd(pair);
         }
-        return new Ladder(pairs);
+
+        return ladder;
     }
 
-    public static List<Player> getInformationAboutPlayers() throws Exception {
-        List<Player> players = new ArrayList<>();
+    private static Map<Integer, Pair> getInformationAboutPairs() throws Exception {
+        Map<Integer, Pair> pairs = new HashMap<>();
+
         try (com.opencsv.CSVReader reader = new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
@@ -51,17 +52,26 @@ public class CSVReader {
 
                 String lastName = pairInfo[0];
                 String firstName = pairInfo[1];
-                //String id = pairInfo[2];
+                int id = Integer.parseInt(pairInfo[2]);
 
-                Player player = new Player(firstName, lastName);
-                players.add(player);
+                Player firstPlayer = new Player(lastName, firstName);
 
+                lastName = pairInfo[3];
+                firstName = pairInfo[4];
+                id = Integer.parseInt(pairInfo[5]);
+
+                Player secondPlayer = new Player(lastName, firstName);
+
+                int index = Integer.parseInt(pairInfo[6]);
+                Pair pair = new Pair(firstPlayer, secondPlayer, false);
+
+                pairs.put(index, pair);
             }
             reader.close();
         } catch (IOException e) {
             throw new Exception("Error reading file " + DEFAULT_FILENAME);
         }
 
-        return players;
+        return pairs;
     }
 }
