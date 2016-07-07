@@ -61,6 +61,14 @@ var Ladder = (function() {
         });
         Vue.component('edit-button', editButton);
 
+        var onValid = function(elementId) {
+            $(elementId).prop("disabled", false);
+        };
+
+        var onInvalid = function(elementId) {
+            $(elementId).prop("disabled", true);
+        };
+
         this.component = new Vue({
             el: '#ladder',
             data: {
@@ -93,7 +101,9 @@ var Ladder = (function() {
                 onUpdate: this.updatePair,
                 refreshLadder: this.refreshLadder,
                 refreshMode: this.refreshMode,
-                updateLadder: this.updateLadder
+                updateLadder: this.updateLadder,
+                onValid: onValid,
+                onInvalid: onInvalid
             }
         });
     }
