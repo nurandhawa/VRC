@@ -350,6 +350,7 @@ public class AppController {
                 errMessage = e.getMessage();
             }
 
+            response.status(401);
             return getErrResponse(errMessage);
         });
 
@@ -372,6 +373,7 @@ public class AppController {
                 message = e.getMessage();
             }
 
+            response.status(400);
             return getErrResponse(message);
         });
 
