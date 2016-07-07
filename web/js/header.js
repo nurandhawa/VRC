@@ -39,5 +39,9 @@ var Header = (function() {
         this.component.$options.components.edit = buttonComponent;
     };
 
+    Header.prototype.updateHeader = function(lastModified) {
+        this.timestamp = lastModified;
+    };
+
     return Header;
 })();

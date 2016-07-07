@@ -92,7 +92,8 @@ var Ladder = (function() {
                 onAdd: this.addPair,
                 onUpdate: this.updatePair,
                 refreshLadder: this.refreshLadder,
-                refreshMode: this.refreshMode
+                refreshMode: this.refreshMode,
+                updateLadder: this.updateLadder
             }
         });
     }
@@ -169,10 +170,14 @@ var Ladder = (function() {
       hideModal(index);
     };
 
+    Ladder.prototype.updateLadder = function(ladderData) {
+        this.ladder = ladderData;
+    };
+
     Ladder.prototype.refreshLadder = function() {
         var api = new API();
         api.getLadder(function(ladderData) {
-            this.ladder = ladderData;
+            this.updateLadder(ladderData);
             this.refreshMode();
         }.bind(this));
     };
