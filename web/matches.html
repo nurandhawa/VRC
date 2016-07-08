@@ -36,16 +36,16 @@
                             </div>
 
                             <div class="modal-body">
-                                <div class="match-pair" v-for="pair in match.pairs">
+                                <div class="match-pair" v-for="(pairIndex, pair) in match.pairs">
                                     <div class="pair-name match-pair-left">
                                         <span class="col-sm-1 label label-info position">{{ $index + 1 }}</span>
                                         <div>
                                             {{ pair.players[0].firstName }} {{pair.players[0].lastName }} and
                                             {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                                         </div>
-                                        <span v-for="pair2 in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
+                                        <span v-for="(roundIndex, pair2) in match.pairs" style="position: relative; display: inline-block; vertical-align: top;">
                                             <span class="dropdown">
-                                                <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="pair.results[$index]">
+                                                <select class="btn btn-primary dropdown" style="margin: 0; padding: 5px" v-model="match.results[pairIndex][roundIndex]">
                                                     <option value="-">N/A</option>
                                                     <option value="W">Win</option>
                                                     <option value="L">Lose</option>
@@ -58,13 +58,19 @@
                                         <button class="btn btn-xs btn-danger" v-bind:class="pair.absentPenalty" @click="applyPenalty(pair, 'miss', $event)">Absent</button>
                                     </div>
                                 </div>
+                                <div class="alert alert-warning" style="margin-top: 10px" v-if="!match.resultsValid">
+                                  Each column is one round. Make sure only <b>two teams play in a round</b>, and that <b>each pair plays exactly twice</b> over all rounds.
+                                </div>
+                                <div class="alert alert-success" style="margin-top: 10px" v-if="match.resultsValid">
+                                  You are good to go!
+                                </div>
                             </div>
 
                             <div class="modal-footer">
                                 <button class="btn btn-default" @click="closeModal()" data-dismiss="modal">
                                     Close
                                 </button>
-                                <button type="button" class="btn btn-primary" @click="saveChanges($index)">Save changes</button>
+                                <button type="button" class="btn btn-primary" @click="saveChanges($index)" :disabled="!match.resultsValid">Save changes</button>
                             </div>
                         </div>
                     </div>
@@ -184,6 +190,7 @@
 </body>
 <script src="vendors/jquery-1.12.4.js"></script>
 <script src="vendors/vue.js"></script>
+<script src="vendors/vue-validator.js"></script>
 <script src="vendors/bootstrap.js"></script>
 <script src="vendors/material.js"></script>
 <script src="vendors/ripples.js"></script>

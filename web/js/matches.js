@@ -82,6 +82,10 @@ var Matches = (function () {
                 read: blankButton
             }
         });
+
+        this.component.matches.forEach(function(match, index) {
+            this.component.$watch("matches[" + index + "].results", this.validateResults.bind(this.component, match));
+        }.bind(this));
     }
 
     Matches.prototype.openModal = function(index) {
@@ -112,16 +116,31 @@ var Matches = (function () {
         });
     };
 
+    Matches.prototype.validateResults = function(currentMatch, newVal, oldVal) {
+        var numRounds = newVal.length;
+        var CORRECT_ROUNDS_PLAYED = 2;
+        var CORRECT_ROUNDS_NOT_PLAYED = numRounds - CORRECT_ROUNDS_PLAYED;
+
+        var isValid = newVal.every(function(pairRecord) {
+            var roundsNotPlayed = pairRecord.filter(function(entry) {
+                return entry === "-";
+            }).length;
+            return roundsNotPlayed === CORRECT_ROUNDS_NOT_PLAYED;
+        });
+
+        currentMatch.resultsValid = isValid;
+    };
+
     Matches.prototype.saveModalChanges = function (index) {
         var match = this.matchlist[index];
         var results = [];
 
-        for (var i = 0; i < match.pairs.length; i++) {
-            var resultRow = [];
+        for (var round = 0; round < match.pairs.length; round++) {
+            var roundResult = [];
             for (var pair in match.pairs) {
-                resultRow.push(match.pairs[pair].results[i]);
+                roundResult.push(match.results[pair][round]);
             }
-            results.push(resultRow);
+            results.push(roundResult);
         }
 
         var api = new API();
