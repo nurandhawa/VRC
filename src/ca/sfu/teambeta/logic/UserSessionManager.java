@@ -2,6 +2,7 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.SessionInformation;
 import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 
 import java.math.BigInteger;
@@ -41,19 +42,31 @@ public class UserSessionManager {
     }
 
     public static void deleteSession(String sessionId) throws NoSuchSessionException {
+        // Validate the input
+        try {
+            InputValidator.checkSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        }
+
+        // If session exists remove it, otherwise throw an exception
         if (sessions.get(sessionId) != null) {
             sessions.remove(sessionId);
         } else {
-            throw new NoSuchSessionException("Invalid SessionID");
+            throw new NoSuchSessionException("Invalid SessionId");
         }
 
     }
 
     public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
-        if (sessionId == null || sessionId == "") {
-            return false;
+        // Validate the input
+        try {
+            InputValidator.checkSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
         }
 
+        // Get the session metadata and check if it's expired
         SessionInformation sessionInformation = getSessionInformation(sessionId);
 
         if (sessionInformation.isSessionExpired() == false) {
@@ -70,7 +83,7 @@ public class UserSessionManager {
         SessionInformation sessionInformation = sessions.get(sessionId);
 
         if (sessionInformation == null) {
-            throw new NoSuchSessionException("Invalid SessionID");
+            throw new NoSuchSessionException("Invalid SessionId");
         } else {
             return sessionInformation;
         }
@@ -78,6 +91,8 @@ public class UserSessionManager {
 
     private static String generateRandomSessionID() {
         // See citations.txt for more information
+
+        // DO NOT CHANGE THESE VALUES
         final int MAX_BIT_LENGTH = 130;
         final int ENCODING_BASE = 32;
 

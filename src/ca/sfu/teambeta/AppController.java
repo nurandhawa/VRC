@@ -3,6 +3,7 @@ package ca.sfu.teambeta;
 import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -10,30 +11,7 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.secure;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -344,7 +322,7 @@ public class AppController {
                 errMessage = e.getMessage();
             } catch (NoSuchUserException e) {
                 errMessage = e.getMessage();
-            } catch (InvalidUserInputException e) {
+            } catch (InvalidInputException e) {
                 errMessage = e.getMessage();
             } catch (InvalidCredentialsException e) {
                 errMessage = e.getMessage();
@@ -368,7 +346,7 @@ public class AppController {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();
-            } catch (InvalidUserInputException e) {
+            } catch (InvalidInputException e) {
                 message = e.getMessage();
             }
 
