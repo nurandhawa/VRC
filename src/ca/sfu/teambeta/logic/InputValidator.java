@@ -26,8 +26,8 @@ public class InputValidator {
 
 
     // MARK: Core Input Validation Methods
-    public static void checkEmailFormat(String email) throws InvalidInputException {
-        checkNullOrEmptyString(email);
+    public static void validateEmailFormat(String email) throws InvalidInputException {
+        validateNullOrEmptyString(email);
 
         // See citations.txt for source of Regex pattern
         String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -44,8 +44,8 @@ public class InputValidator {
         }
     }
 
-    public static void checkPasswordFormat(String password) throws InvalidInputException {
-        checkNullOrEmptyString(password);
+    public static void validatePasswordFormat(String password) throws InvalidInputException {
+        validateNullOrEmptyString(password);
 
         boolean passwordTooLong = password.length() > MAX_PASSWORD_LENGTH;
         boolean passwordTooShort = password.length() < MIN_PASSWORD_LENGTH;
@@ -59,8 +59,8 @@ public class InputValidator {
 
     }
 
-    public static void checkPhoneNumberFormat(String phoneNumber) throws InvalidInputException {
-        checkNullOrEmptyString(phoneNumber);
+    public static void validatePhoneNumberFormat(String phoneNumber) throws InvalidInputException {
+        validateNullOrEmptyString(phoneNumber);
 
         boolean invalidPhoneNumberLength = phoneNumber.length() != PHONE_NUMBER_LENGTH;
         boolean phoneNumberNonNumeric = !StringUtils.isNumeric(phoneNumber);
@@ -76,12 +76,12 @@ public class InputValidator {
 
     }
 
-    public static void checkSessionIdFormat(String sessionId) throws InvalidInputException {
-        checkNullOrEmptyString(sessionId);
+    public static void validateSessionIdFormat(String sessionId) throws InvalidInputException {
+        validateNullOrEmptyString(sessionId);
 
     }
 
-    public static void checkNewPlayers(List<Player> newPlayers, int MAX_SIZE) throws InvalidInputException {
+    public static void validateNewPlayers(List<Player> newPlayers, int MAX_SIZE) throws InvalidInputException {
         if (newPlayers.size() != MAX_SIZE) {
             throw new InvalidInputException("A Pair cannot have more than 2 players.");
         }
@@ -90,13 +90,13 @@ public class InputValidator {
             Integer existingId = player.getExistingId();
             // Ignore player objects that will be replaced by existing player objects
             if (!(existingId >= 0)) {
-                checkName(player.getFirstName());
-                checkName(player.getLastName());
+                validatePlayerName(player.getFirstName());
+                validatePlayerName(player.getLastName());
             }
         }
     }
 
-    public static void checkResults(Scorecard scorecard, String[][] results) throws InvalidInputException {
+    public static void validateResults(Scorecard scorecard, String[][] results) throws InvalidInputException {
         int numTeams = scorecard.getReorderedPairs().size();
         int numRounds = results.length;
         if (numRounds != numTeams) {
@@ -120,7 +120,7 @@ public class InputValidator {
         }
     }
 
-    public static void checkName(String name) throws InvalidInputException {
+    public static void validatePlayerName(String name) throws InvalidInputException {
         boolean isAlpha = name.chars().allMatch(Character::isAlphabetic);
         if (!isAlpha) {
             throw new InvalidInputException("Name is not alphabetic.");
@@ -145,7 +145,7 @@ public class InputValidator {
     }
 
     // MARK: Helper Methods
-    private static void checkNullOrEmptyString(String str) throws InvalidInputException {
+    private static void validateNullOrEmptyString(String str) throws InvalidInputException {
         // This helper method will throw an exception if it encounters a
         //  null or empty string as opposed to returning a boolean so
         //  that the calling method doesn't crash down the road as it trys

@@ -161,7 +161,7 @@ public class AppController {
             List<Player> newPlayers = extractedData.getPlayers();
 
             try {
-                InputValidator.checkNewPlayers(newPlayers, MAX_SIZE);
+                InputValidator.validateNewPlayers(newPlayers, MAX_SIZE);
             } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(exception.getMessage());
@@ -271,7 +271,7 @@ public class AppController {
             Scorecard scorecard = dbManager.getScorecardFromGame(id);
 
             try {
-                InputValidator.checkResults(scorecard, extractedData.results);
+                InputValidator.validateResults(scorecard, extractedData.results);
                 dbManager.inputMatchResults(scorecard, extractedData.results.clone());
             } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);

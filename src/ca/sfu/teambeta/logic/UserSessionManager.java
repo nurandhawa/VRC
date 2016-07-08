@@ -44,7 +44,7 @@ public class UserSessionManager {
     public static void deleteSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
         try {
-            InputValidator.checkSessionIdFormat(sessionId);
+            InputValidator.validateSessionIdFormat(sessionId);
         } catch (InvalidInputException e) {
             throw new NoSuchSessionException("Invalid SessionId");
         }
@@ -61,7 +61,7 @@ public class UserSessionManager {
     public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
         try {
-            InputValidator.checkSessionIdFormat(sessionId);
+            InputValidator.validateSessionIdFormat(sessionId);
         } catch (InvalidInputException e) {
             throw new NoSuchSessionException("Invalid SessionId");
         }
