@@ -1,16 +1,16 @@
 package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static ca.sfu.teambeta.AppController.NOT_PLAYING;
-import static ca.sfu.teambeta.AppController.PLAYING;
+import static ca.sfu.teambeta.AppController.NOT_PLAYING_STATUS;
+import static ca.sfu.teambeta.AppController.PLAYING_STATUS;
 
 /**
  * This class holds methods to validate input that is passed in
@@ -89,9 +89,33 @@ public class InputValidator {
         for (Player player : newPlayers) {
             Integer existingId = player.getExistingId();
             // Ignore player objects that will be replaced by existing player objects
-            if (!(existingId != null && existingId >= 0)) {
+            if (!(existingId >= 0)) {
                 checkName(player.getFirstName());
                 checkName(player.getLastName());
+            }
+        }
+    }
+
+    public static void checkResults(Scorecard scorecard, String[][] results) throws InvalidInputException {
+        int numTeams = scorecard.getReorderedPairs().size();
+        int numRounds = results.length;
+        if (numRounds != numTeams) {
+            throw new InvalidInputException("Results must have " + numRounds + " rounds");
+        }
+
+        final int CORRECT_ROUNDS_PLAYED = 2;
+        final int CORRECT_ROUNDS_NOT_PLAYED = numRounds - CORRECT_ROUNDS_PLAYED;
+
+        for (String[] row : results) {
+            int gamesNotPlayed = 0;
+            for (String result : row) {
+                if (result.equals("-")) {
+                    gamesNotPlayed++;
+                }
+            }
+            if (gamesNotPlayed != CORRECT_ROUNDS_NOT_PLAYED) {
+                throw new InvalidInputException("Results must have " + CORRECT_ROUNDS_PLAYED +
+                        "games played for every pair.");
             }
         }
     }
@@ -104,7 +128,11 @@ public class InputValidator {
     }
 
     public static boolean checkPairExists(DBManager dbManager, int id) {
-        return !dbManager.hasPairID(id);
+        return dbManager.hasPairID(id);
+    }
+
+    public static boolean checkPairActive(DBManager dbManager, int id) {
+        return dbManager.isActivePair(id);
     }
 
     public static boolean checkLadderPosition(int position, int ladderSize) {
@@ -113,7 +141,7 @@ public class InputValidator {
 
 
     public static boolean checkPlayingStatus(String status) {
-        return status.equals(PLAYING) || status.equals(NOT_PLAYING);
+        return status.equals(PLAYING_STATUS) || status.equals(NOT_PLAYING_STATUS);
     }
 
     // MARK: Helper Methods

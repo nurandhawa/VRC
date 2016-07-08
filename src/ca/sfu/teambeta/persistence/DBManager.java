@@ -255,18 +255,12 @@ public class DBManager {
     }
 
     // TODO: This method definitely does not work
-    public void inputMatchResults(Scorecard s, String[][] results) throws Exception {
+    public void inputMatchResults(Scorecard s, String[][] results) {
         GameSession gameSession = getGameSessionLatest();
 
         List<Pair> teams = s.getReorderedPairs();
-        int numTeams = teams.size();
         int rows = results.length;
         int cols = teams.size();
-
-        boolean isValidResult = (rows == numTeams) && (cols == numTeams);
-        if (!isValidResult) {
-            throw new Exception();
-        }
 
         Pair teamWon = null;
         Pair teamLost = null;

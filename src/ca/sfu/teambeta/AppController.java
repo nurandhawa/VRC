@@ -21,8 +21,8 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
-    public static final String PLAYING = "playing";
-    public static final String NOT_PLAYING = "not playing";
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
@@ -111,7 +111,7 @@ public class AppController {
             boolean validNewPos = InputValidator.checkLadderPosition(newPosition, dbManager.getLadderSize());
             boolean validStatus = InputValidator.checkPlayingStatus(status);
 
-            if (InputValidator.checkPairExists(dbManager, id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -120,7 +120,7 @@ public class AppController {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
-                if (status.equals(PLAYING)) {
+                if (status.equals(PLAYING_STATUS)) {
                     boolean statusChanged = dbManager.setPairActive(id);
                     if (statusChanged) {
                         return getOkResponse("");
@@ -131,7 +131,7 @@ public class AppController {
                         response.status(NOT_FOUND);
                         return getErrResponse("Player " + firstName + " " + lastName + " is already playing");
                     }
-                } else if (status.equals(NOT_PLAYING)) {
+                } else if (status.equals(NOT_PLAYING_STATUS)) {
                     dbManager.setPairInactive(id);
                     return getOkResponse("");
                 }
@@ -198,7 +198,7 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (InputValidator.checkPairExists(dbManager, id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -224,7 +224,7 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (InputValidator.checkPairExists(dbManager, id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -271,14 +271,15 @@ public class AppController {
             Scorecard scorecard = dbManager.getScorecardFromGame(id);
 
             try {
+                InputValidator.checkResults(scorecard, extractedData.results);
                 dbManager.inputMatchResults(scorecard, extractedData.results.clone());
-                response.status(OK);
-                return getOkResponse("");
-            } catch (Exception e) {
-                response.body("Invalid result format.");
+            } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("Invalid result format.");
+                return getErrResponse(exception.getMessage());
             }
+
+            response.status(OK);
+            return getOkResponse("");
         });
 
         //Remove a pair from a match
@@ -291,12 +292,12 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (InputValidator.checkPairExists(dbManager, id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND);
             }
 
-            if (!dbManager.isActivePair(id)) {
+            if (!InputValidator.checkPairActive(dbManager, id)) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("The pair is not on the scorecard " + id);
             }
