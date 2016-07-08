@@ -2,7 +2,14 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.*;
+
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+
 import ca.sfu.teambeta.persistence.DBManager;
 import org.apache.commons.lang3.StringUtils;
 

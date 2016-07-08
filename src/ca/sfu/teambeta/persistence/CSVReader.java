@@ -18,7 +18,7 @@ import ca.sfu.teambeta.core.Player;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
         try {
             setupLadder();
         } catch (Exception e) {

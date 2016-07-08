@@ -95,7 +95,8 @@ public class DBManager {
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
         config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/production?serverTimezone=America/Vancouver");
+                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:"
+                + "3306/production?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
