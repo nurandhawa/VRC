@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class InputValidator {
     private static final int MAX_EMAIL_LENGTH = 40;
-    private static final int MAX_PASSWORD_LENGTH = 20;
+    private static final int MAX_PASSWORD_LENGTH = 128;
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final int PHONE_NUMBER_LENGTH = 10;
 
