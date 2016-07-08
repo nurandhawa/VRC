@@ -2,7 +2,11 @@ package ca.sfu.teambeta.persistence;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -14,11 +18,11 @@ import ca.sfu.teambeta.core.Player;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
 
-    public static void main(String args[]) throws  Exception{
+    public static void main(String args[]) throws Exception {
         try {
             setupLadder();
-        } catch(Exception e){
-            throw e ;
+        } catch (Exception e) {
+            throw e;
         }
     }
 
@@ -26,12 +30,12 @@ public class CSVReader {
         Map<Integer, Pair> pairs;
         try {
             pairs = getInformationAboutPairs();
-        } catch (Exception exception){
+        } catch (Exception exception) {
             throw exception;
         }
 
         Ladder ladder = new Ladder();
-        for(Map.Entry<Integer, Pair> entry : pairs.entrySet()){
+        for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
             Pair pair = entry.getValue();
             ladder.insertAtEnd(pair);
         }
@@ -42,7 +46,8 @@ public class CSVReader {
     private static Map<Integer, Pair> getInformationAboutPairs() throws Exception {
         Map<Integer, Pair> pairs = new HashMap<>();
 
-        try (com.opencsv.CSVReader reader = new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
+        try (com.opencsv.CSVReader reader =
+                     new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
 
@@ -50,17 +55,17 @@ public class CSVReader {
             while (iterator.hasNext()) {
                 pairInfo = iterator.next();
 
-                String lastName = pairInfo[0];
-                String firstName = pairInfo[1];
-                int id = Integer.parseInt(pairInfo[2]);
+                String lastNameFirst = pairInfo[0];
+                String firstNameFirst = pairInfo[1];
+                int idFirst = Integer.parseInt(pairInfo[2]);
 
-                Player firstPlayer = new Player(lastName, firstName);
 
-                lastName = pairInfo[3];
-                firstName = pairInfo[4];
-                id = Integer.parseInt(pairInfo[5]);
+                String lastNameSecond = pairInfo[3];
+                String firstNameSecond = pairInfo[4];
+                int idSecond = Integer.parseInt(pairInfo[5]);
 
-                Player secondPlayer = new Player(lastName, firstName);
+                Player firstPlayer = new Player(lastNameFirst, firstNameFirst);
+                Player secondPlayer = new Player(lastNameSecond, firstNameSecond);
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);

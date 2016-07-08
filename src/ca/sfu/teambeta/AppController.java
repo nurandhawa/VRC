@@ -1,7 +1,5 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
@@ -21,9 +19,7 @@ import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -67,7 +63,7 @@ public class AppController {
     public static final int JAR_SERVER_PORT = 443;
 
     private static Gson gson;
-    private final String SESSION_TOKEN_KEY = "sessionToken";
+    private static final String SESSION_TOKEN_KEY = "sessionToken";
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
         final AccountManager accountManager = new AccountManager(dbManager);
@@ -75,7 +71,8 @@ public class AppController {
         staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        String keystorePath = this.getClass().getClassLoader().getResource(KEYSTORE_LOCATION).toString();
+        String keystorePath = this.getClass().getClassLoader()
+                .getResource(KEYSTORE_LOCATION).toString();
         secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
         before("/api/*", (request, response) -> {
@@ -85,12 +82,15 @@ public class AppController {
 
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 try {
-                    boolean authenticated = UserSessionManager.authenticateSession(sessionToken);
+                    boolean authenticated =
+                            UserSessionManager.authenticateSession(sessionToken);
                     if (!authenticated) {
-                        halt(401, getNotAuthenticatedResponse("You must be logged in view this page."));
+                        halt(401, getNotAuthenticatedResponse(
+                                "You must be logged in view this page."));
                     }
                 } catch (NoSuchSessionException exception) {
-                    halt(401, getNotAuthenticatedResponse("You must be logged in view this page."));
+                    halt(401, getNotAuthenticatedResponse(
+                            "You must be logged in view this page."));
                 }
 
             }
@@ -121,7 +121,7 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
-
+                throw ignored;
             }
 
             String status = request.queryParams(STATUS);
@@ -150,7 +150,9 @@ public class AppController {
                         String firstName = activePlayer.getFirstName();
                         String lastName = activePlayer.getLastName();
                         response.status(NOT_FOUND);
-                        return getErrResponse("Player " + firstName + " " + lastName + " is already playing");
+                        return getErrResponse(
+                                "Player " + firstName + " "
+                                + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING)) {
                     dbManager.setPairInactive(id);

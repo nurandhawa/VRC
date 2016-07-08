@@ -48,11 +48,16 @@ public class Game extends Persistable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
 
         final Game otherGame = (Game) other;
-        return getWinner().equals(otherGame.getWinner()) && getLoser().equals(otherGame.getLoser());
+        return getWinner().equals(otherGame.getWinner())
+                && getLoser().equals(otherGame.getLoser());
     }
 
     @Override

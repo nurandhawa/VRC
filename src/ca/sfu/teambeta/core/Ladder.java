@@ -60,14 +60,16 @@ public class Ladder extends Persistable {
     public boolean insertAtIndex(int index, Pair pair) {
         List<Pair> newList;
         if (pairs == null) {
-            newList = new ArrayList<Pair>() {{
-                add(pair);
-            }};
+            newList = new ArrayList<Pair>() {
+                {
+                    add(pair);
+                }
+            };
             pairs = newList;
         } else {
             newList = new LinkedList<>(pairs);
 
-            if(0 <= index && index < pairs.size()){
+            if (0 <= index && index < pairs.size()) {
                 newList.add(index, pair);
                 pairs = newList;
             } else {
@@ -80,7 +82,7 @@ public class Ladder extends Persistable {
     public void insertAtEnd(Pair pair) {
         List<Pair> newList;
 
-        if(pairs == null){
+        if (pairs == null) {
             newList = new ArrayList<>();
         } else {
             newList = new LinkedList<>(pairs);
@@ -104,8 +106,12 @@ public class Ladder extends Persistable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
 
         final Ladder otherLadder = (Ladder) other;
         return getPairs().equals(otherLadder.getPairs());

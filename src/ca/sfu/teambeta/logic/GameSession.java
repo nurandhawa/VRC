@@ -149,7 +149,8 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder(LadderReorderer reorderer) {
-        List<Pair> reorderedList = reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
+        List<Pair> reorderedList =
+                reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         reorderedLadder = new Ladder(reorderedList);
     }
 
@@ -173,8 +174,9 @@ public class GameSession extends Persistable {
 
     @Override
     public int hashCode() {
-        return 57 * ladder.hashCode() * reorderedLadder.hashCode() *
-                activePairs.hashCode() * scorecards.hashCode() * penalties.hashCode();
+        return 57 * ladder.hashCode() * reorderedLadder.hashCode()
+                * activePairs.hashCode() * scorecards.hashCode()
+                * penalties.hashCode();
     }
 
     private boolean searchActivePlayer(Player player) {

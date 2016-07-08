@@ -17,9 +17,15 @@ public class VrcLadderReorderer implements LadderReorderer {
     @Override
     public List<Pair> reorder(List<Pair> originalPairs, List<Scorecard> scorecards,
                               Set<Pair> activePairs, Map<Pair, Penalty> penalties) {
+
         List<Pair> intermediateOrdering = swapBetweenGroups(scorecards);
-        intermediateOrdering = mergeActivePairs(originalPairs, intermediateOrdering);
-        intermediateOrdering = applyPassivePenalty(originalPairs, intermediateOrdering, activePairs);
+
+        intermediateOrdering = mergeActivePairs(
+                originalPairs, intermediateOrdering);
+
+        intermediateOrdering = applyPassivePenalty(
+                originalPairs, intermediateOrdering, activePairs);
+
         return applyPenalties(intermediateOrdering, penalties);
     }
 
@@ -59,8 +65,10 @@ public class VrcLadderReorderer implements LadderReorderer {
         return originalPairs;
     }
 
-    private List<Pair> applyPassivePenalty(List<Pair> originalPairs, List<Pair> activeReorderedPairs,
-                                           Set<Pair> activePairs) {
+    private List<Pair> applyPassivePenalty(
+            List<Pair> originalPairs, List<Pair> activeReorderedPairs,
+            Set<Pair> activePairs) {
+
         Set<Pair> passivePairs = originalPairs.stream()
                 .filter(pair -> !activePairs.contains(pair))
                 .collect(Collectors.toSet());
@@ -77,7 +85,9 @@ public class VrcLadderReorderer implements LadderReorderer {
         return activeReorderedPairs;
     }
 
-    private List<Pair> applyPenalties(List<Pair> activeReorderedPairs, Map<Pair, Penalty> penalties) {
+    private List<Pair> applyPenalties(
+            List<Pair> activeReorderedPairs, Map<Pair, Penalty> penalties) {
+
         List<Penalty> availablePenalties = penalties.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .sorted((penalty1, penalty2) -> penalty1.getPenalty() - penalty2.getPenalty())

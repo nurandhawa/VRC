@@ -66,7 +66,9 @@ public class UserSessionManager {
 
 
     // MARK: Helper Methods
-    private static SessionInformation getSessionInformation(String sessionId) throws NoSuchSessionException {
+    private static SessionInformation getSessionInformation(String sessionId)
+            throws NoSuchSessionException {
+
         SessionInformation sessionInformation = sessions.get(sessionId);
 
         if (sessionInformation == null) {
