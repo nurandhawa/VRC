@@ -1,7 +1,16 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.persistence.DBManager;
+
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static ca.sfu.teambeta.AppController.NOT_PLAYING;
+import static ca.sfu.teambeta.AppController.PLAYING;
 
 /**
  * This class holds methods to validate input that is passed in
@@ -72,6 +81,40 @@ public class InputValidator {
 
     }
 
+    public static void checkNewPlayers(List<Player> newPlayers, int MAX_SIZE) throws InvalidInputException {
+        if (newPlayers.size() != MAX_SIZE) {
+            throw new InvalidInputException("A Pair cannot have more than 2 players.");
+        }
+
+        for (Player player : newPlayers) {
+            Integer existingId = player.getExistingId();
+            // Ignore player objects that will be replaced by existing player objects
+            if (!(existingId != null && existingId >= 0)) {
+                checkName(player.getFirstName());
+                checkName(player.getLastName());
+            }
+        }
+    }
+
+    public static void checkName(String name) throws InvalidInputException {
+        boolean isAlpha = name.chars().allMatch(Character::isAlphabetic);
+        if (!isAlpha) {
+            throw new InvalidInputException("Name is not alphabetic.");
+        }
+    }
+
+    public static boolean checkPairExists(DBManager dbManager, int id) {
+        return !dbManager.hasPairID(id);
+    }
+
+    public static boolean checkLadderPosition(int position, int ladderSize) {
+        return 0 <= position && position <= ladderSize;
+    }
+
+
+    public static boolean checkPlayingStatus(String status) {
+        return status.equals(PLAYING) || status.equals(NOT_PLAYING);
+    }
 
     // MARK: Helper Methods
     private static void checkNullOrEmptyString(String str) throws InvalidInputException {
