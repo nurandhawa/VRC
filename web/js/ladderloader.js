@@ -21,7 +21,6 @@
         return /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$|^$/.test(val);
     });
 
-    var api = new API();
     var ladderData = {
         pairs: [],
         dateCreated: ""
