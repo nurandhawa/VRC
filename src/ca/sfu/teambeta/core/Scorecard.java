@@ -73,21 +73,23 @@ public class Scorecard extends Persistable {
         winner.setPairScore(winner.getPairScore() + 1);
         loser.setPairScore(loser.getPairScore() - 1);
         finishedGameCount++;
+
+        if (pairs.size() == NUM_GAMES) {
+            if (finishedGameCount == 1 || finishedGameCount == 2) {
+                winner.setPairScore(winner.getPairScore() + 1);
+            }
+        }
         if (finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
             this.isDone = true;
+            for (Pair p : pairs) {
+                System.out.println(p.getPairScore());
+            }
         }
     }
 
     public int getPairScore(Pair pair) {
-        int winCount = (int) games.stream()
-                .filter(game -> game.isWinner(pair))
-                .count();
-
-        int loseCount = (int) games.stream()
-                .filter(game -> game.isLoser(pair))
-                .count();
-        return winCount - loseCount;
+        return pair.getPairScore();
     }
 
 
