@@ -44,6 +44,20 @@ public class ScorecardTest {
         Assert.assertEquals(reOrdered, expectedOrder);
     }
 
+    @Test
+    public void testQuadGroup() {
+        List<Pair> fourPairGroup = Arrays.asList(rosStevie, vickyDavid, victorJoyce, bobbyChan);
+        Scorecard sc = new Scorecard(fourPairGroup, null);
+        sc.setGameResults(rosStevie,bobbyChan);
+        sc.setGameResults(victorJoyce,vickyDavid);
+        sc.setGameResults(rosStevie,victorJoyce);
+        sc.setGameResults(vickyDavid,bobbyChan);
+
+        List<Pair> reOrdered = sc.getReorderedPairs();
+        List<Pair> expectedOrder = Arrays.asList(rosStevie, victorJoyce, vickyDavid, bobbyChan);
+        Assert.assertEquals(reOrdered, expectedOrder);
+    }
+
     @Test(expected = RuntimeException.class)
     @Ignore
     public void testObserverThreeTeams() {

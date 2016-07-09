@@ -151,6 +151,9 @@ public class GameSession extends Persistable {
     public void reorderLadder(LadderReorderer reorderer) {
         List<Pair> reorderedList = reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         reorderedLadder = new Ladder(reorderedList);
+        for (Pair p : getAllPairs()) {
+            p.setPairScore(0);
+        }
     }
 
     public boolean addNewPairAtIndex(Pair newPair, int index) {
