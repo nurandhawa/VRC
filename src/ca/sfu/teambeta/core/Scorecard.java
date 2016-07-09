@@ -82,9 +82,6 @@ public class Scorecard extends Persistable {
         if (finishedGameCount == pairs.size()) {
             this.pairs = getReorderedPairs();
             this.isDone = true;
-            for (Pair p : pairs) {
-                System.out.println(p.getPairScore());
-            }
         }
     }
 
