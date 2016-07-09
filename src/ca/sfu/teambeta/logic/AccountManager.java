@@ -2,7 +2,14 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.*;
+
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+
 import ca.sfu.teambeta.persistence.DBManager;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +57,10 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidUserInputException, InvalidCredentialsException {
+    public String login(String email, String password) throws
+            InternalHashingException, NoSuchUserException,
+            InvalidUserInputException, InvalidCredentialsException {
+
         validateEmailFormat(email);
         validatePasswordFormat(password);
 
@@ -78,9 +88,11 @@ public class AccountManager {
         try {
             passwordHash = PasswordHash.createHash(password);
         } catch (Exception e) {
-            // Rethrow a simpler Exception following from the abstract Exceptions thrown by ".createHash()"
-            throw new InternalHashingException("Could not create password hash, " +
-                    "please contact an administrator if the problem persists");
+            // Rethrow a simpler Exception following
+            // from the abstract Exceptions thrown by ".createHash()"
+            throw new InternalHashingException(
+                    "Could not create password hash, "
+                            + "please contact an administrator if the problem persists");
         }
 
         User newUser = new User(email, passwordHash);
@@ -103,9 +115,11 @@ public class AccountManager {
         try {
             isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
         } catch (Exception e) {
-            // Rethrow a simpler Exception following from the abstract Exceptions thrown by ".validatePassword()"
-            throw new InternalHashingException("Password cannot be determined as correct or incorrect, " +
-                    "please contact an administrator if this problem persists");
+            // Rethrow a simpler Exception following from
+            // the abstract Exceptions thrown by ".validatePassword()"
+            throw new InternalHashingException(
+                    "Password cannot be determined as correct or incorrect, "
+                            + "please contact an administrator if this problem persists");
         }
 
         if (!isPasswordCorrect) {
@@ -146,7 +160,8 @@ public class AccountManager {
         // Uncomment to save users in-memory
         for (User user : usersInMemory) {
             if (user.getEmail().equals(newUser.getEmail())) {
-                throw new AccountRegistrationException("The email '" + newUser.getEmail() + "' is already in use");
+                throw new AccountRegistrationException(
+                "The email '" + newUser.getEmail() + "' is already in use");
             }
         }
 
@@ -165,11 +180,13 @@ public class AccountManager {
         boolean phoneNumberNonNumeric = !StringUtils.isNumeric(phoneNumber);
 
         if (invalidPhoneNumberLength) {
-            throw new InvalidUserInputException("The phone number field must be empty or of length " + PHONE_NUMBER_LENGTH
-                    + "\nPlease ensure there are no dashs or spaces. IE: '6045551111'");
+            throw new InvalidUserInputException(
+                    "The phone number field must be empty or of length "
+                            + PHONE_NUMBER_LENGTH
+                            + "\nPlease ensure there are no dashs or spaces. IE: '6045551111'");
         } else if (phoneNumberNonNumeric) {
-            throw new InvalidUserInputException("The phone number must only contain digits" +
-                    "\nPlease ensure there are no dashs or spaces. IE: '6045551111'");
+            throw new InvalidUserInputException("The phone number must only contain digits"
+                            + "\nPlease ensure there are no dashs or spaces. IE: '6045551111'");
         }
 
     }
@@ -179,14 +196,17 @@ public class AccountManager {
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
         // See citations.txt for source for Regex pattern
-        String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         boolean emailNotValid = !email.matches(emailPattern);
 
         if (email.isEmpty()) {
             throw new InvalidUserInputException("The email field cannot be empty");
         } else if (emailTooLong) {
-            throw new InvalidUserInputException("The email address cannot exceed the allowed length of " + MAX_EMAIL_LENGTH +
-                    " characters (includes special characters such as '@' and '.')");
+            throw new InvalidUserInputException(
+                    "The email address cannot exceed the allowed length of "
+                            + MAX_EMAIL_LENGTH
+                            + " characters (includes special characters such as '@' and '.')");
         } else if (emailNotValid) {
             throw new InvalidUserInputException("The email address is not in a valid format");
         }
@@ -199,11 +219,14 @@ public class AccountManager {
         boolean passwordTooShort = password.length() < MIN_PASSWORD_LENGTH;
 
         if (password.isEmpty()) {
-            throw new InvalidUserInputException("The password field cannot be empty");
+            throw new InvalidUserInputException(
+                    "The password field cannot be empty");
         } else if (passwordTooLong) {
-            throw new InvalidUserInputException("The password cannot exceed the allowed length of " + MAX_PASSWORD_LENGTH);
+            throw new InvalidUserInputException(
+                    "The password cannot exceed the allowed length of " + MAX_PASSWORD_LENGTH);
         } else if (passwordTooShort) {
-            throw new InvalidUserInputException("The password cannot be less than " + MIN_PASSWORD_LENGTH + " characters");
+            throw new InvalidUserInputException(
+                    "The password cannot be less than " + MIN_PASSWORD_LENGTH + " characters");
         }
 
     }

@@ -8,7 +8,7 @@ import ca.sfu.teambeta.persistence.Persistable;
 
 /**
  * The User class holds the notion of a database-user.
- *
+ * <p>
  * A Player must hold a 1-to-1 relationship with a User; however the inverse is not true, as a
  * Administrator may not be a Player.
  */
@@ -47,7 +47,8 @@ public class User extends Persistable {
         this.lastName = lastName;
     }
 
-    public User(String email, String passwordHash, String firstName, String lastName, String phoneNumber) {
+    public User(String email, String passwordHash,
+                String firstName, String lastName, String phoneNumber) {
         this(email, passwordHash, firstName, lastName);
         this.phoneNumber = phoneNumber;
     }
@@ -84,16 +85,29 @@ public class User extends Persistable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         User user = (User) o;
 
-        if (!email.equals(user.email)) return false;
-        if (!firstName.equals(user.firstName)) return false;
-        if (!lastName.equals(user.lastName)) return false;
-        return phoneNumber != null ? phoneNumber.equals(user.phoneNumber) : user.phoneNumber == null;
-
+        if (!email.equals(user.email)) {
+            return false;
+        }
+        if (!firstName.equals(user.firstName)) {
+            return false;
+        }
+        if (!lastName.equals(user.lastName)) {
+            return false;
+        }
+        if (phoneNumber != null) {
+            return phoneNumber.equals(user.phoneNumber);
+        } else {
+            return true;
+        }
     }
 
     @Override

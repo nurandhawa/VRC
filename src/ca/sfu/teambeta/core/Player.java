@@ -48,8 +48,12 @@ public class Player extends Persistable {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (other == null || getClass() != other.getClass()) return false;
+        if (this == other) {
+            return true;
+        }
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
 
         final Player otherPlayer = (Player) other;
         return getFirstName().equals(otherPlayer.getFirstName())
@@ -58,8 +62,8 @@ public class Player extends Persistable {
 
     @Override
     public int hashCode() {
-        return 23 * getFirstName().hashCode() *
-                getLastName().hashCode();
+        return 23 * getFirstName().hashCode()
+                * getLastName().hashCode();
     }
 
     public int getExistingId() {

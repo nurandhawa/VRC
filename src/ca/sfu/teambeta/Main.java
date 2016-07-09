@@ -31,7 +31,8 @@ class Main {
         AccountManager am = new AccountManager(dbManager);
         am.register("testuser@vrc.com", "demoPass");
 
-        AppController appController = new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
+        AppController appController =
+                new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
                 AppController.DEVELOP_STATIC_HTML_PATH);
     }
 }

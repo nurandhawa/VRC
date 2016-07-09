@@ -1,6 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
@@ -26,10 +25,7 @@ import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -63,7 +59,8 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "");
         config.setProperty("hibernate.connection.password", "");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:hsqldb:file:/home/freeman/prj/resources/database/test");
+        config.setProperty("hibernate.connection.url",
+                "jdbc:hsqldb:file:/home/freeman/prj/resources/database/test");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
         config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
         return config.buildSessionFactory();
@@ -79,7 +76,8 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "beta-test");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.connection.url",
+                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
@@ -96,7 +94,9 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "beta-test");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/production?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.connection.url",
+                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:"
+                + "3306/production?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
@@ -117,7 +117,8 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "root");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url", "jdbc:mysql://mysql:3306/test?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.connection.url",
+                "jdbc:mysql://mysql:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
@@ -139,17 +140,18 @@ public class DBManager {
     public static void main(String[] args) {
         SessionFactory factory = getMySQLSession(false);
         DBManager dbMan = new DBManager(factory);
-//        Player p1 = new Player("Bobby", "Chan", "");
-//        Player p2 = new Player("Wing", "Man", "");
-//        dbMan.persistEntity(new Pair(p1, p2));
-//
-//        Player p3 = new Player("Hello", "World!", "");
-//        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
-//
-//        Player test = dbMan.getPlayerFromID(5);
+        /*
+        Player p1 = new Player("Bobby", "Chan", "");
+        Player p2 = new Player("Wing", "Man", "");
+        dbMan.persistEntity(new Pair(p1, p2));
 
-//        System.out.println(test.getFirstName());
+        Player p3 = new Player("Hello", "World!", "");
+        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
 
+        Player test = dbMan.getPlayerFromID(5);
+
+        System.out.println(test.getFirstName());
+        */
         Ladder lad = dbMan.getLatestLadder();
 
         System.out.println(lad);
@@ -163,7 +165,9 @@ public class DBManager {
             key = (int) session.save(entity);
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             e.printStackTrace();
         }
         return key;
@@ -404,13 +408,13 @@ public class DBManager {
         GameSession gameSession = getGameSessionLatest();
         int sessionId = gameSession.getID();
         Scorecard scorecard = (Scorecard) session.createQuery(
-                "from Scorecard sc \n" +
-                        "join session_Scorecard s_sc on (s_sc.scorecards_id = sc.id) " +
-                        "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) " +
-                        "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) " +
-                        "where sc_pwin.pairs_id = :winning_pair_id " +
-                        "and sc_plose.pairs_id = :losing_pair_id " +
-                        "and s_sc.session_id = :session_id")
+                "from Scorecard sc \n"
+                        + "join session_Scorecard s_sc on (s_sc.scorecards_id = sc.id) "
+                        + "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) "
+                        + "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) "
+                        + "where sc_pwin.pairs_id = :winning_pair_id "
+                        + "and sc_plose.pairs_id = :losing_pair_id "
+                        + "and s_sc.session_id = :session_id")
                 .setInteger("winning_pair_id", winningPairId)
                 .setInteger("losing_pair_id", winningPairId)
                 .setInteger("session_id", sessionId)
