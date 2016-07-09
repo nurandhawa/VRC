@@ -86,10 +86,12 @@ var API = (function() {
     };
 
     API.prototype.prepareNewPlayer = function(firstName, lastName, phoneNumber) {
+        var onlyDigitsRegex = /\d/g;
+        var sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
         return {
             "firstName": firstName,
             "lastName": lastName,
-            "phoneNumber": phoneNumber,
+            "phoneNumber": sanitizedPhoneNumber,
             "existingId": -1
         };
     };
@@ -185,11 +187,15 @@ var API = (function() {
             var matches = JSON.parse(response);
             matches.forEach(function(match, i) {
                 match.scorecardIndex = i;
+                match.resultsValid = false;
+                match.results = [];
                 match.pairs.forEach(function(pair) {
-                    pair.results = [];
+                    var resultsArr = [];
                     for (var i in match.pairs) {
-                        pair.results.push("-");
+                        resultsArr.push("-");
                     }
+                    match.results.push(resultsArr);
+
                     pair.absentPenalty = {
                         'btn-raised': false
                     };

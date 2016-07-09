@@ -1,7 +1,25 @@
 (function () {
     "use strict";
 
+    $.material.options.validate = false;
     $.material.init();
+
+    Vue.validator('position', function (val) {
+        return /^[1-9][0-9]*$|^$/.test(val);
+    });
+
+    Vue.validator('alpha', function (val) {
+        return /^[A-z]+$/.test(val);
+    });
+
+    // Same as alpha, but empty string also returns true
+    Vue.validator('alphaEmpty', function (val) {
+        return /^[A-z]+$|^$/.test(val);
+    });
+
+    Vue.validator('phone', function (val) {
+        return /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$|^$/.test(val);
+    });
 
     var ladderData = {
         pairs: [],

@@ -1,6 +1,7 @@
 (function () {
     "use strict";
 
+    $.material.options.validate = false;
     $.material.init();
 
     var LOGIN_FORM_ID = "#loginForm";
@@ -20,6 +21,20 @@
         api.userLogin(this.email, this.password, onLoggedIn);
     };
 
+    Vue.validator('email', function (val) {
+        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
+    });
+
+    var onValid = function() {
+        if (this.$loginFormValidator.touched) {
+            $("#submitButton").prop("disabled", false);
+        }
+    };
+
+    var onInvalid = function(element) {
+        $("#submitButton").prop("disabled", true);
+    };
+
     var loginForm = new Vue({
         el: LOGIN_FORM_ID,
         data: {
@@ -28,7 +43,9 @@
             remember: false
         },
         methods: {
-            onSubmit: onSubmit
+            onSubmit: onSubmit,
+            onValid: onValid,
+            onInvalid: onInvalid
         }
     });
 
