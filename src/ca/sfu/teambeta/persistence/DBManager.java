@@ -76,8 +76,7 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "beta-test");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://ec2-52-35-115-65.us-west-2.compute.amazonaws.com:3306/test?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
@@ -94,9 +93,7 @@ public class DBManager {
         config.setProperty("hibernate.connection.username", "beta-test");
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:"
-                + "3306/production?serverTimezone=America/Vancouver");
+        config.setProperty("hibernate.connection.url", "jdbc:mysql://ec2-52-35-115-65.us-west-2.compute.amazonaws.com:3306/production?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
