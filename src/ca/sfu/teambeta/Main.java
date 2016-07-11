@@ -22,6 +22,7 @@ class Main {
                 System.out.println("INVALID CSV FILE");
                 throw e;
             }
+
             SessionFactory sessionFactory = DBManager.getMySQLSession(true);
 
             GameSession gameSession = new GameSession(newLadder);
