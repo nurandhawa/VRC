@@ -81,8 +81,8 @@ public class InputValidator {
 
     }
 
-    public static void validateNewPlayers(List<Player> newPlayers, int MAX_SIZE) throws InvalidInputException {
-        if (newPlayers.size() != MAX_SIZE) {
+    public static void validateNewPlayers(List<Player> newPlayers, int maxSize) throws InvalidInputException {
+        if (newPlayers.size() != maxSize) {
             throw new InvalidInputException("A Pair cannot have more than 2 players.");
         }
 
