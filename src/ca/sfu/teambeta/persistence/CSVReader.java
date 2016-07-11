@@ -64,8 +64,8 @@ public class CSVReader {
                 String firstNameSecond = pairInfo[4];
                 int idSecond = Integer.parseInt(pairInfo[5]);
 
-                Player firstPlayer = new Player(firstNameFirst, lastNameFirst);
-                Player secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                Player firstPlayer = new Player(lastNameFirst, firstNameFirst);
+                Player secondPlayer = new Player(lastNameSecond, firstNameSecond);
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
