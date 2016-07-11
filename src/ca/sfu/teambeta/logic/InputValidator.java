@@ -91,6 +91,7 @@ public class InputValidator {
             // Ignore player objects that will be replaced by existing player objects
             if (!(existingId >= 0)) {
                 validatePlayerName(player.getFirstName());
+                validateNullOrEmptyString(player.getFirstName());
                 validatePlayerName(player.getLastName());
             }
         }
@@ -103,19 +104,20 @@ public class InputValidator {
             throw new InvalidInputException("Results must have " + numRounds + " rounds");
         }
 
-        final int CORRECT_ROUNDS_PLAYED = 2;
-        final int CORRECT_ROUNDS_NOT_PLAYED = numRounds - CORRECT_ROUNDS_PLAYED;
+        int numGamesPerRound = results.length;
+        final int CORRECT_PLAYED_GAMES_PER_ROUND = 2;
+        final int CORRECT_BYE_GAMES_PER_ROUND = numGamesPerRound - CORRECT_PLAYED_GAMES_PER_ROUND;
 
-        for (String[] row : results) {
+        for (String[] round : results) {
             int gamesNotPlayed = 0;
-            for (String result : row) {
+            for (String result : round) {
                 if (result.equals("-")) {
                     gamesNotPlayed++;
                 }
             }
-            if (gamesNotPlayed != CORRECT_ROUNDS_NOT_PLAYED) {
-                throw new InvalidInputException("Results must have " + CORRECT_ROUNDS_PLAYED +
-                        "games played for every pair.");
+            if (gamesNotPlayed != CORRECT_BYE_GAMES_PER_ROUND) {
+                throw new InvalidInputException("Results must have " + CORRECT_PLAYED_GAMES_PER_ROUND +
+                        " games played every round.");
             }
         }
     }
