@@ -1,6 +1,8 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -16,7 +18,7 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidUserInputException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.UserSessionManager;
@@ -38,8 +40,8 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
-    private static final String PLAYING = "playing";
-    private static final String NOT_PLAYING = "not playing";
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
@@ -129,10 +131,10 @@ public class AppController {
                 status = "";
             }
 
-            boolean validNewPos = 0 <= newPosition && newPosition <= dbManager.getLadderSize();
-            boolean validStatus = status.equals(PLAYING) || status.equals(NOT_PLAYING);
+            boolean validNewPos = InputValidator.checkLadderPosition(newPosition, dbManager.getLadderSize());
+            boolean validStatus = InputValidator.checkPlayingStatus(status);
 
-            if (!dbManager.hasPairID(id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -141,7 +143,7 @@ public class AppController {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
-                if (status.equals(PLAYING)) {
+                if (status.equals(PLAYING_STATUS)) {
                     boolean statusChanged = dbManager.setPairActive(id);
                     if (statusChanged) {
                         return getOkResponse("");
@@ -154,7 +156,7 @@ public class AppController {
                                 "Player " + firstName + " "
                                 + lastName + " is already playing");
                     }
-                } else if (status.equals(NOT_PLAYING)) {
+                } else if (status.equals(NOT_PLAYING_STATUS)) {
                     dbManager.setPairInactive(id);
                     return getOkResponse("");
                 }
@@ -178,14 +180,16 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             final int MAX_SIZE = 2;
 
-            boolean validPos = 0 < extractedData.getPosition()
-                    && extractedData.getPosition() <= dbManager.getLadderSize();
+            boolean validPos = InputValidator.checkLadderPosition(
+                    extractedData.getPosition(), dbManager.getLadderSize());
 
             List<Player> newPlayers = extractedData.getPlayers();
 
-            if (newPlayers.size() != MAX_SIZE) {
+            try {
+                InputValidator.validateNewPlayers(newPlayers, MAX_SIZE);
+            } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("A Pair cannot have more than 2 players.");
+                return getErrResponse(exception.getMessage());
             }
 
             for (int i = 0; i < MAX_SIZE; i++) {
@@ -219,7 +223,7 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (!dbManager.hasPairID(id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -245,7 +249,7 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (!dbManager.hasPairID(id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
             }
@@ -292,14 +296,15 @@ public class AppController {
             Scorecard scorecard = dbManager.getScorecardFromGame(id);
 
             try {
+                InputValidator.validateResults(scorecard, extractedData.results);
                 dbManager.inputMatchResults(scorecard, extractedData.results.clone());
-                response.status(OK);
-                return getOkResponse("");
-            } catch (Exception e) {
-                response.body("Invalid result format.");
+            } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);
-                return getErrResponse("Invalid result format.");
+                return getErrResponse(exception.getMessage());
             }
+
+            response.status(OK);
+            return getOkResponse("");
         });
 
         //Remove a pair from a match
@@ -312,12 +317,12 @@ public class AppController {
                 return getErrResponse(ID_NOT_INT);
             }
 
-            if (!dbManager.hasPairID(id)) {
+            if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND);
             }
 
-            if (!dbManager.isActivePair(id)) {
+            if (!InputValidator.checkPairActive(dbManager, id)) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("The pair is not on the scorecard " + id);
             }
@@ -346,7 +351,7 @@ public class AppController {
                 errMessage = e.getMessage();
             } catch (NoSuchUserException e) {
                 errMessage = e.getMessage();
-            } catch (InvalidUserInputException e) {
+            } catch (InvalidInputException e) {
                 errMessage = e.getMessage();
             } catch (InvalidCredentialsException e) {
                 errMessage = e.getMessage();
@@ -371,7 +376,7 @@ public class AppController {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();
-            } catch (InvalidUserInputException e) {
+            } catch (InvalidInputException e) {
                 message = e.getMessage();
             }
 

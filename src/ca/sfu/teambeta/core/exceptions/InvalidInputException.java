@@ -12,22 +12,22 @@ package ca.sfu.teambeta.core.exceptions;
  *  (and within the consequent classes which will handle this) due to it's critical
  *  functionality.
  */
-public class InvalidUserInputException extends Exception {
+public class InvalidInputException extends Exception {
 
     // MARK: - Constructors
-    public InvalidUserInputException() {
+    public InvalidInputException() {
         super();
     }
 
-    public InvalidUserInputException(String message) {
+    public InvalidInputException(String message) {
         super(message);
     }
 
-    public InvalidUserInputException(String message, Throwable cause) {
+    public InvalidInputException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidUserInputException(Throwable cause) {
+    public InvalidInputException(Throwable cause) {
         super(cause);
     }
 
