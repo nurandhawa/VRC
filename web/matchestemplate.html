@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <style>
+      table, th, td {
+        border: 1px solid black;
+        margin: 15px;
+        font-family: sans-serif;
+      }
+      th, td {
+        padding: 10px;
+        min-width: 25px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="matchcards">
+      <div style="display: flex">
+        <div style="flex: 1">
+          <table v-for="match in matches" v-if="$index % 2 == 0">
+            <tr>
+              <th>Teams</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
+            </tr>
+            <tr v-for="pair in match.pairs">
+              <td>{{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+        <div style="flex: 1">
+          <table v-for="match in matches" v-if="$index % 2 == 1">
+            <tr>
+              <th>Teams</th>
+              <th>1</th>
+              <th>2</th>
+              <th>3</th>
+              <th>4</th>
+            </tr>
+            <tr v-for="pair in match.pairs">
+              <td>{{ pair.players[0].firstName }} and {{ pair.players[1].firstName }}</td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script src="vendors/jquery-1.12.4.js"></script>
+  <script src="vendors/vue.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/matchestemplateloader.js"></script>
+
+</html>
