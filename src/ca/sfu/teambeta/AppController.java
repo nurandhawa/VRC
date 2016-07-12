@@ -125,7 +125,6 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
-                throw ignored;
             }
 
             String status = request.queryParams(STATUS);
