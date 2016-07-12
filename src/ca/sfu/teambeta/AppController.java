@@ -25,6 +25,7 @@ import ca.sfu.teambeta.logic.UserSessionManager;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
+import static spark.Spark.exception;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 import static spark.Spark.patch;
@@ -53,6 +54,7 @@ public class AppController {
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
+    private static final int SERVER_ERROR = 500;
     private static final int OK = 200;
 
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
@@ -384,6 +386,11 @@ public class AppController {
             return getErrResponse(message);
         });
 
+        exception(Exception.class, (exception, request, response) -> {
+            exception.printStackTrace();
+            response.status(SERVER_ERROR);
+            response.body(getErrResponse(exception.getMessage()));
+        });
     }
 
     private String getOkResponse(String message) {
