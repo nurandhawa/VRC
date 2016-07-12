@@ -5,6 +5,7 @@
     $.material.init();
 
     var LOGIN_FORM_ID = "#loginForm";
+    var ANIMATION_ID = "#loginAnimation";
 
     // Override the submit button redirect
     $(LOGIN_FORM_ID).submit(function () {
@@ -13,7 +14,7 @@
 
     var onLoggedIn = function(response) {
         Cookies.set('sessionToken', response.sessionToken);
-        window.location.href = "/index.html";
+        window.location.href = "/";
     };
 
     var onSubmit = function(event) {
@@ -21,9 +22,9 @@
         api.userLogin(this.email, this.password, onLoggedIn);
     };
 
-    Vue.validator('email', function (val) {
-        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
-    });
+    // Vue.validator('email', function (val) {
+    //     return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
+    // });
 
     var onValid = function() {
         if (this.$loginFormValidator.touched) {
@@ -46,6 +47,16 @@
             onSubmit: onSubmit,
             onValid: onValid,
             onInvalid: onInvalid
+        }
+    });
+
+    var loginAnimation = new Vue({
+        el: ANIMATION_ID,
+        components: {
+            'ClipLoader': VueSpinner.ClipLoader
+        },
+        data: {
+            color: '#03a9f4'
         }
     });
 

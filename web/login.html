@@ -57,6 +57,10 @@
       </nav>
 
       <div class="loginwrapper">
+        <div id="loginAnimation">
+          <clip-loader :color="color"></clip-loader>
+        </div>
+
         <div id="loginForm" class="login panel panel-default">
           <validator name="loginFormValidator" @valid="onValid" @invalid="onInvalid">
             <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
@@ -93,7 +97,7 @@
   <!-- Scripts run after DOM is loaded -->
   <script src="vendors/jquery-1.12.4.js"></script>
   <script src="vendors/vue.js"></script>
-  <script src="vendors/vue-validator.js"></script>
+  <script src="vendors/vue-spinner.js"></script>
   <script src="vendors/jscookie.js"></script>
   <script src="vendors/bootstrap.js"></script>
   <script src="vendors/material.js"></script>
