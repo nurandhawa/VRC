@@ -62,3 +62,33 @@ dependencies {
     compile group: 'com.java-adventures.security', name: 'secure-password-hash', version: '1.0.1'
     compile files('web')
 }
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.hidetake:gradle-ssh-plugin:2.4.0"
+    }
+}
+
+apply plugin: 'org.hidetake.ssh'
+
+remotes {
+    webServer {
+        host = 'cmpt373-beta.csil.sfu.ca'
+        user = 'root'
+        identity = file('csil_deploy_key')
+    }
+}
+
+task deploy << {
+    ssh.run {
+        session(remotes.webServer) {
+            put from: 'build/libs/vrc-project-0.1.jar', into: '/root'
+            execute 'java -jar /root/vrc-project-0.1.jar'
+        }
+    }
+}
