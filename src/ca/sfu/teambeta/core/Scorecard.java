@@ -11,7 +11,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
@@ -27,7 +26,7 @@ public class Scorecard extends Persistable {
     private static final int LOSE = -1;
     private static final int NUM_GAMES = 4;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     Set<Game> games = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)

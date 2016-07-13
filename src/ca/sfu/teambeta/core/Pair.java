@@ -17,7 +17,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
@@ -31,7 +30,7 @@ import ca.sfu.teambeta.persistence.Persistable;
 @Embeddable
 public class Pair extends Persistable {
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL)
     @Expose
     private Set<Player> players = new HashSet<>();
     @Column(name = "date_created")

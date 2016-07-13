@@ -12,7 +12,6 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OrderColumn;
 
@@ -31,7 +30,7 @@ public class Ladder extends Persistable {
     @Type(type = "timestamp")
     private Date dateCreated = new Date();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL)
     @OrderColumn
     @Expose
     private List<Pair> pairs;
