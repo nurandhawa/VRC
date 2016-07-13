@@ -5,7 +5,6 @@
     $.material.init();
 
     var LOGIN_FORM_ID = "#loginForm";
-    var ANIMATION_ID = "#loginAnimation";
 
     // Override the submit button redirect
     $(LOGIN_FORM_ID).submit(function () {
@@ -18,13 +17,15 @@
     };
 
     var onSubmit = function(event) {
+        this.spinnerVisibility = true;
+        this.validatorVisibility = false;
         var api = new API();
         api.userLogin(this.email, this.password, onLoggedIn);
     };
 
-    // Vue.validator('email', function (val) {
-    //     return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
-    // });
+    Vue.validator('email', function (val) {
+        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
+    });
 
     var onValid = function() {
         if (this.$loginFormValidator.touched) {
@@ -38,25 +39,21 @@
 
     var loginForm = new Vue({
         el: LOGIN_FORM_ID,
+        components: {
+            'ClipLoader': VueSpinner.ClipLoader
+        },
         data: {
             email: "",
             password: "",
-            remember: false
+            remember: false,
+            color: '#03a9f4',
+            spinnerVisibility: false,
+            validatorVisibility: true
         },
         methods: {
             onSubmit: onSubmit,
             onValid: onValid,
             onInvalid: onInvalid
-        }
-    });
-
-    var loginAnimation = new Vue({
-        el: ANIMATION_ID,
-        components: {
-            'ClipLoader': VueSpinner.ClipLoader
-        },
-        data: {
-            color: '#03a9f4'
         }
     });
 
