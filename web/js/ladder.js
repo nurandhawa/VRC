@@ -24,7 +24,7 @@ var Ladder = (function() {
 
         var playingButton;
         var notPlayingButton;
-        var ladderPages = new Array();
+        var ladderPages = [];
 
         playingButton = Vue.extend({
             data: function() {
@@ -186,13 +186,13 @@ var Ladder = (function() {
 
     Ladder.prototype.updateLadder = function(ladderData) {
         this.ladder = ladderData;
-        var ladderPages = new Array();
+        var ladderPages = [];
         if (ladderData){
             var numPages = Math.floor(ladderData.length / NUM_ENTRIES_PER_PAGE) + 1;
             for (var i = 0; i < numPages; i++){
-                ladderPages[i] = new Array();
+                ladderPages[i] = [];
             }
-            for (var i = 0; i < ladderData.length; i++){
+            for (i = 0; i < ladderData.length; i++){
                 var pageIndex = Math.floor(ladderData[i].position / NUM_ENTRIES_PER_PAGE);
                 ladderPages[pageIndex].push(ladderData[i]);
             }
