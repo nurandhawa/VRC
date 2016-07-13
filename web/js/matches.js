@@ -75,17 +75,14 @@ var Matches = (function () {
                     return 1;
                 },
                 openModal: this.openModal,
-                updateMatches: this.updateMatches
+                updateMatches: this.updateMatches,
+                validateResults: this.validateResults
             },
             components: {
                 edit: editButton,
                 read: blankButton
             }
         });
-
-        this.component.matches.forEach(function(match, index) {
-            this.component.$watch("matches[" + index + "].results", this.validateResults.bind(this.component, match));
-        }.bind(this));
     }
 
     Matches.prototype.openModal = function(index) {
@@ -161,6 +158,9 @@ var Matches = (function () {
 
     Matches.prototype.updateMatches = function(matchData) {
         this.matches = matchData;
+        this.matches.forEach(function(match, index) {
+            this.$watch("matches[" + index + "].results", this.validateResults.bind(this, match));
+        }.bind(this));
     };
 
     Matches.prototype.refreshMatches = function() {
