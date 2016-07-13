@@ -88,7 +88,7 @@ task deploy << {
     ssh.run {
         session(remotes.webServer) {
             put from: 'build/libs/vrc-project-0.1.jar', into: '/root'
-            execute 'java -jar /root/vrc-project-0.1.jar'
+            execute 'pkill java && java -jar /root/vrc-project-0.1.jar'
         }
     }
 }
