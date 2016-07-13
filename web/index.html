@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+  <!DOCTYPE html>
+  <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -28,161 +28,174 @@
 
   <body>
 
-      <nav class="navbar navbar-info">
-        <div class="container-fluid">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Vancouver Racquets Club</a>
-          </div>
-
-          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-              <li class="active"><a href="index.html">Ladder</a></li>
-              <li><a href="matches.html">Matches</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="login.html">Log Out</a></li>
-            </ul>
-          </div>
-
-        </div>
-      </nav>
-
-      <div id="header" class="header">
-        <h1 class="header-initial">{{ title }}</h1>
-        <div class="header-mid"><h5>Last modified on {{ timestamp }}</h5></div>
-        <div class="header-right">
-          <component :is="mode" transition="fade" transition-mode="out-in">
-          </component>
-          <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
-        </div>
+  <nav class="navbar navbar-info">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Vancouver Racquets Club</a>
       </div>
 
-      <div id="ladder" class="ladder">
-        <div id="addPairModal" class="modal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 class="modal-title">Add Pair</h3>
-              </div>
-              <validator name="newPairValidator" @valid="onValid('#newPairSave')" @invalid="onInvalid('#newPairSave')">
-                <div class="modal-body">
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="ladderPosition" class="col-md-2 control-label">Ladder Position</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="ladderPosition" v-model="newPairData.position"
-                       v-validate:position="['position']" :classes="{ invalid: 'has-error', }">
-                      <p class="help-block">Must be a valid number. Leave blank to insert the pair at the end of the ladder.</p>
-                    </div>
-                  </div>
-                  <h4>Player 1</h4>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player1First" class="col-md-2 control-label">First Name</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player1First" v-model="newPairData.player1.firstName"
-                       v-validate:p1firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
-                       <p class="help-block" v-if="$newPairValidator.p1firstname.invalid">Required field. Alphabetic characters only.</p>
-                    </div>
-                  </div>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player1Last" class="col-md-2 control-label">Last Name</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player1Last" v-model="newPairData.player1.lastName"
-                       v-validate:p1lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
-                       <p class="help-block" v-if="$newPairValidator.p1lastname.invalid">Alphabetic characters only.</p>
-                    </div>
-                  </div>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player1Phone" class="col-md-2 control-label">Phone Number</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player1Phone" v-model="newPairData.player1.phoneNumber"
-                       v-validate:p1phone="['phone']" :classes="{ invalid: 'has-error', }">
-                      <p class="help-block" v-if="$newPairValidator.p1phone.invalid">Must be a standard 10 digit phone number.</p>
-                    </div>
-                  </div>
-                  <h4>Player 2</h4>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player2First" class="col-md-2 control-label">First Name</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player2First" v-model="newPairData.player2.firstName"
-                       v-validate:p2firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
-                       <p class="help-block" v-if="$newPairValidator.p2firstname.invalid">Required field. Alphabetic characters only.</p>
-                    </div>
-                  </div>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player2Last" class="col-md-2 control-label">Last Name</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player2Last" v-model="newPairData.player2.lastName"
-                       v-validate:p2lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
-                       <p class="help-block" v-if="$newPairValidator.p2lastname.invalid">Alphabetic characters only.</p>
-                    </div>
-                  </div>
-                  <div class="form-group modal-form-group" v-validate-class>
-                    <label for="player2Phone" class="col-md-2 control-label">Phone Number</label>
-                    <div class="col-md-10">
-                      <input type="text" class="form-control" id="player2Phone" v-model="newPairData.player2.phoneNumber"
-                       v-validate:p2phone="['phone']" :classes="{ invalid: 'has-error', }">
-                       <p class="help-block" v-if="$newPairValidator.p2phone.invalid">Must be a standard 10 digit phone number.</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                  <button id="newPairSave" type="button" class="btn btn-success" v-on:click="onAdd" disabled="disabled">Add pair</button>
-                </div>
-              </validator>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="index.html">Ladder</a></li>
+          <li><a href="matches.html">Matches</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="login.html">Log Out</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </nav>
+
+  <div id="header" class="header">
+    <div class = header-item>
+      <h1 class="header-initial">{{ title }}</h1></div>
+    <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
+    <div class="header-right header-item">
+      <div class = "header-button">
+        <component :is="mode" transition="fade" transition-mode="out-in">
+        </component>
+        <a v-on:click="onClick()" class="btn btn-raised btn-primary ">{{ buttonTitle }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="ladder" >
+    <div class="ladder">
+      <div id="addPairModal" class="modal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              <h3 class="modal-title">Add Pair</h3>
             </div>
+            <validator name="newPairValidator" @valid="onValid('#newPairSave')" @invalid="onInvalid('#newPairSave')">
+              <div class="modal-body">
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="ladderPosition" class="col-md-2 control-label">Ladder Position</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="ladderPosition" v-model="newPairData.position"
+                           v-validate:position="['position']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block">Must be a valid number. Leave blank to insert the pair at the end of the ladder.</p>
+                  </div>
+                </div>
+                <h4>Player 1</h4>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player1First" class="col-md-2 control-label">First Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1First" v-model="newPairData.player1.firstName"
+                           v-validate:p1firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p1firstname.invalid">Required field. Alphabetic characters only.</p>
+                  </div>
+                </div>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player1Last" class="col-md-2 control-label">Last Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1Last" v-model="newPairData.player1.lastName"
+                           v-validate:p1lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p1lastname.invalid">Alphabetic characters only.</p>
+                  </div>
+                </div>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player1Phone" class="col-md-2 control-label">Phone Number</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player1Phone" v-model="newPairData.player1.phoneNumber"
+                           v-validate:p1phone="['phone']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p1phone.invalid">Must be a standard 10 digit phone number.</p>
+                  </div>
+                </div>
+                <h4>Player 2</h4>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player2First" class="col-md-2 control-label">First Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2First" v-model="newPairData.player2.firstName"
+                           v-validate:p2firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p2firstname.invalid">Required field. Alphabetic characters only.</p>
+                  </div>
+                </div>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player2Last" class="col-md-2 control-label">Last Name</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2Last" v-model="newPairData.player2.lastName"
+                           v-validate:p2lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p2lastname.invalid">Alphabetic characters only.</p>
+                  </div>
+                </div>
+                <div class="form-group modal-form-group" v-validate-class>
+                  <label for="player2Phone" class="col-md-2 control-label">Phone Number</label>
+                  <div class="col-md-10">
+                    <input type="text" class="form-control" id="player2Phone" v-model="newPairData.player2.phoneNumber"
+                           v-validate:p2phone="['phone']" :classes="{ invalid: 'has-error', }">
+                    <p class="help-block" v-if="$newPairValidator.p2phone.invalid">Must be a standard 10 digit phone number.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="newPairSave" type="button" class="btn btn-success" v-on:click="onAdd" disabled="disabled">Add pair</button>
+              </div>
+            </validator>
           </div>
         </div>
-        <validator name="pairValidator">
-          <div class="panel panel-default ladder-element" v-for="entry in ladder">
-            <div class="panel-body">
-              <div class="pair-name">
+      </div>
+      <validator name="pairValidator">
+        <div class="panel panel-default ladder-element" v-for="entry in ladder">
+          <div class="panel-body">
+            <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
-                {{ entry.teamName }}
-                <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
-                </component>
-                <div id="modal{{ $index }}" class="modal">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 class="modal-title">Edit Pair</h3>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-group modal-form-group" v-validate-class>
-                          <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
-                          <div class="col-md-10">
-                            <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
-                             :field="entry.teamName" v-validate="['required', 'position']" :classes="{ invalid: 'has-error', }"
-                             @valid="onValid('#editPairSave' + $index)", @invalid="onInvalid('#editPairSave' + $index)">
-                             <p class="help-block">Position must be greater than 0.</p>
-                          </div>
+              {{ entry.teamName }}
+              <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
+              </component>
+              <div id="modal{{ $index }}" class="modal">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                      <h3 class="modal-title">Edit Pair</h3>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-group modal-form-group" v-validate-class>
+                        <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
+                        <div class="col-md-10">
+                          <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
+                                 :field="entry.teamName" v-validate="['required', 'position']" :classes="{ invalid: 'has-error', }"
+                                 @valid="onValid('#editPairSave' + $index)", @invalid="onInvalid('#editPairSave' + $index)">
+                          <p class="help-block">Position must be greater than 0.</p>
                         </div>
                       </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete($index)">Delete pair</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button id="editPairSave{{ $index }}" type="button" class="btn btn-success" v-on:click="onUpdate($index)" disabled="disabled">
-                          Save changes
-                        </button>
-                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete($index)">Delete pair</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button id="editPairSave{{ $index }}" type="button" class="btn btn-success" v-on:click="onUpdate($index)" disabled="disabled">
+                        Save changes
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </validator>
-
-      </div>
+        </div>
+      </validator>
+    </div>
+    <div class="pages-container">
+      <ul class="pagination pages-buttons">
+        <li><a href="#">«</a></li>
+        <li v-for="entry in ladderPages">
+          <a href="#">{{ $index + 1 }}</a>
+        </li>
+        <li><a href="#">»</a></li>
+      </ul>
+    </div>
+  </div>
 
   </body>
 
@@ -198,4 +211,5 @@
   <script src="js/ladder.js"></script>
   <script src="js/ladderloader.js"></script>
 
-</html>
+
+  </html>

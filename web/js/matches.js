@@ -6,13 +6,6 @@ var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-i
 
 var Matches = (function () {
     function Matches(matchData) {
-        Vue.filter('filterLeft', function (array, matchNum) {
-            var filteredArray = [];
-            if (matchNum % 3 == 1) {
-                filteredArray.add(array[matchNum]);
-            }
-        });
-
         Vue.component('matches', {
             template: '#matches-template',
             props: {
@@ -23,15 +16,6 @@ var Matches = (function () {
                     type: Boolean,
                     required: true,
                     twoWay: true
-                }
-            },
-            filters: {
-                filterLeft: function (matchNum) {
-                    var matches = [];
-                    matches.add(1);
-                    matches.add(2);
-                    matches.add(3);
-                    return matches;
                 }
             },
             methods: {
@@ -71,9 +55,6 @@ var Matches = (function () {
                 mode: 'read'
             },
             methods: {
-                filterLeft: function () {
-                    return 1;
-                },
                 openModal: this.openModal,
                 updateMatches: this.updateMatches,
                 validateResults: this.validateResults
