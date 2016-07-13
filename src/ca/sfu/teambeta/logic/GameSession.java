@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -34,10 +33,10 @@ public class GameSession extends Persistable {
     @OneToOne(cascade = CascadeType.ALL)
     private Ladder reorderedLadder = null;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     private Set<Pair> activePairs = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     @OrderColumn
     private List<Scorecard> scorecards = new ArrayList<>();
 
