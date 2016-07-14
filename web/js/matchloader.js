@@ -21,7 +21,7 @@
         methods: {
             saveResults: function() {
                 var api = new API();
-                api.reorderLadder();
+                api.reorderLadder(api.gameSession.LATEST);
             }
         },
         parent: header.component
@@ -29,7 +29,7 @@
     header.addButton(saveResultsButton);
 
     var api = new API();
-    api.getMatches(function (response) {
+    api.getMatches(api.gameSession.LATEST, function (response) {
         matches.updateMatches.call(matches.component, response);
         header.updateHeader.call(header.component, response.dateCreated);
     });

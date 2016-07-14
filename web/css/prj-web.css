@@ -65,6 +65,32 @@
   margin: -10px;
 }
 
+.matches-container {
+  margin: 10px;
+}
+
+.matches-container-tabs {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.nav-tabs > li {
+  flex: 1;
+  margin-bottom: 0px;
+}
+
+.nav-tabs > li.active {
+  background-color: #26A69A;
+}
+
+.matches-tabs {
+  width: 100%;
+  text-align: center;
+}
+
 .matches {
   display: flex;
 }
