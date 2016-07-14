@@ -223,22 +223,44 @@ public class DBManager {
         return ladder;
     }
 
-    public synchronized void addPenaltyToPairToLatestGameSession(int pairId, Penalty penalty) {
+    public synchronized GameSession getGameSessionLatest() {
         Transaction tx = null;
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            Pair pair = session.get(Pair.class, pairId);
             DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
                     .setProjection(Projections.max("id"));
             gameSession = (GameSession) session.createCriteria(GameSession.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            gameSession.setPenaltyToPair(pair, penalty);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
         }
+        return gameSession;
+    }
+
+    // TODO: Actually get previous game session
+    public synchronized GameSession getGameSessionPrevious() {
+        Transaction tx = null;
+        GameSession gameSession = null;
+        try {
+            tx = session.beginTransaction();
+            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
+                    .setProjection(Projections.max("id"));
+            gameSession = (GameSession) session.createCriteria(GameSession.class)
+                    .add(Property.forName("id").eq(maxId))
+                    .uniqueResult();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return gameSession;
+    }
+
+    public void addPenaltyToPair(GameSession gameSession, int pairId, Penalty penalty) {
+        Pair pair = getPairFromID(pairId);
+        gameSession.setPenaltyToPair(pair, penalty);
     }
 
     public synchronized void addPairToLatestLadder(Pair pair) {
@@ -258,10 +280,7 @@ public class DBManager {
         }
     }
 
-    // TODO: This method definitely does not work
-    public synchronized void inputMatchResults(Scorecard s, String[][] results) {
-        GameSession gameSession = getGameSessionLatest();
-
+    public synchronized void inputMatchResults(GameSession gameSession, Scorecard s, String[][] results) {
         List<Pair> teams = s.getReorderedPairs();
         int rows = results.length;
         int cols = teams.size();
@@ -282,7 +301,6 @@ public class DBManager {
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
                 s.setGameResults(teamWon,teamLost);
-                //setGameResults(teamWon.getID(), teamLost.getID());
             }
             winCount = 0;
             teamLost = null;
@@ -291,14 +309,12 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public synchronized void addPair(Pair pair, int position) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
         gameSession.addNewPairAtIndex(pair, position);
         persistEntity(gameSession);
     }
 
-    public synchronized void addPair(Pair pair) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void addPair(GameSession gameSession, Pair pair) {
         gameSession.addNewPairAtEnd(pair);
         persistEntity(gameSession);
     }
@@ -328,8 +344,7 @@ public class DBManager {
         return getPairFromID(id) != null;
     }
 
-    public synchronized void movePair(int pairId, int newPosition) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
 
         removePair(pairId);
@@ -337,8 +352,7 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public synchronized Player getAlreadyActivePlayer(int id) throws Exception {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized Player getAlreadyActivePlayer(GameSession gameSession, int id) throws Exception {
         Pair pair = getPairFromID(id);
         Player player;
         try {
@@ -349,8 +363,7 @@ public class DBManager {
         return player;
     }
 
-    public synchronized boolean setPairActive(int pairId) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized boolean setPairActive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
         boolean activated = gameSession.setPairActive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
@@ -358,16 +371,14 @@ public class DBManager {
         return activated;
     }
 
-    public synchronized void setPairInactive(int pairId) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void setPairInactive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
         gameSession.setPairInactive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
         persistEntity(gameSession);
     }
 
-    public synchronized boolean isActivePair(int pairId) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized boolean isActivePair(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
 
         boolean status = gameSession.isActivePair(pair);
@@ -375,22 +386,19 @@ public class DBManager {
         return status;
     }
 
-    public synchronized int getLadderSize() {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized int getLadderSize(GameSession gameSession) {
         List<Pair> ladder = gameSession.getAllPairs();
         return ladder.size();
     }
 
-    public synchronized String getJSONLadder() {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized String getJSONLadder(GameSession gameSession) {
         List<Pair> ladder = gameSession.getAllPairs();
         JSONSerializer serializer = new LadderJSONSerializer(ladder,
                 gameSession.getActivePairSet());
         return serializer.toJson();
     }
 
-    public synchronized String getJSONScorecards() {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
@@ -398,8 +406,7 @@ public class DBManager {
         return json;
     }
 
-    public synchronized void setGameResults(int winningPairId, int losingPairId) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int losingPairId) {
         int sessionId = gameSession.getID();
         Scorecard scorecard = (Scorecard) session.createQuery(
                 "from Scorecard sc \n"
@@ -442,21 +449,15 @@ public class DBManager {
         return gameSession;
     }
 
-    private GameSession getGameSessionLatest() {
+    private void submitGameSession(GameSession newSession) {
         Transaction tx = null;
-        GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(maxId))
-                    .uniqueResult();
+            session.saveOrUpdate(newSession);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
         }
-        return gameSession;
     }
 
     public synchronized User getUser(String email) {
@@ -502,14 +503,12 @@ public class DBManager {
         }
     }
 
-    public synchronized Scorecard getScorecardFromGame(int index) {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized Scorecard getScorecardFromGame(GameSession gameSession, int index) {
         persistEntity(gameSession);
         return gameSession.getScorecardByIndex(index);
     }
 
-    public synchronized void reorderLadder() {
-        GameSession gameSession = getGameSessionLatest();
+    public synchronized void reorderLadder(GameSession gameSession) {
         gameSession.reorderLadder(new VrcLadderReorderer());
         List<Pair> reorderedPairs = gameSession.getReorderedLadder();
         Ladder nextWeekLadder = new Ladder(reorderedPairs);

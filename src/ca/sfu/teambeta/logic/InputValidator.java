@@ -133,8 +133,8 @@ public class InputValidator {
         return dbManager.hasPairID(id);
     }
 
-    public static boolean checkPairActive(DBManager dbManager, int id) {
-        return dbManager.isActivePair(id);
+    public static boolean checkPairActive(DBManager dbManager, GameSession gameSession, int id) {
+        return dbManager.isActivePair(gameSession, id);
     }
 
     public static boolean checkLadderPosition(int position, int ladderSize) {
