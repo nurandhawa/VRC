@@ -9,7 +9,7 @@ var Ladder = (function() {
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
     var PAGE_BUTTON_PREFIX = '<span v-on:click="changeCurrentPage()"> Page {{ ';
-    var PAGE_BUTTON_SUFFIX = ' }} </span>'
+    var PAGE_BUTTON_SUFFIX = ' }} </span>';
 
     var showModal = function(index) {
         var modalId = "#modal" + index;
