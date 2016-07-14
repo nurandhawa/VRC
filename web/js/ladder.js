@@ -1,11 +1,15 @@
 var Ladder = (function() {
     "use strict";
 
+    var NUM_ENTRIES_PER_PAGE = 20;
+
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
     'class="btn btn-raised btn-xs toggle-button ';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
+    var PAGE_BUTTON_PREFIX = '<a v-on:click="changeCurrentPage()"> Page {{ ';
+    var PAGE_BUTTON_SUFFIX = ' }} </a>';
 
     var showModal = function(index) {
         var modalId = "#modal" + index;
@@ -19,8 +23,12 @@ var Ladder = (function() {
 
     function Ladder(ladderData) {
 
+
         var playingButton;
         var notPlayingButton;
+        var pageButton;
+        var ladderPages = [];
+        var currentPage = [];
 
         playingButton = Vue.extend({
             data: function() {
@@ -50,6 +58,17 @@ var Ladder = (function() {
         });
         Vue.component('not-playing-button', notPlayingButton);
 
+        pageButton = Vue.extend({
+            props: ['index'],
+            template:  PAGE_BUTTON_PREFIX + 'index' + PAGE_BUTTON_SUFFIX,
+            methods: {
+                changeCurrentPage: function(index) {
+                    this.$parent.changeCurrentPage(this.index - 1);
+                }
+            }
+        });
+        Vue.component('page-button', pageButton);
+
         var editButton = Vue.extend({
             props: ['index'],
             template: EDIT_BUTTON_HTML,
@@ -59,7 +78,6 @@ var Ladder = (function() {
                 }
             }
         });
-        Vue.component('edit-button', editButton);
 
         var onValid = function(elementId) {
             $(elementId).prop("disabled", false);
@@ -73,6 +91,8 @@ var Ladder = (function() {
             el: '#ladder',
             data: {
                 ladder: ladderData,
+                ladderPages: ladderPages,
+                currentPage: currentPage,
                 newPairData: {
                     player1: {
                         firstName: "",
@@ -96,6 +116,7 @@ var Ladder = (function() {
             methods: {
                 changeStatus: this.changeStatus,
                 changeMode: this.changeMode,
+                changeCurrentPage: this.changeCurrentPage,
                 onDelete: this.deletePair,
                 onAdd: this.addPair,
                 onUpdate: this.updatePair,
@@ -123,6 +144,10 @@ var Ladder = (function() {
                 pair.playingStatus = "playing";
             });
         }
+    };
+
+    Ladder.prototype.changeCurrentPage = function(index) {
+        this.currentPage = this.ladderPages[index];
     };
 
     Ladder.prototype.changeMode = function() {
@@ -182,6 +207,19 @@ var Ladder = (function() {
 
     Ladder.prototype.updateLadder = function(ladderData) {
         this.ladder = ladderData;
+        var ladderPages = [];
+        if (ladderData){
+            var numPages = Math.floor(ladderData.length / NUM_ENTRIES_PER_PAGE) + 1;
+            for (var i = 0; i < numPages; i++){
+                ladderPages[i] = [];
+            }
+            for (i = 0; i < ladderData.length; i++){
+                var pageIndex = Math.floor((ladderData[i].position - 1) / NUM_ENTRIES_PER_PAGE);
+                ladderPages[pageIndex].push(ladderData[i]);
+            }
+        }
+        this.ladderPages = ladderPages;
+        this.currentPage = ladderPages[0];
     };
 
     Ladder.prototype.refreshLadder = function() {
