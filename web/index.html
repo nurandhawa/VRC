@@ -146,7 +146,7 @@
         </div>
       </div>
       <validator name="pairValidator">
-        <div class="panel panel-default ladder-element" v-for="entry in ladder">
+        <div class="panel panel-default ladder-element" v-for="entry in currentPage">
           <div class="panel-body">
             <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
@@ -189,8 +189,8 @@
     <div class="pages-container">
       <ul class="pagination pages-buttons">
         <li><a href="#">«</a></li>
-        <li v-for="entry in ladderPages">
-          <a href="#">{{ $index + 1 }}</a>
+        <li v-for="(index, entry) in ladderPages">
+          <page-button :index="$index"></page-button>
         </li>
         <li><a href="#">»</a></li>
       </ul>

@@ -8,6 +8,8 @@ var Ladder = (function() {
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
+    var PAGE_BUTTON_PREFIX = '<span v-on:click="changeCurrentPage()"> {{ ';
+    var PAGE_BUTTON_SUFFIX = ' }} </span>'
 
     var showModal = function(index) {
         var modalId = "#modal" + index;
@@ -24,7 +26,9 @@ var Ladder = (function() {
 
         var playingButton;
         var notPlayingButton;
+        var pageButton;
         var ladderPages = [];
+        var currentPage = [];
 
         playingButton = Vue.extend({
             data: function() {
@@ -54,6 +58,17 @@ var Ladder = (function() {
         });
         Vue.component('not-playing-button', notPlayingButton);
 
+        pageButton = Vue.extend({
+            props: ['index'],
+            template:  PAGE_BUTTON_PREFIX + 'index' + PAGE_BUTTON_SUFFIX,
+            methods: {
+                changeCurrentPage: function(index) {
+                    this.$parent.changeCurrentPage(this.index);
+                }
+            }
+        });
+        Vue.component('page-button', pageButton);
+
         var editButton = Vue.extend({
             props: ['index'],
             template: EDIT_BUTTON_HTML,
@@ -77,6 +92,7 @@ var Ladder = (function() {
             data: {
                 ladder: ladderData,
                 ladderPages: ladderPages,
+                currentPage: currentPage,
                 newPairData: {
                     player1: {
                         firstName: "",
@@ -100,6 +116,7 @@ var Ladder = (function() {
             methods: {
                 changeStatus: this.changeStatus,
                 changeMode: this.changeMode,
+                changeCurrentPage: this.changeCurrentPage,
                 onDelete: this.deletePair,
                 onAdd: this.addPair,
                 onUpdate: this.updatePair,
@@ -127,6 +144,11 @@ var Ladder = (function() {
                 pair.playingStatus = "playing";
             });
         }
+    };
+
+    Ladder.prototype.changeCurrentPage = function(index) {
+        alert(index);
+        this.currentPage = this.ladderPages[index];
     };
 
     Ladder.prototype.changeMode = function() {
@@ -193,11 +215,12 @@ var Ladder = (function() {
                 ladderPages[i] = [];
             }
             for (i = 0; i < ladderData.length; i++){
-                var pageIndex = Math.floor(ladderData[i].position / NUM_ENTRIES_PER_PAGE);
+                var pageIndex = Math.floor((ladderData[i].position - 1) / NUM_ENTRIES_PER_PAGE);
                 ladderPages[pageIndex].push(ladderData[i]);
             }
         }
         this.ladderPages = ladderPages;
+        this.currentPage = ladderPages[0];
     };
 
     Ladder.prototype.refreshLadder = function() {
