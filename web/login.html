@@ -58,8 +58,8 @@
 
       <div class="loginwrapper">
         <div id="loginForm" class="login panel panel-default">
-          <div id="loginAnimation">
-            <clip-loader :color="color" v-if="spinnerVisibility"></clip-loader>
+          <div id="loginAnimation" v-if="spinnerVisibility">
+            <clip-loader :color="color"></clip-loader>
           </div>
           <validator name="loginFormValidator" @valid="onValid" @invalid="onInvalid" v-if="validatorVisibility">
             <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
@@ -82,8 +82,8 @@
                     <input type="checkbox" v-model="remember"> Remember me
                   </label>
                 </div>
-                <div class="col-md-10">
-                  <center><button id="submitButton" type="submit" class="btn btn-success btn-raised" disabled="disabled">Submit</button></center>
+                <div class="col-md-10 center">
+                  <button id="submitButton" type="submit" class="btn btn-success btn-raised" disabled="disabled">Submit</button>
                 </div>
               </fieldset>
             </form>
