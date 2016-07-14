@@ -8,7 +8,7 @@ var Ladder = (function() {
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
-    var PAGE_BUTTON_PREFIX = '<span v-on:click="changeCurrentPage()"> {{ ';
+    var PAGE_BUTTON_PREFIX = '<span v-on:click="changeCurrentPage()"> Page {{ ';
     var PAGE_BUTTON_SUFFIX = ' }} </span>'
 
     var showModal = function(index) {
@@ -63,7 +63,7 @@ var Ladder = (function() {
             template:  PAGE_BUTTON_PREFIX + 'index' + PAGE_BUTTON_SUFFIX,
             methods: {
                 changeCurrentPage: function(index) {
-                    this.$parent.changeCurrentPage(this.index);
+                    this.$parent.changeCurrentPage(this.index - 1);
                 }
             }
         });
@@ -147,7 +147,6 @@ var Ladder = (function() {
     };
 
     Ladder.prototype.changeCurrentPage = function(index) {
-        alert(index);
         this.currentPage = this.ladderPages[index];
     };
 

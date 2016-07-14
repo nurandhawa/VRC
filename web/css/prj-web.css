@@ -35,16 +35,18 @@
 }
 
 .ladder {
-    padding: 20px 15px;
+    padding: 20px 15px 10px;
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    height: 57.5em;
+    flex-flow: column wrap;
+    vertical-align: text-top;
     align-items: center;
 }
 
 .ladder-element {
-    width: 80%;
+    width: 47%;
+    height: 4em;
+    align-items: center;
 }
 
 .pair-name {
@@ -249,4 +251,13 @@
         justify-content: center;
     }
 
+    .ladder {
+        flex-flow: row wrap;
+        justify-content: center;
+        align-content: flex-start;
+        height: 112em;
+    }
+    .ladder-element {
+        width:80%
+    }
 }
