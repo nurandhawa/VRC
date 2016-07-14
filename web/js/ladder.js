@@ -8,8 +8,8 @@ var Ladder = (function() {
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
-    var PAGE_BUTTON_PREFIX = '<span v-on:click="changeCurrentPage()"> Page {{ ';
-    var PAGE_BUTTON_SUFFIX = ' }} </span>';
+    var PAGE_BUTTON_PREFIX = '<a v-on:click="changeCurrentPage()"> Page {{ ';
+    var PAGE_BUTTON_SUFFIX = ' }} </a>';
 
     var showModal = function(index) {
         var modalId = "#modal" + index;

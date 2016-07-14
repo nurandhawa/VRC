@@ -229,6 +229,10 @@
     display: inline-block;
 }
 
+.pages-buttons:hover {
+    cursor: pointer;
+}
+
 @media screen and (max-width: 767px) {
 
     .header {
