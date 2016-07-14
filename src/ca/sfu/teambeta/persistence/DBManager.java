@@ -449,17 +449,6 @@ public class DBManager {
         return gameSession;
     }
 
-    private void submitGameSession(GameSession newSession) {
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(newSession);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-    }
-
     public synchronized User getUser(String email) {
         Transaction tx = null;
         User user = null;
