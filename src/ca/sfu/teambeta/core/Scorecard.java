@@ -135,7 +135,7 @@ public class Scorecard extends Persistable {
         return timeSlot;
     }
 
-    public void setPairScore(Time timeSlot) {
+    public void setTimeSlot(Time timeSlot) {
         this.timeSlot = timeSlot;
     }
 }
