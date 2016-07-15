@@ -118,26 +118,26 @@ public class TimeSelectionTest {
     }
 
     @Test
-    public void distributePairs() throws  Exception{
+    public void distributePairsCase_1() throws  Exception{
         TimeSelection selector = new VrcTimeSelection();
         ScorecardGenerator generator = new VrcScorecardGenerator();
 
-        List<Pair> pairs = setUp();
+        List<Pair> pairs = setUpBig();
         List<Scorecard> scorecards =
                 generator.generateScorecards(pairs);
 
         selector.distributePairs(scorecards);
 
         //Check logic when too many pairs are playing
-        //It should distribute pairs equally between timeslots
+        //It should distribute pairs equally between time slots
         checkLogic(selector, pairs);
     }
 
-    private List<Pair> setUp() throws Exception {
+    private List<Pair> setUpBig() throws Exception {
         List<Pair> pairs;
 
         try {
-            pairs = createPairs();
+            pairs = createBigAmountPairs();
         } catch (Exception e){
             throw e;
         }
@@ -155,7 +155,7 @@ public class TimeSelectionTest {
         return pairs;
     }
 
-    private List<Pair> createPairs() throws Exception {
+    private List<Pair> createBigAmountPairs() throws Exception {
         List<Pair> pairs;
 
         try {
@@ -191,5 +191,59 @@ public class TimeSelectionTest {
                         || (amountPairs - 1) == expectedAmount
                         || (amountPairs + 1) == expectedAmount;
         Assert.assertEquals(approximateAmount, true);
+    }
+
+    @Test
+    public void distributePairsCase_2() throws  Exception{
+        TimeSelection selector = new VrcTimeSelection();
+        ScorecardGenerator generator = new VrcScorecardGenerator();
+
+        List<Pair> pairs = setUpSmall();
+
+        List<Scorecard> scorecards =
+                generator.generateScorecards(pairs);
+        selector.distributePairs(scorecards);
+
+        //One of the time slots was overflowed
+        //Distributes extra pairs to other time slots
+        checkLogic(selector, pairs);
+    }
+
+    private List<Pair> setUpSmall() throws Exception {
+        List<Pair> pairs;
+
+        try {
+            pairs = createSmallAmountPairs();
+        } catch (Exception e){
+            throw e;
+        }
+
+        for(Pair pair : pairs) {
+            pair.setTimeSlot(Time.TH_8_30);
+        }
+
+        return pairs;
+    }
+
+    private List<Pair> createSmallAmountPairs() throws Exception {
+        List<Pair> pairs;
+        List<Pair> littlePairs = new ArrayList<>();
+
+        try {
+            Ladder ladder = CSVReader.setupLadder();
+            pairs = ladder.getPairs();
+        } catch (Exception e){
+            throw e;
+        }
+
+        int size = pairs.size();
+        int startFromTwoThird = size * 2 / 3;
+
+        for(int i = startFromTwoThird; i < size; i++) {
+            Pair pair = pairs.get(i);
+            littlePairs.add(pair);
+        }
+
+        return littlePairs;
     }
 }
