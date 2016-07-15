@@ -246,10 +246,13 @@ public class DBManager {
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
+            DetachedCriteria currentId = DetachedCriteria.forClass(GameSession.class)
+                    .setProjection(Projections.max("id"));
+            DetachedCriteria prevId = DetachedCriteria.forClass(GameSession.class)
+                    .add(Restrictions.not(Property.forName("id").eq(currentId)))
                     .setProjection(Projections.max("id"));
             gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(maxId))
+                    .add(Property.forName("id").eq(prevId))
                     .uniqueResult();
             tx.commit();
         } catch (HibernateException e) {
