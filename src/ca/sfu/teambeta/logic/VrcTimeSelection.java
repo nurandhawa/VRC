@@ -160,7 +160,12 @@ public class VrcTimeSelection implements TimeSelection {
 
             if (amount > avgPairsPerTimeSlot) {
                 int extraPairs = amount - avgPairsPerTimeSlot;
-                moveOverflowedGroupsToNextTimeSlot(avgPairsPerTimeSlot, extraPairs, time);
+                if (extraPairs != 1) {
+                    //If the difference between time slots is on 1 pair
+                    //do not move the whole group
+                    //some groups have 4 pairs and some 3, time slots cannot be perfectly equal
+                    moveOverflowedGroupsToNextTimeSlot(avgPairsPerTimeSlot, extraPairs, time);
+                }
             }
         }
     }
