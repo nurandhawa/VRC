@@ -143,7 +143,8 @@ public class InputValidator {
 
 
     public static boolean checkPlayingStatus(String status) {
-        return status.equals(PLAYING_STATUS) || status.equals(NOT_PLAYING_STATUS);
+        return status.equals(PLAYING_STATUS) || status.equals(
+                NOT_PLAYING_STATUS);
     }
 
     // MARK: Helper Methods
