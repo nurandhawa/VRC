@@ -52,17 +52,14 @@ public class AccountManager {
 
     // MARK: - The Core Login/Registration Methods
     public String login(String email, String password) throws InternalHashingException, NoSuchUserException,
-            InvalidInputException, InvalidCredentialsException {
-        InputValidator.validateEmailFormat(email);
-        InputValidator.validatePasswordFormat(password);
+            InvalidCredentialsException {
 
         // Authenticate and if successful get the user from the database
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        String sessionId = UserSessionManager.createNewSession(user);
 
-        return sessionId;
+        return UserSessionManager.createNewSession(user);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {
