@@ -44,6 +44,8 @@ public class Pair extends Persistable {
     private boolean isPlaying;
     @Expose
     private int pairScore;
+    @Expose
+    private Time timeSlot;
 
     public Pair() {
     }
@@ -121,5 +123,13 @@ public class Pair extends Persistable {
 
     public void setLastWeekPosition(int lastWeekPosition) {
         this.lastWeekPosition = lastWeekPosition;
+    }
+
+    public Time getTimeSlot(){
+        return timeSlot;
+    }
+
+    public void setPairScore(Time timeSlot) {
+        this.timeSlot = timeSlot;
     }
 }
