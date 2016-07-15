@@ -11,8 +11,9 @@ import java.util.*;
  * Created by constantin on 11/07/16.
  */
 public class VrcTimeSelection implements TimeSelection {
-    private static final Time DEFAULT_TIME_SLOT = Time.NO_SLOT;
+    private static final Time DEFAULT_TIME_SLOT = Time.TH_8_30;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
+    private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private List<Pair> allPairs;
     private List<Scorecard> allScorecards;
 
@@ -32,9 +33,9 @@ public class VrcTimeSelection implements TimeSelection {
     public List<Pair> getPairsByTime(List<Pair> allPairs, Time time) {
         List<Pair> pairs = new ArrayList<>();
 
-        for(Pair pair : allPairs) {
+        for (Pair pair : allPairs) {
             Time timeSlot = pair.getTimeSlot();
-            if(timeSlot == time) {
+            if (timeSlot == time) {
                 pairs.add(pair);
             }
         }
@@ -44,8 +45,8 @@ public class VrcTimeSelection implements TimeSelection {
 
     @Override
     public void clearTimeSlots(Ladder ladder) {
-        for(Pair pair : ladder.getPairs()) {
-            pair.setTimeSlot(DEFAULT_TIME_SLOT);
+        for (Pair pair : ladder.getPairs()) {
+            pair.setTimeSlot(Time.NO_SLOT);
         }
     }
 
@@ -62,12 +63,11 @@ public class VrcTimeSelection implements TimeSelection {
 
         //Create Limitations which determine how to arrange groups between time slots
         int amountPlayingPairs = allPairs.size();
-        int amountTimeSlots = Time.values().length;
 
-        int maxNumPairs = amountTimeSlots * MAX_NUM_PAIRS_PER_SLOT;
+        int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
         boolean crowded = amountPlayingPairs > maxNumPairs;
 
-        if(crowded){
+        if (crowded) {
             //Every time slot will have equall amount of pairs
             distributeEqually(amountPlayingPairs);
         } else {
@@ -77,10 +77,18 @@ public class VrcTimeSelection implements TimeSelection {
     }
 
     private void saveValues(List<Scorecard> scorecards) {
-        for (Scorecard group : scorecards){
+        for (Scorecard group : scorecards) {
             List<Pair> pairs = group.getReorderedPairs();
 
-            allPairs.addAll(pairs);
+            for (Pair pair : pairs) {
+                Time time = pair.getTimeSlot();
+
+                //If time was not selected set to default
+                if (time == Time.NO_SLOT) {
+                    pair.setTimeSlot(DEFAULT_TIME_SLOT);
+                }
+                allPairs.add(pair);
+            }
         }
         this.allScorecards = scorecards;
     }
@@ -89,7 +97,7 @@ public class VrcTimeSelection implements TimeSelection {
         List<Pair> pairs = scorecard.getReorderedPairs();
         List<Time> timeSlots = new ArrayList<>();
 
-        for(Pair pair : pairs){
+        for (Pair pair : pairs) {
             Time time = pair.getTimeSlot();
             timeSlots.add(time);
         }
@@ -102,7 +110,7 @@ public class VrcTimeSelection implements TimeSelection {
 
         //Update Pairs inside of the scorecard
         List<Pair> pairs = scorecard.getReorderedPairs();
-        for(Pair pair : pairs) {
+        for (Pair pair : pairs) {
             pair.setTimeSlot(time);
         }
     }
@@ -111,7 +119,7 @@ public class VrcTimeSelection implements TimeSelection {
         Map<Time, Integer> timeFrequency = new HashMap<>();
 
         //Initialize values
-        for(Time time : Time.values()){
+        for (Time time : Time.values()) {
             timeFrequency.put(time, 0);
         }
 
@@ -127,10 +135,10 @@ public class VrcTimeSelection implements TimeSelection {
         //if all are the same, select the earliest time slot
         Time dominantTime = null;
         int maxFrequency = 0;
-        for(Map.Entry<Time, Integer> entry : timeFrequency.entrySet()){
+        for (Map.Entry<Time, Integer> entry : timeFrequency.entrySet()) {
             int frequency = entry.getValue();
 
-            if(frequency > maxFrequency){
+            if (frequency > maxFrequency) {
                 maxFrequency = frequency;
                 dominantTime = entry.getKey();
             }
@@ -140,14 +148,17 @@ public class VrcTimeSelection implements TimeSelection {
     }
 
     private void distributeEqually(int amountPlayingPairs) {
-        int amountTimeSlots = Time.values().length;
-        int avgPairsPerTimeSlot = amountPlayingPairs / amountTimeSlots;
+        int avgPairsPerTimeSlot = amountPlayingPairs / AMOUNT_TIME_SLOTS;
 
         //Move extra groups to the next time slot, do that for all time slots
-        for(Time time : Time.values()){
+        for (Time time : Time.values()) {
+            //Omit undefined time slot
+            if(time == Time.NO_SLOT){
+                continue;
+            }
             int amount = getAmountPairsByTime(allPairs, time);
 
-            if (amount > avgPairsPerTimeSlot){
+            if (amount > avgPairsPerTimeSlot) {
                 int extraPairs = amount - avgPairsPerTimeSlot;
                 moveOverflowedGroupsToNextTimeSlot(avgPairsPerTimeSlot, extraPairs, time);
             }
@@ -162,7 +173,7 @@ public class VrcTimeSelection implements TimeSelection {
 
         //While we have more extra pairs and we are still having more pairs then allowed
         //Move the scorecards to next time slot
-        while (numExtraPairs > 0 && amountPairsByTime > limitPairs){
+        while (numExtraPairs > 0 && amountPairsByTime > limitPairs) {
 
             //Groups with the lowest ratings will be moved to another time slot
             int lastIndex = scorecards.size() - 1;
@@ -179,9 +190,9 @@ public class VrcTimeSelection implements TimeSelection {
     private List<Scorecard> getScorecardsByTime(Time time) {
         List<Scorecard> scorecards = new ArrayList<>();
 
-        for(Scorecard group : allScorecards){
+        for (Scorecard group : allScorecards) {
             Time timeSlot = group.getTimeSlot();
-            if (timeSlot == time){
+            if (timeSlot == time) {
                 scorecards.add(group);
             }
         }
@@ -192,18 +203,25 @@ public class VrcTimeSelection implements TimeSelection {
     private Time getNextTimeSlot(Time time) {
         boolean next = false;
         //Default time slot is first time slot
-        Time nextTimeSlot = Time.values()[0];
-        for(Time timeSlot :Time.values()){
-            if(timeSlot == time){
+        //If the time passed is at the end of the Time.values()
+        //Then next time is the element in the beginning.
+        Time nextTimeSlot = DEFAULT_TIME_SLOT;
+        for (Time timeSlot : Time.values()) {
+            //Omit the no value slot
+            if(timeSlot == Time.NO_SLOT) {
+                continue;
+            }
+
+            if (timeSlot == time) {
                 next = true;
             }
 
-            if(next) {
+            if (next) {
                 //Save next time slot
                 nextTimeSlot = timeSlot;
             }
         }
-
         return nextTimeSlot;
     }
+
 }
