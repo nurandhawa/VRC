@@ -38,10 +38,7 @@ public class Pair extends Persistable {
     private Date dateCreated;
 
     @Transient
-    @Expose
-    private int position;
-    @Transient
-    private int penalty;
+    private int lastWeekPosition;
     @Transient
     @Expose
     private boolean isPlaying;
@@ -55,8 +52,6 @@ public class Pair extends Persistable {
         players.add(firstPlayer);
         players.add(secondPlayer);
         dateCreated = new Date();
-        position = 0;
-        penalty = 0;
         this.isPlaying = false;
     }
 
@@ -64,8 +59,6 @@ public class Pair extends Persistable {
         players.add(firstPlayer);
         players.add(secondPlayer);
         dateCreated = new Date();
-        position = 0;
-        penalty = 0;
         this.isPlaying = isPlaying;
     }
 
@@ -102,8 +95,7 @@ public class Pair extends Persistable {
     }
 
     public String toString() {
-        return position
-                + ") " +  getPlayers().get(0).getFirstName()
+        return getPlayers().get(0).getFirstName()
                 + " & " + getPlayers().get(1).getFirstName();
     }
 
@@ -121,5 +113,13 @@ public class Pair extends Persistable {
 
     public void setPlaying(boolean playing) {
         isPlaying = playing;
+    }
+
+    public int getLastWeekPosition() {
+        return lastWeekPosition;
+    }
+
+    public void setLastWeekPosition(int lastWeekPosition) {
+        this.lastWeekPosition = lastWeekPosition;
     }
 }
