@@ -72,7 +72,7 @@ public class VrcTimeSelection implements TimeSelection {
             distributeEqually(amountPlayingPairs);
         } else {
             //Some time slots have to many groups, moves them to next time slot
-            //TODO
+            rearangeGroupsBetweenTimeSlots();
         }
     }
 
@@ -224,4 +224,17 @@ public class VrcTimeSelection implements TimeSelection {
         return nextTimeSlot;
     }
 
+    private void rearangeGroupsBetweenTimeSlots() {
+        for(Time time : Time.values()){
+            int amount = getAmountPairsByTime(allPairs, time);
+            int extra = amount - MAX_NUM_PAIRS_PER_SLOT;
+            boolean crowded = extra > 0;
+
+            if(crowded){
+                //Move extra groups to the next time slot, do that for all time slots
+                moveOverflowedGroupsToNextTimeSlot(MAX_NUM_PAIRS_PER_SLOT, extra, time);
+            }
+
+        }
+    }
 }
