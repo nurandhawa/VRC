@@ -1,8 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -25,7 +22,10 @@ import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -77,7 +77,7 @@ public class DBManager {
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
         config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:3306/test?serverTimezone=America/Vancouver");
+                "jdbc:mysql://vrcproject.duckdns.org:3306/gshieh?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
@@ -95,7 +95,7 @@ public class DBManager {
         config.setProperty("hibernate.connection.password", "b3ta");
         config.setProperty("hibernate.connection.pool_size", "1");
         config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://cmpt373-beta.csil.sfu.ca:"
+                "jdbc:mysql://vrcproject.duckdns.org:"
                 + "3306/production?serverTimezone=America/Vancouver");
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
         config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
@@ -107,7 +107,7 @@ public class DBManager {
         }
     }
 
-    public static SessionFactory getDockerSession(boolean create) {
+    private static SessionFactory getDockerSession(boolean create) {
         Configuration config = getDefaultConfiguration();
         if (create) {
             config.setProperty("hibernate.hbm2ddl.auto", "create");
@@ -157,7 +157,7 @@ public class DBManager {
         System.out.println(lad);
     }
 
-    public int persistEntity(Persistable entity) {
+    public synchronized int persistEntity(Persistable entity) {
         Transaction tx = null;
         int key = 0;
         try {
@@ -186,7 +186,7 @@ public class DBManager {
         return entity;
     }
 
-    public Player getPlayerFromID(int id) {
+    public synchronized Player getPlayerFromID(int id) {
         Player player = null;
         try {
             player = (Player) getEntityFromID(Player.class, id);
@@ -196,7 +196,7 @@ public class DBManager {
         return player;
     }
 
-    public Pair getPairFromID(int id) {
+    public synchronized Pair getPairFromID(int id) {
         Pair pair = null;
         try {
             pair = (Pair) getEntityFromID(Pair.class, id);
@@ -206,7 +206,7 @@ public class DBManager {
         return pair;
     }
 
-    public Ladder getLatestLadder() {
+    public synchronized Ladder getLatestLadder() {
         Transaction tx = null;
         Ladder ladder = null;
         try {
@@ -223,7 +223,7 @@ public class DBManager {
         return ladder;
     }
 
-    public void addPenaltyToPairToLatestGameSession(int pairId, Penalty penalty) {
+    public synchronized void addPenaltyToPairToLatestGameSession(int pairId, Penalty penalty) {
         Transaction tx = null;
         GameSession gameSession = null;
         try {
@@ -241,7 +241,7 @@ public class DBManager {
         }
     }
 
-    public void addPairToLatestLadder(Pair pair) {
+    public synchronized void addPairToLatestLadder(Pair pair) {
         Transaction tx = null;
         Ladder ladder = null;
         try {
@@ -259,7 +259,7 @@ public class DBManager {
     }
 
     // TODO: This method definitely does not work
-    public void inputMatchResults(Scorecard s, String[][] results) {
+    public synchronized void inputMatchResults(Scorecard s, String[][] results) {
         GameSession gameSession = getGameSessionLatest();
 
         List<Pair> teams = s.getReorderedPairs();
@@ -288,22 +288,22 @@ public class DBManager {
             teamLost = null;
             teamWon = null;
         }
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
     }
 
-    public void addPair(Pair pair, int position) {
+    public synchronized void addPair(Pair pair, int position) {
         GameSession gameSession = getGameSessionLatest();
         gameSession.addNewPairAtIndex(pair, position);
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
     }
 
-    public void addPair(Pair pair) {
+    public synchronized void addPair(Pair pair) {
         GameSession gameSession = getGameSessionLatest();
         gameSession.addNewPairAtEnd(pair);
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
     }
 
-    public boolean removePair(int pairId) {
+    public synchronized boolean removePair(int pairId) {
         Transaction tx = null;
         Pair pair = null;
         Ladder ladder = null;
@@ -324,20 +324,20 @@ public class DBManager {
         return removed;
     }
 
-    public boolean hasPairID(int id) {
+    public synchronized boolean hasPairID(int id) {
         return getPairFromID(id) != null;
     }
 
-    public void movePair(int pairId, int newPosition) {
+    public synchronized void movePair(int pairId, int newPosition) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
 
         removePair(pairId);
         gameSession.addNewPairAtIndex(pair, newPosition);
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
     }
 
-    public Player getAlreadyActivePlayer(int id) throws Exception {
+    public synchronized Player getAlreadyActivePlayer(int id) throws Exception {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(id);
         Player player;
@@ -349,39 +349,39 @@ public class DBManager {
         return player;
     }
 
-    public boolean setPairActive(int pairId) {
+    public synchronized boolean setPairActive(int pairId) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         boolean activated = gameSession.setPairActive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
         return activated;
     }
 
-    public void setPairInactive(int pairId) {
+    public synchronized void setPairInactive(int pairId) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         gameSession.setPairInactive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
     }
 
-    public boolean isActivePair(int pairId) {
+    public synchronized boolean isActivePair(int pairId) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
 
         boolean status = gameSession.isActivePair(pair);
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
         return status;
     }
 
-    public int getLadderSize() {
+    public synchronized int getLadderSize() {
         GameSession gameSession = getGameSessionLatest();
         List<Pair> ladder = gameSession.getAllPairs();
         return ladder.size();
     }
 
-    public String getJSONLadder() {
+    public synchronized String getJSONLadder() {
         GameSession gameSession = getGameSessionLatest();
         List<Pair> ladder = gameSession.getAllPairs();
         JSONSerializer serializer = new LadderJSONSerializer(ladder,
@@ -389,7 +389,7 @@ public class DBManager {
         return serializer.toJson();
     }
 
-    public String getJSONScorecards() {
+    public synchronized String getJSONScorecards() {
         GameSession gameSession = getGameSessionLatest();
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -398,7 +398,7 @@ public class DBManager {
         return json;
     }
 
-    public void setGameResults(int winningPairId, int losingPairId) {
+    public synchronized void setGameResults(int winningPairId, int losingPairId) {
         GameSession gameSession = getGameSessionLatest();
         int sessionId = gameSession.getID();
         Scorecard scorecard = (Scorecard) session.createQuery(
@@ -459,18 +459,7 @@ public class DBManager {
         return gameSession;
     }
 
-    private void submitGameSession(GameSession newSession) {
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(newSession);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-    }
-
-    public User getUser(String email) {
+    public synchronized User getUser(String email) {
         Transaction tx = null;
         User user = null;
         try {
@@ -485,7 +474,7 @@ public class DBManager {
         return user;
     }
 
-    public void addNewUser(User user) throws AccountRegistrationException {
+    public synchronized void addNewUser(User user) throws AccountRegistrationException {
         String email = user.getEmail();
         boolean uniqueEmail = (getUser(email) == null);
         if (!uniqueEmail) {
@@ -502,7 +491,7 @@ public class DBManager {
         }
     }
 
-    public void addNewPlayer(Player player) throws AccountRegistrationException {
+    public synchronized void addNewPlayer(Player player) throws AccountRegistrationException {
         Transaction tx = null;
         try {
             tx = session.beginTransaction();
@@ -513,19 +502,19 @@ public class DBManager {
         }
     }
 
-    public Scorecard getScorecardFromGame(int index) {
+    public synchronized Scorecard getScorecardFromGame(int index) {
         GameSession gameSession = getGameSessionLatest();
-        submitGameSession(gameSession);
+        persistEntity(gameSession);
         return gameSession.getScorecardByIndex(index);
     }
 
-    public void reorderLadder() {
+    public synchronized void reorderLadder() {
         GameSession gameSession = getGameSessionLatest();
         gameSession.reorderLadder(new VrcLadderReorderer());
         List<Pair> reorderedPairs = gameSession.getReorderedLadder();
         Ladder nextWeekLadder = new Ladder(reorderedPairs);
         GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
-        submitGameSession(gameSession);
-        submitGameSession(nextWeekGameSession);
+        persistEntity(gameSession);
+        persistEntity(nextWeekGameSession);
     }
 }
