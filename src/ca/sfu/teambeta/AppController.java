@@ -1,6 +1,7 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
@@ -21,7 +22,6 @@ import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.UserSessionManager;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -43,6 +43,9 @@ public class AppController {
     private static final String POSITION = "position";
     public static final String PLAYING_STATUS = "playing";
     public static final String NOT_PLAYING_STATUS = "not playing";
+    private static final String GAMESESSION = "gameSession";
+    private static final String GAMESESSION_PREVIOUS = "previous";
+    private static final String GAMESESSION_LATEST = "latest";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
@@ -54,6 +57,7 @@ public class AppController {
 
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
+    private static final int NOT_AUTHENTICATED = 401;
     private static final int SERVER_ERROR = 500;
     private static final int OK = 200;
 
@@ -89,20 +93,28 @@ public class AppController {
                     boolean authenticated =
                             UserSessionManager.authenticateSession(sessionToken);
                     if (!authenticated) {
-                        halt(401, getNotAuthenticatedResponse(
+                        halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
                                 "You must be logged in view this page."));
                     }
                 } catch (NoSuchSessionException exception) {
-                    halt(401, getNotAuthenticatedResponse(
+                    halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
                             "You must be logged in view this page."));
                 }
 
             }
         });
 
+        before("/api/matches", (request, response) -> {
+            String requestedGameSession = request.queryParams(GAMESESSION);
+            if (requestedGameSession == null ||
+                    getRequestedGameSession(dbManager, requestedGameSession) == null) {
+                halt(BAD_REQUEST, getErrResponse("Must specify gameSession: latest or previous"));
+            }
+        });
+
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
-            String json = dbManager.getJSONLadder();
+            String json = dbManager.getJSONLadder(dbManager.getGameSessionLatest());
             if (!json.isEmpty()) {
                 return json;
             } else {
@@ -132,7 +144,10 @@ public class AppController {
                 status = "";
             }
 
-            boolean validNewPos = InputValidator.checkLadderPosition(newPosition, dbManager.getLadderSize());
+            GameSession gameSession = dbManager.getGameSessionLatest();
+
+            boolean validNewPos = InputValidator.checkLadderPosition(newPosition,
+                    dbManager.getLadderSize(gameSession));
             boolean validStatus = InputValidator.checkPlayingStatus(status);
 
             if (!InputValidator.checkPairExists(dbManager, id)) {
@@ -145,11 +160,11 @@ public class AppController {
                 return getErrResponse("Specify what to update: position or status");
             } else if (validStatus && !validNewPos) {
                 if (status.equals(PLAYING_STATUS)) {
-                    boolean statusChanged = dbManager.setPairActive(id);
+                    boolean statusChanged = dbManager.setPairActive(gameSession, id);
                     if (statusChanged) {
                         return getOkResponse("");
                     } else {
-                        Player activePlayer = dbManager.getAlreadyActivePlayer(id);
+                        Player activePlayer = dbManager.getAlreadyActivePlayer(gameSession, id);
                         String firstName = activePlayer.getFirstName();
                         String lastName = activePlayer.getLastName();
                         response.status(NOT_FOUND);
@@ -158,12 +173,12 @@ public class AppController {
                                 + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING_STATUS)) {
-                    dbManager.setPairInactive(id);
+                    dbManager.setPairInactive(gameSession, id);
                     return getOkResponse("");
                 }
 
             } else if (!validStatus && validNewPos) {
-                dbManager.movePair(id, newPosition);
+                dbManager.movePair(gameSession, id, newPosition);
                 return getOkResponse("");
 
             } else {
@@ -181,8 +196,10 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             final int MAX_SIZE = 2;
 
+            GameSession gameSession = dbManager.getGameSessionLatest();
+
             boolean validPos = InputValidator.checkLadderPosition(
-                    extractedData.getPosition(), dbManager.getLadderSize());
+                    extractedData.getPosition(), dbManager.getLadderSize(gameSession));
 
             List<Player> newPlayers = extractedData.getPlayers();
 
@@ -204,10 +221,10 @@ public class AppController {
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
 
             if (validPos) {
-                dbManager.addPair(pair, extractedData.getPosition() - 1);
+                dbManager.addPair(gameSession, pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
-                dbManager.addPair(pair);
+                dbManager.addPair(gameSession, pair);
                 response.status(OK);
             }
 
@@ -236,8 +253,12 @@ public class AppController {
         });
 
         post("/api/matches", ((request, response) -> {
-            dbManager.reorderLadder();
-            return OK;
+            GameSession gameSession = getRequestedGameSession(dbManager,
+                    request.queryParams(GAMESESSION));
+
+            dbManager.reorderLadder(gameSession);
+
+            return getOkResponse("");
         }));
 
         //add a penalty to a pair
@@ -257,12 +278,15 @@ public class AppController {
 
             String penaltyType = request.queryParams(PENALTY);
 
+            GameSession gameSession = getRequestedGameSession(dbManager,
+                    request.queryParams(GAMESESSION));
+
             if (penaltyType.equals(LATE)) {
-                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.LATE);
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.LATE);
             } else if (penaltyType.equals(MISS)) {
-                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.MISSING);
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.MISSING);
             } else if (penaltyType.equals(ACCIDENT)) {
-                dbManager.addPenaltyToPairToLatestGameSession(id, Penalty.ACCIDENT);
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.ACCIDENT);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
@@ -272,7 +296,10 @@ public class AppController {
 
         //Show a list of matches
         get("/api/matches", (request, response) -> {
-            String json = dbManager.getJSONScorecards();
+            GameSession gameSession = getRequestedGameSession(dbManager,
+                    request.queryParams(GAMESESSION));
+
+            String json = dbManager.getJSONScorecards(gameSession);
             final String EMPTY_JSON_ARRAY = "[]";
             if (!json.equals(EMPTY_JSON_ARRAY)) {
                 response.status(OK);
@@ -294,11 +321,15 @@ public class AppController {
             }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            Scorecard scorecard = dbManager.getScorecardFromGame(id);
+
+            GameSession gameSession = getRequestedGameSession(dbManager,
+                    request.queryParams(GAMESESSION));
+
+            Scorecard scorecard = dbManager.getScorecardFromGame(gameSession, id);
 
             try {
                 InputValidator.validateResults(scorecard, extractedData.results);
-                dbManager.inputMatchResults(scorecard, extractedData.results.clone());
+                dbManager.inputMatchResults(gameSession, scorecard, extractedData.results.clone());
             } catch (InvalidInputException exception) {
                 response.status(BAD_REQUEST);
                 return getErrResponse(exception.getMessage());
@@ -323,12 +354,15 @@ public class AppController {
                 return getErrResponse(PAIR_NOT_FOUND);
             }
 
-            if (!InputValidator.checkPairActive(dbManager, id)) {
+            GameSession gameSession = getRequestedGameSession(dbManager,
+                    request.queryParams(GAMESESSION));
+
+            if (!InputValidator.checkPairActive(dbManager, gameSession, id)) {
                 response.status(BAD_REQUEST);
                 return getErrResponse("The pair is not on the scorecard " + id);
             }
 
-            dbManager.setPairInactive(id);
+            dbManager.setPairInactive(gameSession, id);
 
             response.status(OK);
             return getOkResponse("");
@@ -390,6 +424,16 @@ public class AppController {
             response.status(SERVER_ERROR);
             response.body(getErrResponse(exception.getMessage()));
         });
+    }
+
+    private GameSession getRequestedGameSession(DBManager dbManager, String requestedGameSession) {
+        if (requestedGameSession.equals(GAMESESSION_LATEST)) {
+            return dbManager.getGameSessionLatest();
+        } else if (requestedGameSession.equals(GAMESESSION_PREVIOUS)) {
+            return dbManager.getGameSessionPrevious();
+        } else {
+            return null;
+        }
     }
 
     private String getOkResponse(String message) {

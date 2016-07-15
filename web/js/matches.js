@@ -77,7 +77,7 @@ var Matches = (function () {
         this.active = false;
     };
 
-    Matches.prototype.applyPenalty = function(pair, penaltyType, event) {
+    Matches.prototype.applyPenalty = function(gameSession, pair, penaltyType, event) {
         if (penaltyType === "late") {
             pair.latePenalty = {
                 'btn-raised': true
@@ -89,7 +89,7 @@ var Matches = (function () {
             };
         }
         var api = new API();
-        api.addPenalty(pair.id, penaltyType, function(response) {
+        api.addPenalty(gameSession, pair.id, penaltyType, function(response) {
             // $(event.srcElement).addClass("btn-raised");
         });
     };
@@ -109,7 +109,7 @@ var Matches = (function () {
         currentMatch.resultsValid = isValid;
     };
 
-    Matches.prototype.saveModalChanges = function (index) {
+    Matches.prototype.saveModalChanges = function (gameSession, index) {
         var match = this.matchlist[index];
         var results = [];
 
@@ -122,7 +122,7 @@ var Matches = (function () {
         }
 
         var api = new API();
-        api.inputMatchResults(match.id, results, function() {
+        api.inputMatchResults(gameSession, match.id, results, function() {
             this.refreshMatches();
         }.bind(this));
         this.closeModal();
@@ -146,7 +146,7 @@ var Matches = (function () {
 
     Matches.prototype.refreshMatches = function() {
         var api = new API();
-        api.getMatches(function(matchData) {
+        api.getMatches(api.gameSession.LATEST, function(matchData) {
             this.$parent.updateMatches.call(this.$parent, matchData);
         }.bind(this));
     };
