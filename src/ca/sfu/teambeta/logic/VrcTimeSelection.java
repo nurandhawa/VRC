@@ -59,7 +59,7 @@ public class VrcTimeSelection implements TimeSelection {
             Time time = getDominantTime(timeSlots);
             assignTimeToGroup(scorecard, time);
         }
-        
+
         //TODO distribution od groups
     }
 
