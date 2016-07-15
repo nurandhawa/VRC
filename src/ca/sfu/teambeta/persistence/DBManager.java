@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
@@ -18,13 +19,6 @@ import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
-import ca.sfu.teambeta.core.Game;
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 
 /**
@@ -241,7 +235,7 @@ public class DBManager {
         }
     }
 
-    public void addPairToLatestLadder(Pair pair) {
+    public void addPairToLatestLadder(Pair pair, Time time) {
         Transaction tx = null;
         Ladder ladder = null;
         try {
@@ -251,7 +245,7 @@ public class DBManager {
             ladder = (Ladder) session.createCriteria(Ladder.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            ladder.insertAtEnd(pair);
+            ladder.insertAtEnd(pair, time);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -291,15 +285,15 @@ public class DBManager {
         submitGameSession(gameSession);
     }
 
-    public void addPair(Pair pair, int position) {
+    public void addPair(Pair pair, int position, Time time) {
         GameSession gameSession = getGameSessionLatest();
-        gameSession.addNewPairAtIndex(pair, position);
+        gameSession.addNewPairAtIndex(pair, position, time);
         submitGameSession(gameSession);
     }
 
-    public void addPair(Pair pair) {
+    public void addPair(Pair pair, Time time) {
         GameSession gameSession = getGameSessionLatest();
-        gameSession.addNewPairAtEnd(pair);
+        gameSession.addNewPairAtEnd(pair, time);
         submitGameSession(gameSession);
     }
 
@@ -317,6 +311,7 @@ public class DBManager {
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             removed = ladder.removePair(pair);
+            pair.setTimeSlot(Time.NO_SLOT);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -331,9 +326,10 @@ public class DBManager {
     public void movePair(int pairId, int newPosition) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
+        Time time = pair.getTimeSlot();
 
         removePair(pairId);
-        gameSession.addNewPairAtIndex(pair, newPosition);
+        gameSession.addNewPairAtIndex(pair, newPosition, time);
         submitGameSession(gameSession);
     }
 
@@ -527,5 +523,20 @@ public class DBManager {
         GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
         submitGameSession(gameSession);
         submitGameSession(nextWeekGameSession);
+    }
+
+    public void setTimeSlot(int pairId, Time time) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        gameSession.setTimeSlot(pair, time);
+        submitGameSession(gameSession);
+    }
+
+    public Time getTimeSlot(int pairId) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        Time time = pair.getTimeSlot();
+        submitGameSession(gameSession);
+        return time;
     }
 }

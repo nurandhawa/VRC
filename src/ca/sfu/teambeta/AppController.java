@@ -1,5 +1,6 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.UserSessionManager;
@@ -10,11 +11,6 @@ import com.google.gson.JsonObject;
 
 import java.util.List;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
@@ -22,6 +18,7 @@ import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.UserSessionManager;
+import spark.Request;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -41,6 +38,7 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+    private static final String TIME_SLOT = "time";
     public static final String PLAYING_STATUS = "playing";
     public static final String NOT_PLAYING_STATUS = "not playing";
 
@@ -155,7 +153,7 @@ public class AppController {
                         response.status(NOT_FOUND);
                         return getErrResponse(
                                 "Player " + firstName + " "
-                                + lastName + " is already playing");
+                                        + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING_STATUS)) {
                     dbManager.setPairInactive(id);
@@ -202,12 +200,13 @@ public class AppController {
             }
 
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+            Time time = convertStrTime(request.queryParams(TIME_SLOT));
 
             if (validPos) {
-                dbManager.addPair(pair, extractedData.getPosition() - 1);
+                dbManager.addPair(pair, extractedData.getPosition() - 1, time);
                 response.status(OK);
             } else {
-                dbManager.addPair(pair);
+                dbManager.addPair(pair, time);
                 response.status(OK);
             }
 
@@ -390,6 +389,19 @@ public class AppController {
             response.status(SERVER_ERROR);
             response.body(getErrResponse(exception.getMessage()));
         });
+    }
+
+    private Time convertStrTime(String timeStr) {
+        Time time = Time.NO_SLOT;
+
+        //Convert string to enum type
+        for (Time timeSlot : Time.values()) {
+            if (timeSlot.getTime() == timeStr) {
+                time = timeSlot;
+                break;
+            }
+        }
+        return time;
     }
 
     private String getOkResponse(String message) {

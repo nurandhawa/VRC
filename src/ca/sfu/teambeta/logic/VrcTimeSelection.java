@@ -153,7 +153,7 @@ public class VrcTimeSelection implements TimeSelection {
         //Move extra groups to the next time slot, do that for all time slots
         for (Time time : Time.values()) {
             //Omit undefined time slot
-            if(time == Time.NO_SLOT){
+            if (time == Time.NO_SLOT) {
                 continue;
             }
             int amount = getAmountPairsByTime(allPairs, time);
@@ -184,6 +184,7 @@ public class VrcTimeSelection implements TimeSelection {
 
             int numPairsMoved = group.getReorderedPairs().size();
             numExtraPairs -= numPairsMoved;
+            amountPairsByTime -= numPairsMoved;
         }
     }
 
@@ -205,20 +206,15 @@ public class VrcTimeSelection implements TimeSelection {
         //Default time slot is first time slot
         //If the time passed is at the end of the Time.values()
         //Then next time is the element in the beginning.
+
         Time nextTimeSlot = DEFAULT_TIME_SLOT;
-        for (Time timeSlot : Time.values()) {
-            //Omit the no value slot
-            if(timeSlot == Time.NO_SLOT) {
-                continue;
-            }
+        Time[] times = Time.values();
 
-            if (timeSlot == time) {
-                next = true;
-            }
-
-            if (next) {
-                //Save next time slot
-                nextTimeSlot = timeSlot;
+        for(int i = 0; i < times.length; i++) {
+            if (times[i] == time) {
+                if (i + 1 < times.length) {
+                    nextTimeSlot = times[i + 1];
+                }
             }
         }
         return nextTimeSlot;

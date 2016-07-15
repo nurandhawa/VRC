@@ -18,11 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.persistence.Persistable;
 
 @Entity(name = "session")
@@ -157,17 +153,17 @@ public class GameSession extends Persistable {
         }
     }
 
-    public boolean addNewPairAtIndex(Pair newPair, int index) {
+    public boolean addNewPairAtIndex(Pair newPair, int index, Time time) {
         boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
             activePairs.add(newPair);
-            ladder.insertAtIndex(index, newPair);
+            ladder.insertAtIndex(index, newPair, time);
         }
         return pairExists;
     }
 
-    public boolean addNewPairAtEnd(Pair newPair) {
-        return addNewPairAtIndex(newPair, ladder.getLadderLength());
+    public boolean addNewPairAtEnd(Pair newPair, Time time) {
+        return addNewPairAtIndex(newPair, ladder.getLadderLength(), time);
     }
 
     @Override
@@ -200,5 +196,12 @@ public class GameSession extends Persistable {
         return null;
     }
 
-
+    public void setTimeSlot(Pair pair, Time time) {
+        if (ladder.contains(pair)) {
+            int index = ladder.getPairs().indexOf(pair);
+            Pair pairFromLadder = ladder.getPairAtIndex(index);
+            ladder.removePair(pairFromLadder);
+            ladder.insertAtIndex(index, pairFromLadder, time);
+        }
+    }
 }

@@ -190,6 +190,13 @@ public class TimeSelectionTest {
                 amountPairs == expectedAmount
                         || (amountPairs - 1) == expectedAmount
                         || (amountPairs + 1) == expectedAmount;
+
+
+
+        List<Pair> x = selector.getPairsByTime(pairs, Time.TH_8_30);
+        List<Pair> y = selector.getPairsByTime(pairs, Time.TH_9_00);
+
+        System.out.println(x.size() + " " + y.size());
         Assert.assertEquals(approximateAmount, true);
     }
 
