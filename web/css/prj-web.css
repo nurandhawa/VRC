@@ -238,6 +238,11 @@
     padding: 20px 15px;
 }
 
+.form-horizontal .form-group {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
 .modal-form-group {
     margin: 0px;
 }
