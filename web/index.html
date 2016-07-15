@@ -158,6 +158,7 @@
           <div class="panel-body">
             <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
+                <label class="label label-info positionChange">{{ entry.positionChange }}</label>
               {{ entry.teamName }}
               <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
               </component>
