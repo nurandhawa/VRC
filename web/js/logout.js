@@ -4,14 +4,14 @@
     $.material.options.validate = false;
     $.material.init();
 
-    var onLoggedIn = function(response) {
+    var setResponseWithSessionId = function(response) {
         Cookies.set('sessionToken', response.sessionToken);
         window.location.href = "/index.html";
     };
 
     var onLogout = function() {
         var api = new API();
-        api.userLogout(onLoggedIn);
+        api.userLogout(setResponseWithSessionId);
     };
 
     document.getElementById("logout_nav").onclick = onLogout;
