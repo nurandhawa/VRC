@@ -4,7 +4,7 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.username">beta-test</property>
+        <property name="hibernate.connection.username">root</property>
         <property name="hibernate.connection.password">b3ta</property>
         <property name="hibernate.connection.pool_size">1</property>
         <property name="hibernate.connection.url">
