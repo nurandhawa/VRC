@@ -18,8 +18,9 @@
 
     var onLoginError = function (response) {
         this.spinnerVisibility = false;
-        if (response.statusCode = 401) {
+        if (response.status == 401) {
             this.invalidCredentials = true;
+            $("#inputEmail").parent().addClass("has-error");
             $("#inputEmail").focus();
         }
     };
