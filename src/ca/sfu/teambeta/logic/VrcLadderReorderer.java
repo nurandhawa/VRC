@@ -1,9 +1,6 @@
 package ca.sfu.teambeta.logic;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ca.sfu.teambeta.core.Pair;
@@ -71,7 +68,7 @@ public class VrcLadderReorderer implements LadderReorderer {
 
         Set<Pair> passivePairs = originalPairs.stream()
                 .filter(pair -> !activePairs.contains(pair))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
         for (Pair pair : passivePairs) {
             int index = activeReorderedPairs.indexOf(pair);
             int newIndex = index + 2;
