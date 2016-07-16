@@ -14,6 +14,6 @@
         api.userLogout(onLoggedIn);
     };
 
-    document.getElementById("logout_nav").onclick = onLogout();
+    document.getElementById("logout_nav").onclick = onLogout;
 })();
 
