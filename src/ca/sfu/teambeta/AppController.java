@@ -123,6 +123,13 @@ public class AppController {
             }
         });
 
+        //logout
+        post("/api/logout", (request, response) -> {
+            String sessionToken = request.cookie(SESSION_TOKEN_KEY);
+            accountManager.logout(sessionToken);
+            return getOkResponse("Logged out.");
+        });
+
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
             int id;

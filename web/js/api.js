@@ -329,6 +329,27 @@ var API = (function() {
         });
     };
 
+    API.prototype.userLogout = function (doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/logout",
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
     return API;
 
 })();
