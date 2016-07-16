@@ -16,11 +16,22 @@
         window.location.href = "/";
     };
 
+    var onLoginError = function (response) {
+        this.spinnerVisibility = false;
+        if (response.statusCode = 401) {
+            this.invalidCredentials = true;
+            $("#inputEmail").focus();
+        }
+    };
+
+    var onEmailChange = function () {
+        this.invalidCredentials = false;
+    };
+
     var onSubmit = function(event) {
         this.spinnerVisibility = true;
-        this.validatorVisibility = false;
         var api = new API();
-        api.userLogin(this.email, this.password, onLoggedIn);
+        api.userLogin(this.email, this.password, onLoggedIn, onLoginError.bind(this));
     };
 
     Vue.validator('email', function (val) {
@@ -39,6 +50,9 @@
 
     var loginForm = new Vue({
         el: LOGIN_FORM_ID,
+        bind: {
+            onLoginError: onLoginError
+        },
         components: {
             'ClipLoader': VueSpinner.ClipLoader
         },
@@ -48,12 +62,13 @@
             remember: false,
             color: '#03a9f4',
             spinnerVisibility: false,
-            validatorVisibility: true
+            invalidCredentials: false
         },
         methods: {
             onSubmit: onSubmit,
             onValid: onValid,
-            onInvalid: onInvalid
+            onInvalid: onInvalid,
+            onEmailChange: onEmailChange
         }
     });
 

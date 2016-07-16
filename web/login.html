@@ -58,18 +58,19 @@
 
       <div class="loginwrapper">
         <div id="loginForm" class="login panel panel-default">
-          <div id="loginAnimation" v-if="spinnerVisibility">
-            <clip-loader :color="color"></clip-loader>
-          </div>
-          <validator name="loginFormValidator" @valid="onValid" @invalid="onInvalid" v-if="validatorVisibility">
+          <validator name="loginFormValidator" @valid="onValid" @invalid="onInvalid">
             <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
               <fieldset>
                 <legend>Login</legend>
                 <div class="form-group label-floating" v-validate-class>
                   <label for="inputEmail" class="control-label">Email</label>
                   <input type="text" class="form-control" id="inputEmail" v-model="email"
-                   v-validate:email="['required', 'email']" initial="off" :classes="{ invalid: 'has-error', }">
+                         v-validate:email="['required', 'email']" initial="off"
+                         :classes="{ invalid: 'has-error', }"
+                         v-on:change="onEmailChange">
                   <p class="help-block" v-if="$loginFormValidator.email.invalid">You must enter a valid email.</p>
+                  <p class="help-block" v-if="invalidCredentials">Please check your login
+                    credentials and try again.</p>
                 </div>
                 <div class="form-group label-floating" v-validate-class>
                   <label for="inputPassword" class="control-label">Password</label>
@@ -84,6 +85,9 @@
                 </div>
                 <div class="col-md-10 center">
                   <button id="submitButton" type="submit" class="btn btn-success btn-raised" disabled="disabled">Submit</button>
+                  <div id="loginAnimation" v-if="spinnerVisibility">
+                    <clip-loader :color="color"></clip-loader>
+                  </div>
                 </div>
               </fieldset>
             </form>
