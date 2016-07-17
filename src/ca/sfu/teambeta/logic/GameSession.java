@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,15 +44,32 @@ public class GameSession extends Persistable {
     @ElementCollection
     private Map<Pair, Penalty> penalties = new HashMap<>();
 
+    private long timestamp;
+
     // Default constructor for Hibernate
     public GameSession() {
-
+        setTimestamp();
     }
 
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator());
+
+        setTimestamp();
+    }
+
+    // Constructor for testing
+    public GameSession(Ladder ladder, long timestamp) {
+        this.ladder = ladder;
+        initializeActivePlayers();
+        createGroups(new VrcScorecardGenerator());
+
+        this.timestamp = timestamp;
+    }
+
+    private void setTimestamp() {
+        this.timestamp = Instant.now().getEpochSecond();
     }
 
     public List<Scorecard> createGroups(ScorecardGenerator generator) {

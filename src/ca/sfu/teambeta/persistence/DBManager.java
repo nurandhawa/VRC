@@ -9,10 +9,16 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.Ladder;
@@ -37,6 +43,16 @@ public class DBManager {
     private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
     private Session session;
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
+    }
+
+    public enum GameSessionWeek {
+        THIS_WEEK,
+        LAST_WEEK
+    }
 
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
@@ -172,42 +188,72 @@ public class DBManager {
         return ladder;
     }
 
-    public synchronized GameSession getGameSessionLatest() {
+    private synchronized GameSession getGameSessionByWeek(GameSessionWeek week, GameSessionVersion version) {
+        List<Long> timestamps = getMinMaxTimestamps(week);
+        long maxTimestamp = timestamps.get(0);
+        long minTimestamp = timestamps.get(1);
+
         Transaction tx = null;
+        List gameSessions = null;
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(maxId))
-                    .uniqueResult();
+            DetachedCriteria weekCriteria = DetachedCriteria.forClass(GameSession.class)
+                    .add(Restrictions.ge("timestamp", minTimestamp))
+                    .add(Restrictions.lt("timestamp", maxTimestamp))
+                    .setProjection(Projections.id());
+            gameSessions = session.createCriteria(GameSession.class)
+                    .add(Property.forName("id").in(weekCriteria))
+                    .addOrder(Order.desc("timestamp"))
+                    .list();
             tx.commit();
+
+            int gameSessionIndex = -1;
+
+            if (version == null || version == GameSessionVersion.CURRENT) {
+                gameSessionIndex = 0;
+            } else if (version == GameSessionVersion.PREVIOUS) {
+                gameSessionIndex = 1;
+            }
+
+            gameSession = (GameSession) gameSessions.get(gameSessionIndex);
+
         } catch (HibernateException e) {
             tx.rollback();
         }
         return gameSession;
     }
 
-    // TODO: Actually get previous game session
-    public synchronized GameSession getGameSessionPrevious() {
-        Transaction tx = null;
-        GameSession gameSession = null;
-        try {
-            tx = session.beginTransaction();
-            DetachedCriteria currentId = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.max("id"));
-            DetachedCriteria prevId = DetachedCriteria.forClass(GameSession.class)
-                    .add(Restrictions.not(Property.forName("id").eq(currentId)))
-                    .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(prevId))
-                    .uniqueResult();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
+    private List<Long> getMinMaxTimestamps(GameSessionWeek week) {
+        List<Long> timestamps = new ArrayList<>();
+
+        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
+        dateTime = dateTime.withHour(17);
+        dateTime = dateTime.withMinute(0);
+        dateTime = dateTime.withSecond(0);
+        dateTime = dateTime.withNano(0);
+
+        if (week == GameSessionWeek.LAST_WEEK) {
+            dateTime = dateTime.minusWeeks(1);
         }
-        return gameSession;
+
+        timestamps.add(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+        dateTime = dateTime.minusWeeks(1);
+        timestamps.add(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+
+        return timestamps;
+    }
+
+    public synchronized GameSession getGameSessionLatest() {
+        return getGameSessionByWeek(GameSessionWeek.THIS_WEEK, GameSessionVersion.CURRENT);
+    }
+
+    public synchronized GameSession getGameSessionLatest(GameSessionVersion version) {
+        return getGameSessionByWeek(GameSessionWeek.THIS_WEEK, version);
+    }
+
+    public synchronized GameSession getGameSessionPrevious() {
+        return getGameSessionByWeek(GameSessionWeek.LAST_WEEK, GameSessionVersion.CURRENT);
     }
 
     public void addPenaltyToPair(GameSession gameSession, int pairId, Penalty penalty) {
