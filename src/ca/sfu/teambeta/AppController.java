@@ -376,22 +376,15 @@ public class AppController {
             String pwd = extractedData.getPassword();
 
             JsonObject successResponse = new JsonObject();
-            String errMessage = "";
             String sessionToken = "";
             try {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException e) {
-                errMessage = e.getMessage();
-            } catch (NoSuchUserException e) {
-                errMessage = e.getMessage();
-            } catch (InvalidCredentialsException e) {
-                errMessage = e.getMessage();
+            } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
+                response.status(NOT_AUTHENTICATED);
+                return "";
             }
-
-            response.status(NOT_AUTHENTICATED);
-            return errMessage;
         });
 
         //registers a new user
