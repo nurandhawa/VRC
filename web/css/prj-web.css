@@ -1,3 +1,5 @@
+
+
 .header {
     margin-top: 40px;
     justify-content: center;
@@ -71,33 +73,52 @@
 }
 
 .matches-container {
-  margin: 10px;
+    margin: 10px;
+    margin-top: 20px;
+    background: #f2f2f2;
 }
 
 .matches-container-tabs {
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  align-content: center;
+    margin-bottom: 15px;
+    margin-top: 3em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
 .nav-tabs > li {
-  flex: 1;
-  margin-bottom: 0px;
+    flex: 1;
+    margin-bottom: -1px;
+    background-color: #03a9f4;
+    /*just remove above color to revert*/
 }
 
 .nav-tabs > li.active {
-  background-color: #26A69A;
+    background-color: #0398db;
+    /*old colour was #26A69A; just change back to revert*/
 }
 
 .matches-tabs {
-  width: 100%;
-  text-align: center;
+    width: 100%;
+    text-align: center;
 }
 
 .matches {
     display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    margin: auto;
+    margin-top: 2em;
+    width: 90vw;
+}
+
+.match-item {
+    flex: 1;
+    flex-basis: 30%;
+    max-width: 28vw;
+    margin: 1vw;
+    margin-top: 0;
 }
 
 .matches-left {
@@ -239,8 +260,8 @@
 }
 
 .form-horizontal .form-group {
-  margin-right: 0px;
-  margin-left: 0px;
+    margin-right: 0px;
+    margin-left: 0px;
 }
 
 .modal-form-group {
@@ -262,6 +283,13 @@
 
 .pages-buttons:hover {
     cursor: pointer;
+}
+
+@media screen and (max-width: 1030px) {
+    .match-item {
+        flex-basis: 47%;
+        max-width: 43vw;
+    }
 }
 
 @media screen and (max-width: 767px) {
@@ -295,4 +323,10 @@
     .ladder-element {
         width:80%
     }
+
+    .match-item {
+        flex-basis: 80vw;
+        max-width: 90vw;
+    }
 }
+
