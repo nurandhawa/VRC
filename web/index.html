@@ -1,5 +1,5 @@
   <!DOCTYPE html>
-  <html lang="en">
+  <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -47,7 +47,7 @@
           <li><a href="matches.html">Matches</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="login.html">Log Out</a></li>
+          <li><a id="logout_nav" href="login.html">Log Out</a></li>
         </ul>
       </div>
 
@@ -218,6 +218,7 @@
   <script src="js/header.js"></script>
   <script src="js/ladder.js"></script>
   <script src="js/ladderloader.js"></script>
+  <script src="js/logout.js"></script>
   <script>
     $(function () {
       $('#last-page-button').on('click', function(){
