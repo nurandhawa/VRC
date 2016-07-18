@@ -23,7 +23,9 @@ public class SessionInformation {
         return expiryDate;
     }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
     /*
     // Method in here if in future explicit role is needed
