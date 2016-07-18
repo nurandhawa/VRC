@@ -497,10 +497,28 @@ public class DBManager {
 
     public synchronized void reorderLadder(GameSession gameSession) {
         gameSession.reorderLadder(new VrcLadderReorderer());
-        List<Pair> reorderedPairs = gameSession.getReorderedLadder();
+    }
+
+    public synchronized GameSession createNewGameSession(GameSession sourceGameSession) {
+        List<Pair> reorderedPairs = sourceGameSession.getReorderedLadder();
         Ladder nextWeekLadder = new Ladder(reorderedPairs);
-        GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
+        return new GameSession(nextWeekLadder);
+    }
+
+    public synchronized void migrateLadderData(GameSession previousVersion, GameSession latestVersion) {
+        List<Pair> activePairs = previousVersion.getActivePairs();
+        List<Pair> newPairs = latestVersion.getAllPairs();
+
+        for (Pair activePair : activePairs) {
+            for (Pair newPair : newPairs) {
+                if (activePair.getID() == newPair.getID()) {
+                    latestVersion.setPairActive(newPair);
+                }
+            }
+        }
+    }
+
+    public synchronized void saveGameSession(GameSession gameSession) {
         persistEntity(gameSession);
-        persistEntity(nextWeekGameSession);
     }
 }
