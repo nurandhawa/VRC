@@ -28,7 +28,7 @@ public class UserSessionManager {
     private static Dictionary<String, SessionInformation> sessions = new Hashtable<>();
 
 
-    // MARK: - The Core SessionInformation Methods
+    // MARK: - The Core Session Methods
     public static String createNewSession(User user, UserRole role) {
         String sessionId = generateRandomSessionID();
         String userEmail = user.getEmail();
@@ -77,21 +77,7 @@ public class UserSessionManager {
         }
     }
 
-
-    // MARK: Helper Methods
-    private static SessionInformation getSessionInformation(String sessionId)
-            throws NoSuchSessionException {
-
-        SessionInformation sessionInformation = sessions.get(sessionId);
-
-        if (sessionInformation == null) {
-            throw new NoSuchSessionException("Invalid SessionId");
-        } else {
-            return sessionInformation;
-        }
-    }
-
-    private static boolean isAdministratorSession(String sessionId)
+    public static boolean isAdministratorSession(String sessionId)
             throws NoSuchSessionException {
 
         // Validate the input
@@ -105,6 +91,20 @@ public class UserSessionManager {
 
         return sessionInformation.isAdministratorSession();
 
+    }
+
+
+    // MARK: Helper Methods
+    private static SessionInformation getSessionInformation(String sessionId)
+            throws NoSuchSessionException {
+
+        SessionInformation sessionInformation = sessions.get(sessionId);
+
+        if (sessionInformation == null) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        } else {
+            return sessionInformation;
+        }
     }
 
     private static String generateRandomSessionID() {

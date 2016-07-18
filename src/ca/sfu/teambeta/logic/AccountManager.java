@@ -31,11 +31,11 @@ public class AccountManager {
     private List<String> administrators;
 
 
-    /*
+/*
     // User for testing purposes
     private static final String DEMO_EMAIL = "testuser@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
-    */
+*/
 
     /*
     // When testing, uncomment and use this array to mimic database interaction
@@ -194,15 +194,15 @@ public class AccountManager {
 
 
     // MARK: - Main Function
-    /*
+/*
     public static void main(String[] args) {
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
 
         AccountManager accountManager = new AccountManager(dbManager);
         // Register a user
         try {
-            accountManager.register(DEMO_EMAIL, DEMO_PASSWORD);
+            accountManager.register("admin_zong@vrc.ca", DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
@@ -216,18 +216,18 @@ public class AccountManager {
 
 
         // Register the same user again (Should fail with duplicate user email)
-        try {
-            accountManager.register(DEMO_EMAIL, DEMO_PASSWORD);
-        } catch (InternalHashingException e) {
-            System.out.println(e.getMessage());
-            return;
-        } catch (InvalidInputException e) {
-            System.out.println(e.getMessage());
-            return;
-        } catch (AccountRegistrationException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+//        try {
+//            accountManager.register("admin_zong@vrc.ca", DEMO_PASSWORD);
+//        } catch (InternalHashingException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        } catch (InvalidInputException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        } catch (AccountRegistrationException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        }
 
 
 
@@ -235,7 +235,7 @@ public class AccountManager {
         String userSessionId = "";
 
         try {
-            userSessionId = accountManager.login(DEMO_EMAIL, DEMO_PASSWORD);
+            userSessionId = accountManager.login("admin_zong@vrc.ca", DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
@@ -252,7 +252,18 @@ public class AccountManager {
 
         System.out.println("User SessionInformation ID: " + userSessionId);
 
+        boolean admin;
+
+        try {
+            admin = UserSessionManager.isAdministratorSession(userSessionId);
+        } catch (NoSuchSessionException e) {
+            admin = false;
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        System.out.println("Is Admin: " + admin);
     }
-    */
+*/
 
 }
