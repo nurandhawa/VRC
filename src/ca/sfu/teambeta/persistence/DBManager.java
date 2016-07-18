@@ -15,7 +15,6 @@ import org.hibernate.criterion.Restrictions;
 
 import java.util.List;
 
-import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
@@ -31,55 +30,40 @@ import ca.sfu.teambeta.logic.VrcScorecardGenerator;
  * Utility class that reads and writes data to the database
  */
 public class DBManager {
+    private static final String LOCAL_TESTING_CFG_XML = "hibernate.testing.cfg.xml";
+    private static final String HIBERNATE_CLASSES_XML = "hibernate.classes.xml";
+    private static final String PRODUCTION_CFG_XML = "hibernate.production.cfg.xml";
+    private static final String DOCKER_CFG_XML = "hibernate.docker.cfg.xml";
+    private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
-    private SessionFactory factory;
     private Session session;
 
     public DBManager(SessionFactory factory) {
-        this.factory = factory;
         this.session = factory.openSession();
     }
 
-    private static Configuration getDefaultConfiguration() {
-        Configuration config = new Configuration();
-        config.addAnnotatedClass(Player.class);
-        config.addAnnotatedClass(Pair.class);
-        config.addAnnotatedClass(Ladder.class);
-        config.addAnnotatedClass(Scorecard.class);
-        config.addAnnotatedClass(Game.class);
-        config.addAnnotatedClass(GameSession.class);
-        config.addAnnotatedClass(Penalty.class);
-        config.addAnnotatedClass(User.class);
-        return config;
-    }
-
+    // Use me if the database is down
     public static SessionFactory getHSQLSession() {
-        Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "update");
-        config.setProperty("hibernate.connection.username", "");
-        config.setProperty("hibernate.connection.password", "");
-        config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:hsqldb:file:/home/freeman/prj/resources/database/test");
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-        config.setProperty("hibernate.connection.driver_class", "org.hsqldb.jdbcDriver");
-        return config.buildSessionFactory();
+        Configuration config = new Configuration();
+        config.configure(H2_CFG_XML);
+        config.configure(HIBERNATE_CLASSES_XML);
+        try {
+            return config.buildSessionFactory();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new RuntimeException();
+        }
     }
 
     public static SessionFactory getMySQLSession(boolean create) {
-        Configuration config = getDefaultConfiguration();
+        Configuration config = new Configuration();
+        config.configure(LOCAL_TESTING_CFG_XML);
+        config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
             config.setProperty("hibernate.hbm2ddl.auto", "create");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
-        config.setProperty("hibernate.connection.username", "beta-test");
-        config.setProperty("hibernate.connection.password", "b3ta");
-        config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://vrcproject.duckdns.org:3306/gshieh?serverTimezone=America/Vancouver");
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
             return config.buildSessionFactory();
         } catch (Exception ex) {
@@ -89,16 +73,9 @@ public class DBManager {
     }
 
     public static SessionFactory getProductionSession() {
-        Configuration config = getDefaultConfiguration();
-        config.setProperty("hibernate.hbm2ddl.auto", "update");
-        config.setProperty("hibernate.connection.username", "beta-test");
-        config.setProperty("hibernate.connection.password", "b3ta");
-        config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://vrcproject.duckdns.org:"
-                + "3306/production?serverTimezone=America/Vancouver");
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
+        Configuration config = new Configuration();
+        config.configure(PRODUCTION_CFG_XML);
+        config.configure(HIBERNATE_CLASSES_XML);
         try {
             return config.buildSessionFactory();
         } catch (Exception ex) {
@@ -107,54 +84,26 @@ public class DBManager {
         }
     }
 
-    private static SessionFactory getDockerSession(boolean create) {
-        Configuration config = getDefaultConfiguration();
+    public static SessionFactory getTestingSession(boolean create) {
+        boolean isTesting = System.getenv(TESTING_ENV_VAR) != null;
+        Configuration config = new Configuration();
+        if (isTesting) {
+            config.configure(DOCKER_CFG_XML);
+        } else {
+            config.configure(LOCAL_TESTING_CFG_XML);
+        }
+        config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
             config.setProperty("hibernate.hbm2ddl.auto", "create");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
-        config.setProperty("hibernate.connection.username", "root");
-        config.setProperty("hibernate.connection.password", "b3ta");
-        config.setProperty("hibernate.connection.pool_size", "1");
-        config.setProperty("hibernate.connection.url",
-                "jdbc:mysql://mysql:3306/test?serverTimezone=America/Vancouver");
-        config.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        config.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         try {
             return config.buildSessionFactory();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new RuntimeException();
         }
-    }
-
-    public static SessionFactory getTestingSession(boolean create) {
-        boolean isTesting = System.getenv(TESTING_ENV_VAR) != null;
-        if (isTesting) {
-            return getDockerSession(create);
-        } else {
-            return getMySQLSession(create);
-        }
-    }
-
-    public static void main(String[] args) {
-        SessionFactory factory = getMySQLSession(false);
-        DBManager dbMan = new DBManager(factory);
-        /*
-        Player p1 = new Player("Bobby", "Chan", "");
-        Player p2 = new Player("Wing", "Man", "");
-        dbMan.persistEntity(new Pair(p1, p2));
-
-        Player p3 = new Player("Hello", "World!", "");
-        dbMan.persistEntity(new Pair(new Player("Bobby", "Chan", ""), p3));
-
-        Player test = dbMan.getPlayerFromID(5);
-
-        System.out.println(test.getFirstName());
-        */
-        Ladder lad = dbMan.getLatestLadder();
-
-        System.out.println(lad);
     }
 
     public synchronized int persistEntity(Persistable entity) {
