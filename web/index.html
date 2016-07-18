@@ -154,13 +154,16 @@
         </div>
       </div>
       <validator name="pairValidator">
+        <input type="text" v-model="message" placeholder="Search"   value=" ">
         <div class="panel panel-default ladder-element" v-for="entry in currentPage">
           <div class="panel-body">
             <div class="pair-name">
+              <div v-if="entry.teamName.indexOf(message) >= 0">
               <span class="label label-info position">{{ entry.position }}</span>
               {{ entry.teamName }}
+
               <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
-              </component>
+              </component>             </div>
               <div id="modal{{ $index }}" class="modal">
                 <div class="modal-dialog">
                   <div class="modal-content">
