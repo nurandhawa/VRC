@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <mapping class="ca.sfu.teambeta.core.Player"/>
+        <mapping class="ca.sfu.teambeta.core.Pair"/>
+        <mapping class="ca.sfu.teambeta.core.Ladder"/>
+        <mapping class="ca.sfu.teambeta.core.Scorecard"/>
+        <mapping class="ca.sfu.teambeta.core.Game"/>
+        <mapping class="ca.sfu.teambeta.core.Penalty"/>
+        <mapping class="ca.sfu.teambeta.core.User"/>
+        <mapping class="ca.sfu.teambeta.logic.GameSession"/>
+    </session-factory>
+</hibernate-configuration>

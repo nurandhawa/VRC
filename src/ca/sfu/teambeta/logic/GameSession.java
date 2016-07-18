@@ -150,6 +150,7 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder(LadderReorderer reorderer) {
+        updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         reorderedLadder = new Ladder(reorderedList);
@@ -158,10 +159,17 @@ public class GameSession extends Persistable {
         }
     }
 
+    private void updatePairsLastWeekPositions() {
+        List<Pair> pairList = this.ladder.getPairs();
+        for (int i = 0; i < pairList.size(); i++) {
+            Pair pair = pairList.get(i);
+            pair.setLastWeekPosition(i + 1);
+        }
+    }
+
     public boolean addNewPairAtIndex(Pair newPair, int index, Time time) {
         boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
-            activePairs.add(newPair);
             ladder.insertAtIndex(index, newPair, time);
         }
         return pairExists;

@@ -16,3 +16,6 @@ Thumbs.db
 *.war
 *.ear
 hs_err_pid*
+
+database
+resources/hibernate.testing.cfg.xml

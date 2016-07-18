@@ -70,6 +70,32 @@
     margin: -10px;
 }
 
+.matches-container {
+  margin: 10px;
+}
+
+.matches-container-tabs {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.nav-tabs > li {
+  flex: 1;
+  margin-bottom: 0px;
+}
+
+.nav-tabs > li.active {
+  background-color: #26A69A;
+}
+
+.matches-tabs {
+  width: 100%;
+  text-align: center;
+}
+
 .matches {
     display: flex;
 }
@@ -101,7 +127,6 @@
 }
 
 .match-pair-right {
-    flex: 1;
     display: flex;
     justify-content: flex-end;
 }
@@ -212,6 +237,11 @@
     padding: 20px 15px;
 }
 
+.form-horizontal .form-group {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
 .modal-form-group {
     margin: 0px;
 }
@@ -265,3 +295,10 @@
         width:80%
     }
 }
+
+.submitButton {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center { margin: auto; text-align: center; }

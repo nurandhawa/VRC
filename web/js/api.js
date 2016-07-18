@@ -5,14 +5,28 @@ var API = (function() {
     var LADDER_ENDPOINT = "/ladder";
     var STATUS_PARAM = "?newStatus=";
     var POSITION_PARAM = "?position=";
-    var PENALTY_PARAM = "?penalty=";
+    var PENALTY_PARAM = "&penalty=";
+    var GAMESESSION_PARAM = "?gameSession=";
 
     function API() {
+        this.playingStatus = Object.freeze({
+            PLAYING: "playing",
+            NOT_PLAYING: "not playing"
+        });
         this.STATUS_PLAYING = "playing";
         this.STATUS_NOT_PLAYING = "not playing";
+        this.penalty = Object.freeze({
+            MISS: "miss",
+            LATE: "late",
+            ACCIDENT: "accident"
+        });
         this.PENALTY_MISS = "miss";
         this.PENALTY_LATE = "late";
         this.PENALTY_ACCIDENT = "accident";
+        this.gameSession = Object.freeze({
+            LATEST: "latest",
+            PREVIOUS: "previous"
+        });
     }
 
     API.prototype.getLadder = function(doneCallback, failCallback) {
@@ -150,10 +164,11 @@ var API = (function() {
     };
 
     // Valid penalties are "late", "miss" or "accident"
-    API.prototype.addPenalty = function (pairId, penalty, doneCallback, failCallback) {
+    API.prototype.addPenalty = function (gameSession, pairId, penalty, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/matches/" + pairId + PENALTY_PARAM + penalty
+            url: SERVER_URL + "/matches/" + pairId + GAMESESSION_PARAM + gameSession +
+                 PENALTY_PARAM + penalty
         })
         .done(function (response) {
             if (doneCallback) {
@@ -171,17 +186,17 @@ var API = (function() {
         });
     };
 
-    API.prototype.reorderLadder = function() {
+    API.prototype.reorderLadder = function(gameSession) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/matches"
+            url: SERVER_URL + "/matches" + GAMESESSION_PARAM + gameSession
         });
     };
 
-    API.prototype.getMatches = function (doneCallback, failCallback) {
+    API.prototype.getMatches = function (gameSession, doneCallback, failCallback) {
         $.ajax({
             method: "GET",
-            url: SERVER_URL + "/matches"
+            url: SERVER_URL + "/matches" + GAMESESSION_PARAM + gameSession
         })
         .done(function (response) {
             var matches = JSON.parse(response);
@@ -219,10 +234,10 @@ var API = (function() {
         });
     };
 
-    API.prototype.inputMatchResults = function (matchId, results, doneCallback, failCallback) {
+    API.prototype.inputMatchResults = function (gameSession, matchId, results, doneCallback, failCallback) {
         $.ajax({
             method: "PATCH",
-            url: SERVER_URL + "/matches/" + matchId,
+            url: SERVER_URL + "/matches/" + matchId + GAMESESSION_PARAM + gameSession,
             data: JSON.stringify({
                 results: results
             })
@@ -312,6 +327,23 @@ var API = (function() {
                 alert(responseBody.message);
             }
         });
+    };
+
+    API.prototype.userLogout = function (doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/logout",
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
     };
 
     return API;
