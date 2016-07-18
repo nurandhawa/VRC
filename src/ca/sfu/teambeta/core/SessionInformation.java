@@ -8,11 +8,13 @@ package ca.sfu.teambeta.core;
 public class SessionInformation {
     private String email;
     private String expiryDate;
+    private UserRole role;
 
     // MARK: Constructor
-    public SessionInformation(String email, String expiryDate) {
+    public SessionInformation(String email, UserRole role) {
         this.email = email;
-        this.expiryDate = expiryDate;
+        this.role = role;
+        this.expiryDate = "datePlaceholder";
     }
 
 
