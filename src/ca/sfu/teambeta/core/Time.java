@@ -10,11 +10,11 @@ public enum Time {
 
     private String time;
 
-    Time(String time){
+    Time(String time) {
         this.time = time;
     }
 
-    public String getTime(){
+    public String getTime() {
         return time;
     }
 }

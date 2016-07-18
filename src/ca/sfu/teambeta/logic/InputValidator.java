@@ -30,15 +30,17 @@ public class InputValidator {
         validateNullOrEmptyString(email);
 
         // See citations.txt for source of Regex pattern
-        String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        String emailPattern = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         boolean emailNotValid = !email.matches(emailPattern);
 
         boolean emailTooLong = email.length() > MAX_EMAIL_LENGTH;
 
 
         if (emailTooLong) {
-            throw new InvalidInputException("The email address cannot exceed the allowed length of " + MAX_EMAIL_LENGTH +
-                    " characters (includes special characters such as '@' and '.')");
+            throw new InvalidInputException("The email address cannot"
+                    + " exceed the allowed length of " + MAX_EMAIL_LENGTH
+                    + " characters (includes special characters such as '@' and '.')");
         } else if (emailNotValid) {
             throw new InvalidInputException("The email address is not in a valid format");
         }
@@ -52,9 +54,11 @@ public class InputValidator {
 
 
         if (passwordTooLong) {
-            throw new InvalidInputException("The password cannot exceed the allowed length of " + MAX_PASSWORD_LENGTH);
+            throw new InvalidInputException("The password cannot exceed the "
+                    + "allowed length of " + MAX_PASSWORD_LENGTH);
         } else if (passwordTooShort) {
-            throw new InvalidInputException("The password cannot be less than " + MIN_PASSWORD_LENGTH + " characters");
+            throw new InvalidInputException("The password cannot be less than "
+                    + MIN_PASSWORD_LENGTH + " characters");
         }
 
     }
@@ -67,21 +71,25 @@ public class InputValidator {
 
 
         if (invalidPhoneNumberLength) {
-            throw new InvalidInputException("The phone number field must be " + PHONE_NUMBER_LENGTH
-                    + "characters. \nPlease ensure there are no dashes or spaces. IE: '6045551111'");
+            throw new InvalidInputException("The phone number field must be "
+                    + PHONE_NUMBER_LENGTH
+                    + "characters. \nPlease ensure there are no dashes"
+                    + " or spaces. IE: '6045551111'");
         } else if (phoneNumberNonNumeric) {
-            throw new InvalidInputException("The phone number must only contain digits" +
-                    "\nPlease ensure there are no dashes or spaces. IE: '6045551111'");
+            throw new InvalidInputException("The phone number must only contain digits"
+                    + "\nPlease ensure there are no dashes or spaces. IE: '6045551111'");
         }
 
     }
 
-    public static void validateSessionIdFormat(String sessionId) throws InvalidInputException {
+    public static void validateSessionIdFormat(String sessionId)
+            throws InvalidInputException {
         validateNullOrEmptyString(sessionId);
 
     }
 
-    public static void validateNewPlayers(List<Player> newPlayers, int maxSize) throws InvalidInputException {
+    public static void validateNewPlayers(List<Player> newPlayers, int maxSize)
+            throws InvalidInputException {
         if (newPlayers.size() != maxSize) {
             throw new InvalidInputException("A Pair cannot have more than 2 players.");
         }
@@ -97,7 +105,9 @@ public class InputValidator {
         }
     }
 
-    public static void validateResults(Scorecard scorecard, String[][] results) throws InvalidInputException {
+    public static void validateResults(Scorecard scorecard, String[][] results)
+            throws InvalidInputException {
+
         int numTeams = scorecard.getReorderedPairs().size();
         int numRounds = results.length;
         if (numRounds != numTeams) {
@@ -116,8 +126,9 @@ public class InputValidator {
                 }
             }
             if (gamesNotPlayed != CORRECT_BYE_GAMES_PER_ROUND) {
-                throw new InvalidInputException("Results must have " + CORRECT_PLAYED_GAMES_PER_ROUND +
-                        " games played every round.");
+                throw new InvalidInputException("Results must have "
+                        + CORRECT_PLAYED_GAMES_PER_ROUND
+                        + " games played every round.");
             }
         }
     }
