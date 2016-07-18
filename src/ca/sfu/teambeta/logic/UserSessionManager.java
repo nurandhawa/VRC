@@ -91,6 +91,22 @@ public class UserSessionManager {
         }
     }
 
+    private static boolean isAdministratorSession(String sessionId)
+            throws NoSuchSessionException {
+
+        // Validate the input
+        try {
+            InputValidator.validateSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        }
+
+        SessionInformation sessionInformation = sessions.get(sessionId);
+
+        return sessionInformation.isAdministratorSession();
+
+    }
+
     private static String generateRandomSessionID() {
         // See citations.txt for more information
 

@@ -23,13 +23,24 @@ public class SessionInformation {
         return expiryDate;
     }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
 
+    /*
+    // Method in here if in future explicit role is needed
+    public UserRole getRole() { return role; }
+    */
 
     // MARK: Helper Methods
     public boolean isSessionExpired() {
         return false;
+    }
+
+    public boolean isAdministratorSession() {
+        if (role == UserRole.ADMINISTRATOR) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }
