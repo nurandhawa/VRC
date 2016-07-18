@@ -1,22 +1,22 @@
-var Ladder = (function() {
+var Ladder = (function () {
     "use strict";
 
     var NUM_ENTRIES_PER_PAGE = 20;
 
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
-    'class="btn btn-raised btn-xs toggle-button ';
+        'class="btn btn-raised btn-xs toggle-button ';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
     var PAGE_BUTTON_PREFIX = '<a v-on:click="changeCurrentPage()"> Page {{ ';
     var PAGE_BUTTON_SUFFIX = ' }} </a>';
 
-    var showModal = function(index) {
+    var showModal = function (index) {
         var modalId = "#modal" + index;
         $(modalId).modal("show");
     };
 
-    var hideModal = function(index) {
+    var hideModal = function (index) {
         var modalId = "#modal" + index;
         $(modalId).modal("hide");
     };
@@ -31,13 +31,13 @@ var Ladder = (function() {
         var currentPage = [];
 
         playingButton = Vue.extend({
-            data: function() {
-                return { status: "Playing" };
+            data: function () {
+                return {status: "Playing"};
             },
             props: ['index'],
             template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX,
             methods: {
-                changeStatus: function() {
+                changeStatus: function () {
                     this.$parent.changeStatus(this.index);
                 }
             }
@@ -45,13 +45,13 @@ var Ladder = (function() {
         Vue.component('playing-button', playingButton);
 
         notPlayingButton = Vue.extend({
-            data: function() {
-                return { status: "Not Playing" };
+            data: function () {
+                return {status: "Not Playing"};
             },
             props: ['index'],
             template: STATUS_BUTTON_HTML_PREFIX + 'btn-danger' + STATUS_BUTTON_HTML_SUFFIX,
             methods: {
-                changeStatus: function(index) {
+                changeStatus: function (index) {
                     this.$parent.changeStatus(this.index);
                 }
             }
@@ -60,9 +60,9 @@ var Ladder = (function() {
 
         pageButton = Vue.extend({
             props: ['index'],
-            template:  PAGE_BUTTON_PREFIX + 'index' + PAGE_BUTTON_SUFFIX,
+            template: PAGE_BUTTON_PREFIX + 'index' + PAGE_BUTTON_SUFFIX,
             methods: {
-                changeCurrentPage: function(index) {
+                changeCurrentPage: function (index) {
                     this.$parent.changeCurrentPage(this.index - 1);
                 }
             }
@@ -73,17 +73,17 @@ var Ladder = (function() {
             props: ['index'],
             template: EDIT_BUTTON_HTML,
             methods: {
-                editPair: function() {
+                editPair: function () {
                     showModal(this.index);
                 }
             }
         });
 
-        var onValid = function(elementId) {
+        var onValid = function (elementId) {
             $(elementId).prop("disabled", false);
         };
 
-        var onInvalid = function(elementId) {
+        var onInvalid = function (elementId) {
             $(elementId).prop("disabled", true);
         };
 
@@ -129,43 +129,43 @@ var Ladder = (function() {
         });
     }
 
-    Ladder.prototype.changeStatus = function(index) {
+    Ladder.prototype.changeStatus = function (index) {
         var api = new API();
         var pair = this.ladder[index];
         if (pair.playingStatus === "playing") {
-            api.updatePairStatus(pair.id, "not playing", function(response) {
+            api.updatePairStatus(pair.id, "not playing", function (response) {
                 pair.isPlaying = false;
                 pair.playingStatus = "notplaying";
             });
         }
         else {
-            api.updatePairStatus(pair.id, "playing", function(response) {
+            api.updatePairStatus(pair.id, "playing", function (response) {
                 pair.isPlaying = true;
                 pair.playingStatus = "playing";
             });
         }
     };
 
-    Ladder.prototype.changeCurrentPage = function(index) {
+    Ladder.prototype.changeCurrentPage = function (index) {
         this.currentPage = this.ladderPages[index];
     };
 
-    Ladder.prototype.changeMode = function() {
+    Ladder.prototype.changeMode = function () {
         if (this.mode === 'read') {
             this.mode = 'edit';
-            this.ladder.forEach(function(entry) {
+            this.ladder.forEach(function (entry) {
                 entry.playingStatus = 'edit';
             });
         }
         else {
             this.mode = 'read';
-            this.ladder.forEach(function(entry) {
+            this.ladder.forEach(function (entry) {
                 entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
     };
 
-    Ladder.prototype.deletePair = function(index) {
+    Ladder.prototype.deletePair = function (index) {
         var answer = confirm("Are you sure you want to delete this pair?");
         if (answer) {
             var api = new API();
@@ -174,7 +174,7 @@ var Ladder = (function() {
         }
     };
 
-    Ladder.prototype.addPair = function(event) {
+    Ladder.prototype.addPair = function (event) {
         var api = new API();
 
         var player1Data = this.newPairData.player1;
@@ -194,26 +194,26 @@ var Ladder = (function() {
         $("#addPairModal").modal("hide");
     };
 
-    Ladder.prototype.updatePair = function(index, event) {
-      var api = new API();
+    Ladder.prototype.updatePair = function (index, event) {
+        var api = new API();
 
-      var pair = this.ladder[index];
-      var pairId = pair.id;
-      var newPosition = pair.newPosition;
+        var pair = this.ladder[index];
+        var pairId = pair.id;
+        var newPosition = pair.newPosition;
 
-      api.updatePairPosition(pairId, newPosition, this.refreshLadder);
-      hideModal(index);
+        api.updatePairPosition(pairId, newPosition, this.refreshLadder);
+        hideModal(index);
     };
 
-    Ladder.prototype.updateLadder = function(ladderData) {
+    Ladder.prototype.updateLadder = function (ladderData) {
         this.ladder = ladderData;
         var ladderPages = [];
-        if (ladderData){
+        if (ladderData) {
             var numPages = Math.floor(ladderData.length / NUM_ENTRIES_PER_PAGE) + 1;
-            for (var i = 0; i < numPages; i++){
+            for (var i = 0; i < numPages; i++) {
                 ladderPages[i] = [];
             }
-            for (i = 0; i < ladderData.length; i++){
+            for (i = 0; i < ladderData.length; i++) {
                 var pageIndex = Math.floor((ladderData[i].position - 1) / NUM_ENTRIES_PER_PAGE);
                 ladderPages[pageIndex].push(ladderData[i]);
             }
@@ -222,22 +222,22 @@ var Ladder = (function() {
         this.currentPage = ladderPages[0];
     };
 
-    Ladder.prototype.refreshLadder = function() {
+    Ladder.prototype.refreshLadder = function () {
         var api = new API();
-        api.getLadder(function(ladderData) {
+        api.getLadder(function (ladderData) {
             this.updateLadder(ladderData);
             this.refreshMode();
         }.bind(this));
     };
 
-    Ladder.prototype.refreshMode = function() {
+    Ladder.prototype.refreshMode = function () {
         if (this.mode === 'edit') {
-            this.ladder.forEach(function(entry) {
+            this.ladder.forEach(function (entry) {
                 entry.playingStatus = 'edit';
             });
         }
         else {
-            this.ladder.forEach(function(entry) {
+            this.ladder.forEach(function (entry) {
                 entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
