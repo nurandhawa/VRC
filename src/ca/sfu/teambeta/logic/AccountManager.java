@@ -51,7 +51,8 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password) throws InternalHashingException, NoSuchUserException,
+    public String login(String email, String password)
+            throws InternalHashingException, NoSuchUserException,
             InvalidInputException, InvalidCredentialsException {
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);

@@ -5,7 +5,10 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Created by constantin on 11/07/16.
@@ -215,7 +218,7 @@ public class VrcTimeSelection implements TimeSelection {
         Time nextTimeSlot = DEFAULT_TIME_SLOT;
         Time[] times = Time.values();
 
-        for(int i = 0; i < times.length; i++) {
+        for (int i = 0; i < times.length; i++) {
             if (times[i] == time) {
                 if (i + 1 < times.length) {
                     nextTimeSlot = times[i + 1];
@@ -226,12 +229,12 @@ public class VrcTimeSelection implements TimeSelection {
     }
 
     private void rearangeGroupsBetweenTimeSlots() {
-        for(Time time : Time.values()){
+        for (Time time : Time.values()) {
             int amount = getAmountPairsByTime(allPairs, time);
             int extra = amount - MAX_NUM_PAIRS_PER_SLOT;
             boolean crowded = extra > 0;
 
-            if(crowded){
+            if (crowded) {
                 //Move extra groups to the next time slot, do that for all time slots
                 moveOverflowedGroupsToNextTimeSlot(MAX_NUM_PAIRS_PER_SLOT, extra, time);
             }

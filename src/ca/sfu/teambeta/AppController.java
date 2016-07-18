@@ -1,10 +1,17 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
+
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -17,8 +24,6 @@ import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import spark.Request;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -120,9 +125,11 @@ public class AppController {
             }
 
             int newPosition = -1;
+
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                throw e;
             }
 
             String status = request.queryParams(STATUS);
@@ -130,7 +137,8 @@ public class AppController {
                 status = "";
             }
 
-            boolean validNewPos = InputValidator.checkLadderPosition(newPosition, dbManager.getLadderSize());
+            boolean validNewPos = InputValidator.checkLadderPosition(
+                    newPosition, dbManager.getLadderSize());
             boolean validStatus = InputValidator.checkPlayingStatus(status);
 
             if (!InputValidator.checkPairExists(dbManager, id)) {

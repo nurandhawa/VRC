@@ -131,7 +131,7 @@ public class Scorecard extends Persistable {
         return 47 * pairs.hashCode();
     }
 
-    public Time getTimeSlot(){
+    public Time getTimeSlot() {
         return timeSlot;
     }
 
