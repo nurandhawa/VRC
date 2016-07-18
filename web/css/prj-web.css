@@ -295,3 +295,10 @@
         width:80%
     }
 }
+
+.submitButton {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.center { margin: auto; text-align: center; }

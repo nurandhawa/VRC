@@ -1,10 +1,5 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -22,6 +17,11 @@ import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -38,40 +38,33 @@ import static spark.Spark.staticFiles;
  * Created by NoorUllah on 2016-06-16.
  */
 public class AppController {
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
+    public static final String DEVELOP_STATIC_HTML_PATH = ".";
+    public static final String JAR_STATIC_HTML_PATH = "/web";
+    public static final int DEVELOP_SERVER_PORT = 8000;
+    public static final int JAR_SERVER_PORT = 443;
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
-    public static final String PLAYING_STATUS = "playing";
-    public static final String NOT_PLAYING_STATUS = "not playing";
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
-
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
-
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
-
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
     private static final int NOT_AUTHENTICATED = 401;
     private static final int SERVER_ERROR = 500;
     private static final int OK = 200;
-
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
-
-    public static final String DEVELOP_STATIC_HTML_PATH = ".";
-    public static final String JAR_STATIC_HTML_PATH = "/web";
-
-    public static final int DEVELOP_SERVER_PORT = 8000;
-    public static final int JAR_SERVER_PORT = 443;
-
-    private static Gson gson;
     private static final String SESSION_TOKEN_KEY = "sessionToken";
+    private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
         final AccountManager accountManager = new AccountManager(dbManager);
@@ -383,24 +376,15 @@ public class AppController {
             String pwd = extractedData.getPassword();
 
             JsonObject successResponse = new JsonObject();
-            String errMessage = "";
             String sessionToken = "";
             try {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException e) {
-                errMessage = e.getMessage();
-            } catch (NoSuchUserException e) {
-                errMessage = e.getMessage();
-            } catch (InvalidInputException e) {
-                errMessage = e.getMessage();
-            } catch (InvalidCredentialsException e) {
-                errMessage = e.getMessage();
+            } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
+                response.status(NOT_AUTHENTICATED);
+                return "";
             }
-
-            response.status(401);
-            return getErrResponse(errMessage);
         });
 
         //registers a new user
