@@ -2,15 +2,12 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.PasswordHash;
 import ca.sfu.teambeta.core.User;
-
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-
+import ca.sfu.teambeta.core.UserRole;
+import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.persistence.DBManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AccountManager handles:
@@ -31,6 +28,8 @@ import ca.sfu.teambeta.persistence.DBManager;
 
 public class AccountManager {
     private DBManager dbManager;
+    private List<String> administrators;
+
 
     /*
     // User for testing purposes
@@ -47,6 +46,9 @@ public class AccountManager {
     // MARK: Constructor
     public AccountManager(DBManager dbManager) {
         this.dbManager = dbManager;
+        administrators = new ArrayList<>();
+
+        administrators = getAdministrators();
     }
 
 
@@ -60,7 +62,8 @@ public class AccountManager {
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        String sessionId = UserSessionManager.createNewSession(user);
+        UserRole role = getUserClearanceLevel(user.getEmail());
+        String sessionId = UserSessionManager.createNewSession(user, role);
 
         return sessionId;
     }
@@ -122,6 +125,30 @@ public class AccountManager {
 
     }
 
+    private List<String> getAdministrators() {
+        // In the future this method can be changed to fetch
+        //  a list of admin emails from the database, or a file, etc.
+
+        List<String> admins = new ArrayList<>();
+
+        final String DEMO_ADMIN_1 = "admin_billy@vrc.ca";
+        final String DEMO_ADMIN_2 = "admin_zong@vrc.ca";
+
+        admins.add(DEMO_ADMIN_1);
+        admins.add(DEMO_ADMIN_2);
+
+        return admins;
+
+    }
+
+    private UserRole getUserClearanceLevel(String email) {
+        if (administrators.contains(email)) {
+            return UserRole.ADMINISTRATOR;
+        } else {
+            return UserRole.REGULAR;
+        }
+
+    }
 
     // MARK: - Database Methods
     private User getUserFromDB(String email) throws NoSuchUserException {
@@ -164,6 +191,7 @@ public class AccountManager {
         dbManager.addNewUser(newUser);
 
     }
+
 
     // MARK: - Main Function
     /*
