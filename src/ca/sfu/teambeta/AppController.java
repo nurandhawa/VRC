@@ -258,11 +258,14 @@ public class AppController {
             dbManager.reorderLadder(gameSession);
             dbManager.saveGameSession(gameSession);
 
+            GameSession newGameSession = dbManager.createNewGameSession(gameSession);
+
             if (request.queryParams(GAMESESSION).equals(GAMESESSION_PREVIOUS)) {
-                GameSession newGameSession = dbManager.createNewGameSession(gameSession);
-                dbManager.migrateLadderData(gameSession, newGameSession);
-                dbManager.saveGameSession(newGameSession);
+                GameSession previousVersion = dbManager.getGameSessionLatest(DBManager.GameSessionVersion.PREVIOUS);
+                dbManager.migrateLadderData(previousVersion, newGameSession);
             }
+
+            dbManager.saveGameSession(newGameSession);
 
             return getOkResponse("");
         }));
