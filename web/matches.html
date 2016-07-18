@@ -180,7 +180,69 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
                     </div>
+                </div>
+                <div id="matches-mid" class="matches-mid">
+                    <div v-for="match in matches">
+                        <div v-if="(match.scorecardIndex % 3) == 1">
+                            <div class="panel"
+                                 v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
+                                <div id="match{{match.scorecardIndex}}"
+                                     class="panel-info match-heading panel-heading ">
+                                    <h3 class="match-title panel-title">Match {{
+                                        match.scorecardIndex + 1 }}</h3>
+                                    <component :is="mode" column="left" :index="$index"
+                                               transition="fade" transition-mode="out-in">
+                                    </component>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="pair-name match-pair" v-for="pair in match.pairs">
+                                        <div class="col-sm-1 label label-info position">{{ $index +
+                                            1 }}
+                                        </div>
+                                        <div>
+                                            {{ pair.players[0].firstName }}
+                                            {{pair.players[0].lastName }} and
+                                            {{ pair.players[1].firstName }}
+                                            {{pair.players[1].lastName}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="matches-mid" class="matches-mid">
+                    <div v-for="match in matches">
+                        <div v-if="(match.scorecardIndex % 3) == 2">
+                            <div class="panel"
+                                 v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
+                                <div id="match{{match.scorecardIndex}}"
+                                     class="panel-info match-heading panel-heading ">
+                                    <h3 class="match-title panel-title">Match {{
+                                        match.scorecardIndex + 1 }}</h3>
+                                    <component :is="mode" column="left" :index="$index"
+                                               transition="fade" transition-mode="out-in">
+                                    </component>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="pair-name match-pair" v-for="pair in match.pairs">
+                                        <div class="col-sm-1 label label-info position">{{ $index +
+                                            1 }}
+                                        </div>
+                                        <div>
+                                            {{ pair.players[0].firstName }}
+                                            {{pair.players[0].lastName }} and
+                                            {{ pair.players[1].firstName }}
+                                            {{pair.players[1].lastName}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <matches :show.sync="showModal" :matchlist="matches"
                          :active.sync="active"></matches>
             </div>
