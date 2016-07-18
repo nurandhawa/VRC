@@ -1,15 +1,14 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.PasswordHash;
-import ca.sfu.teambeta.core.User;
+import com.ja.security.PasswordHash;
 
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-
 import ca.sfu.teambeta.persistence.DBManager;
 
 /**
@@ -31,6 +30,7 @@ import ca.sfu.teambeta.persistence.DBManager;
 
 public class AccountManager {
     private DBManager dbManager;
+    private PasswordHash passwordHasher = new PasswordHash();
 
     /*
     // User for testing purposes
@@ -78,7 +78,7 @@ public class AccountManager {
         String passwordHash;
 
         try {
-            passwordHash = PasswordHash.createHash(password);
+            passwordHash = passwordHasher.createHash(password);
         } catch (Exception e) {
             // Rethrow a simpler Exception following
             // from the abstract Exceptions thrown by ".createHash()"
@@ -105,7 +105,7 @@ public class AccountManager {
         boolean isPasswordCorrect;
 
         try {
-            isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
+            isPasswordCorrect = passwordHasher.validatePassword(password, user.getPasswordHash());
         } catch (Exception e) {
             // Rethrow a simpler Exception following from
             // the abstract Exceptions thrown by ".validatePassword()"
