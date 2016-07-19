@@ -5,7 +5,7 @@
 var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
 var Matches = (function () {
-    function Matches(matchData) {
+    function Matches(matchData, elementId) {
         Vue.component('matches', {
             template: '#matches-template',
             props: {
@@ -29,6 +29,7 @@ var Matches = (function () {
             }
         });
 
+
         var editButton;
         var blankButton;
         editButton = Vue.extend({
@@ -47,26 +48,7 @@ var Matches = (function () {
         });
 
         this.component = new Vue({
-            el: '#matches',
-            data: {
-                active: 0,
-                showModal: false,
-                matches: matchData,
-                mode: 'read'
-            },
-            methods: {
-                openModal: this.openModal,
-                updateMatches: this.updateMatches,
-                validateResults: this.validateResults
-            },
-            components: {
-                edit: editButton,
-                read: blankButton
-            }
-        });
-
-        this.previousComponent = new Vue({
-            el: '#matches-previous',
+            el: elementId,
             data: {
                 active: 0,
                 showModal: false,
