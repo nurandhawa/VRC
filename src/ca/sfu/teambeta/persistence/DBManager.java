@@ -44,16 +44,6 @@ public class DBManager {
     private static String TESTING_ENV_VAR = "TESTING";
     private Session session;
 
-    public enum GameSessionVersion {
-        CURRENT,
-        PREVIOUS
-    }
-
-    public enum GameSessionWeek {
-        THIS_WEEK,
-        LAST_WEEK
-    }
-
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
     }
@@ -500,8 +490,7 @@ public class DBManager {
     }
 
     public synchronized GameSession createNewGameSession(GameSession sourceGameSession) {
-        List<Pair> reorderedPairs = sourceGameSession.getReorderedLadder();
-        Ladder nextWeekLadder = new Ladder(reorderedPairs);
+        Ladder nextWeekLadder = sourceGameSession.getReorderedLadder();
         return new GameSession(nextWeekLadder);
     }
 
@@ -520,5 +509,15 @@ public class DBManager {
 
     public synchronized void saveGameSession(GameSession gameSession) {
         persistEntity(gameSession);
+    }
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
+    }
+
+    public enum GameSessionWeek {
+        THIS_WEEK,
+        LAST_WEEK
     }
 }

@@ -117,12 +117,8 @@ public class GameSession extends Persistable {
         return Collections.unmodifiableList(scorecards);
     }
 
-    public List<Pair> getReorderedLadder() {
-        if (reorderedLadder != null) {
-            return new ArrayList<>(reorderedLadder.getPairs());
-        } else {
-            return new ArrayList<>();
-        }
+    public Ladder getReorderedLadder() {
+        return reorderedLadder;
     }
 
     public boolean setPairActive(Pair pair) {
