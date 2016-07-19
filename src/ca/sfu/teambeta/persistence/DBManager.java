@@ -217,7 +217,7 @@ public class DBManager {
         gameSession.setPenaltyToPair(pair, penalty);
     }
 
-    public synchronized void addPairToLatestLadder(Pair pair, Time time) {
+    public synchronized void addPairToLatestLadder(Pair pair) {
         Transaction tx = null;
         Ladder ladder = null;
         try {
