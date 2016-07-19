@@ -99,9 +99,11 @@ public class GameSessionTest extends PersistenceTest {
     public void testScorecardOrder() {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Scorecard first = scorecards.get(0);
-        assertEquals(first.getReorderedPairs(), Arrays.asList(davidBob, richardRobin, kevinJasmin));
+        assertEquals(first.getReorderedPairs(), Arrays.asList(
+                davidBob, richardRobin, kevinJasmin));
         Scorecard second = scorecards.get(1);
-        assertEquals(second.getReorderedPairs(), Arrays.asList(tonyAngelica, anastasiaVictoria, ianCamden));
+        assertEquals(second.getReorderedPairs(), Arrays.asList(
+                tonyAngelica, anastasiaVictoria, ianCamden));
 
     }
 
@@ -119,16 +121,16 @@ public class GameSessionTest extends PersistenceTest {
         saveGameSession();
         Session session = getSession();
         Scorecard firstCard = session.get(Scorecard.class, 1);
-        Scorecard secondCard = session.get(Scorecard.class, 2);
-
         List<Pair> activePairs = gameSession.getActivePairs();
-        Pair pair3 = activePairs.get(2);
+
 
         firstCard.setGameResults(davidBob, richardRobin);
         firstCard.setGameResults(kevinJasmin, richardRobin);
         firstCard.setGameResults(kevinJasmin, davidBob);
         Transaction tx = session.beginTransaction();
         session.update(firstCard);
+
+        Scorecard secondCard = session.get(Scorecard.class, 2);
 
         secondCard.setGameResults(ianCamden, anastasiaVictoria);
         secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
@@ -138,26 +140,29 @@ public class GameSessionTest extends PersistenceTest {
 
         Game testGame1 = session.get(Game.class, 2);
         session.close();
+        Pair pair3 = activePairs.get(2);
         assert (testGame1.getWinner().equals(pair3));
     }
 
     @Test
     public void testReordering() {
         int key = saveGameSession();
-        Session session = getSession();
 
         List<Scorecard> scorecards = gameSession.getScorecards();
 
         Scorecard firstCard = scorecards.get(0);
-        Scorecard secondCard = scorecards.get(1);
 
         firstCard.setGameResults(davidBob, richardRobin);
         firstCard.setGameResults(kevinJasmin, richardRobin);
         firstCard.setGameResults(kevinJasmin, davidBob);
 
+        Scorecard secondCard = scorecards.get(1);
+
         secondCard.setGameResults(ianCamden, anastasiaVictoria);
         secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
         secondCard.setGameResults(ianCamden, tonyAngelica);
+
+        Session session = getSession();
         session.update(secondCard);
 
         gameSession.reorderLadder(new VrcLadderReorderer());
@@ -174,7 +179,9 @@ public class GameSessionTest extends PersistenceTest {
             key = (int) session.save(gameSession);
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             e.printStackTrace();
         }
         return key;

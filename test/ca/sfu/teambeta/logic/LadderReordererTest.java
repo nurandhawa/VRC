@@ -74,7 +74,8 @@ public class LadderReordererTest {
         penalties.put(p2, Penalty.LATE);
 
         LadderReorderer ladderReorderer = new VrcLadderReorderer();
-        List<Pair> afterProcessing = ladderReorderer.reorder(fakeDB(), scorecards, activePairs, penalties);
+        List<Pair> afterProcessing = ladderReorderer.reorder(
+                fakeDB(), scorecards, activePairs, penalties);
 
         Assert.assertEquals(afterProcessing, processedFakeDB());
     }
