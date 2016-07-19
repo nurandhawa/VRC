@@ -69,7 +69,7 @@ public class Ladder extends Persistable {
         } else {
             newList = new LinkedList<>(pairs);
 
-            if (0 <= index && index < pairs.size()) {
+            if (0 <= index && index <= pairs.size()) {
                 newList.add(index, pair);
                 pairs = newList;
             } else {

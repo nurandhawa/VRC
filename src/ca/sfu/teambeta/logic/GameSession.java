@@ -175,7 +175,11 @@ public class GameSession extends Persistable {
     }
 
     public boolean addNewPairAtEnd(Pair newPair) {
-        return addNewPairAtIndex(newPair, ladder.getLadderLength());
+        boolean pairExists = ladder.getPairs().contains(newPair);
+        if (!pairExists) {
+            ladder.insertAtEnd(newPair);
+        }
+        return pairExists;
     }
 
     @Override

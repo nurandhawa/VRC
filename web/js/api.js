@@ -101,7 +101,10 @@ var API = (function() {
 
     API.prototype.prepareNewPlayer = function(firstName, lastName, phoneNumber) {
         var onlyDigitsRegex = /\d/g;
-        var sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        var sanitizedPhoneNumber = "";
+        if (phoneNumber !== "") {
+          sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        }
         return {
             "firstName": firstName,
             "lastName": lastName,
