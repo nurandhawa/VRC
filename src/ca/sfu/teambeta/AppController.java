@@ -5,7 +5,6 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.Time;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -229,13 +228,12 @@ public class AppController {
             }
 
             Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
-            Time time = convertStrTime(request.queryParams(TIME_SLOT));
 
             if (validPos) {
-                dbManager.addPair(gameSession, pair, extractedData.getPosition() - 1, time);
+                dbManager.addPair(gameSession, pair, extractedData.getPosition() - 1);
                 response.status(OK);
             } else {
-                dbManager.addPair(gameSession, pair, time);
+                dbManager.addPair(gameSession, pair);
                 response.status(OK);
             }
 
@@ -429,18 +427,18 @@ public class AppController {
         });
     }
 
-    private Time convertStrTime(String timeStr) {
-        Time time = Time.NO_SLOT;
-
-        //Convert string to enum type
-        for (Time timeSlot : Time.values()) {
-            if (timeSlot.getTime() == timeStr) {
-                time = timeSlot;
-                break;
-            }
-        }
-        return time;
-    }
+//    private Time convertStrTime(String timeStr) {
+//        Time time = Time.NO_SLOT;
+//
+//        //Convert string to enum type
+//        for (Time timeSlot : Time.values()) {
+//            if (timeSlot.getTime() == timeStr) {
+//                time = timeSlot;
+//                break;
+//            }
+//        }
+//        return time;
+//    }
 
     private GameSession getRequestedGameSession(DBManager dbManager, String requestedGameSession) {
         if (requestedGameSession.equals(GAMESESSION_LATEST)) {

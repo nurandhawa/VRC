@@ -264,13 +264,13 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public synchronized void addPair(GameSession gameSession, Pair pair, int position, Time time) {
-        gameSession.addNewPairAtIndex(pair, position, time);
+    public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
+        gameSession.addNewPairAtIndex(pair, position);
         persistEntity(gameSession);
     }
 
-    public synchronized void addPair(GameSession gameSession, Pair pair, Time time) {
-        gameSession.addNewPairAtEnd(pair, time);
+    public synchronized void addPair(GameSession gameSession, Pair pair) {
+        gameSession.addNewPairAtEnd(pair);
         persistEntity(gameSession);
     }
 
@@ -306,7 +306,7 @@ public class DBManager {
 
         removePair(pairId);
 
-        gameSession.addNewPairAtIndex(pair, newPosition, time);
+        gameSession.addNewPairAtIndex(pair, newPosition);
         persistEntity(gameSession);
     }
 

@@ -57,9 +57,8 @@ public class Ladder extends Persistable {
         return success;
     }
 
-    public boolean insertAtIndex(int index, Pair pair, Time time) {
+    public boolean insertAtIndex(int index, Pair pair) {
         List<Pair> newList;
-        pair.setTimeSlot(time);
         if (pairs == null) {
             newList = new ArrayList<Pair>() {
                 {
@@ -80,15 +79,7 @@ public class Ladder extends Persistable {
         return true;
     }
 
-    public boolean insertAtIndex(int index, Pair pair) {
-        return insertAtIndex(index, pair, Time.NO_SLOT);
-    }
-
     public void insertAtEnd(Pair pair) {
-        insertAtEnd(pair, Time.NO_SLOT);
-    }
-
-    public void insertAtEnd(Pair pair, Time time) {
         List<Pair> newList;
 
         if (pairs == null) {
@@ -97,7 +88,6 @@ public class Ladder extends Persistable {
             newList = new LinkedList<>(pairs);
         }
 
-        pair.setTimeSlot(time);
         newList.add(pair);
         pairs = newList;
     }
