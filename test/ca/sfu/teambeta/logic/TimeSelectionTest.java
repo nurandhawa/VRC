@@ -1,15 +1,22 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
+
 import ca.sfu.teambeta.persistence.CSVReader;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Created by constantin on 11/07/16.
  */
+
 public class TimeSelectionTest {
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
@@ -55,9 +62,7 @@ public class TimeSelectionTest {
     }
 
     @Test
-    public void clearTimeSlots(){
-        TimeSelection selector = new VrcTimeSelection();
-
+    public void clearTimeSlots() {
         Player firstPlayer = new Player("Kate", "Smith");
         Player secondPlayer = new Player("Nick", "Smith");
         Pair pair1 = new Pair(firstPlayer, secondPlayer, true);
@@ -72,6 +77,7 @@ public class TimeSelectionTest {
         ladder.insertAtEnd(pair1);
         ladder.insertAtEnd(pair2);
 
+        TimeSelection selector = new VrcTimeSelection();
         selector.clearTimeSlots(ladder);
         int size = selector.getAmountPairsByTime(ladder.getPairs(), Time.TH_8_30);
         Assert.assertEquals(size, 0);
@@ -79,7 +85,6 @@ public class TimeSelectionTest {
 
     @Test
     public void checkCommonTimeForGroup() {
-        TimeSelection selector = new VrcTimeSelection();
 
         Player firstPlayer = new Player("Kate", "Smith");
         Player secondPlayer = new Player("Nick", "Smith");
@@ -96,7 +101,7 @@ public class TimeSelectionTest {
         Pair pair3 = new Pair(firstPlayer, secondPlayer, true);
         pair3.setTimeSlot(Time.TH_8_30);
 
-        List<Pair> pairs = new ArrayList<Pair>(){
+        List<Pair> pairs = new ArrayList<Pair>() {
             {
                 add(pair1);
                 add(pair2);
@@ -104,12 +109,13 @@ public class TimeSelectionTest {
             }
         };
         Scorecard scorecard = new Scorecard(pairs, null);
-        List<Scorecard> scorecards = new ArrayList<Scorecard>(){
+        List<Scorecard> scorecards = new ArrayList<Scorecard>() {
             {
                 add(scorecard);
             }
         };
 
+        TimeSelection selector = new VrcTimeSelection();
         selector.distributePairs(scorecards);
         Time time = scorecard.getTimeSlot();
         Time expectedTime = Time.TH_8_30;
@@ -118,7 +124,7 @@ public class TimeSelectionTest {
     }
 
     @Test
-    public void distributePairsCase_1() throws  Exception{
+    public void distributePairsCase_1() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
         ScorecardGenerator generator = new VrcScorecardGenerator();
 
@@ -138,12 +144,12 @@ public class TimeSelectionTest {
 
         try {
             pairs = createBigAmountPairs();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
 
         int count = 0;
-        for(Pair pair : pairs) {
+        for (Pair pair : pairs) {
             if (count % 5 == 0) {
                 pair.setTimeSlot(Time.TH_9_00);
             } else {
@@ -161,21 +167,21 @@ public class TimeSelectionTest {
         try {
             Ladder ladder = CSVReader.setupLadder();
             pairs = ladder.getPairs();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
 
         return pairs;
     }
 
-    private void checkLogic(TimeSelection selector, List<Pair> pairs){
+    private void checkLogic(TimeSelection selector, List<Pair> pairs) {
         int amountPlayingPairs = pairs.size();
 
-        int maxNumPairs = AMOUNT_TIME_SLOTS  * MAX_NUM_PAIRS_PER_SLOT;
+        int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
         boolean crowded = amountPlayingPairs > maxNumPairs;
         int expectedAmount = selector.getAmountPairsByTime(pairs, Time.TH_8_30);
 
-        if(crowded){
+        if (crowded) {
             expectedAmount = amountPlayingPairs / AMOUNT_TIME_SLOTS;
         } else {
             if (expectedAmount > MAX_NUM_PAIRS_PER_SLOT) {
@@ -191,17 +197,11 @@ public class TimeSelectionTest {
                         || (amountPairs - 1) == expectedAmount
                         || (amountPairs + 1) == expectedAmount;
 
-
-
-        List<Pair> x = selector.getPairsByTime(pairs, Time.TH_8_30);
-        List<Pair> y = selector.getPairsByTime(pairs, Time.TH_9_00);
-
-        System.out.println(x.size() + " " + y.size());
         Assert.assertEquals(approximateAmount, true);
     }
 
     @Test
-    public void distributePairsCase_2() throws  Exception{
+    public void distributePairsCase_2() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
         ScorecardGenerator generator = new VrcScorecardGenerator();
 
@@ -221,11 +221,11 @@ public class TimeSelectionTest {
 
         try {
             pairs = createSmallAmountPairs();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
 
-        for(Pair pair : pairs) {
+        for (Pair pair : pairs) {
             pair.setTimeSlot(Time.TH_8_30);
         }
 
@@ -239,14 +239,14 @@ public class TimeSelectionTest {
         try {
             Ladder ladder = CSVReader.setupLadder();
             pairs = ladder.getPairs();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
 
         int size = pairs.size();
         int startFromTwoThird = size * 2 / 3;
 
-        for(int i = startFromTwoThird; i < size; i++) {
+        for (int i = startFromTwoThird; i < size; i++) {
             Pair pair = pairs.get(i);
             littlePairs.add(pair);
         }

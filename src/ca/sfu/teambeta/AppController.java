@@ -1,6 +1,11 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -387,7 +392,8 @@ public class AppController {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InternalHashingException |
+                    NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }

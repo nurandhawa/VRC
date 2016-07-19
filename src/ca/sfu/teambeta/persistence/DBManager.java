@@ -234,7 +234,8 @@ public class DBManager {
         }
     }
 
-    public synchronized void inputMatchResults(GameSession gameSession, Scorecard s, String[][] results) {
+    public synchronized void inputMatchResults(
+            GameSession gameSession, Scorecard s, String[][] results) {
         List<Pair> teams = s.getReorderedPairs();
         int rows = results.length;
         int cols = teams.size();
@@ -309,7 +310,8 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public synchronized Player getAlreadyActivePlayer(GameSession gameSession, int id) throws Exception {
+    public synchronized Player getAlreadyActivePlayer(
+            GameSession gameSession, int id) throws Exception {
         Pair pair = getPairFromID(id);
         Player player;
         try {
@@ -363,7 +365,8 @@ public class DBManager {
         return json;
     }
 
-    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int losingPairId) {
+    public synchronized void setGameResults(
+            GameSession gameSession, int winningPairId, int losingPairId) {
         int sessionId = gameSession.getID();
         Scorecard scorecard = (Scorecard) session.createQuery(
                 "from Scorecard sc \n"
