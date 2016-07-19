@@ -5,7 +5,7 @@ var Ladder = (function () {
 
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
         'class="btn btn-raised btn-xs toggle-button ';
-    var TIME_SELECT_HTML = '<button class="btn-link" id="timeSelect">preferred time</button>';
+    var TIME_SELECT_HTML = '<button class="btn-link" onclick="onTimeSelect" id="timeSelect">preferred time</button>';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
@@ -125,7 +125,8 @@ var Ladder = (function () {
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
                 onValid: onValid,
-                onInvalid: onInvalid
+                onInvalid: onInvalid,
+                onTimeSelect: timeSelection()
             }
         });
     }
@@ -243,6 +244,22 @@ var Ladder = (function () {
             });
         }
     };
+    
+    function timeSelection() {
+        var timeModal = document.getElementById("timeSelectModal");
+        var closeBtn = document.getElementById("timeCloseBtn");
+        timeModal.style.display = "block";
 
+        closeBtn.onclick = function() {
+            timeModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == timeModal) {
+                timeModal.style.display = "none";
+            }
+        }
+    }
+    
     return Ladder;
 })();

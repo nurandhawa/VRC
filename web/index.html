@@ -163,6 +163,14 @@
               {{ entry.teamName }}
                 <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
               </component>
+              <div id="timeSelectModal" style="display: none" class="modal-dialog">
+                <div id="timeSelectModalContent" class="modal-content">
+                  <span id="timeCloseBtn" class="close">x</span>
+                  <label><input id="checkbox8pm" type="checkbox" value="first_checkbox">Thursday, 08:00 pm</label><br>
+                  <label><input id="checkbox9pm" type="checkbox" value="second_checkbox">Thursday, 09:30 pm</label>
+                </div>
+
+              </div>
 
               <div id="modal{{ entry.position - 1 }}" class="modal">
                 <div class="modal-dialog">
