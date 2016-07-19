@@ -132,12 +132,4 @@ public class Pair extends Persistable {
     public void setLastWeekPosition(int lastWeekPosition) {
         this.lastWeekPosition = lastWeekPosition;
     }
-
-    public Time getTimeSlot(){
-        return timeSlot;
-    }
-
-    public void setTimeSlot(Time timeSlot) {
-        this.timeSlot = timeSlot;
-    }
 }

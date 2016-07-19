@@ -5,6 +5,7 @@ var Ladder = (function () {
 
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
         'class="btn btn-raised btn-xs toggle-button ';
+    var TIME_SELECT_HTML = '<button class="btn-link" id="timeSelect">preferred time</button>';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
@@ -35,7 +36,7 @@ var Ladder = (function () {
                 return {status: "Playing"};
             },
             props: ['index'],
-            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX,
+            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX + TIME_SELECT_HTML,
             methods: {
                 changeStatus: function () {
                     this.$parent.changeStatus(this.index);
