@@ -1,27 +1,29 @@
 package ca.sfu.teambeta;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-
-import java.util.List;
-
 import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+
 import ca.sfu.teambeta.logic.AccountManager;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
+
+import java.util.List;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -38,8 +40,6 @@ import static spark.Spark.staticFiles;
  * Created by NoorUllah on 2016-06-16.
  */
 public class AppController {
-    public static final String PLAYING_STATUS = "playing";
-    public static final String NOT_PLAYING_STATUS = "not playing";
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
@@ -47,9 +47,15 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+
+    private static final String TIME_SLOT = "time";
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
+
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
+
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
@@ -134,6 +140,7 @@ public class AppController {
             }
 
             int newPosition = -1;
+
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
@@ -148,6 +155,7 @@ public class AppController {
 
             boolean validNewPos = InputValidator.checkLadderPosition(newPosition,
                     dbManager.getLadderSize(gameSession));
+
             boolean validStatus = InputValidator.checkPlayingStatus(status);
 
             if (!InputValidator.checkPairExists(dbManager, id)) {
@@ -170,7 +178,7 @@ public class AppController {
                         response.status(NOT_FOUND);
                         return getErrResponse(
                                 "Player " + firstName + " "
-                                + lastName + " is already playing");
+                                        + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING_STATUS)) {
                     dbManager.setPairInactive(gameSession, id);
@@ -381,7 +389,8 @@ public class AppController {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InternalHashingException |
+                    NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
@@ -416,6 +425,19 @@ public class AppController {
             response.body(getErrResponse(exception.getMessage()));
         });
     }
+
+//    private Time convertStrTime(String timeStr) {
+//        Time time = Time.NO_SLOT;
+//
+//        //Convert string to enum type
+//        for (Time timeSlot : Time.values()) {
+//            if (timeSlot.getTime() == timeStr) {
+//                time = timeSlot;
+//                break;
+//            }
+//        }
+//        return time;
+//    }
 
     private GameSession getRequestedGameSession(DBManager dbManager, String requestedGameSession) {
         if (requestedGameSession.equals(GAMESESSION_LATEST)) {

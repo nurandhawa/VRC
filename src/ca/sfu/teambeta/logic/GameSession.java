@@ -23,6 +23,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.persistence.Persistable;
 
 @Entity(name = "session")
@@ -208,5 +209,13 @@ public class GameSession extends Persistable {
         return null;
     }
 
-
+    public void setTimeSlot(Pair pair, Time time) {
+        if (ladder.contains(pair)) {
+            int index = ladder.getPairs().indexOf(pair);
+            Pair pairFromLadder = ladder.getPairAtIndex(index);
+            pairFromLadder.setTimeSlot(time);
+            ladder.removePair(pairFromLadder);
+            ladder.insertAtIndex(index, pairFromLadder);
+        }
+    }
 }

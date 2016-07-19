@@ -117,6 +117,14 @@ public class Pair extends Persistable {
         isPlaying = playing;
     }
 
+    public Time getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(Time timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
     public int getLastWeekPosition() {
         return lastWeekPosition;
     }

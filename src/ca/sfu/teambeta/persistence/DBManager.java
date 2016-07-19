@@ -20,9 +20,11 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
+
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
@@ -286,6 +288,7 @@ public class DBManager {
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             removed = ladder.removePair(pair);
+            pair.setTimeSlot(Time.NO_SLOT);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -299,8 +302,10 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
+        Time time = pair.getTimeSlot();
 
         removePair(pairId);
+
         gameSession.addNewPairAtIndex(pair, newPosition);
         persistEntity(gameSession);
     }
@@ -459,5 +464,20 @@ public class DBManager {
         GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
         persistEntity(gameSession);
         persistEntity(nextWeekGameSession);
+    }
+
+    public void setTimeSlot(int pairId, Time time) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        gameSession.setTimeSlot(pair, time);
+        persistEntity(gameSession);
+    }
+
+    public Time getTimeSlot(int pairId) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        Time time = pair.getTimeSlot();
+        persistEntity(gameSession);
+        return time;
     }
 }

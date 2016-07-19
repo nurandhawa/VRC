@@ -51,7 +51,9 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password) throws InternalHashingException, NoSuchUserException,
+
+    public String login(String email, String password)
+            throws InternalHashingException, NoSuchUserException,
             InvalidCredentialsException {
 
         // Authenticate and if successful get the user from the database
