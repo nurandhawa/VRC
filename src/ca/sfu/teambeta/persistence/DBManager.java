@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,10 +24,6 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-
-import ca.sfu.teambeta.logic.VrcLadderReorderer;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -39,9 +36,12 @@ public class DBManager {
     private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
     private Session session;
+    private TimeSelection selector;
 
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
+        selector = new VrcTimeSelection();
+        new TaskPerformer(this);
     }
 
     // Use me if the database is down
@@ -302,7 +302,6 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
-        Time time = pair.getTimeSlot();
 
         removePair(pairId);
 
@@ -461,12 +460,14 @@ public class DBManager {
         gameSession.reorderLadder(new VrcLadderReorderer());
         List<Pair> reorderedPairs = gameSession.getReorderedLadder();
         Ladder nextWeekLadder = new Ladder(reorderedPairs);
+        selector.clearTimeSlots(nextWeekLadder);
         GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
+
         persistEntity(gameSession);
         persistEntity(nextWeekGameSession);
     }
 
-    public void setTimeSlot(int pairId, Time time) {
+    public synchronized void setTimeSlot(int pairId, Time time) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
         gameSession.setTimeSlot(pair, time);
@@ -479,5 +480,13 @@ public class DBManager {
         Time time = pair.getTimeSlot();
         persistEntity(gameSession);
         return time;
+    }
+
+    public void performTimeDistribution() {
+        GameSession gameSession = getGameSessionLatest();
+        List<Scorecard> scorecards = gameSession.getScorecards();
+        selector.distributePairs(scorecards);
+        gameSession.setScorecards(scorecards);
+        persistEntity(gameSession);
     }
 }

@@ -218,4 +218,8 @@ public class GameSession extends Persistable {
             ladder.insertAtIndex(index, pairFromLadder);
         }
     }
+
+    public void setScorecards(List<Scorecard> scorecards) {
+        this.scorecards = scorecards;
+    }
 }
