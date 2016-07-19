@@ -178,22 +178,16 @@ public class DBManager {
         return ladder;
     }
 
-    private synchronized GameSession getGameSessionByWeek(GameSessionWeek week, GameSessionVersion version) {
-        List<Long> timestamps = getMinMaxTimestamps(week);
-        long maxTimestamp = timestamps.get(0);
-        long minTimestamp = timestamps.get(1);
-
+    private synchronized GameSession getGameSessionByVersion(GameSessionVersion version) {
         Transaction tx = null;
         List gameSessions = null;
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria weekCriteria = DetachedCriteria.forClass(GameSession.class)
-                    .add(Restrictions.ge("timestamp", minTimestamp))
-                    .add(Restrictions.lt("timestamp", maxTimestamp))
+            DetachedCriteria idCriteria = DetachedCriteria.forClass(GameSession.class)
                     .setProjection(Projections.id());
             gameSessions = session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").in(weekCriteria))
+                    .add(Property.forName("id").in(idCriteria))
                     .addOrder(Order.desc("timestamp"))
                     .list();
             tx.commit();
@@ -210,40 +204,18 @@ public class DBManager {
 
         } catch (HibernateException e) {
             tx.rollback();
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
         return gameSession;
     }
 
-    private List<Long> getMinMaxTimestamps(GameSessionWeek week) {
-        List<Long> timestamps = new ArrayList<>();
-
-        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
-        dateTime = dateTime.withHour(17);
-        dateTime = dateTime.withMinute(0);
-        dateTime = dateTime.withSecond(0);
-        dateTime = dateTime.withNano(0);
-
-        if (week == GameSessionWeek.LAST_WEEK) {
-            dateTime = dateTime.minusWeeks(1);
-        }
-
-        timestamps.add(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dateTime = dateTime.minusWeeks(1);
-        timestamps.add(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-
-        return timestamps;
-    }
-
     public synchronized GameSession getGameSessionLatest() {
-        return getGameSessionByWeek(GameSessionWeek.THIS_WEEK, GameSessionVersion.CURRENT);
-    }
-
-    public synchronized GameSession getGameSessionLatest(GameSessionVersion version) {
-        return getGameSessionByWeek(GameSessionWeek.THIS_WEEK, version);
+        return getGameSessionByVersion(GameSessionVersion.CURRENT);
     }
 
     public synchronized GameSession getGameSessionPrevious() {
-        return getGameSessionByWeek(GameSessionWeek.LAST_WEEK, GameSessionVersion.CURRENT);
+        return getGameSessionByVersion(GameSessionVersion.PREVIOUS);
     }
 
     public void addPenaltyToPair(GameSession gameSession, int pairId, Penalty penalty) {
@@ -514,10 +486,5 @@ public class DBManager {
     public enum GameSessionVersion {
         CURRENT,
         PREVIOUS
-    }
-
-    public enum GameSessionWeek {
-        THIS_WEEK,
-        LAST_WEEK
     }
 }

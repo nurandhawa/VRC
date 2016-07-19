@@ -258,14 +258,10 @@ public class AppController {
             dbManager.reorderLadder(gameSession);
             dbManager.saveGameSession(gameSession);
 
-            GameSession newGameSession = dbManager.createNewGameSession(gameSession);
-
-            if (request.queryParams(GAMESESSION).equals(GAMESESSION_PREVIOUS)) {
-                GameSession previousVersion = dbManager.getGameSessionLatest(DBManager.GameSessionVersion.PREVIOUS);
-                dbManager.migrateLadderData(previousVersion, newGameSession);
+            if (request.queryParams(GAMESESSION).equals(GAMESESSION_LATEST)) {
+                GameSession newGameSession = dbManager.createNewGameSession(gameSession);
+                dbManager.saveGameSession(newGameSession);
             }
-
-            dbManager.saveGameSession(newGameSession);
 
             return getOkResponse("");
         }));
@@ -307,6 +303,10 @@ public class AppController {
         get("/api/matches", (request, response) -> {
             GameSession gameSession = getRequestedGameSession(dbManager,
                     request.queryParams(GAMESESSION));
+            if (gameSession == null) {
+                response.status(OK);
+                return "[]";
+            }
 
             String json = dbManager.getJSONScorecards(gameSession);
             final String EMPTY_JSON_ARRAY = "[]";

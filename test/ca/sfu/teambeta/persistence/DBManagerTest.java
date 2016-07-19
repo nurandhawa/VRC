@@ -114,43 +114,6 @@ public class DBManagerTest {
     }
 
     @Test
-    public void testGetPreviousGameSessionWeekEnd() {
-        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.previous(DayOfWeek.THURSDAY));
-        dateTime = dateTime.withHour(16);
-        dateTime = dateTime.withMinute(59);
-        dateTime = dateTime.withSecond(59);
-
-        GameSession expectedPrevious = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofHours(0)));
-        dbManager.persistEntity(expectedPrevious);
-
-        GameSession latest = generateGameSession(Instant.now().getEpochSecond());
-        dbManager.persistEntity(latest);
-
-        GameSession resultPrevious = dbManager.getGameSessionPrevious();
-
-        assertEquals(expectedPrevious.getID(), resultPrevious.getID());
-    }
-
-    @Test
-    public void testGetPreviousGameSessionWeekBegin() {
-        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.previous(DayOfWeek.THURSDAY));
-        dateTime = dateTime.minusWeeks(1);
-        dateTime = dateTime.withHour(17);
-        dateTime = dateTime.withMinute(0);
-        dateTime = dateTime.withSecond(1);
-
-        GameSession expectedPrevious = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(expectedPrevious);
-
-        GameSession latest = generateGameSession(dateTime.plusWeeks(1).toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(latest);
-
-        GameSession resultPrevious = dbManager.getGameSessionPrevious();
-
-        assertEquals(expectedPrevious.getID(), resultPrevious.getID());
-    }
-
-    @Test
     public void testGetLatestGameSession() {
         LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
 
@@ -162,76 +125,6 @@ public class DBManagerTest {
 
         GameSession resultLatest = dbManager.getGameSessionLatest();
         assertEquals(expectedLatest.getID(), resultLatest.getID());
-    }
-
-    @Test
-    public void testGetLatestGameSessionWeekEnd() {
-        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.next(DayOfWeek.THURSDAY));
-        dateTime = dateTime.withHour(16);
-        dateTime = dateTime.withMinute(59);
-        dateTime = dateTime.withSecond(59);
-
-        GameSession previous = generateGameSession(dateTime.minusWeeks(1).toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(previous);
-
-        GameSession expectedLatest = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(expectedLatest);
-
-        GameSession resultLatest = dbManager.getGameSessionLatest();
-
-        assertEquals(expectedLatest.getID(), resultLatest.getID());
-    }
-
-    @Test
-    public void testGetLatestGameSessionWeekBegin() {
-        LocalDateTime dateTime = LocalDateTime.now().with(TemporalAdjusters.previous(DayOfWeek.THURSDAY));
-        dateTime = dateTime.withHour(17);
-        dateTime = dateTime.withMinute(0);
-        dateTime = dateTime.withSecond(1);
-
-        GameSession previous = generateGameSession(dateTime.minusWeeks(1).toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(previous);
-
-        GameSession expectedLatest = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        dbManager.persistEntity(expectedLatest);
-
-        GameSession resultLatest = dbManager.getGameSessionLatest();
-
-        assertEquals(expectedLatest.getID(), resultLatest.getID());
-    }
-
-    @Test
-    public void testGetLatestGameSessionCurrentVersion() {
-        LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
-
-        GameSession previousWeek = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        GameSession latestWeekPreviousVersion = generateGameSession(Instant.now().minusSeconds(1).getEpochSecond());
-        GameSession latestWeekCurrentVersion = generateGameSession(Instant.now().getEpochSecond());
-
-        dbManager.persistEntity(previousWeek);
-        dbManager.persistEntity(latestWeekPreviousVersion);
-        dbManager.persistEntity(latestWeekCurrentVersion);
-
-        GameSession resultLatestCurrentVersion = dbManager.getGameSessionLatest(DBManager.GameSessionVersion.CURRENT);
-
-        assertEquals(latestWeekCurrentVersion.getID(), resultLatestCurrentVersion.getID());
-    }
-
-    @Test
-    public void testGetLatestGameSessionPreviousVersion() {
-        LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
-
-        GameSession previousWeek = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
-        GameSession latestWeekPreviousVersion = generateGameSession(Instant.now().minusSeconds(1).getEpochSecond());
-        GameSession latestWeekCurrentVersion = generateGameSession(Instant.now().getEpochSecond());
-
-        dbManager.persistEntity(previousWeek);
-        dbManager.persistEntity(latestWeekPreviousVersion);
-        dbManager.persistEntity(latestWeekCurrentVersion);
-
-        GameSession resultLatestPreviousVersion = dbManager.getGameSessionLatest(DBManager.GameSessionVersion.PREVIOUS);
-
-        assertEquals(latestWeekPreviousVersion.getID(), resultLatestPreviousVersion.getID());
     }
 
     @Test

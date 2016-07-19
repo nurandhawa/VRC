@@ -12,6 +12,7 @@
 
     var editFunction = function() {
         matches.changeMode.call(matches.component);
+        matches.changeMode.call(matches.previousComponent);
     };
 
     var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
@@ -32,5 +33,9 @@
     api.getMatches(api.gameSession.LATEST, function (response) {
         matches.updateMatches.call(matches.component, response);
         header.updateHeader.call(header.component, response.dateCreated);
+    });
+
+    api.getMatches(api.gameSession.PREVIOUS, function (response) {
+        matches.updateMatches.call(matches.previousComponent, response);
     });
 })();

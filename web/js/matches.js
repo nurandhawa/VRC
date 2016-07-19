@@ -64,6 +64,25 @@ var Matches = (function () {
                 read: blankButton
             }
         });
+
+        this.previousComponent = new Vue({
+            el: '#matches-previous',
+            data: {
+                active: 0,
+                showModal: false,
+                matches: matchData,
+                mode: 'read'
+            },
+            methods: {
+                openModal: this.openModal,
+                updateMatches: this.updateMatches,
+                validateResults: this.validateResults
+            },
+            components: {
+                edit: editButton,
+                read: blankButton
+            }
+        });
     }
 
     Matches.prototype.openModal = function(index) {
