@@ -227,7 +227,7 @@ public class DBManager {
             ladder = (Ladder) session.createCriteria(Ladder.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            ladder.insertAtEnd(pair, time);
+            ladder.insertAtEnd(pair);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -255,7 +255,7 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon,teamLost);
+                s.setGameResults(teamWon, teamLost);
             }
             winCount = 0;
             teamLost = null;

@@ -213,8 +213,9 @@ public class GameSession extends Persistable {
         if (ladder.contains(pair)) {
             int index = ladder.getPairs().indexOf(pair);
             Pair pairFromLadder = ladder.getPairAtIndex(index);
+            pairFromLadder.setTimeSlot(time);
             ladder.removePair(pairFromLadder);
-            ladder.insertAtIndex(index, pairFromLadder, time);
+            ladder.insertAtIndex(index, pairFromLadder);
         }
     }
 }
