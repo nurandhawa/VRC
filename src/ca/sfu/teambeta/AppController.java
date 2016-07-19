@@ -1,10 +1,6 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -127,6 +123,20 @@ public class AppController {
             String sessionToken = request.cookie(SESSION_TOKEN_KEY);
             accountManager.logout(sessionToken);
             return getOkResponse("Logged out.");
+        });
+
+        patch("/api/ladder/:id", (request, response) -> {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                return getErrResponse(ID_NOT_INT);
+            }
+
+            Time time = convertStrTime(request.queryParams(TIME_SLOT));
+            dbManager.setTimeSlot(id, time);
+
+            return getOkResponse("");
         });
 
         //updates a pair's playing status or position
@@ -426,18 +436,18 @@ public class AppController {
         });
     }
 
-//    private Time convertStrTime(String timeStr) {
-//        Time time = Time.NO_SLOT;
-//
-//        //Convert string to enum type
-//        for (Time timeSlot : Time.values()) {
-//            if (timeSlot.getTime() == timeStr) {
-//                time = timeSlot;
-//                break;
-//            }
-//        }
-//        return time;
-//    }
+    private Time convertStrTime(String timeStr) {
+        Time time = Time.NO_SLOT;
+
+        //Convert string to enum type
+        for (Time timeSlot : Time.values()) {
+            if (timeSlot.getTime() == timeStr) {
+                time = timeSlot;
+                break;
+            }
+        }
+        return time;
+    }
 
     private GameSession getRequestedGameSession(DBManager dbManager, String requestedGameSession) {
         if (requestedGameSession.equals(GAMESESSION_LATEST)) {
