@@ -346,6 +346,27 @@ var API = (function() {
             });
     };
 
+    API.prototype.setTime = function (time, pairId, doneCallback, failCallback) {
+        $.ajax({
+            method: "PATCH",
+            url: SERVER_URL + "/ladder/time/" + pairId,
+            data: JSON.stringify({
+                "time": time,
+            })
+        })
+            
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
+    }
+    
     return API;
 
 })();

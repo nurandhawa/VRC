@@ -419,6 +419,27 @@ public class AppController {
             return getErrResponse(message);
         });
 
+        patch("/api/ladder/time/:id", (request, response) -> {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(ID_NOT_INT);
+            }
+
+            if (!InputValidator.checkPairExists(dbManager, id)) {
+                response.status(NOT_FOUND);
+                return getErrResponse(PAIR_NOT_FOUND + id);
+            }
+
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String time = extractedData.getTime();
+            System.out.println(dbManager.getPairFromID(id) + " " + time);
+            return getOkResponse("");
+        });
+
         exception(Exception.class, (exception, request, response) -> {
             exception.printStackTrace();
             response.status(SERVER_ERROR);

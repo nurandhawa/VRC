@@ -43,19 +43,31 @@ var Ladder = (function () {
                 },
 
                 timeSelection: function () {
-                     var timeModal = document.getElementById("timeSelectModal");
-                     var closeBtn = document.getElementById("timeCloseBtn");
+                     var timeModal = document.getElementById("timeSelectModal" + this.index);
+                     var closeBtn = document.getElementById("timeCloseBtn" + this.index);
+                     var saveBtn = document.getElementById("timeSaveButton" + this.index);
+                     var firstCheckBox = document.getElementById("checkbox8pm" + this.index);
+                     var secondCheckBox = document.getElementById("checkbox9pm" + this.index);
+
                      timeModal.style.display = "block";
 
                      closeBtn.onclick = function() {
-                     timeModal.style.display = "none";
+                        timeModal.style.display = "none";
                      }
-
+                     saveBtn.onclick = function() {
+                         timeModal.style.display = "none";
+                     }
                      window.onclick = function(event) {
                      if (event.target == timeModal) {
-                     timeModal.style.display = "none";
+                        timeModal.style.display = "none";
                      }
                      }
+                     firstCheckBox.onclick = function() {
+                         secondCheckBox.checked = false;
+                     }
+                    secondCheckBox.onclick = function() {
+                        firstCheckBox.checked = false;
+                    }
                 }
             }
         });
@@ -141,7 +153,8 @@ var Ladder = (function () {
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
                 onValid: onValid,
-                onInvalid: onInvalid
+                onInvalid: onInvalid,
+                setTime: this.setTime
             }
         });
     }
@@ -188,6 +201,15 @@ var Ladder = (function () {
             var api = new API();
             api.removePair(this.ladder[index].id, this.refreshLadder);
             hideModal(index);
+        }
+    };
+
+    Ladder.prototype.setTime = function (index) {
+        var api = new API();
+        if(document.getElementById("checkbox8pm" + index).checked) {
+            api.setTime("08:00 pm", this.ladder[index].id);
+        } else {
+            api.setTime("09:30 pm", this.ladder[index].id);
         }
     };
 
