@@ -253,7 +253,7 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon,teamLost);
+                s.setGameResults(teamWon, teamLost);
             }
             winCount = 0;
             teamLost = null;
