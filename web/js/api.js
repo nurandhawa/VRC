@@ -202,6 +202,11 @@ var API = (function() {
             var matches = JSON.parse(response);
             matches.forEach(function(match, i) {
                 match.scorecardIndex = i;
+                if(match.timeSlot === "SLOT_1") {
+                    match.timeSlot = "08:00 pm";
+                } else {
+                    match.timeSlot = "09:30 pm";
+                }
                 match.resultsValid = false;
                 match.results = [];
                 match.pairs.forEach(function(pair) {

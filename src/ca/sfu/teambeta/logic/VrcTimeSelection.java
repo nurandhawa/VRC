@@ -113,9 +113,6 @@ public class VrcTimeSelection implements TimeSelection {
 
         //Update Pairs inside of the scorecard
         List<Pair> pairs = scorecard.getReorderedPairs();
-        for (Pair pair : pairs) {
-            pair.setTimeSlot(time);
-        }
     }
 
     private Time getDominantTime(List<Time> timeSlots) {
