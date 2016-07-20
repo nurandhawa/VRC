@@ -127,7 +127,6 @@ public class VrcTimeSelection implements TimeSelection {
         for (Time time : timeSlots) {
             int amount = timeFrequency.get(time);
             amount++;
-
             timeFrequency.put(time, amount);
         }
 
