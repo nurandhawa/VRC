@@ -124,7 +124,7 @@ var Matches = (function () {
 
         var api = new API();
         api.inputMatchResults(gameSession, match.id, results, function() {
-            this.refreshMatches();
+            this.refreshMatches(gameSession);
         }.bind(this));
         this.closeModal();
     };
@@ -145,9 +145,9 @@ var Matches = (function () {
         }.bind(this));
     };
 
-    Matches.prototype.refreshMatches = function() {
+    Matches.prototype.refreshMatches = function(gameSession) {
         var api = new API();
-        api.getMatches(api.gameSession.LATEST, function(matchData) {
+        api.getMatches(gameSession, function(matchData) {
             this.$parent.updateMatches.call(this.$parent, matchData);
         }.bind(this));
     };
