@@ -2,6 +2,7 @@ package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.SessionInformation;
 import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.UserRole;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 
@@ -27,13 +28,12 @@ public class UserSessionManager {
     private static Dictionary<String, SessionInformation> sessions = new Hashtable<>();
 
 
-    // MARK: - The Core SessionInformation Methods
-    public static String createNewSession(User user) {
+    // MARK: - The Core Session Methods
+    public static String createNewSession(User user, UserRole role) {
         String sessionId = generateRandomSessionID();
         String userEmail = user.getEmail();
-        String expiryDate = "datePlaceholder";
 
-        SessionInformation userSessionInformation = new SessionInformation(userEmail, expiryDate);
+        SessionInformation userSessionInformation = new SessionInformation(userEmail, role);
 
         sessions.put(sessionId, userSessionInformation);
 
@@ -75,6 +75,22 @@ public class UserSessionManager {
             deleteSession(sessionId);
             return false;
         }
+    }
+
+    public static boolean isAdministratorSession(String sessionId)
+            throws NoSuchSessionException {
+
+        // Validate the input
+        try {
+            InputValidator.validateSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        }
+
+        SessionInformation sessionInformation = sessions.get(sessionId);
+
+        return sessionInformation.isAdministratorSession();
+
     }
 
 
