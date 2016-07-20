@@ -19,6 +19,8 @@ public class JsonExtractedData {
     private String email;
     @Expose
     private String password;
+    @Expose
+    private String time;
 
 
     public JsonExtractedData() {
@@ -51,5 +53,13 @@ public class JsonExtractedData {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
