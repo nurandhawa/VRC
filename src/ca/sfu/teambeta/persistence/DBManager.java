@@ -466,19 +466,6 @@ public class DBManager {
         return new GameSession(nextWeekLadder);
     }
 
-    public synchronized void migrateLadderData(GameSession previousVersion, GameSession latestVersion) {
-        List<Pair> activePairs = previousVersion.getActivePairs();
-        List<Pair> newPairs = latestVersion.getAllPairs();
-
-        for (Pair activePair : activePairs) {
-            for (Pair newPair : newPairs) {
-                if (activePair.getID() == newPair.getID()) {
-                    latestVersion.setPairActive(newPair);
-                }
-            }
-        }
-    }
-
     public synchronized void saveGameSession(GameSession gameSession) {
         persistEntity(gameSession);
     }

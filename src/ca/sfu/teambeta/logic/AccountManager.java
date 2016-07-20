@@ -73,9 +73,8 @@ public class AccountManager {
 
         // Create a session for the user
         UserRole role = getUserClearanceLevel(user.getEmail());
-        String sessionId = UserSessionManager.createNewSession(user, role);
 
-        return UserSessionManager.createNewSession(user);
+        return UserSessionManager.createNewSession(user, role);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {

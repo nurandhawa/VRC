@@ -126,27 +126,4 @@ public class DBManagerTest {
         GameSession resultLatest = dbManager.getGameSessionLatest();
         assertEquals(expectedLatest.getID(), resultLatest.getID());
     }
-
-    @Test
-    public void testGameSessionMigration() throws Exception {
-        GameSession previousVersion = generateGameSession(Instant.now().minusSeconds(1).getEpochSecond());
-
-        List<Pair> previousPairs = previousVersion.getAllPairs();
-        previousVersion.setPairActive(previousPairs.get(0));
-        previousVersion.setPairActive(previousPairs.get(1));
-        previousVersion.setPairActive(previousPairs.get(2));
-
-        dbManager.persistEntity(previousVersion);
-
-        Ladder previousVersionLadder = new Ladder(previousVersion.getAllPairs());
-        GameSession currentVersion = new GameSession(previousVersionLadder);
-        dbManager.persistEntity(currentVersion);
-
-        List<Pair> previousActivePairs = previousVersion.getActivePairs();
-
-        dbManager.migrateLadderData(previousVersion, currentVersion);
-
-        List<Pair> currentActivePairs = currentVersion.getActivePairs();
-        assertEquals(previousActivePairs, currentActivePairs);
-    }
 }
