@@ -183,7 +183,7 @@ var Ladder = (function () {
                 pair.isPlaying = false;
                 pair.playingStatus = "notplaying";
                 document.getElementById("checkbox8pm" + index).checked = true;
-                document.getElementById("checkbox9pm" + index).checked = false;;
+                document.getElementById("checkbox9pm" + index).checked = false;
             });
         }
         else {
