@@ -240,38 +240,8 @@ public class DBManager {
         }
     }
 
-    public synchronized void inputMatchResults(
-            GameSession gameSession, Scorecard s, String[][] results) {
-        List<Pair> teams = s.getReorderedPairs();
-        int rows = results.length;
-        int cols = teams.size();
-
-        Pair teamWon = null;
-        Pair teamLost = null;
-        int winCount = 0;
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (results[i][j].equals("W")) {
-                    teamWon = teams.get(j);
-                    winCount++;
-                } else if (results[i][j].equals("L")) {
-                    teamLost = teams.get(j);
-                    winCount--;
-                }
-            }
-            if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon, teamLost);
-            }
-            winCount = 0;
-            teamLost = null;
-            teamWon = null;
-        }
-        persistEntity(gameSession);
-    }
-
-    public synchronized void addPair(GameSession gameSession, Pair pair, int index) {
-        gameSession.addNewPairAtIndex(pair, index);
+    public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
+        gameSession.addNewPairAtIndex(pair, position);
         persistEntity(gameSession);
     }
 
@@ -377,7 +347,7 @@ public class DBManager {
         return serializer.toJson();
     }
 
-    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int losingPairId) {
+    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int rank) {
         int sessionId = gameSession.getID();
         Scorecard scorecard = (Scorecard) session.createQuery(
                 "from Scorecard sc \n"
@@ -385,15 +355,12 @@ public class DBManager {
                         + "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) "
                         + "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) "
                         + "where sc_pwin.pairs_id = :winning_pair_id "
-                        + "and sc_plose.pairs_id = :losing_pair_id "
                         + "and s_sc.session_id = :session_id")
                 .setInteger("winning_pair_id", winningPairId)
-                .setInteger("losing_pair_id", winningPairId)
                 .setInteger("session_id", sessionId)
                 .uniqueResult();
         Pair winningPair = session.load(Pair.class, winningPairId);
-        Pair losingPair = session.load(Pair.class, losingPairId);
-        scorecard.setGameResults(winningPair, losingPair);
+        scorecard.setGameResults(winningPair, rank);
 
         Transaction tx = null;
         try {

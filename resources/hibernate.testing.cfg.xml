@@ -10,7 +10,7 @@
 
         <!--Change 'test' to your SFU username!-->
         <property name="hibernate.connection.url">
-            jdbc:mysql://vrcproject.duckdns.org:3306/test?serverTimezone=America/Vancouver
+            jdbc:mysql://vrcproject.duckdns.org:3306/gshieh?serverTimezone=America/Vancouver
         </property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
         <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>

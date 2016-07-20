@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.core;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -22,9 +21,9 @@ public class ScorecardTest {
     @Test
     public void testFirstExample() {
         Scorecard sc = new Scorecard(threePairs, null);
-        sc.setGameResults(victorJoyce,vickyDavid);
-        sc.setGameResults(victorJoyce,rosStevie);
-        sc.setGameResults(rosStevie,vickyDavid);
+        sc.setGameResults(victorJoyce, 1);
+        sc.setGameResults(rosStevie, 2);
+        sc.setGameResults(vickyDavid, 3);
 
         List<Pair> reOrdered = sc.getReorderedPairs();
         List<Pair> expectedOrder = Arrays.asList(victorJoyce, rosStevie, vickyDavid);
@@ -35,9 +34,9 @@ public class ScorecardTest {
     public void testLastExample() {
         Arrays.asList(rosStevie, vickyDavid, victorJoyce);
         Scorecard sc = new Scorecard(threePairs, null);
-        sc.setGameResults(rosStevie,vickyDavid);
-        sc.setGameResults(rosStevie,victorJoyce);
-        sc.setGameResults(victorJoyce,vickyDavid);
+        sc.setGameResults(rosStevie, 1);
+        sc.setGameResults(victorJoyce, 2);
+        sc.setGameResults(vickyDavid, 3);
 
         List<Pair> reOrdered = sc.getReorderedPairs();
         List<Pair> expectedOrder = Arrays.asList(rosStevie, victorJoyce, vickyDavid);
@@ -48,38 +47,14 @@ public class ScorecardTest {
     public void testQuadGroup() {
         List<Pair> fourPairGroup = Arrays.asList(rosStevie, vickyDavid, victorJoyce, bobbyChan);
         Scorecard sc = new Scorecard(fourPairGroup, null);
-        sc.setGameResults(rosStevie,bobbyChan);
-        sc.setGameResults(victorJoyce,vickyDavid);
-        sc.setGameResults(rosStevie,victorJoyce);
-        sc.setGameResults(vickyDavid,bobbyChan);
+        sc.setGameResults(rosStevie, 1);
+        sc.setGameResults(bobbyChan, 4);
+        sc.setGameResults(victorJoyce, 2);
+        sc.setGameResults(vickyDavid, 3);
 
         List<Pair> reOrdered = sc.getReorderedPairs();
         List<Pair> expectedOrder = Arrays.asList(rosStevie, victorJoyce, vickyDavid, bobbyChan);
         Assert.assertEquals(reOrdered, expectedOrder);
     }
 
-    @Test(expected = RuntimeException.class)
-    @Ignore
-    public void testObserverThreeTeams() {
-        Observer observer = () -> {
-            throw new RuntimeException();
-        };
-        Scorecard sc = new Scorecard(threePairs, observer);
-        sc.setGameResults(victorJoyce, vickyDavid);
-        sc.setGameResults(rosStevie, vickyDavid);
-        sc.setGameResults(rosStevie, victorJoyce);
-    }
-
-    @Test(expected = RuntimeException.class)
-    @Ignore
-    public void testObserverFourTeams() {
-        Observer observer = () -> {
-            throw new RuntimeException();
-        };
-        Scorecard sc = new Scorecard(threePairs, observer);
-        sc.setGameResults(victorJoyce, vickyDavid);
-        sc.setGameResults(victorJoyce, rosStevie);
-        sc.setGameResults(bobbyChan, vickyDavid);
-        sc.setGameResults(rosStevie, bobbyChan);
-    }
 }

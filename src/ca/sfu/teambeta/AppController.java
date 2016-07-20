@@ -338,13 +338,13 @@ public class AppController {
 
             Scorecard scorecard = dbManager.getScorecardFromGame(gameSession, id);
 
-            try {
-                InputValidator.validateResults(scorecard, extractedData.results);
-                dbManager.inputMatchResults(gameSession, scorecard, extractedData.results.clone());
-            } catch (InvalidInputException exception) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(exception.getMessage());
-            }
+//            try {
+//                InputValidator.validateResults(scorecard, extractedData.results);
+//                dbManager.inputMatchResults(gameSession, scorecard, extractedData.results.clone());
+//            } catch (InvalidInputException exception) {
+//                response.status(BAD_REQUEST);
+//                return getErrResponse(exception.getMessage());
+//            }
 
             response.status(OK);
             return getOkResponse("");
