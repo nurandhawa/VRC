@@ -3,7 +3,7 @@
 
     var api = new API();
 
-    api.getMatches(function(matchData) {
+    api.getMatches("latest", function(matchData) {
         var matchCardsComponent = new Vue({
             el: '#matchcards',
             data: {
