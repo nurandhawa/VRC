@@ -48,6 +48,9 @@ var API = (function() {
 
                     pair.teamName = player1Name + " and " + player2Name;
                     pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+
+                    pair.mode = "read";
+
                     ladderData.players.push({
                         label: player1Name,
                         id: player1.id
@@ -204,10 +207,24 @@ var API = (function() {
             });
     };
 
-    API.prototype.reorderLadder = function(gameSession) {
+    API.prototype.reorderLadder = function (gameSession, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/matches" + GAMESESSION_PARAM + gameSession
+        })
+        .done(function (response) {
+            if (doneCallback) {
+                doneCallback(response);
+            }
+        })
+        .fail(function (response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                alert(responseBody.message);
+            }
         });
     };
 
@@ -394,7 +411,7 @@ var API = (function() {
                 }
             });
     };
-    
+
     return API;
 
 })();

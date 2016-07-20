@@ -64,6 +64,8 @@ var Matches = (function () {
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
                     var results = match.results;
+                    this.mode = "loading";
+
                     var api = new API();
                     api.inputMatchResults(gameSession, match.id, results, function() {
                         this.refreshMatches(gameSession);
@@ -201,7 +203,8 @@ var Matches = (function () {
                       }),
                       read: Vue.extend({
                           template: "<a></a>"
-                      })
+                      }),
+                      loading: VueSpinner.ClipLoader
                   }
               })
           }

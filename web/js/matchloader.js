@@ -23,8 +23,17 @@
         },
         methods: {
             saveResults: function() {
+                var header = this.$parent;
+                header.mode = "loading";
                 var api = new API();
-                api.reorderLadder(matches.component.activeGameSession);
+                var doneCallback = function() {
+                    header.mode = "edit";
+                };
+                var failCallback = function(response) {
+                    header.mode = "edit";
+                    alert(JSON.parse(response.responseText).responseBody);
+                };
+                api.reorderLadder(matches.component.activeGameSession, doneCallback.bind(this), failCallback.bind(this));
             }
         }
     });
