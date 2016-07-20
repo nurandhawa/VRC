@@ -1,7 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.logic.TimeSelection;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
 import org.quartz.*;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -15,7 +13,10 @@ public class TaskPerformer {
     private static final String JOB_NAME = "timeSlotDistribution";
     private static final String GROUP_NAME = "group";
     private static final String TRIGGER_NAME = "trigger";
-    private static final String DEFAULT_SCHEDULE = "0 0/1 8-17 * * ?";
+    // every Thursday at 6:00 pm
+    private static final String DEFAULT_SCHEDULE =  "0 0 18 ? * THU";
+    // every Minute
+    private static final String TEST_SCHEDULE =  "0 0/1 * * * ?";
 
     private DBManager dbManager;
     private String schedule;

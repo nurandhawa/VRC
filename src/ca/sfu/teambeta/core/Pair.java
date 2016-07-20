@@ -55,6 +55,7 @@ public class Pair extends Persistable {
         players.add(secondPlayer);
         dateCreated = new Date();
         this.isPlaying = false;
+        timeSlot = Time.NO_SLOT;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -62,6 +63,7 @@ public class Pair extends Persistable {
         players.add(secondPlayer);
         dateCreated = new Date();
         this.isPlaying = isPlaying;
+        timeSlot = Time.NO_SLOT;
     }
 
     public List<Player> getPlayers() {

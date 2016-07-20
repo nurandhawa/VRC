@@ -1,5 +1,8 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.logic.TimeSelection;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,9 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameSession;
 
 import static junit.framework.TestCase.assertEquals;
@@ -164,5 +164,53 @@ public class DBManagerTest {
         GameSession resultLatest = dbManager.getGameSessionLatest();
 
         assertEquals(expectedLatest.getID(), resultLatest.getID());
+    }
+
+    @Test
+    public void timeDistribution() {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+
+        //Initialize the ladder and save it in DB
+        Ladder ladder = new Ladder();
+        try {
+            ladder = setUpLadder();
+        } catch (Exception e) {}
+
+        GameSession gameSession = new GameSession(ladder);
+        dbManager.persistEntity(gameSession);
+
+        //Get one third of all pairs and set them to active and select the time slot
+        List<Pair> pairs = ladder.getPairs();
+        for (int i = 0; i < pairs.size() / 3; i ++ ) {
+            pairs.remove(0);
+        }
+
+        for (Pair pair : pairs) {
+            dbManager.setPairActive(gameSession, pair.getID());
+            dbManager.setTimeSlot(pair.getID(), Time.TH_8_30);
+        }
+        dbManager.performTimeDistribution();
+
+        gameSession = dbManager.getGameSessionLatest();
+        List<Pair> resultPairs = gameSession.getActivePairs();
+
+        //Get the amount of pairs at first time slot
+        TimeSelection selector = new VrcTimeSelection();
+        int amount = selector.getAmountPairsByTime(resultPairs, Time.TH_8_30);
+
+        Assert.assertEquals(24, amount);
+    }
+
+    private Ladder setUpLadder() throws Exception {
+        Ladder ladder;
+
+        try {
+            ladder = CSVReader.setupLadder();
+        } catch (Exception e) {
+            throw e;
+        }
+
+        return ladder;
     }
 }
