@@ -28,14 +28,14 @@ public class VrcTimeSelection implements TimeSelection {
     @Override
     public int getAmountPairsByTime(List<Pair> allPairs, Time time) {
         List<Pair> pairs = getPairsByTime(allPairs, time);
-
+        System.out.println(time + " " + pairs.size());
         return pairs.size();
     }
 
     @Override
     public List<Pair> getPairsByTime(List<Pair> allPairs, Time time) {
         List<Pair> pairs = new ArrayList<>();
-
+        pairs.clear();
         for (Pair pair : allPairs) {
             Time timeSlot = pair.getTimeSlot();
             if (timeSlot == time) {
@@ -81,6 +81,7 @@ public class VrcTimeSelection implements TimeSelection {
 
     private void saveValues(List<Scorecard> scorecards) {
         for (Scorecard group : scorecards) {
+            allPairs.clear();
             List<Pair> pairs = group.getReorderedPairs();
 
             for (Pair pair : pairs) {
@@ -229,7 +230,6 @@ public class VrcTimeSelection implements TimeSelection {
             int amount = getAmountPairsByTime(allPairs, time);
             int extra = amount - MAX_NUM_PAIRS_PER_SLOT;
             boolean crowded = extra > 0;
-
             if (crowded) {
                 //Move extra groups to the next time slot, do that for all time slots
                 moveOverflowedGroupsToNextTimeSlot(MAX_NUM_PAIRS_PER_SLOT, extra, time);
