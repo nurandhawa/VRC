@@ -327,6 +327,7 @@ public class DBManager {
         boolean activated = gameSession.setPairActive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
         persistEntity(gameSession);
+        performTimeDistribution();
         return activated;
     }
 

@@ -441,6 +441,7 @@ public class AppController {
             } else {
                 return getErrResponse("Invalid time");
             }
+            dbManager.performTimeDistribution();
             return getOkResponse("");
         });
 
