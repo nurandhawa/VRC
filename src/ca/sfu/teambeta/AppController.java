@@ -1,10 +1,6 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.*;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -436,7 +432,15 @@ public class AppController {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String time = extractedData.getTime();
-            System.out.println(dbManager.getPairFromID(id) + " " + time);
+            Pair pair = dbManager.getPairFromID(id);
+
+            if (time.equalsIgnoreCase("08:00 pm")) {
+                pair.setTimeSlot(Time.TH_8_30);
+            } else if (time.equalsIgnoreCase("09:30 pm")) {
+                pair.setTimeSlot(Time.TH_9_00);
+            } else {
+                return getErrResponse("Invalid time");
+            }
             return getOkResponse("");
         });
 
