@@ -435,7 +435,7 @@ public class AppController {
             Pair pair = dbManager.getPairFromID(id);
 
             if (time.equalsIgnoreCase(Time.SLOT_1.getTime())) {
-                pair.setTimeSlot(Time.SLOT_2);
+                pair.setTimeSlot(Time.SLOT_1);
             } else if (time.equalsIgnoreCase(Time.SLOT_2.getTime())) {
                 pair.setTimeSlot(Time.SLOT_2);
             } else {

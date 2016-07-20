@@ -175,14 +175,15 @@ public class DBManagerTest {
         Ladder ladder = new Ladder();
         try {
             ladder = setUpLadder();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         GameSession gameSession = new GameSession(ladder);
         dbManager.persistEntity(gameSession);
 
         //Get one third of all pairs and set them to active and select the time slot
         List<Pair> pairs = ladder.getPairs();
-        for (int i = 0; i < pairs.size() / 3; i ++ ) {
+        for (int i = 0; i < pairs.size() / 3; i++) {
             pairs.remove(0);
         }
 
