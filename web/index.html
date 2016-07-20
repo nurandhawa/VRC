@@ -164,7 +164,7 @@
                 <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
               </component>
               <div id="timeSelectModal{{entry.position - 1}}" style="display: none" class="modal">
-                <div name="time-modal" class="modal-dialog">
+                <div class="modal-dialog">
                   <div id="timeSelectModalContent" class="modal-content">
                     <span id="timeCloseBtn{{entry.position - 1}}" class="close">x</span>
                     <label><input id="checkbox8pm{{entry.position - 1}}" type="checkbox" value="first_checkbox" checked="true">

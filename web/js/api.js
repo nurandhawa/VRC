@@ -365,7 +365,7 @@ var API = (function() {
                     failCallback(response);
                 }
             });
-    }
+    };
     
     return API;
 

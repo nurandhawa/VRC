@@ -53,21 +53,21 @@ var Ladder = (function () {
 
                      closeBtn.onclick = function() {
                         timeModal.style.display = "none";
-                     }
+                     };
                      saveBtn.onclick = function() {
                          timeModal.style.display = "none";
-                     }
+                     };
                      window.onclick = function(event) {
-                     if (event.target == timeModal) {
-                        timeModal.style.display = "none";
-                     }
-                     }
+                         if (event.target == timeModal) {
+                            timeModal.style.display = "none";
+                         }
+                     };
                      firstCheckBox.onclick = function() {
                          secondCheckBox.checked = false;
-                     }
+                     };
                     secondCheckBox.onclick = function() {
                         firstCheckBox.checked = false;
-                    }
+                    };
                 }
             }
         });
