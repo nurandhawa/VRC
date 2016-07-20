@@ -49,17 +49,25 @@ var Ladder = (function () {
                      var firstCheckBox = document.getElementById("checkbox8pm" + this.index);
                      var secondCheckBox = document.getElementById("checkbox9pm" + this.index);
 
-                     timeModal.style.display = "block";
+                    timeModal.style.display = "block";
+                    var isFirstCheckBoxChecked;
+                    Boolean(isFirstCheckBoxChecked);
+                    if (firstCheckBox.checked) {
+                        isFirstCheckBoxChecked = true;
+                    }
+                    else { isFirstCheckBoxChecked = false; }
 
-                     closeBtn.onclick = function() {
-                        timeModal.style.display = "none";
-                     };
+                     closeBtn.onclick = myCloseFunction;
                      saveBtn.onclick = function() {
                          timeModal.style.display = "none";
                      };
                      window.onclick = function(event) {
                          if (event.target == timeModal) {
-                            timeModal.style.display = "none";
+                             timeModal.style.display = "none";
+                             if (isFirstCheckBoxChecked) {
+                                 firstCheckBox.checked = true;
+                                 secondCheckBox.checked = false;
+                             }
                          }
                      };
                      firstCheckBox.onclick = function() {
@@ -68,6 +76,14 @@ var Ladder = (function () {
                     secondCheckBox.onclick = function() {
                         firstCheckBox.checked = false;
                     };
+
+                    function myCloseFunction() {
+                        timeModal.style.display = "none";
+                        if (isFirstCheckBoxChecked) {
+                            firstCheckBox.checked = true;
+                            secondCheckBox.checked = false;
+                        }
+                    }
                 }
             }
         });
@@ -166,6 +182,8 @@ var Ladder = (function () {
             api.updatePairStatus(pair.id, "not playing", function (response) {
                 pair.isPlaying = false;
                 pair.playingStatus = "notplaying";
+                document.getElementById("checkbox8pm" + index).checked = true;
+                document.getElementById("checkbox9pm" + index).checked = false;;
             });
         }
         else {
