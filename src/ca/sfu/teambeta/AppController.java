@@ -125,20 +125,6 @@ public class AppController {
             return getOkResponse("Logged out.");
         });
 
-        patch("/api/ladder/:id", (request, response) -> {
-            int id;
-            try {
-                id = Integer.parseInt(request.params(ID));
-            } catch (Exception e) {
-                return getErrResponse(ID_NOT_INT);
-            }
-
-            Time time = convertStrTime(request.queryParams(TIME_SLOT));
-            dbManager.setTimeSlot(id, time);
-
-            return getOkResponse("");
-        });
-
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
             int id;
@@ -448,10 +434,10 @@ public class AppController {
             String time = extractedData.getTime();
             Pair pair = dbManager.getPairFromID(id);
 
-            if (time.equalsIgnoreCase("08:00 pm")) {
-                pair.setTimeSlot(Time.TH_8_30);
-            } else if (time.equalsIgnoreCase("09:30 pm")) {
-                pair.setTimeSlot(Time.TH_9_00);
+            if (time.equalsIgnoreCase(Time.SLOT_1.getTime())) {
+                pair.setTimeSlot(Time.SLOT_2);
+            } else if (time.equalsIgnoreCase(Time.SLOT_2.getTime())) {
+                pair.setTimeSlot(Time.SLOT_2);
             } else {
                 return getErrResponse("Invalid time");
             }
@@ -463,19 +449,6 @@ public class AppController {
             response.status(SERVER_ERROR);
             response.body(getErrResponse(exception.getMessage()));
         });
-    }
-
-    private Time convertStrTime(String timeStr) {
-        Time time = Time.NO_SLOT;
-
-        //Convert string to enum type
-        for (Time timeSlot : Time.values()) {
-            if (timeSlot.getTime() == timeStr) {
-                time = timeSlot;
-                break;
-            }
-        }
-        return time;
     }
 
     private GameSession getRequestedGameSession(DBManager dbManager, String requestedGameSession) {

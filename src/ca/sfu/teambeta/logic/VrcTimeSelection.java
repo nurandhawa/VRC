@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Created by constantin on 11/07/16.
  */
 public class VrcTimeSelection implements TimeSelection {
-    private static final Time DEFAULT_TIME_SLOT = Time.TH_8_30;
+    private static final Time DEFAULT_TIME_SLOT = Time.SLOT_1;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private List<Pair> allPairs;

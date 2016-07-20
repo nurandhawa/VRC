@@ -32,8 +32,8 @@ public class TimeSelectionTest {
         Pair pair2 = new Pair(firstPlayer, secondPlayer, true);
 
         TimeSelection selector = new VrcTimeSelection();
-        pair1.setTimeSlot(Time.TH_8_30);
-        pair2.setTimeSlot(Time.TH_9_00);
+        pair1.setTimeSlot(Time.SLOT_1);
+        pair2.setTimeSlot(Time.SLOT_2);
         List<Pair> activePairs = new ArrayList<Pair>() {
             {
                 add(pair1);
@@ -41,8 +41,8 @@ public class TimeSelectionTest {
             }
         };
 
-        List<Pair> pairsFirstTimeSlot = selector.getPairsByTime(activePairs, Time.TH_8_30);
-        List<Pair> pairsSecondTimeSlot = selector.getPairsByTime(activePairs, Time.TH_9_00);
+        List<Pair> pairsFirstTimeSlot = selector.getPairsByTime(activePairs, Time.SLOT_1);
+        List<Pair> pairsSecondTimeSlot = selector.getPairsByTime(activePairs, Time.SLOT_2);
 
         List<Pair> expectedFirstTimeSlot = new ArrayList<Pair>() {
             {
@@ -66,12 +66,12 @@ public class TimeSelectionTest {
         Player firstPlayer = new Player("Kate", "Smith");
         Player secondPlayer = new Player("Nick", "Smith");
         Pair pair1 = new Pair(firstPlayer, secondPlayer, true);
-        pair1.setTimeSlot(Time.TH_8_30);
+        pair1.setTimeSlot(Time.SLOT_1);
 
         firstPlayer = new Player("Anna", "Fraser");
         secondPlayer = new Player("Camden", "Fraser");
         Pair pair2 = new Pair(firstPlayer, secondPlayer, true);
-        pair2.setTimeSlot(Time.TH_8_30);
+        pair2.setTimeSlot(Time.SLOT_1);
 
         Ladder ladder = new Ladder();
         ladder.insertAtEnd(pair1);
@@ -79,7 +79,7 @@ public class TimeSelectionTest {
 
         TimeSelection selector = new VrcTimeSelection();
         selector.clearTimeSlots(ladder);
-        int size = selector.getAmountPairsByTime(ladder.getPairs(), Time.TH_8_30);
+        int size = selector.getAmountPairsByTime(ladder.getPairs(), Time.SLOT_1);
         Assert.assertEquals(size, 0);
     }
 
@@ -89,17 +89,17 @@ public class TimeSelectionTest {
         Player firstPlayer = new Player("Kate", "Smith");
         Player secondPlayer = new Player("Nick", "Smith");
         Pair pair1 = new Pair(firstPlayer, secondPlayer, true);
-        pair1.setTimeSlot(Time.TH_8_30);
+        pair1.setTimeSlot(Time.SLOT_1);
 
         firstPlayer = new Player("Anna", "Fraser");
         secondPlayer = new Player("Camden", "Fraser");
         Pair pair2 = new Pair(firstPlayer, secondPlayer, true);
-        pair2.setTimeSlot(Time.TH_9_00);
+        pair2.setTimeSlot(Time.SLOT_1);
 
         firstPlayer = new Player("Emma", "Johnson");
         secondPlayer = new Player("William", "Johnson");
         Pair pair3 = new Pair(firstPlayer, secondPlayer, true);
-        pair3.setTimeSlot(Time.TH_8_30);
+        pair3.setTimeSlot(Time.SLOT_1);
 
         List<Pair> pairs = new ArrayList<Pair>() {
             {
@@ -118,7 +118,7 @@ public class TimeSelectionTest {
         TimeSelection selector = new VrcTimeSelection();
         selector.distributePairs(scorecards);
         Time time = scorecard.getTimeSlot();
-        Time expectedTime = Time.TH_8_30;
+        Time expectedTime = Time.SLOT_1;
 
         Assert.assertEquals(expectedTime, time);
     }
@@ -151,9 +151,9 @@ public class TimeSelectionTest {
         int count = 0;
         for (Pair pair : pairs) {
             if (count % 5 == 0) {
-                pair.setTimeSlot(Time.TH_9_00);
+                pair.setTimeSlot(Time.SLOT_1);
             } else {
-                pair.setTimeSlot(Time.TH_8_30);
+                pair.setTimeSlot(Time.SLOT_1);
             }
             count++;
         }
@@ -179,7 +179,7 @@ public class TimeSelectionTest {
 
         int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
         boolean crowded = amountPlayingPairs > maxNumPairs;
-        int expectedAmount = selector.getAmountPairsByTime(pairs, Time.TH_8_30);
+        int expectedAmount = selector.getAmountPairsByTime(pairs, Time.SLOT_1);
 
         if (crowded) {
             expectedAmount = amountPlayingPairs / AMOUNT_TIME_SLOTS;
@@ -189,7 +189,7 @@ public class TimeSelectionTest {
             }
         }
 
-        int amountPairs = selector.getAmountPairsByTime(pairs, Time.TH_8_30);
+        int amountPairs = selector.getAmountPairsByTime(pairs, Time.SLOT_1);
 
         //Error on 1 pair is allowed as there are some groups with 4 pairs
         boolean approximateAmount =
@@ -226,7 +226,7 @@ public class TimeSelectionTest {
         }
 
         for (Pair pair : pairs) {
-            pair.setTimeSlot(Time.TH_8_30);
+            pair.setTimeSlot(Time.SLOT_1);
         }
 
         return pairs;

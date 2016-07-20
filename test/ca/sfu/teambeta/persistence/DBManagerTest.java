@@ -188,7 +188,7 @@ public class DBManagerTest {
 
         for (Pair pair : pairs) {
             dbManager.setPairActive(gameSession, pair.getID());
-            dbManager.setTimeSlot(pair.getID(), Time.TH_8_30);
+            dbManager.setTimeSlot(pair.getID(), Time.SLOT_1);
         }
         dbManager.performTimeDistribution();
 
@@ -197,7 +197,7 @@ public class DBManagerTest {
 
         //Get the amount of pairs at first time slot
         TimeSelection selector = new VrcTimeSelection();
-        int amount = selector.getAmountPairsByTime(resultPairs, Time.TH_8_30);
+        int amount = selector.getAmountPairsByTime(resultPairs, Time.SLOT_1);
 
         Assert.assertEquals(24, amount);
     }
