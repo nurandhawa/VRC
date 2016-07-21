@@ -1,16 +1,16 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.persistence.DBManager;
+
 import com.ja.security.PasswordHash;
 
 import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.persistence.DBManager;
+import ca.sfu.teambeta.core.UserRole;
+import ca.sfu.teambeta.core.exceptions.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ja.security.PasswordHash;
 

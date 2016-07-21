@@ -93,7 +93,7 @@ public class UserSessionManager {
         return sessionInformation.isAdministratorSession();
 
     }
-
+    
     public static String getEmailFromSessionId(String sessionId)
             throws NoSuchSessionException {
 
@@ -108,7 +108,6 @@ public class UserSessionManager {
 
         return sessionInformation.getEmail();
     }
-
 
     // MARK: Helper Methods
     private static SessionInformation getSessionInformation(String sessionId)
