@@ -25,42 +25,32 @@ public class TimeSelectionTest {
 
     @Test
     public void getPairsByTime() {
-        Player firstPlayer = new Player("Kate", "Smith");
-        Player secondPlayer = new Player("Nick", "Smith");
-        Pair pair1 = new Pair(firstPlayer, secondPlayer, true);
+        List<Pair> pairs = new ArrayList<Pair>() {
+            {
+                add(new Pair(new Player("a", "b"), new Player("c", "d")));
+                add(new Pair(new Player("e", "f"), new Player("g", "h")));
+                add(new Pair(new Player("i", "j"), new Player("k", "l")));
+            }
+        };
 
-        firstPlayer = new Player("Anna", "Fraser");
-        secondPlayer = new Player("Camden", "Fraser");
-        Pair pair2 = new Pair(firstPlayer, secondPlayer, true);
+        Scorecard sc1 = new Scorecard(pairs, null);
+        Scorecard sc2 = new Scorecard(pairs, null);
 
         TimeSelection selector = new VrcTimeSelection();
-        pair1.setTimeSlot(Time.SLOT_1);
-        pair2.setTimeSlot(Time.SLOT_2);
-        List<Pair> activePairs = new ArrayList<Pair>() {
+        sc1.setTimeSlot(Time.SLOT_1);
+        sc2.setTimeSlot(Time.SLOT_2);
+        List<Scorecard> scorecards = new ArrayList<Scorecard>() {
             {
-                add(pair1);
-                add(pair2);
+                add(sc1);
+                add(sc2);
             }
         };
 
-        List<Pair> pairsFirstTimeSlot = selector.getPairsByTime(activePairs, Time.SLOT_1);
-        List<Pair> pairsSecondTimeSlot = selector.getPairsByTime(activePairs, Time.SLOT_2);
+        int pairsFirstTimeSlot = selector.getAmountPairsByTime(scorecards, Time.SLOT_1);
+        int pairsSecondTimeSlot = selector.getAmountPairsByTime(scorecards, Time.SLOT_2);
 
-        List<Pair> expectedFirstTimeSlot = new ArrayList<Pair>() {
-            {
-                add(pair1);
-            }
-        };
-
-
-        List<Pair> expectedSecondTimeSlot = new ArrayList<Pair>() {
-            {
-                add(pair2);
-            }
-        };
-
-        Assert.assertEquals(pairsFirstTimeSlot, expectedFirstTimeSlot);
-        Assert.assertEquals(pairsSecondTimeSlot, expectedSecondTimeSlot);
+        Assert.assertEquals(3, pairsFirstTimeSlot);
+        Assert.assertEquals(3, pairsSecondTimeSlot);
     }
 
     @Test
@@ -75,13 +65,25 @@ public class TimeSelectionTest {
         Pair pair2 = new Pair(firstPlayer, secondPlayer, true);
         pair2.setTimeSlot(Time.SLOT_1);
 
+        firstPlayer = new Player("Maria", "Johnson");
+        secondPlayer = new Player("Isaac", "johnson");
+        Pair pair3 = new Pair(firstPlayer, secondPlayer, true);
+        pair3.setTimeSlot(Time.SLOT_1);
+
         Ladder ladder = new Ladder();
         ladder.insertAtEnd(pair1);
         ladder.insertAtEnd(pair2);
+        ladder.insertAtEnd(pair3);
+
+        List<Scorecard> scorecards = new ArrayList<Scorecard>() {
+            {
+                add(new Scorecard(ladder.getPairs(), null));
+            }
+        };
 
         TimeSelection selector = new VrcTimeSelection();
         selector.clearTimeSlots(ladder);
-        int size = selector.getAmountPairsByTime(ladder.getPairs(), Time.SLOT_1);
+        int size = selector.getAmountPairsByTime(scorecards, Time.SLOT_1);
         Assert.assertEquals(size, 0);
     }
 
@@ -138,7 +140,7 @@ public class TimeSelectionTest {
 
         //Check logic when too many pairs are playing
         //It should distribute pairs equally between time slots
-        checkLogic(selector, pairs);
+        checkLogic(selector, scorecards);
     }
 
     private List<Pair> setUpBig() throws Exception {
@@ -176,12 +178,12 @@ public class TimeSelectionTest {
         return pairs;
     }
 
-    private void checkLogic(TimeSelection selector, List<Pair> pairs) {
-        int amountPlayingPairs = pairs.size();
+    private void checkLogic(TimeSelection selector, List<Scorecard> scorecards) {
+        int amountPlayingPairs = getAmountOfAllPairs(scorecards);
 
         int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
         boolean crowded = amountPlayingPairs > maxNumPairs;
-        int expectedAmount = selector.getAmountPairsByTime(pairs, Time.SLOT_1);
+        int expectedAmount = selector.getAmountPairsByTime(scorecards, Time.SLOT_1);
 
         if (crowded) {
             expectedAmount = amountPlayingPairs / AMOUNT_TIME_SLOTS;
@@ -191,7 +193,7 @@ public class TimeSelectionTest {
             }
         }
 
-        int amountPairs = selector.getAmountPairsByTime(pairs, Time.SLOT_1);
+        int amountPairs = selector.getAmountPairsByTime(scorecards, Time.SLOT_1);
 
         //Error on 1 pair is allowed as there are some groups with 4 pairs
         boolean approximateAmount =
@@ -200,6 +202,14 @@ public class TimeSelectionTest {
                         || (amountPairs + 1) == expectedAmount;
 
         Assert.assertEquals(approximateAmount, true);
+    }
+
+    private int getAmountOfAllPairs(List<Scorecard> scorecards) {
+        int amount = 0;
+        for (Scorecard scorecard : scorecards) {
+            amount += scorecard.getReorderedPairs().size();
+        }
+        return amount;
     }
 
     @Test
@@ -215,7 +225,7 @@ public class TimeSelectionTest {
 
         //One of the time slots was overflowed
         //Distributes extra pairs to other time slots
-        checkLogic(selector, pairs);
+        checkLogic(selector, scorecards);
     }
 
     private List<Pair> setUpSmall() throws Exception {
@@ -258,8 +268,6 @@ public class TimeSelectionTest {
 
     @Test
     public void scorecardTimeScenario() {
-        DBManager dbManager;
-        Ladder newLadder = null;
         List<Pair> pairs = new ArrayList<>();
         final int NUM_OF_PLAYERS = 10;
         Player p1;
@@ -268,13 +276,11 @@ public class TimeSelectionTest {
             p1 = new Player(Integer.toString(i + 65), Integer.toString(i + 66));
             p2 = new Player(Integer.toString(i + 93), Integer.toString(i + 94));
             pairs.add(new Pair(p1, p2));
-            p1 = null;
-            p2 = null;
         }
-        newLadder = new Ladder(pairs);
+        Ladder newLadder = new Ladder(pairs);
         SessionFactory sessionFactory = DBManager.getMySQLSession(true);
         GameSession gameSession = new GameSession(newLadder);
-        dbManager = new DBManager(sessionFactory);
+        DBManager dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
 
         for (int i = 0; i < pairs.size(); i++) {

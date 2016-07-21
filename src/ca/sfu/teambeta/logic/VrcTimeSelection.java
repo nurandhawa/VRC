@@ -17,33 +17,21 @@ public class VrcTimeSelection implements TimeSelection {
     private static final Time DEFAULT_TIME_SLOT = Time.SLOT_1;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
-    private List<Pair> allPairs;
-    private List<Scorecard> allScorecards;
 
     public VrcTimeSelection() {
-        allPairs = new ArrayList<>();
-        allScorecards = new ArrayList<>();
     }
 
     @Override
-    public int getAmountPairsByTime(List<Pair> allPairs, Time time) {
-        List<Pair> pairs = getPairsByTime(allPairs, time);
-        System.out.println(time + " " + pairs.size());
-        return pairs.size();
-    }
-
-    @Override
-    public List<Pair> getPairsByTime(List<Pair> allPairs, Time time) {
+    public int getAmountPairsByTime(List<Scorecard> scorecards, Time time) {
         List<Pair> pairs = new ArrayList<>();
-        pairs.clear();
-        for (Pair pair : allPairs) {
-            Time timeSlot = pair.getTimeSlot();
-            if (timeSlot == time) {
-                pairs.add(pair);
+
+        for (Scorecard scorecard : scorecards) {
+            if (scorecard.getTimeSlot() == time) {
+                pairs.addAll(scorecard.getReorderedPairs());
             }
         }
 
-        return pairs;
+        return pairs.size();
     }
 
     @Override
@@ -54,47 +42,34 @@ public class VrcTimeSelection implements TimeSelection {
     }
 
     @Override
-    public void distributePairs(List<Scorecard> scorecards) {
-        saveValues(scorecards);
-
+    public void distributePairs(List<Scorecard> allScorecards) {
         //Make schedule of groups by selecting most popular time slot
         for (Scorecard scorecard : allScorecards) {
             List<Time> timeSlots = getTimeSlotsOfGroup(scorecard);
             Time time = getDominantTime(timeSlots);
-            assignTimeToGroup(scorecard, time);
+            scorecard.setTimeSlot(time);
         }
 
         //Create Limitations which determine how to arrange groups between time slots
-        int amountPlayingPairs = allPairs.size();
-
+        int amountPlayingPairs = getAmountOfAllPairs(allScorecards);
         int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
         boolean crowded = amountPlayingPairs > maxNumPairs;
 
         if (crowded) {
             //Every time slot will have equall amount of pairs
-            distributeEqually(amountPlayingPairs);
+            distributeEqually(amountPlayingPairs, allScorecards);
         } else {
             //Some time slots have to many groups, moves them to next time slot
-            rearangeGroupsBetweenTimeSlots();
+            rearangeGroupsBetweenTimeSlots(allScorecards);
         }
     }
 
-    private void saveValues(List<Scorecard> scorecards) {
-        for (Scorecard group : scorecards) {
-            allPairs.clear();
-            List<Pair> pairs = group.getReorderedPairs();
-
-            for (Pair pair : pairs) {
-                Time time = pair.getTimeSlot();
-
-                //If time was not selected set to default
-                if (time == Time.NO_SLOT) {
-                    pair.setTimeSlot(DEFAULT_TIME_SLOT);
-                }
-                allPairs.add(pair);
-            }
+    private int getAmountOfAllPairs(List<Scorecard> allScorecards) {
+        int amount = 0;
+        for (Time time : Time.values()) {
+            amount += getAmountPairsByTime(allScorecards, time);
         }
-        this.allScorecards = scorecards;
+        return amount;
     }
 
     private List<Time> getTimeSlotsOfGroup(Scorecard scorecard) {
@@ -107,13 +82,6 @@ public class VrcTimeSelection implements TimeSelection {
         }
 
         return timeSlots;
-    }
-
-    private void assignTimeToGroup(Scorecard scorecard, Time time) {
-        scorecard.setTimeSlot(time);
-
-        //Update Pairs inside of the scorecard
-        List<Pair> pairs = scorecard.getReorderedPairs();
     }
 
     private Time getDominantTime(List<Time> timeSlots) {
@@ -147,7 +115,7 @@ public class VrcTimeSelection implements TimeSelection {
         return dominantTime;
     }
 
-    private void distributeEqually(int amountPlayingPairs) {
+    private void distributeEqually(int amountPlayingPairs, List<Scorecard> allScorecards) {
         int avgPairsPerTimeSlot = amountPlayingPairs / AMOUNT_TIME_SLOTS;
 
         //Move extra groups to the next time slot, do that for all time slots
@@ -156,36 +124,36 @@ public class VrcTimeSelection implements TimeSelection {
             if (time == Time.NO_SLOT) {
                 continue;
             }
-            int amount = getAmountPairsByTime(allPairs, time);
-
+            int amount = getAmountPairsByTime(allScorecards, time);
             if (amount > avgPairsPerTimeSlot) {
                 int extraPairs = amount - avgPairsPerTimeSlot;
                 if (extraPairs != 1) {
                     //If the difference between time slots is on 1 pair
                     //do not move the whole group
                     //some groups have 4 pairs and some 3, time slots cannot be perfectly equal
-                    moveOverflowedGroupsToNextTimeSlot(avgPairsPerTimeSlot, extraPairs, time);
+                    moveOverflowedGroupsToNextTimeSlot(amount, avgPairsPerTimeSlot, extraPairs, time, allScorecards);
                 }
             }
         }
     }
 
-    private void moveOverflowedGroupsToNextTimeSlot(int limitPairs, int numExtraPairs, Time time) {
-        List<Scorecard> scorecards = getScorecardsByTime(time);
-        Time nextTimeSlot = getNextTimeSlot(time);
+    private void moveOverflowedGroupsToNextTimeSlot(
+            int amountPairsByTime, int limitPairs, int numExtraPairs,
+            Time oldTime, List<Scorecard> allScorecards) {
 
-        int amountPairsByTime = getAmountPairsByTime(allPairs, time);
+        List<Scorecard> scorecards = getScorecardsByTime(allScorecards, oldTime);
+        Time nextTimeSlot = getNextTimeSlot(oldTime);
 
         //While we have more extra pairs and we are still having more pairs then allowed
         //Move the scorecards to next time slot
         while (numExtraPairs > 0 && amountPairsByTime > limitPairs) {
 
             //Groups with the lowest ratings will be moved to another time slot
-            int lastIndex = scorecards.size() - 1;
-            Scorecard group = scorecards.get(lastIndex);
-            scorecards.remove(lastIndex);
-
-            assignTimeToGroup(group, nextTimeSlot);
+            Scorecard group = getLastScorecard(scorecards, oldTime);
+            if (group == null) {
+                break;
+            }
+            group.setTimeSlot(nextTimeSlot);
 
             int numPairsMoved = group.getReorderedPairs().size();
             numExtraPairs -= numPairsMoved;
@@ -193,7 +161,18 @@ public class VrcTimeSelection implements TimeSelection {
         }
     }
 
-    private List<Scorecard> getScorecardsByTime(Time time) {
+    private Scorecard getLastScorecard(List<Scorecard> scorecards, Time oldTime) {
+        for (int i = scorecards.size() - 1; i > 0; i--) {
+            Scorecard group = scorecards.get(i);
+
+            if (group.getTimeSlot() == oldTime) {
+                return group;
+            }
+        }
+        return null;
+    }
+
+    private List<Scorecard> getScorecardsByTime(List<Scorecard> allScorecards, Time time) {
         List<Scorecard> scorecards = new ArrayList<>();
 
         for (Scorecard group : allScorecards) {
@@ -225,14 +204,14 @@ public class VrcTimeSelection implements TimeSelection {
         return nextTimeSlot;
     }
 
-    private void rearangeGroupsBetweenTimeSlots() {
+    private void rearangeGroupsBetweenTimeSlots(List<Scorecard> allScorecards) {
         for (Time time : Time.values()) {
-            int amount = getAmountPairsByTime(allPairs, time);
+            int amount = getAmountPairsByTime(allScorecards, time);
             int extra = amount - MAX_NUM_PAIRS_PER_SLOT;
             boolean crowded = extra > 0;
             if (crowded) {
                 //Move extra groups to the next time slot, do that for all time slots
-                moveOverflowedGroupsToNextTimeSlot(MAX_NUM_PAIRS_PER_SLOT, extra, time);
+                moveOverflowedGroupsToNextTimeSlot(amount, MAX_NUM_PAIRS_PER_SLOT, extra, time, allScorecards);
             }
 
         }

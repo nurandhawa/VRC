@@ -12,9 +12,7 @@ import java.util.List;
  */
 public interface TimeSelection {
 
-    int getAmountPairsByTime(List<Pair> pairs, Time time);
-
-    List<Pair> getPairsByTime(List<Pair> pairs,  Time time);
+    int getAmountPairsByTime(List<Scorecard> scorecards, Time time);
 
     void distributePairs(List<Scorecard> scorecards);
 
