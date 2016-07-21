@@ -184,6 +184,7 @@
     height: 3.5em;
 }
 .match-pair-right {
+    flex: 1;
     display: flex;
     justify-content: flex-end;
     min-width: 10em;
