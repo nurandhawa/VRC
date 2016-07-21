@@ -74,6 +74,10 @@
                                                 @click="applyPenalty(match.gameSession, pair, 'miss', $event)">
                                             Absent
                                         </button>
+                                        <button class="btn btn-xs btn-danger"
+                                                @click="removeMatchPair(pair)">
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="alert alert-warning" style="margin-top: 10px" v-if="!match.resultsValid">
