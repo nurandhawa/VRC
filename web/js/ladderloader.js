@@ -23,10 +23,11 @@
 
     var ladderData = {
         pairs: [],
+        players: [],
         dateCreated: ""
     };
 
-    var ladder = new Ladder(ladderData.pairs);
+    var ladder = new Ladder(ladderData);
 
     var editFunction = function() {
         ladder.changeMode.call(ladder.component);

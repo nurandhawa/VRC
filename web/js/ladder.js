@@ -102,17 +102,22 @@ var Ladder = (function () {
         this.component = new Vue({
             el: '#ladder',
             data: {
-                ladder: ladderData,
+                ladder: ladderData.pairs,
+                players: ladderData.players,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
                 newPairData: {
                     player1: {
+                        type: "",
+                        existingPlayer: "",
                         firstName: "",
                         lastName: "",
                         phoneNumber: ""
                     },
                     player2: {
+                        type: "",
+                        existingPlayer: "",
                         firstName: "",
                         lastName: "",
                         phoneNumber: ""
@@ -124,7 +129,8 @@ var Ladder = (function () {
             components: {
                 playing: playingButton,
                 notplaying: notPlayingButton,
-                edit: editButton
+                edit: editButton,
+                'v-select': VueSelect.VueSelect
             },
             methods: {
                 changeStatus: this.changeStatus,
@@ -209,12 +215,24 @@ var Ladder = (function () {
         var api = new API();
 
         var player1Data = this.newPairData.player1;
-        var player1 = api.prepareNewPlayer(player1Data.firstName,
-            player1Data.lastName, player1Data.phoneNumber);
+        var player1 = null;
+        if (player1Data.type === "existing") {
+            player1 = api.prepareExistingPlayer(player1Data.existingPlayer.id);
+        }
+        else {
+            player1 = api.prepareNewPlayer(player1Data.firstName,
+                player1Data.lastName, player1Data.phoneNumber);
+        }
 
         var player2Data = this.newPairData.player2;
-        var player2 = api.prepareNewPlayer(player2Data.firstName,
-            player2Data.lastName, player2Data.phoneNumber);
+        var player2 = null;
+        if (player2Data.type === "existing") {
+            player2 = api.prepareExistingPlayer(player2Data.existingPlayer.id);
+        }
+        else {
+            player2 = api.prepareNewPlayer(player2Data.firstName,
+              player2Data.lastName, player2Data.phoneNumber);
+        }
 
         var ladderPosition = this.newPairData.position;
         if (ladderPosition === "") {
@@ -237,16 +255,17 @@ var Ladder = (function () {
     };
 
     Ladder.prototype.updateLadder = function (ladderData) {
-        this.ladder = ladderData;
+        this.ladder = ladderData.pairs;
+        this.players = ladderData.players;
         var ladderPages = [];
-        if (ladderData) {
-            var numPages = Math.floor(ladderData.length / NUM_ENTRIES_PER_PAGE) + 1;
+        if (ladderData.pairs) {
+            var numPages = Math.floor(ladderData.pairs.length / NUM_ENTRIES_PER_PAGE) + 1;
             for (var i = 0; i < numPages; i++) {
                 ladderPages[i] = [];
             }
-            for (i = 0; i < ladderData.length; i++) {
-                var pageIndex = Math.floor((ladderData[i].position - 1) / NUM_ENTRIES_PER_PAGE);
-                ladderPages[pageIndex].push(ladderData[i]);
+            for (i = 0; i < ladderData.pairs.length; i++) {
+                var pageIndex = Math.floor((ladderData.pairs[i].position - 1) / NUM_ENTRIES_PER_PAGE);
+                ladderPages[pageIndex].push(ladderData.pairs[i]);
             }
         }
         this.ladderPages = ladderPages;

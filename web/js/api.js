@@ -34,26 +34,41 @@ var API = (function() {
             method: "GET",
             url: SERVER_URL + LADDER_ENDPOINT
         })
-            .done(function(response) {
-                if (doneCallback) {
-                    var ladderData = JSON.parse(response);
-                    ladderData.forEach(function(pair) {
-                        pair.teamName = pair.players[0].firstName + " " + pair.players[0].lastName + " and " +
-                            pair.players[1].firstName + " " + pair.players[1].lastName;
-                        pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+        .done(function(response) {
+            if (doneCallback) {
+                var ladderData = {};
+                ladderData.pairs = JSON.parse(response);
+                ladderData.players = [];
+                ladderData.pairs.forEach(function(pair) {
+                    var player1 = pair.players[0];
+                    var player2 = pair.players[1];
+
+                    var player1Name = player1.firstName + " " + player1.lastName;
+                    var player2Name = player2.firstName + " " + player2.lastName;
+
+                    pair.teamName = player1Name + " and " + player2Name;
+                    pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+                    ladderData.players.push({
+                        label: player1Name,
+                        id: player1.id
                     });
-                    doneCallback(ladderData);
-                }
-            })
-            .fail(function(response) {
-                if (failCallback) {
-                    failCallback(response);
-                }
-                else {
-                    var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
-                }
-            });
+                    ladderData.players.push({
+                        label: player2Name,
+                        id: player2.id
+                    });
+                });
+                doneCallback(ladderData);
+            }
+        })
+        .fail(function(response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                alert(responseBody.message);
+            }
+        });
     };
 
     // newStatus must be "playing" or "not playing"
