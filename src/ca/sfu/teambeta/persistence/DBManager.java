@@ -41,7 +41,6 @@ public class DBManager {
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
         selector = new VrcTimeSelection();
-        new TaskPerformer(this);
     }
 
     // Use me if the database is down

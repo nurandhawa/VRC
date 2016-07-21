@@ -59,6 +59,5 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
     compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
     compile group: 'com.java-adventures.security', name: 'secure-password-hash', version: '1.0.1'
-    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.2.1'
     compile files('web')
 }
