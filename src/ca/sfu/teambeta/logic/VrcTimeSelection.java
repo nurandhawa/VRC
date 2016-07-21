@@ -85,7 +85,7 @@ public class VrcTimeSelection implements TimeSelection {
     }
 
 
-        //Count how many pairs selected particular time slot
+    //Count how many pairs selected particular time slot
     private Time getDominantTime(List<Time> timeSlots) {
         Map<Time, Integer> timeFrequency = new HashMap<>();
 
