@@ -69,7 +69,6 @@ public class CSVReader {
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
-                pair.setLastWeekPosition(index);
 
                 pairs.put(index, pair);
             }

@@ -70,10 +70,13 @@ public class GameSession extends Persistable {
     }
 
     public void initializeActivePlayers() {
+        int index = 1;
         for (Pair p : this.ladder.getPairs()) {
             if (p.isPlaying()) {
                 setPairActive(p);
             }
+            p.setLastWeekPosition(index);
+            index++;
         }
     }
 
