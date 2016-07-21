@@ -14,8 +14,8 @@
         matches.changeMode.call(matches.component);
     };
 
-    var saveResultsButton = new Vue({
-        el: "#reorderLadderButton",
+    var reorderLadderButton = Vue.extend({
+        template: "#reorderLadderButtonTemplate",
         data: function() {
             return { disabled: !matches.component.allDone };
         },
@@ -24,16 +24,17 @@
                 var api = new API();
                 api.reorderLadder(api.gameSession.LATEST);
             }
-        },
+        }
     });
+    Vue.component('reorder-ladder-button', reorderLadderButton);
 
     matches.component.$watch("allDone", function(newVal, oldVal) {
         if (newVal === true) {
-            saveResultsButton.disabled = false;
+            reorderLadderButton.disabled = false;
             $("#reorderLadderButton").prop("disabled", false);
         }
         else {
-            saveResultsButton.disabled = true;
+            reorderLadderButton.disabled = true;
             $("#reorderLadderButton").prop("disabled", true);
         }
     });
