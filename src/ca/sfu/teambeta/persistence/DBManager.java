@@ -322,7 +322,7 @@ public class DBManager {
 
     public synchronized boolean setPairActive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
-        pair.setTimeSlot(Time.SLOT_1);
+        pair.setTimeSlot(Time.NO_SLOT);
         boolean activated = gameSession.setPairActive(pair);
         gameSession.createGroups(new VrcScorecardGenerator());
         persistEntity(gameSession);

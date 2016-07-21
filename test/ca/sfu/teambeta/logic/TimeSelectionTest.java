@@ -157,7 +157,7 @@ public class TimeSelectionTest {
             if (count % 5 == 0) {
                 pair.setTimeSlot(Time.SLOT_2);
             } else {
-                pair.setTimeSlot(Time.SLOT_1);
+                pair.setTimeSlot(Time.NO_SLOT);
             }
             count++;
         }

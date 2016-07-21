@@ -84,6 +84,8 @@ public class VrcTimeSelection implements TimeSelection {
         return timeSlots;
     }
 
+
+        //Count how many pairs selected particular time slot
     private Time getDominantTime(List<Time> timeSlots) {
         Map<Time, Integer> timeFrequency = new HashMap<>();
 
@@ -91,8 +93,6 @@ public class VrcTimeSelection implements TimeSelection {
         for (Time time : Time.values()) {
             timeFrequency.put(time, 0);
         }
-
-        //Count how many pairs selected particular time slot
         for (Time time : timeSlots) {
             int amount = timeFrequency.get(time);
             amount++;
@@ -102,16 +102,30 @@ public class VrcTimeSelection implements TimeSelection {
         //Get the most popular time slot,
         //if all are the same, select the earliest time slot
         Time dominantTime = null;
-        int maxFrequency = 0;
-        for (Map.Entry<Time, Integer> entry : timeFrequency.entrySet()) {
-            int frequency = entry.getValue();
 
-            if (frequency > maxFrequency) {
-                maxFrequency = frequency;
-                dominantTime = entry.getKey();
+        for (int check = 0; check < 2; check++) {
+            int maxFrequency = 0;
+
+            for (Map.Entry<Time, Integer> entry : timeFrequency.entrySet()) {
+                //Loop twice (second time omit the NO_SLOT as it cannot be the result)
+                //NO_SLOT has the lowest priority which means
+                //if there is at least one pair that selected different slot, than that's the result
+                if (check == 1 && entry.getKey() == Time.NO_SLOT) {
+                    continue;
+                }
+                int frequency = entry.getValue();
+
+                if (frequency > maxFrequency) {
+                    maxFrequency = frequency;
+                    dominantTime = entry.getKey();
+                }
             }
         }
 
+        //If all pairs decided not to select slots, switch to default
+        if (dominantTime == Time.NO_SLOT) {
+            dominantTime = DEFAULT_TIME_SLOT;
+        }
         return dominantTime;
     }
 
