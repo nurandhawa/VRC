@@ -16,6 +16,7 @@ import ca.sfu.teambeta.logic.GameSession;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
 
 /**
  * Created by David on 2016-06-19.
@@ -164,5 +165,95 @@ public class DBManagerTest {
         GameSession resultLatest = dbManager.getGameSessionLatest();
 
         assertEquals(expectedLatest.getID(), resultLatest.getID());
+    }
+
+    @Test
+    public void testAddPair() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession gameSession = generateGameSession();
+        dbManager.persistEntity(gameSession);
+
+        Pair expectedPair = new Pair(new Player("Jin", "Yang"),
+                new Player("Erlich", "Bachman"));
+        dbManager.addPair(gameSession, expectedPair);
+
+        List<Pair> allPairs = gameSession.getAllPairs();
+
+        Pair resultsPair = allPairs.get(allPairs.size() - 1);
+
+        assertEquals(expectedPair.getID(), resultsPair.getID());
+    }
+
+    @Test
+    public void testAddPairAlreadyExists() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession gameSession = generateGameSession();
+        dbManager.persistEntity(gameSession);
+
+        Pair pair = new Pair(new Player("Jin", "Yang"),
+                new Player("Erlich", "Bachman"));
+        dbManager.addPair(gameSession, pair);
+
+        List<Pair> expectedPairs = gameSession.getAllPairs();
+
+        dbManager.addPair(gameSession, pair);
+
+        List<Pair> resultPairs = gameSession.getAllPairs();
+
+        assertEquals(expectedPairs, resultPairs);
+    }
+
+    @Test
+    public void testAddPairAtPosition() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession gameSession = generateGameSession();
+        dbManager.persistEntity(gameSession);
+
+        Pair expectedPair = new Pair(new Player("Jin", "Yang"),
+                new Player("Erlich", "Bachman"));
+        dbManager.addPair(gameSession, expectedPair, 0);
+
+        List<Pair> allPairs = gameSession.getAllPairs();
+
+        Pair resultsPair = allPairs.get(0);
+
+        assertEquals(expectedPair.getID(), resultsPair.getID());
+    }
+
+    @Test
+    public void testAddPairAtPositionEnd() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession gameSession = generateGameSession();
+        dbManager.persistEntity(gameSession);
+
+        Pair expectedPair = new Pair(new Player("Jin", "Yang"),
+                new Player("Erlich", "Bachman"));
+        dbManager.addPair(gameSession, expectedPair, gameSession.getAllPairs().size());
+
+        List<Pair> allPairs = gameSession.getAllPairs();
+
+        Pair resultsPair = allPairs.get(gameSession.getAllPairs().size() - 1);
+
+        assertEquals(expectedPair.getID(), resultsPair.getID());
+    }
+
+    @Test
+    public void testAddPairAtInvalidPosition() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession gameSession = generateGameSession();
+        dbManager.persistEntity(gameSession);
+
+        Pair pair = new Pair(new Player("Jin", "Yang"),
+                new Player("Erlich", "Bachman"));
+        dbManager.addPair(gameSession, pair, -1);
+
+        List<Pair> allPairs = gameSession.getAllPairs();
+
+        assertTrue(!allPairs.contains(pair));
     }
 }

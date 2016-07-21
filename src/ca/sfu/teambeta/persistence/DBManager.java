@@ -261,8 +261,8 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
-        gameSession.addNewPairAtIndex(pair, position);
+    public synchronized void addPair(GameSession gameSession, Pair pair, int index) {
+        gameSession.addNewPairAtIndex(pair, index);
         persistEntity(gameSession);
     }
 
