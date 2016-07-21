@@ -77,6 +77,14 @@ public class GameSession extends Persistable {
         }
     }
 
+    public void setUpLastWeekPositions() {
+        int position = 1;
+        for (Pair p : ladder.getPairs()) {
+            p.setLastWeekPosition(position);
+            position++;
+        }
+    }
+
     public Set<Pair> getActivePairSet() {
         return new HashSet<>(activePairs);
     }
