@@ -168,9 +168,9 @@
                   <div id="timeSelectModalContent" class="modal-content">
                     <span id="timeCloseBtn{{entry.position - 1}}" class="close">x</span>
                     <label><input id="checkbox8pm{{entry.position - 1}}" type="checkbox" value="first_checkbox">
-                      <label style="font-size: small;color: black">Thursday, 08:00 pm.</label></label><br>
+                      <label class="checkbox-label">Thursday, 08:00 pm.</label></label><br>
                     <label><input id="checkbox9pm{{entry.position - 1}}" type="checkbox" value="second_checkbox">
-                      <label style="color: black;font-size: small">Thursday, 09:30 pm.</label></label>
+                      <label class="checkbox-label">Thursday, 09:30 pm.</label></label>
                     <button type="button" class="btn btn-success" id="timeSaveButton{{entry.position - 1}}" style="float: right"
                             v-on:click="setTime(entry.position - 1)">Save</button>
                   </div>

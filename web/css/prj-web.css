@@ -71,6 +71,11 @@
     border-color: #03a9f4;
 }
 
+.checkbox-label {
+    color: black;
+    font-size: small;
+}
+
 .close {
     color: #aaa;
     float: right;
