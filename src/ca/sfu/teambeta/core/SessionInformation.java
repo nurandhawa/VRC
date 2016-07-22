@@ -8,11 +8,13 @@ package ca.sfu.teambeta.core;
 public class SessionInformation {
     private String email;
     private String expiryDate;
+    private UserRole role;
 
     // MARK: Constructor
-    public SessionInformation(String email, String expiryDate) {
+    public SessionInformation(String email, UserRole role) {
         this.email = email;
-        this.expiryDate = expiryDate;
+        this.role = role;
+        this.expiryDate = "datePlaceholder";
     }
 
 
@@ -25,9 +27,22 @@ public class SessionInformation {
         return email;
     }
 
+    /*
+    // Method in here if in future explicit role is needed
+    public UserRole getRole() { return role; }
+    */
 
     // MARK: Helper Methods
     public boolean isSessionExpired() {
         return false;
+    }
+
+    public boolean isAdministratorSession() {
+        if (role == UserRole.ADMINISTRATOR) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

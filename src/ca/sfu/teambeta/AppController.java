@@ -99,8 +99,7 @@ public class AppController {
 
         before("/api/matches", (request, response) -> {
             String requestedGameSession = request.queryParams(GAMESESSION);
-            if (requestedGameSession == null ||
-                    getRequestedGameSession(dbManager, requestedGameSession) == null) {
+            if (requestedGameSession == null) {
                 halt(BAD_REQUEST, getErrResponse("Must specify gameSession: latest or previous"));
             }
         });
