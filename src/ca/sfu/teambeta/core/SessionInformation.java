@@ -5,9 +5,10 @@ import java.util.Calendar;
 /**
  * The SessionInformation class holds all the related information on a logged in user's session.
  */
+
 public class SessionInformation {
-    // TTL is calculated in minutes
-    private static final int TIME_TO_LIVE = 60;
+    // TTL is calculated in days
+    private static final int TIME_TO_LIVE = 7;
     private String email;
     private Calendar expiryDate;
     private UserRole role;
@@ -17,7 +18,7 @@ public class SessionInformation {
         this.email = email;
         this.role = role;
         this.expiryDate = Calendar.getInstance();
-        expiryDate.add(Calendar.MINUTE, TIME_TO_LIVE);
+        expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE);
     }
 
     // MARK: Getters
@@ -53,9 +54,9 @@ public class SessionInformation {
 
     public static void main(String[] args) {
         Calendar time = Calendar.getInstance();
-        System.out.println("Current Time:       " + time.getTime());
-        time.add(Calendar.HOUR, 1);
-        System.out.println("Time after one hour:" + time.getTime());
+        System.out.println("Current Time:     " + time.getTime());
+        time.add(Calendar.DAY_OF_MONTH, 7);
+        System.out.println("Time after 7 days:" + time.getTime());
 
         Calendar currentTime = Calendar.getInstance();
         Calendar past = Calendar.getInstance();
@@ -69,11 +70,11 @@ public class SessionInformation {
 
         SessionInformation info = new SessionInformation("email", UserRole.REGULAR);
         System.out.println(info.getExpiryDate().getTime());
-        //For testing set TTL to 1 minute !
+        //For testing set TTL on 6 seconds
         System.out.println("Expired? (Expected: false) " + info.isSessionExpired());
         try {
             //61 sec
-            Thread.sleep(61000);
+            Thread.sleep(5000);
         } catch (Exception e) {
             System.out.println("Interrupted");
         }
