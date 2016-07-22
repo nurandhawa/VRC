@@ -9,10 +9,16 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.sfu.teambeta.core.Ladder;
@@ -172,42 +178,44 @@ public class DBManager {
         return ladder;
     }
 
-    public synchronized GameSession getGameSessionLatest() {
+    private synchronized GameSession getGameSessionByVersion(GameSessionVersion version) {
         Transaction tx = null;
+        List gameSessions = null;
         GameSession gameSession = null;
         try {
             tx = session.beginTransaction();
-            DetachedCriteria maxId = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(maxId))
-                    .uniqueResult();
+            DetachedCriteria idCriteria = DetachedCriteria.forClass(GameSession.class)
+                    .setProjection(Projections.id());
+            gameSessions = session.createCriteria(GameSession.class)
+                    .add(Property.forName("id").in(idCriteria))
+                    .addOrder(Order.desc("timestamp"))
+                    .list();
             tx.commit();
+
+            int gameSessionIndex = -1;
+
+            if (version == null || version == GameSessionVersion.CURRENT) {
+                gameSessionIndex = 0;
+            } else if (version == GameSessionVersion.PREVIOUS) {
+                gameSessionIndex = 1;
+            }
+
+            gameSession = (GameSession) gameSessions.get(gameSessionIndex);
+
         } catch (HibernateException e) {
             tx.rollback();
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
         return gameSession;
     }
 
-    // TODO: Actually get previous game session
+    public synchronized GameSession getGameSessionLatest() {
+        return getGameSessionByVersion(GameSessionVersion.CURRENT);
+    }
+
     public synchronized GameSession getGameSessionPrevious() {
-        Transaction tx = null;
-        GameSession gameSession = null;
-        try {
-            tx = session.beginTransaction();
-            DetachedCriteria currentId = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.max("id"));
-            DetachedCriteria prevId = DetachedCriteria.forClass(GameSession.class)
-                    .add(Restrictions.not(Property.forName("id").eq(currentId)))
-                    .setProjection(Projections.max("id"));
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").eq(prevId))
-                    .uniqueResult();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-        return gameSession;
+        return getGameSessionByVersion(GameSessionVersion.PREVIOUS);
     }
 
     public void addPenaltyToPair(GameSession gameSession, int pairId, Penalty penalty) {
@@ -451,10 +459,19 @@ public class DBManager {
 
     public synchronized void reorderLadder(GameSession gameSession) {
         gameSession.reorderLadder(new VrcLadderReorderer());
-        List<Pair> reorderedPairs = gameSession.getReorderedLadder();
-        Ladder nextWeekLadder = new Ladder(reorderedPairs);
-        GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
+    }
+
+    public synchronized GameSession createNewGameSession(GameSession sourceGameSession) {
+        Ladder nextWeekLadder = sourceGameSession.getReorderedLadder();
+        return new GameSession(nextWeekLadder);
+    }
+
+    public synchronized void saveGameSession(GameSession gameSession) {
         persistEntity(gameSession);
-        persistEntity(nextWeekGameSession);
+    }
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
     }
 }

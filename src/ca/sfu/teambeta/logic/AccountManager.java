@@ -1,5 +1,14 @@
 package ca.sfu.teambeta.logic;
 
+import com.ja.security.PasswordHash;
+
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import com.ja.security.PasswordHash;
@@ -64,9 +73,8 @@ public class AccountManager {
 
         // Create a session for the user
         UserRole role = getUserClearanceLevel(user.getEmail());
-        String sessionId = UserSessionManager.createNewSession(user, role);
 
-        return sessionId;
+        return UserSessionManager.createNewSession(user, role);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {

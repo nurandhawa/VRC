@@ -2,9 +2,14 @@ package ca.sfu.teambeta.persistence;
 
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -21,13 +26,18 @@ import static junit.framework.TestCase.assertNotNull;
  * Created by David on 2016-06-19.
  */
 public class DBManagerTest {
+    private DBManager dbManager;
+
+    @Before
+    public void setUp() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        this.dbManager = new DBManager(sessionFactory);
+    }
 
     @Test
     public void testGetPlayerFromID() {
         Player playerExpected = new Player("Zara", "Ali");
 
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(playerExpected);
         Player playerActual = dbManager.getPlayerFromID(1);
 
@@ -38,8 +48,6 @@ public class DBManagerTest {
     public void testGetPlayerFromIDNotFound() {
         Player playerExpected = null;
 
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         Player playerActual = dbManager.getPlayerFromID(99);
 
         Assert.assertEquals(playerExpected, playerActual);
@@ -54,9 +62,6 @@ public class DBManagerTest {
                 new Pair(new Player("Bobby", "Chan"), new Player("Big", "Head"), false)
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
-
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
 
         dbManager.persistEntity(ladderExpected);
         Ladder ladderActual = dbManager.getLatestLadder();
@@ -76,16 +81,13 @@ public class DBManagerTest {
         );
         Ladder ladderExpected = new Ladder(ladderPairs);
 
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
-
         dbManager.persistEntity(ladderExpected);
         Ladder ladderActual = dbManager.getLatestLadder();
 
         Assert.assertEquals(ladderExpected, ladderActual);
     }
 
-    private GameSession generateGameSession() {
+    private GameSession generateGameSession(long timestamp) {
         List<Pair> ladderPairs = Arrays.asList(
                 new Pair(new Player("Bobby", "Chan"), new Player("Wing", "Man"), false),
                 new Pair(new Player("Ken", "Hazen"), new Player("Brian", "Fraser"), false),
@@ -94,17 +96,15 @@ public class DBManagerTest {
         );
         Collections.shuffle(ladderPairs);
         Ladder ladder = new Ladder(ladderPairs);
-        return new GameSession(ladder);
+        return new GameSession(ladder, timestamp);
     }
-
 
     @Test
     public void testGetPreviousGameSession() {
-        GameSession expectedPrevious = generateGameSession();
-        GameSession latest = generateGameSession();
+        LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
 
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession expectedPrevious = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+        GameSession latest = generateGameSession(Instant.now().getEpochSecond());
 
         dbManager.persistEntity(expectedPrevious);
         dbManager.persistEntity(latest);
@@ -114,55 +114,16 @@ public class DBManagerTest {
     }
 
     @Test
-    public void testGetPreviousGameSessionManySessions() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
-
-        List<GameSession> sessionsList = new ArrayList<>(10);
-        GameSession currSession;
-        for (int i = 0; i < 10; i++) {
-            currSession = generateGameSession();
-            sessionsList.add(currSession);
-            dbManager.persistEntity(currSession);
-        }
-
-        GameSession expectedPrevious = sessionsList.get(sessionsList.size() - 2);
-        GameSession resultPrevious = dbManager.getGameSessionPrevious();
-
-        assertEquals(expectedPrevious.getID(), resultPrevious.getID());
-    }
-
-    @Test
     public void testGetLatestGameSession() {
-        GameSession previous = generateGameSession();
-        GameSession expectedLatest = generateGameSession();
+        LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
 
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
+        GameSession previous = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+        GameSession expectedLatest = generateGameSession(Instant.now().getEpochSecond());
 
         dbManager.persistEntity(previous);
         dbManager.persistEntity(expectedLatest);
 
         GameSession resultLatest = dbManager.getGameSessionLatest();
-        assertEquals(expectedLatest.getID(), resultLatest.getID());
-    }
-
-    @Test
-    public void testGetLatestGameSessionManySessions() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
-
-        List<GameSession> sessionsList = new ArrayList<>(10);
-        GameSession currSession;
-        for (int i = 0; i < 10; i++) {
-            currSession = generateGameSession();
-            sessionsList.add(currSession);
-            dbManager.persistEntity(currSession);
-        }
-
-        GameSession expectedLatest = sessionsList.get(sessionsList.size() - 1);
-        GameSession resultLatest = dbManager.getGameSessionLatest();
-
         assertEquals(expectedLatest.getID(), resultLatest.getID());
     }
 }

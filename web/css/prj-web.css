@@ -319,12 +319,23 @@
         align-content: flex-start;
         height: 112em;
     }
+
     .ladder-element {
-        width:80%
+        width: 80%
     }
 
     .match-item {
         flex-basis: 80vw;
         max-width: 90vw;
+    }
+
+    .submitButton {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .center {
+        margin: auto;
+        text-align: center;
     }
 }

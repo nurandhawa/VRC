@@ -256,6 +256,12 @@ public class AppController {
                     request.queryParams(GAMESESSION));
 
             dbManager.reorderLadder(gameSession);
+            dbManager.saveGameSession(gameSession);
+
+            if (request.queryParams(GAMESESSION).equals(GAMESESSION_LATEST)) {
+                GameSession newGameSession = dbManager.createNewGameSession(gameSession);
+                dbManager.saveGameSession(newGameSession);
+            }
 
             return getOkResponse("");
         }));
@@ -297,6 +303,10 @@ public class AppController {
         get("/api/matches", (request, response) -> {
             GameSession gameSession = getRequestedGameSession(dbManager,
                     request.queryParams(GAMESESSION));
+            if (gameSession == null) {
+                response.status(OK);
+                return "[]";
+            }
 
             String json = dbManager.getJSONScorecards(gameSession);
             final String EMPTY_JSON_ARRAY = "[]";
