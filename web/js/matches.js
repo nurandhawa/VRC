@@ -53,6 +53,7 @@ var Matches = (function () {
                 active: 0,
                 showModal: false,
                 matches: matchData,
+                allDone: false,
                 mode: 'read'
             },
             methods: {
@@ -143,6 +144,14 @@ var Matches = (function () {
         this.matches.forEach(function(match, index) {
             this.$watch("matches[" + index + "].results", this.validateResults.bind(this, match));
         }.bind(this));
+
+        var allDone = this.matches.every(function(match) {
+            return match.isDone;
+        });
+        if (allDone) {
+            console.log("all done");
+            this.allDone = true;
+        }
     };
 
     Matches.prototype.refreshMatches = function(gameSession) {
