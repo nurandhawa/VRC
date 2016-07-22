@@ -43,55 +43,7 @@ var Ladder = (function () {
                 },
 
                 timeSelection: function () {
-                    var timeModal = document.getElementById("timeSelectModal" + this.index);
-                    var closeBtn = document.getElementById("timeCloseBtn" + this.index);
-                    var saveBtn = document.getElementById("timeSaveButton" + this.index);
-                    var firstCheckBox = document.getElementById("checkbox8pm" + this.index);
-                    var secondCheckBox = document.getElementById("checkbox9pm" + this.index);
-
-                    timeModal.style.display = "block";
-                    const isFirstCheckBoxChecked = firstCheckBox.checked;
-                    const isSecondCheckBoxChecked = secondCheckBox.checked;
-                    Boolean(isFirstCheckBoxChecked);
-                    Boolean(isSecondCheckBoxChecked);
-
-                    if (!isFirstCheckBoxChecked && !isSecondCheckBoxChecked) {
-                        firstCheckBox.checked = true;
-                    }
-
-                    closeBtn.onclick = function () {
-                        timeModal.style.display = "none";
-                        if (isSecondCheckBoxChecked) {
-                            secondCheckBox.checked = true;
-                            firstCheckBox.checked = false;
-                        }
-                        else if (isFirstCheckBoxChecked) {
-                            firstCheckBox.checked = true;
-                            secondCheckBox.checked = false;
-                        }
-                    };
-                    saveBtn.onclick = function () {
-                        timeModal.style.display = "none";
-                    };
-                    window.onclick = function (event) {
-                        if (event.target == timeModal) {
-                            timeModal.style.display = "none";
-                            if (isSecondCheckBoxChecked) {
-                                secondCheckBox.checked = true;
-                                firstCheckBox.checked = false;
-                            }
-                            else if (isFirstCheckBoxChecked) {
-                                firstCheckBox.checked = true;
-                                secondCheckBox.checked = false;
-                            }
-                        }
-                    };
-                    firstCheckBox.onclick = function () {
-                        secondCheckBox.checked = false;
-                    };
-                    secondCheckBox.onclick = function () {
-                        firstCheckBox.checked = false;
-                    };
+                    this.$parent.fillTimeModal(this.index);
                 }
             }
         });
@@ -178,7 +130,8 @@ var Ladder = (function () {
                 updateLadder: this.updateLadder,
                 onValid: onValid,
                 onInvalid: onInvalid,
-                setTime: this.setTime
+                setTime: this.setTime,
+                fillTimeModal: this.fillTimeModal
             }
         });
     }
@@ -306,6 +259,51 @@ var Ladder = (function () {
                 entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
+    };
+
+    Ladder.prototype.fillTimeModal = function (index) {
+        var timeModal = document.getElementById("timeSelectModal" + index);
+        var closeBtn = document.getElementById("timeCloseBtn" + index);
+        var saveBtn = document.getElementById("timeSaveButton" + index);
+        var firstCheckBox = document.getElementById("checkbox8pm" + index);
+        var secondCheckBox = document.getElementById("checkbox9pm" + index);
+
+        timeModal.style.display = "block";
+
+        var pair = this.ladder[index];
+        if (pair.timeSlot == "SLOT_1") {
+            firstCheckBox.checked = true;
+            secondCheckBox.checked = false;
+        } else if (pair.timeSlot == "SLOT_2") {
+            firstCheckBox.checked = false;
+            secondCheckBox.checked = true;
+        } else {
+            firstCheckBox.checked = false;
+            secondCheckBox.checked = false;
+        }
+
+        closeBtn.onclick = function () {
+            timeModal.style.display = "none";
+        };
+        saveBtn.onclick = function () {
+            timeModal.style.display = "none";
+            if (firstCheckBox.checked) {
+                pair.timeSlot = "SLOT_1";
+            } else if (secondCheckBox.checked) {
+                pair.timeSlot = "SLOT_2";
+            }
+        };
+        window.onclick = function (event) {
+            if (event.target == timeModal) {
+                timeModal.style.display = "none";
+            }
+        };
+        firstCheckBox.onclick = function () {
+            secondCheckBox.checked = false;
+        };
+        secondCheckBox.onclick = function () {
+            firstCheckBox.checked = false;
+        };
     };
 
     return Ladder;

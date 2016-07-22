@@ -267,8 +267,7 @@ public class TimeSelectionTest {
         return littlePairs;
     }
 
-    @Ignore
-    //ignore since it uses database connection everytime which increases burden on db and may fail builds.
+    @Test
     public void scorecardTimeScenario() {
         List<Pair> pairs = new ArrayList<>();
         final int NUM_OF_PLAYERS = 10;
@@ -280,7 +279,7 @@ public class TimeSelectionTest {
             pairs.add(new Pair(p1, p2));
         }
         Ladder newLadder = new Ladder(pairs);
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         GameSession gameSession = new GameSession(newLadder);
         DBManager dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
