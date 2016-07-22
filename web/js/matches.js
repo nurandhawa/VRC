@@ -139,14 +139,20 @@ var Matches = (function () {
                       "updateMatches": function (matchData, gameSession) {
                           if (gameSession === this.gameSession) {
                               this.matches = matchData;
-                              this.matches.forEach(function(match, index) {
-                                  this.$watch("matches[" + index + "].results", this.validateResults.bind(this, match));
+                              this.matches.forEach(function (match, matchIndex) {
+                                  var thisMatch = this.matches[matchIndex];
+                                  var thisVue = this;
+                                  thisMatch.pairs.forEach(function (pair, pairIndex) {
+                                      thisVue.$watch(
+                                          "matches[" + matchIndex + "].results[" + pairIndex + "]",
+                                          thisVue.validateResults.bind(thisVue, match));
+                                  });
                               }.bind(this));
-
+                              
                               var matchesDone = this.matches.every(function(match) {
                                   return match.isDone;
                               });
-
+    
                               if (gameSession === "latest") {
                                   this.$dispatch("matchesDone", matchesDone);
                               }
