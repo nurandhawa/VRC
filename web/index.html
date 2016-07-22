@@ -58,6 +58,7 @@
     <div class = header-item>
       <h1 class="header-initial">{{ title }}</h1></div>
     <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
+
     <div class="header-right header-item">
       <div class = "header-button">
         <component :is="mode" transition="fade" transition-mode="out-in">
@@ -67,13 +68,15 @@
     </div>
   </div>
 
+
   <div id="ladder" >
-    <div class="pages-container">
+    <div class="pages-container" style="margin-left: 35%">
       <ul class="pagination pages-buttons">
         <li v-for="entry in ladderPages">
           <page-button :index="$index + 1"></page-button>
         </li>
       </ul>
+      <input type="text" v-model="searchText" placeholder="Search"   value=" "  style="float:right;margin-right:10%;margin-top: 20px;">
     </div>
 
   <div class="ladder">
@@ -154,7 +157,7 @@
         </div>
       </div>
       <validator name="pairValidator">
-        <div class="panel panel-default ladder-element" v-for="entry in currentPage">
+        <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
           <div class="panel-body">
             <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
