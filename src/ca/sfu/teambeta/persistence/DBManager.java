@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.logic.UserSessionManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -21,12 +23,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
@@ -364,6 +360,12 @@ public class DBManager {
 
         String json = gson.toJson(scorecards);
         return json;
+    }
+
+    public synchronized String getJSONSession(String sessionToken) {
+        //ex: {"email":"test@gmail.com","admin":true}
+        JSONSerializer serializer = new SessionJSONSerializer(sessionToken);
+        return serializer.toJson();
     }
 
     public synchronized void setGameResults(GameSession gameSession, int winningPairId, int losingPairId) {

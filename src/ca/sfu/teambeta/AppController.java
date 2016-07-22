@@ -87,13 +87,17 @@ public class AppController {
                             UserSessionManager.authenticateSession(sessionToken);
                     if (!authenticated) {
                         halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
-                                "You must be logged in view this page."));
+                                "You must be logged in to view this page."));
+                    } else {
+                        //Return the role of the user in the JSON
+                        String json = dbManager.getJSONSession(sessionToken);
+                        halt(OK, json);
                     }
                 } catch (NoSuchSessionException exception) {
                     halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
-                            "You must be logged in view this page."));
+                            "You must be logged in to view this page."));
                 }
-
+                //UserSessionManager.isAdministratorSession(sessionToken);
             }
         });
 
