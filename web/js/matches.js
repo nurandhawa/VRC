@@ -121,17 +121,28 @@ var Matches = (function () {
                           return this.active;
                       },
                       validateResults: function (currentMatch, newVal, oldVal) {
-                          var numRounds = newVal.length;
-                          var CORRECT_ROUNDS_PLAYED = 2;
-                          var CORRECT_ROUNDS_NOT_PLAYED = numRounds - CORRECT_ROUNDS_PLAYED;
+                          var ROUNDS_TO_PLAY = 3;
+                          var results = currentMatch.results;
 
-                          var isValid = newVal.every(function (pairRecord) {
-                              var roundsNotPlayed = pairRecord.filter(function (entry) {
-                                  return entry === "-";
-                              }).length;
-                              return roundsNotPlayed === CORRECT_ROUNDS_NOT_PLAYED;
+                          var numPlayed = 0;
+                          var ranksTaken = [];
+                          results.forEach(function(result){
+                              if(result.beenPlayed === true){
+                                  var thisRanking = result.newRanking;
+                                  var isRankTaken = false;
+                                  for (var i = 0; i < ranksTaken.length; i++) {
+                                      if (ranksTaken[i] === thisRanking){
+                                          isRankTaken = true;
+                                      }
+                                  }
+                                  if(!isRankTaken){
+                                      ranksTaken.push(thisRanking);
+                                      numPlayed++;
+                                  }
+                              }
                           });
 
+                          var isValid = ROUNDS_TO_PLAY === numPlayed;
                           currentMatch.resultsValid = isValid;
                       }
                   },

@@ -218,7 +218,7 @@ var API = (function() {
                             pairId: 0,
                             newRanking: 0,
                             beenPlayed: false
-                        }
+                        };
                         match.results.push(result);
 
                         pair.absentPenalty = {
