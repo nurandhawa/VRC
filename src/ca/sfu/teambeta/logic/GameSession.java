@@ -174,7 +174,11 @@ public class GameSession extends Persistable {
         updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
-        reorderedLadder = new Ladder(reorderedList);
+        if (reorderedLadder == null) {
+            reorderedLadder = new Ladder(reorderedList);
+        } else {
+            reorderedLadder.setNewPairs(reorderedList);
+        }
         for (Pair p : getAllPairs()) {
             p.setPairScore(0);
         }
