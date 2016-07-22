@@ -93,6 +93,21 @@ public class UserSessionManager {
 
     }
 
+    public static String getEmailFromSessionId(String sessionId)
+            throws NoSuchSessionException {
+
+        // Validate the input
+        try {
+            InputValidator.validateSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        }
+
+        SessionInformation sessionInformation = sessions.get(sessionId);
+
+        return sessionInformation.getEmail();
+    }
+
 
     // MARK: Helper Methods
     private static SessionInformation getSessionInformation(String sessionId)
@@ -132,5 +147,4 @@ public class UserSessionManager {
     public static int numUsersLoggedIn() {
         return sessions.size();
     }
-
 }
