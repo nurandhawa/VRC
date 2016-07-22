@@ -22,6 +22,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -112,20 +113,15 @@ public class DBManager {
         }
     }
 
-    public synchronized int persistEntity(Persistable entity) {
-        Transaction tx = null;
-        int key = 0;
+    public synchronized void persistEntity(Persistable entity) {
+        Transaction tx = session.beginTransaction();
         try {
-            tx = session.beginTransaction();
-            key = (int) session.save(entity);
+            session.saveOrUpdate(entity);
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
+            tx.rollback();
             e.printStackTrace();
         }
-        return key;
     }
 
     private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
@@ -133,7 +129,7 @@ public class DBManager {
         Persistable entity = null;
         try {
             tx = session.beginTransaction();
-            entity = (Persistable) session.get(persistable, id);
+            entity = (Persistable) session.load(persistable, id);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -431,9 +427,14 @@ public class DBManager {
         }
     }
 
-    public synchronized Scorecard getScorecardFromGame(GameSession gameSession, int index) {
-        persistEntity(gameSession);
-        return gameSession.getScorecardByIndex(index);
+    // Rankings are in a format of pairID -> position in scorecard
+    public synchronized void setMatchResults(int scorecardId, Map<Integer, Integer> rankings) {
+        Scorecard sc = (Scorecard) getEntityFromID(Scorecard.class, scorecardId);
+        for (Map.Entry<Integer, Integer> entry : rankings.entrySet()) {
+            Pair pair = getPairFromID(entry.getKey());
+            sc.setGameResults(pair, entry.getValue());
+        }
+        persistEntity(sc);
     }
 
     public synchronized void reorderLadder(GameSession gameSession) {
