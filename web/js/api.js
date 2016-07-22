@@ -101,7 +101,10 @@ var API = (function() {
 
     API.prototype.prepareNewPlayer = function(firstName, lastName, phoneNumber) {
         var onlyDigitsRegex = /\d/g;
-        var sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        var sanitizedPhoneNumber = "";
+        if (phoneNumber !== "") {
+          sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        }
         return {
             "firstName": firstName,
             "lastName": lastName,
@@ -327,6 +330,23 @@ var API = (function() {
                 alert(responseBody.message);
             }
         });
+    };
+
+    API.prototype.userLogout = function (doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/logout",
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
     };
 
     return API;

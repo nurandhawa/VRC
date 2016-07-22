@@ -1,5 +1,5 @@
   <!DOCTYPE html>
-  <html lang="en">
+  <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -47,7 +47,7 @@
           <li><a href="matches.html">Matches</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="login.html">Log Out</a></li>
+          <li><a id="logout_nav" href="login.html">Log Out</a></li>
         </ul>
       </div>
 
@@ -160,10 +160,12 @@
           <div class="panel-body">
             <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
+                <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
+                <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
               {{ entry.teamName }}
-              <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
+              <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
               </component>
-              <div id="modal{{ $index }}" class="modal">
+              <div id="modal{{ entry.position - 1 }}" class="modal">
                 <div class="modal-dialog">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -176,15 +178,15 @@
                         <div class="col-md-10">
                           <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
                                  :field="entry.teamName" v-validate="['required', 'position']" :classes="{ invalid: 'has-error', }"
-                                 @valid="onValid('#editPairSave' + $index)", @invalid="onInvalid('#editPairSave' + $index)">
+                                 @valid="onValid('#editPairSave' + (entry.position - 1))", @invalid="onInvalid('#editPairSave' + (entry.position - 1))">
                           <p class="help-block">Position must be greater than 0.</p>
                         </div>
                       </div>
                     </div>
                     <div class="modal-footer">
-                      <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete($index)">Delete pair</button>
+                      <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete(entry.position - 1)">Delete pair</button>
                       <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                      <button id="editPairSave{{ $index }}" type="button" class="btn btn-success" v-on:click="onUpdate($index)" disabled="disabled">
+                      <button id="editPairSave{{ entry.position - 1 }}" type="button" class="btn btn-success" v-on:click="onUpdate(entry.position - 1)" disabled="disabled">
                         Save changes
                       </button>
                     </div>
@@ -218,6 +220,7 @@
   <script src="js/header.js"></script>
   <script src="js/ladder.js"></script>
   <script src="js/ladderloader.js"></script>
+  <script src="js/logout.js"></script>
   <script>
     $(function () {
       $('#last-page-button').on('click', function(){

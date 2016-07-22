@@ -77,6 +77,14 @@ public class GameSession extends Persistable {
         }
     }
 
+    public void setUpLastWeekPositions() {
+        int position = 1;
+        for (Pair p : ladder.getPairs()) {
+            p.setLastWeekPosition(position);
+            position++;
+        }
+    }
+
     public Set<Pair> getActivePairSet() {
         return new HashSet<>(activePairs);
     }
@@ -149,6 +157,7 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder(LadderReorderer reorderer) {
+        updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         reorderedLadder = new Ladder(reorderedList);
@@ -157,17 +166,30 @@ public class GameSession extends Persistable {
         }
     }
 
+    private void updatePairsLastWeekPositions() {
+        List<Pair> pairList = this.ladder.getPairs();
+        for (int i = 0; i < pairList.size(); i++) {
+            Pair pair = pairList.get(i);
+            pair.setLastWeekPosition(i + 1);
+        }
+    }
+
     public boolean addNewPairAtIndex(Pair newPair, int index) {
         boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
-            activePairs.add(newPair);
+            newPair.setLastWeekPosition(index + 1);
             ladder.insertAtIndex(index, newPair);
         }
         return pairExists;
     }
 
     public boolean addNewPairAtEnd(Pair newPair) {
-        return addNewPairAtIndex(newPair, ladder.getLadderLength());
+        boolean pairExists = ladder.getPairs().contains(newPair);
+        if (!pairExists) {
+            newPair.setLastWeekPosition(ladder.getLadderLength() + 1);
+            ladder.insertAtEnd(newPair);
+        }
+        return pairExists;
     }
 
     @Override

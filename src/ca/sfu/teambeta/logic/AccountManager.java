@@ -1,16 +1,15 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.PasswordHash;
-import ca.sfu.teambeta.core.User;
-
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-
 import ca.sfu.teambeta.persistence.DBManager;
+
+import com.ja.security.PasswordHash;
+
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.UserRole;
+import ca.sfu.teambeta.core.exceptions.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AccountManager handles:
@@ -31,12 +30,15 @@ import ca.sfu.teambeta.persistence.DBManager;
 
 public class AccountManager {
     private DBManager dbManager;
+    private PasswordHash passwordHasher = new PasswordHash();
+    private List<String> administrators;
 
-    /*
+
+/*
     // User for testing purposes
     private static final String DEMO_EMAIL = "testuser@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
-    */
+*/
 
     /*
     // When testing, uncomment and use this array to mimic database interaction
@@ -47,20 +49,22 @@ public class AccountManager {
     // MARK: Constructor
     public AccountManager(DBManager dbManager) {
         this.dbManager = dbManager;
+        administrators = new ArrayList<>();
+
+        administrators = getAdministrators();
     }
 
 
     // MARK: - The Core Login/Registration Methods
     public String login(String email, String password) throws InternalHashingException, NoSuchUserException,
-            InvalidInputException, InvalidCredentialsException {
-        InputValidator.validateEmailFormat(email);
-        InputValidator.validatePasswordFormat(password);
+            InvalidCredentialsException {
 
         // Authenticate and if successful get the user from the database
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        String sessionId = UserSessionManager.createNewSession(user);
+        UserRole role = getUserClearanceLevel(user.getEmail());
+        String sessionId = UserSessionManager.createNewSession(user, role);
 
         return sessionId;
     }
@@ -78,7 +82,7 @@ public class AccountManager {
         String passwordHash;
 
         try {
-            passwordHash = PasswordHash.createHash(password);
+            passwordHash = passwordHasher.createHash(password);
         } catch (Exception e) {
             // Rethrow a simpler Exception following
             // from the abstract Exceptions thrown by ".createHash()"
@@ -105,7 +109,7 @@ public class AccountManager {
         boolean isPasswordCorrect;
 
         try {
-            isPasswordCorrect = PasswordHash.validatePassword(password, user.getPasswordHash());
+            isPasswordCorrect = passwordHasher.validatePassword(password, user.getPasswordHash());
         } catch (Exception e) {
             // Rethrow a simpler Exception following from
             // the abstract Exceptions thrown by ".validatePassword()"
@@ -122,6 +126,30 @@ public class AccountManager {
 
     }
 
+    private List<String> getAdministrators() {
+        // In the future this method can be changed to fetch
+        //  a list of admin emails from the database, or a file, etc.
+
+        List<String> admins = new ArrayList<>();
+
+        final String DEMO_ADMIN_1 = "admin_billy@vrc.ca";
+        final String DEMO_ADMIN_2 = "admin_zong@vrc.ca";
+
+        admins.add(DEMO_ADMIN_1);
+        admins.add(DEMO_ADMIN_2);
+
+        return admins;
+
+    }
+
+    private UserRole getUserClearanceLevel(String email) {
+        if (administrators.contains(email)) {
+            return UserRole.ADMINISTRATOR;
+        } else {
+            return UserRole.REGULAR;
+        }
+
+    }
 
     // MARK: - Database Methods
     private User getUserFromDB(String email) throws NoSuchUserException {
@@ -165,16 +193,17 @@ public class AccountManager {
 
     }
 
+
     // MARK: - Main Function
-    /*
+/*
     public static void main(String[] args) {
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
 
         AccountManager accountManager = new AccountManager(dbManager);
         // Register a user
         try {
-            accountManager.register(DEMO_EMAIL, DEMO_PASSWORD);
+            accountManager.register("admin_zong@vrc.ca", DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
@@ -188,18 +217,18 @@ public class AccountManager {
 
 
         // Register the same user again (Should fail with duplicate user email)
-        try {
-            accountManager.register(DEMO_EMAIL, DEMO_PASSWORD);
-        } catch (InternalHashingException e) {
-            System.out.println(e.getMessage());
-            return;
-        } catch (InvalidInputException e) {
-            System.out.println(e.getMessage());
-            return;
-        } catch (AccountRegistrationException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
+//        try {
+//            accountManager.register("admin_zong@vrc.ca", DEMO_PASSWORD);
+//        } catch (InternalHashingException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        } catch (InvalidInputException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        } catch (AccountRegistrationException e) {
+//            System.out.println(e.getMessage());
+//            return;
+//        }
 
 
 
@@ -207,7 +236,7 @@ public class AccountManager {
         String userSessionId = "";
 
         try {
-            userSessionId = accountManager.login(DEMO_EMAIL, DEMO_PASSWORD);
+            userSessionId = accountManager.login("admin_zong@vrc.ca", DEMO_PASSWORD);
         } catch (InternalHashingException e) {
             System.out.println(e.getMessage());
             return;
@@ -224,7 +253,18 @@ public class AccountManager {
 
         System.out.println("User SessionInformation ID: " + userSessionId);
 
+        boolean admin;
+
+        try {
+            admin = UserSessionManager.isAdministratorSession(userSessionId);
+        } catch (NoSuchSessionException e) {
+            admin = false;
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        System.out.println("Is Admin: " + admin);
     }
-    */
+*/
 
 }
