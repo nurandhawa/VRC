@@ -75,13 +75,11 @@
           <page-button :index="$index + 1"></page-button>
         </li>
       </ul>
-      <input type="text" v-model="searchText" placeholder="Search"   value=" "  style="float:right;margin-right:10%;margin-top: 20px;">
+      <input type="text" v-model="message" placeholder="Search"   value=" "  style="float:right;margin-right:10%;margin-top: 20px;">
     </div>
 
   <div class="ladder">
-
-
-    <div id="addPairModal" class="modal">
+      <div id="addPairModal" class="modal">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -158,15 +156,13 @@
         </div>
       </div>
       <validator name="pairValidator">
-
-        <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
+        <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy message in 'teamName'">
           <div class="panel-body">
             <div class="pair-name">
               <span class="label label-info position">{{ entry.position }}</span>
               {{ entry.teamName }}
-
               <component :is="entry.playingStatus" :index="$index" transition="fade" transition-mode="out-in">
-              </component>             </div>
+              </component>
               <div id="modal{{ $index }}" class="modal">
                 <div class="modal-dialog">
                   <div class="modal-content">
