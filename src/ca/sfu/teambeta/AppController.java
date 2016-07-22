@@ -87,13 +87,17 @@ public class AppController {
                             UserSessionManager.authenticateSession(sessionToken);
                     if (!authenticated) {
                         halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
-                                "You must be logged in view this page."));
+                                "You must be logged in to view this page."));
+                    } else {
+                        //Return the role of the user in the JSON
+                        String json = dbManager.getJSONSession(sessionToken);
+                        halt(OK, json);
                     }
                 } catch (NoSuchSessionException exception) {
                     halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
-                            "You must be logged in view this page."));
+                            "You must be logged in to view this page."));
                 }
-
+                //UserSessionManager.isAdministratorSession(sessionToken);
             }
         });
 
@@ -256,6 +260,12 @@ public class AppController {
                     request.queryParams(GAMESESSION));
 
             dbManager.reorderLadder(gameSession);
+            dbManager.saveGameSession(gameSession);
+
+            if (request.queryParams(GAMESESSION).equals(GAMESESSION_LATEST)) {
+                GameSession newGameSession = dbManager.createNewGameSession(gameSession);
+                dbManager.saveGameSession(newGameSession);
+            }
 
             return getOkResponse("");
         }));
@@ -297,6 +307,10 @@ public class AppController {
         get("/api/matches", (request, response) -> {
             GameSession gameSession = getRequestedGameSession(dbManager,
                     request.queryParams(GAMESESSION));
+            if (gameSession == null) {
+                response.status(OK);
+                return "[]";
+            }
 
             String json = dbManager.getJSONScorecards(gameSession);
             final String EMPTY_JSON_ARRAY = "[]";

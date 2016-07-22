@@ -104,6 +104,11 @@ public class Ladder extends Persistable {
         return pairs.size();
     }
 
+    // DO NOT USE ME!! Unless you are specifically dealing with manual override
+    public void setNewPairs(List<Pair> newPairList) {
+        pairs = newPairList;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {

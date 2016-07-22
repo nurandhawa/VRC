@@ -205,6 +205,7 @@ var API = (function() {
             var matches = JSON.parse(response);
             matches.forEach(function(match, i) {
                 match.scorecardIndex = i;
+                match.gameSession = gameSession;
                 match.resultsValid = false;
                 match.results = [];
                 match.pairs.forEach(function(pair) {
