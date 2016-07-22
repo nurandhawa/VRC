@@ -335,10 +335,11 @@ public class DBManager {
 
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Scorecard.class, new ScorecardSerializer())
+                .create();
 
-        String json = gson.toJson(scorecards);
-        return json;
+        return gson.toJson(scorecards);
     }
 
     public synchronized String getJSONSession(String sessionToken) {

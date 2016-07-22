@@ -24,9 +24,9 @@ public class Scorecard extends Persistable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
-    List<Pair> pairs;
+    private List<Pair> pairs;
     @Expose
-    boolean isDone;
+    private boolean isDone;
 
     @Transient
     @Expose
@@ -49,17 +49,18 @@ public class Scorecard extends Persistable {
         }
     }
 
-    private int getPairScore(Pair pair) {
-        int score = Integer.MAX_VALUE;
+    public int getPairScore(Pair pair) {
         for (PairRanking ranking : pairRankings) {
             if (ranking.hasPair(pair)) {
-                score = ranking.getRank();
-                return score;
+                return ranking.getRank();
             }
         }
-        return score;
+        return 0;
     }
 
+    public List<Pair> getPairs() {
+        return Collections.unmodifiableList(pairs);
+    }
 
     public List<Pair> getReorderedPairs() {
         List<Pair> orderedPairs = new ArrayList<>(pairs);
@@ -67,8 +68,8 @@ public class Scorecard extends Persistable {
         return orderedPairs;
     }
 
-    public boolean hasPair(Pair p) {
-        return pairs.contains(p);
+    public boolean isDone() {
+        return isDone;
     }
 
     @Override
