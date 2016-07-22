@@ -44,7 +44,8 @@ public class AppController {
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
 
-    private static final String TIME_SLOT = "time";
+    private static final String TIME_SLOT_1 = "08:00 pm";
+    private static final String TIME_SLOT_2 = "09:30 pm";
     public static final String PLAYING_STATUS = "playing";
     public static final String NOT_PLAYING_STATUS = "not playing";
 
@@ -432,16 +433,14 @@ public class AppController {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String time = extractedData.getTime();
-            Pair pair = dbManager.getPairFromID(id);
 
-            if (time.equalsIgnoreCase(Time.SLOT_1.getTime())) {
-                pair.setTimeSlot(Time.SLOT_1);
-            } else if (time.equalsIgnoreCase(Time.SLOT_2.getTime())) {
-                pair.setTimeSlot(Time.SLOT_2);
+            if (time.equalsIgnoreCase(TIME_SLOT_1)) {
+                dbManager.setTimeSlot(id, Time.SLOT_1);
+            } else if (time.equalsIgnoreCase(TIME_SLOT_2)) {
+                dbManager.setTimeSlot(id, Time.SLOT_2);
             } else {
                 return getErrResponse("Invalid time");
             }
-            dbManager.performTimeDistribution();
             return getOkResponse("");
         });
 
