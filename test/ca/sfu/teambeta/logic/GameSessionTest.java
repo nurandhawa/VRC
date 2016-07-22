@@ -130,7 +130,7 @@ public class GameSessionTest extends PersistenceTest {
 
         firstCard.setGameResults(davidBob, 2);
         firstCard.setGameResults(kevinJasmin, 1);
-        firstCard.setGameResults(davidBob, 3);
+        firstCard.setGameResults(richardRobin, 3);
 
         secondCard.setGameResults(ianCamden, 1);
         secondCard.setGameResults(tonyAngelica, 2);
