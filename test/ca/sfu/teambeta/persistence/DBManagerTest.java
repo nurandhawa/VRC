@@ -1,8 +1,8 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.logic.TimeSelection;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.logic.GameSession;
 
 import static junit.framework.TestCase.assertEquals;
@@ -44,7 +47,7 @@ public class DBManagerTest {
         Assert.assertEquals(playerExpected, playerActual);
     }
 
-    @Test
+    @Test(expected = ObjectNotFoundException.class)
     public void testGetPlayerFromIDNotFound() {
         Player playerExpected = null;
 
