@@ -80,7 +80,7 @@ public class GameSessionTest extends PersistenceTest {
         gameSession.setPairActive(anastasiaVictoria);
         gameSession.setPairActive(ianCamden);
 
-        gameSession.createGroups(new VrcScorecardGenerator());
+        gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
     }
 
 
@@ -165,7 +165,7 @@ public class GameSessionTest extends PersistenceTest {
         Session session = getSession();
         session.update(secondCard);
 
-        gameSession.reorderLadder(new VrcLadderReorderer());
+        gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());
 
         assertEquals(reorderedList, gameSession.getReorderedLadder());
     }

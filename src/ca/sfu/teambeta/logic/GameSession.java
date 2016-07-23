@@ -52,11 +52,15 @@ public class GameSession extends Persistable {
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
         initializeActivePlayers();
-        createGroups(new VrcScorecardGenerator());
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
     }
 
-    public List<Scorecard> createGroups(ScorecardGenerator generator) {
+    public List<Scorecard> createGroups(ScorecardGenerator generator, TimeSelection timeSelector) {
+        //Generate groups
         scorecards = generator.generateScorecards(getActivePairs());
+        //Set dominant time slots for each group
+        timeSelector.distributePairs(scorecards);
+
         return Collections.unmodifiableList(scorecards);
     }
 
@@ -149,11 +153,15 @@ public class GameSession extends Persistable {
         return active;
     }
 
-    public void reorderLadder(LadderReorderer reorderer) {
+    public void reorderLadder(LadderReorderer reorderer, TimeSelection timeSelector) {
         updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         reorderedLadder = new Ladder(reorderedList);
+
+        //Set all the time slots of each pair to NO_SLOT
+        timeSelector.clearTimeSlots(reorderedLadder);
+
         for (Pair p : getAllPairs()) {
             p.setPairScore(0);
         }

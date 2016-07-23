@@ -7,10 +7,7 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 
 import ca.sfu.teambeta.persistence.CSVReader;
-import ca.sfu.teambeta.persistence.DBManager;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -265,38 +262,5 @@ public class TimeSelectionTest {
         }
 
         return littlePairs;
-    }
-
-    @Test
-    public void scorecardTimeScenario() {
-        List<Pair> pairs = new ArrayList<>();
-        final int NUM_OF_PLAYERS = 10;
-        Player p1;
-        Player p2;
-        for (int i = 0; i < NUM_OF_PLAYERS; i++) {
-            p1 = new Player(Integer.toString(i + 65), Integer.toString(i + 66));
-            p2 = new Player(Integer.toString(i + 93), Integer.toString(i + 94));
-            pairs.add(new Pair(p1, p2));
-        }
-        Ladder newLadder = new Ladder(pairs);
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        GameSession gameSession = new GameSession(newLadder);
-        DBManager dbManager = new DBManager(sessionFactory);
-        dbManager.persistEntity(gameSession);
-
-        for (int i = 0; i < pairs.size(); i++) {
-            dbManager.setPairActive(gameSession, pairs.get(i).getID());
-            if (i == 0 || i == 2 || i == 5 || i == 9) {
-                pairs.get(i).setTimeSlot(Time.SLOT_2);
-            } else {
-                pairs.get(i).setTimeSlot(Time.SLOT_1);
-            }
-        }
-        dbManager.performTimeDistribution();
-
-        List<Scorecard> scorecards = gameSession.getScorecards();
-        Assert.assertEquals(scorecards.get(0).getTimeSlot(), Time.SLOT_2);
-        Assert.assertEquals(scorecards.get(1).getTimeSlot(), Time.SLOT_1);
-        Assert.assertEquals(scorecards.get(2).getTimeSlot(), Time.SLOT_1);
     }
 }

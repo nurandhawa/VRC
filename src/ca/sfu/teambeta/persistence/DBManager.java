@@ -36,11 +36,9 @@ public class DBManager {
     private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
     private Session session;
-    private TimeSelection selector;
 
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
-        selector = new VrcTimeSelection();
     }
 
     // Use me if the database is down
@@ -324,16 +322,15 @@ public class DBManager {
         Pair pair = getPairFromID(pairId);
         pair.setTimeSlot(Time.NO_SLOT);
         boolean activated = gameSession.setPairActive(pair);
-        gameSession.createGroups(new VrcScorecardGenerator());
+        gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
-        performTimeDistribution();
         return activated;
     }
 
     public synchronized void setPairInactive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
         gameSession.setPairInactive(pair);
-        gameSession.createGroups(new VrcScorecardGenerator());
+        gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
     }
 
@@ -458,10 +455,9 @@ public class DBManager {
     }
 
     public synchronized void reorderLadder(GameSession gameSession) {
-        gameSession.reorderLadder(new VrcLadderReorderer());
+        gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());
         List<Pair> reorderedPairs = gameSession.getReorderedLadder();
         Ladder nextWeekLadder = new Ladder(reorderedPairs);
-        selector.clearTimeSlots(nextWeekLadder);
         GameSession nextWeekGameSession = new GameSession(nextWeekLadder);
 
         persistEntity(gameSession);
@@ -481,13 +477,5 @@ public class DBManager {
         Time time = pair.getTimeSlot();
         persistEntity(gameSession);
         return time;
-    }
-
-    public void performTimeDistribution() {
-        GameSession gameSession = getGameSessionLatest();
-        List<Scorecard> scorecards = gameSession.getScorecards();
-        selector.distributePairs(scorecards);
-        gameSession.setScorecards(scorecards);
-        persistEntity(gameSession);
     }
 }
