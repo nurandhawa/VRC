@@ -166,7 +166,7 @@
               {{ entry.teamName }}
                 <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
               </component>
-              <div id="timeSelectModal{{entry.position - 1}}" style="display: none" class="modal">
+              <div id="timeSelectModal{{entry.position - 1}}" class="modal">
                 <div class="modal-dialog">
                   <div id="timeSelectModalContent" class="modal-content">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

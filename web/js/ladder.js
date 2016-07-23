@@ -184,8 +184,7 @@ var Ladder = (function () {
     };
 
     Ladder.prototype.setTime = function (index) {
-        var timeModal = document.getElementById("timeSelectModal" + index);
-        timeModal.style.display = "none";
+        $("#timeSelectModal" + index).modal("hide");
         var pair = this.ladder[index];
         var api = new API();
         if (document.getElementById("checkbox8pm" + index).checked) {
@@ -271,11 +270,10 @@ var Ladder = (function () {
 
     Ladder.prototype.fillTimeModal = function (index) {
         var timeModal = document.getElementById("timeSelectModal" + index);
-        var saveBtn = document.getElementById("timeSaveButton" + index);
         var firstCheckBox = document.getElementById("checkbox8pm" + index);
         var secondCheckBox = document.getElementById("checkbox9pm" + index);
 
-        timeModal.style.display = "block";
+        $("#timeSelectModal" + index).modal("show");
 
         var pair = this.ladder[index];
         if (pair.timeSlot == "SLOT_1") {
@@ -291,7 +289,7 @@ var Ladder = (function () {
 
         window.onclick = function (event) {
             if (event.target == timeModal) {
-                timeModal.style.display = "none";
+                $("#timeSelectModal" + index).modal("hide");
             }
         };
         firstCheckBox.onclick = function () {
