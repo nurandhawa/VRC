@@ -440,7 +440,8 @@ public class AppController {
             }
 
             GameSession gameSession = dbManager.getGameSessionLatest();
-            gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
+            VrcTimeSelection timeSelector = new VrcTimeSelection();
+            timeSelector.distributePairs(gameSession.getScorecards());
             return getOkResponse("");
         });
 
