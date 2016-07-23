@@ -191,9 +191,12 @@ var Ladder = (function () {
         if (document.getElementById("checkbox8pm" + index).checked) {
             api.setTime("08:00 pm", pair.id);
             pair.timeSlot = "SLOT_1";
-        } else {
+        } else if (document.getElementById("checkbox9pm" + index).checked) {
             api.setTime("09:30 pm", pair.id);
             pair.timeSlot = "SLOT_2";
+        } else {
+            api.setTime("NO_SLOT", pair.id);
+            pair.timeSlot = "NO_SLOT";
         }
     };
 

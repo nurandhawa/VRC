@@ -445,7 +445,7 @@ public class AppController {
             } else if (time.equalsIgnoreCase(TIME_SLOT_2)) {
                 dbManager.setTimeSlot(id, Time.SLOT_2);
             } else {
-                return getErrResponse("Invalid time");
+                dbManager.setTimeSlot(id, Time.NO_SLOT);
             }
 
             GameSession gameSession = dbManager.getGameSessionLatest();
