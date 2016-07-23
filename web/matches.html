@@ -56,12 +56,12 @@
                                     <div class="match-pair-right">
                                         <button class="btn btn-xs btn-danger"
                                                 v-bind:class="pair.latePenalty"
-                                                @click="applyPenalty('latest', pair, 'late', $event)">
+                                                @click="applyPenalty(match.gameSession, pair, 'late', $event)">
                                             Late
                                         </button>
                                         <button class="btn btn-xs btn-danger"
                                                 v-bind:class="pair.absentPenalty"
-                                                @click="applyPenalty('latest', pair, 'miss', $event)">
+                                                @click="applyPenalty(match.gameSession, pair, 'miss', $event)">
                                             Absent
                                         </button>
                                     </div>
@@ -79,7 +79,7 @@
                                     Close
                                 </button>
                                 <button type="button" class="btn btn-primary"
-                                        @click="saveChanges('latest', $index)"
+                                        @click="saveChanges(match.gameSession, $index)"
                                         :disabled="!match.resultsValid">Save changes
                                 </button>
                             </div>
@@ -133,28 +133,52 @@
     </div>
 </div>
 
-<div class="panel panel-primary matches-container">
+<div id="tabs" class="panel panel-primary matches-container">
     <ul class="nav nav-tabs matches-container-tabs" style="margin-bottom: 15px;">
         <li class=""><a class="matches-tabs" href="#lastweek" data-toggle="tab"
-                        aria-expanded="false">Last Week
-            <div class="ripple-container"></div>
+                        aria-expanded="false" @click="setActive('previous')">Last Week
+          <div class="ripple-container"></div>
         </a></li>
         <li class="active"><a class="matches-tabs" href="#thisweek" data-toggle="tab"
-                              aria-expanded="true">This Week
-            <div class="ripple-container"></div>
+                              aria-expanded="true" @click="setActive('latest')">This Week
+          <div class="ripple-container"></div>
         </a></li>
     </ul>
     <div id="tabContent" class="tab-content">
         <div class="tab-pane fade" id="lastweek">
-            <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu
-                stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg
-                carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth.
-                Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat
-                salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher
-                voluptate nisi qui.</p>
-    </div>
+            <div id="matches-previous" class="matches">
+                <div class="match-item" v-for="match in matches">
+                    <div class="panel"
+                         v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
+                        <div id="match{{match.scorecardIndex}}"
+                             class="match-heading panel-heading">
+                            <h3 class="match-title panel-title">Match {{
+                                match.scorecardIndex + 1 }}</h3>
+                            <component :is="mode" column="left" :index="$index"
+                                       transition="fade" transition-mode="out-in">
+                            </component>
+                        </div>
+                        <div class="panel-body">
+                            <div class="pair-name match-pair" v-for="pair in match.pairs">
+                                <div class="col-sm-1 label label-info position">{{ $index +
+                                    1 }}
+                                </div>
+                                <div>
+                                    {{ pair.players[0].firstName }}
+                                    {{pair.players[0].lastName }} and
+                                    {{ pair.players[1].firstName }}
+                                    {{pair.players[1].lastName}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <matches :show.sync="showModal" :matchlist="matches"
+                         :active.sync="active"></matches>
+            </div>
+        </div>
         <div class="tab-pane fade active in" id="thisweek">
-            <div id="matches" class="matches">
+            <div id="matches-latest" class="matches">
                     <div class="match-item" v-for="match in matches">
                             <div class="panel"
                                  v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">

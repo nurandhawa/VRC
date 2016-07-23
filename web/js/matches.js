@@ -5,7 +5,7 @@
 var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
 
 var Matches = (function () {
-    function Matches(matchData) {
+    function Matches(matchData, elementId) {
         Vue.component('matches', {
             template: '#matches-template',
             props: {
@@ -29,6 +29,7 @@ var Matches = (function () {
             }
         });
 
+
         var editButton;
         var blankButton;
         editButton = Vue.extend({
@@ -47,7 +48,7 @@ var Matches = (function () {
         });
 
         this.component = new Vue({
-            el: '#matches',
+            el: elementId,
             data: {
                 active: 0,
                 showModal: false,
@@ -123,7 +124,7 @@ var Matches = (function () {
 
         var api = new API();
         api.inputMatchResults(gameSession, match.id, results, function() {
-            this.refreshMatches();
+            this.refreshMatches(gameSession);
         }.bind(this));
         this.closeModal();
     };
@@ -144,9 +145,9 @@ var Matches = (function () {
         }.bind(this));
     };
 
-    Matches.prototype.refreshMatches = function() {
+    Matches.prototype.refreshMatches = function(gameSession) {
         var api = new API();
-        api.getMatches(api.gameSession.LATEST, function(matchData) {
+        api.getMatches(gameSession, function(matchData) {
             this.$parent.updateMatches.call(this.$parent, matchData);
         }.bind(this));
     };

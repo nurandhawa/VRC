@@ -69,7 +69,7 @@ public class Ladder extends Persistable {
         } else {
             newList = new LinkedList<>(pairs);
 
-            if (0 <= index && index < pairs.size()) {
+            if (0 <= index && index <= pairs.size()) {
                 newList.add(index, pair);
                 pairs = newList;
             } else {
@@ -102,6 +102,11 @@ public class Ladder extends Persistable {
 
     public int getLadderLength() {
         return pairs.size();
+    }
+
+    // DO NOT USE ME!! Unless you are specifically dealing with manual override
+    public void setNewPairs(List<Pair> newPairList) {
+        pairs = newPairList;
     }
 
     @Override

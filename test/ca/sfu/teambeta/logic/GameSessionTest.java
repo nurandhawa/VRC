@@ -63,6 +63,8 @@ public class GameSessionTest extends PersistenceTest {
     private final List<Pair> reorderedList = Arrays.asList(kevinJasmin, kateNick, jimRyan,
             ianCamden, tonyAngelica, amyMaria, anastasiaVictoria, richardRobin, davidBob);
 
+    private final Ladder reorderedLadder = new Ladder(reorderedList);
+
     GameSession gameSession;
 
     @Before
@@ -167,7 +169,7 @@ public class GameSessionTest extends PersistenceTest {
 
         gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());
 
-        assertEquals(reorderedList, gameSession.getReorderedLadder());
+        assertEquals(reorderedLadder, gameSession.getReorderedLadder());
     }
 
     private int saveGameSession() {

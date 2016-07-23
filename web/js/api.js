@@ -101,7 +101,10 @@ var API = (function() {
 
     API.prototype.prepareNewPlayer = function(firstName, lastName, phoneNumber) {
         var onlyDigitsRegex = /\d/g;
-        var sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        var sanitizedPhoneNumber = "";
+        if (phoneNumber !== "") {
+          sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+        }
         return {
             "firstName": firstName,
             "lastName": lastName,
@@ -202,6 +205,7 @@ var API = (function() {
             var matches = JSON.parse(response);
             matches.forEach(function(match, i) {
                 match.scorecardIndex = i;
+                match.gameSession = gameSession;
                 if(match.timeSlot === "SLOT_1") {
                     match.timeSlot = "08:00 pm";
                 } else {
