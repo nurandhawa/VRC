@@ -143,8 +143,6 @@ var Ladder = (function () {
             api.updatePairStatus(pair.id, "not playing", function (response) {
                 pair.isPlaying = false;
                 pair.playingStatus = "notplaying";
-                document.getElementById("checkbox8pm" + index).checked = true;
-                document.getElementById("checkbox9pm" + index).checked = false;
             });
         }
         else {
