@@ -32,7 +32,7 @@
     var reorderLadderButton = Vue.extend({
         template: "#reorderLadderButtonTemplate",
         data: function() {
-            return { disabled: !matches.component.allDone };
+            return { disabled: false };
         },
         methods: {
             saveResults: function() {
@@ -43,16 +43,16 @@
     });
     Vue.component('reorder-ladder-button', reorderLadderButton);
 
-    matches.component.$watch("allDone", function(newVal, oldVal) {
-        if (newVal === true) {
-            reorderLadderButton.disabled = false;
-            $("#reorderLadderButton").prop("disabled", false);
-        }
-        else {
-            reorderLadderButton.disabled = true;
-            $("#reorderLadderButton").prop("disabled", true);
-        }
-    });
+    // matches.component.$watch("allDone", function(newVal, oldVal) {
+    //     if (newVal === true) {
+    //         reorderLadderButton.disabled = false;
+    //         $("#reorderLadderButton").prop("disabled", false);
+    //     }
+    //     else {
+    //         reorderLadderButton.disabled = true;
+    //         $("#reorderLadderButton").prop("disabled", true);
+    //     }
+    // });
 
     var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
 
