@@ -3,7 +3,9 @@ package ca.sfu.teambeta.persistence;
 import ca.sfu.teambeta.logic.TimeSelection;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +13,6 @@ import org.junit.Test;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,11 +31,18 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class DBManagerTest {
     private DBManager dbManager;
+    private Session session;
 
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        this.dbManager = new DBManager(sessionFactory);
+        this.session = sessionFactory.openSession();
+        this.dbManager = new DBManager(session);
+    }
+
+    @After
+    public void tearDown() {
+        session.close();
     }
 
     @Test
@@ -49,11 +57,9 @@ public class DBManagerTest {
 
     @Test(expected = ObjectNotFoundException.class)
     public void testGetPlayerFromIDNotFound() {
-        Player playerExpected = null;
-
         Player playerActual = dbManager.getPlayerFromID(99);
 
-        Assert.assertEquals(playerExpected, playerActual);
+        Assert.assertNull(playerActual);
     }
 
     @Test

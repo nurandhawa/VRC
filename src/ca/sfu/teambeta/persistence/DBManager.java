@@ -24,13 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 
 /**
@@ -47,6 +40,11 @@ public class DBManager {
 
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
+    }
+
+    // Used for testing purposes where session needs to be closed
+    public DBManager(Session session) {
+        this.session = session;
     }
 
     // Use me if the database is down
@@ -101,7 +99,7 @@ public class DBManager {
         }
         config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
-            config.setProperty("hibernate.hbm2ddl.auto", "create");
+            config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
@@ -342,31 +340,6 @@ public class DBManager {
         //ex: {"email":"test@gmail.com","admin":true}
         JSONSerializer serializer = new SessionJSONSerializer(sessionToken);
         return serializer.toJson();
-    }
-
-    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int rank) {
-        int sessionId = gameSession.getID();
-        Scorecard scorecard = (Scorecard) session.createQuery(
-                "from Scorecard sc \n"
-                        + "join session_Scorecard s_sc on (s_sc.scorecards_id = sc.id) "
-                        + "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) "
-                        + "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) "
-                        + "where sc_pwin.pairs_id = :winning_pair_id "
-                        + "and s_sc.session_id = :session_id")
-                .setInteger("winning_pair_id", winningPairId)
-                .setInteger("session_id", sessionId)
-                .uniqueResult();
-        Pair winningPair = session.load(Pair.class, winningPairId);
-        scorecard.setGameResults(winningPair, rank);
-
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(scorecard);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
     }
 
     private GameSession getGameSession(int gameSessionId) {
