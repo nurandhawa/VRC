@@ -2,6 +2,7 @@ package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.core.*;
 
+import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -13,10 +14,6 @@ import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import java.util.List;
@@ -441,6 +438,9 @@ public class AppController {
             } else {
                 return getErrResponse("Invalid time");
             }
+
+            GameSession gameSession = dbManager.getGameSessionLatest();
+            gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
             return getOkResponse("");
         });
 
