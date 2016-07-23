@@ -184,11 +184,16 @@ var Ladder = (function () {
     };
 
     Ladder.prototype.setTime = function (index) {
+        var timeModal = document.getElementById("timeSelectModal" + index);
+        timeModal.style.display = "none";
+        var pair = this.ladder[index];
         var api = new API();
         if (document.getElementById("checkbox8pm" + index).checked) {
-            api.setTime("08:00 pm", this.ladder[index].id);
+            api.setTime("08:00 pm", pair.id);
+            pair.timeSlot = "SLOT_1";
         } else {
-            api.setTime("09:30 pm", this.ladder[index].id);
+            api.setTime("09:30 pm", pair.id);
+            pair.timeSlot = "SLOT_2";
         }
     };
 
@@ -263,7 +268,6 @@ var Ladder = (function () {
 
     Ladder.prototype.fillTimeModal = function (index) {
         var timeModal = document.getElementById("timeSelectModal" + index);
-        var closeBtn = document.getElementById("timeCloseBtn" + index);
         var saveBtn = document.getElementById("timeSaveButton" + index);
         var firstCheckBox = document.getElementById("checkbox8pm" + index);
         var secondCheckBox = document.getElementById("checkbox9pm" + index);
@@ -282,17 +286,6 @@ var Ladder = (function () {
             secondCheckBox.checked = false;
         }
 
-        closeBtn.onclick = function () {
-            timeModal.style.display = "none";
-        };
-        saveBtn.onclick = function () {
-            timeModal.style.display = "none";
-            if (firstCheckBox.checked) {
-                pair.timeSlot = "SLOT_1";
-            } else if (secondCheckBox.checked) {
-                pair.timeSlot = "SLOT_2";
-            }
-        };
         window.onclick = function (event) {
             if (event.target == timeModal) {
                 timeModal.style.display = "none";

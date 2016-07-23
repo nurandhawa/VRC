@@ -44,6 +44,7 @@ public class Pair extends Persistable {
     private boolean isPlaying;
     @Expose
     private int pairScore;
+    @Transient
     @Expose
     private Time timeSlot;
 

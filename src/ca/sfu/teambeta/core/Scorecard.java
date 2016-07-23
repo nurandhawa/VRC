@@ -37,6 +37,7 @@ public class Scorecard extends Persistable {
     @Transient
     Observer observer = null;
     int finishedGameCount = 0;
+    @Transient
     @Expose
     private Time timeSlot;
 
