@@ -133,9 +133,8 @@ public class DBManagerTest {
         DBManager dbManager = new DBManager(sessionFactory);
 
         List<GameSession> sessionsList = new ArrayList<>(10);
-        GameSession currSession;
         for (int i = 0; i < 10; i++) {
-            currSession = generateGameSession(Instant.now().getEpochSecond());
+            GameSession currSession = generateGameSession(i);
             sessionsList.add(currSession);
             dbManager.persistEntity(currSession);
         }
