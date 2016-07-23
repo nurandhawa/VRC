@@ -29,19 +29,32 @@
         previousMatches.changeMode.call(previousMatches.component);
     };
 
-    var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
-
-    var saveResultsButton = Vue.extend({
-        template: '<a v-on:click="saveResults()" class="btn btn-raised btn-success header-button">Reorder Ladder</a>',
+    var reorderLadderButton = Vue.extend({
+        template: "#reorderLadderButtonTemplate",
+        data: function() {
+            return { disabled: !matches.component.allDone };
+        },
         methods: {
             saveResults: function() {
                 var api = new API();
                 api.reorderLadder(tabs.activeTab);
             }
-        },
-        parent: header.component
+        }
     });
-    header.addButton(saveResultsButton);
+    Vue.component('reorder-ladder-button', reorderLadderButton);
+
+    matches.component.$watch("allDone", function(newVal, oldVal) {
+        if (newVal === true) {
+            reorderLadderButton.disabled = false;
+            $("#reorderLadderButton").prop("disabled", false);
+        }
+        else {
+            reorderLadderButton.disabled = true;
+            $("#reorderLadderButton").prop("disabled", true);
+        }
+    });
+
+    var header = new Header("Matches", "Edit Matches", "TBD", editFunction);
 
     var api = new API();
     api.getMatches(api.gameSession.LATEST, function (response) {
