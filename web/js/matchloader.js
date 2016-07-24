@@ -16,20 +16,20 @@
     var editFunction = function() {
         // latestMatches.changeMode.call(latestMatches.component);
         // previousMatches.changeMode.call(previousMatches.component);
-        matches.component.$broadcast("changeMode");
+        matches.changeMode();
     };
 
     var reorderLadderButton = Vue.extend({
         template: "#reorderLadderButtonTemplate",
         data: function() {
             return {
-                disabled: !matches.component.allDone
+                disabled: !matches.isAllDone()
             };
         },
         methods: {
             saveResults: function() {
                 var api = new API();
-                api.reorderLadder(tabs.activeTab);
+                api.reorderLadder(matches.component.activeGameSession);
             }
         }
     });
@@ -51,12 +51,13 @@
     var api = new API();
     api.getMatches(api.gameSession.LATEST, function (response) {
         // latestMatches.updateMatches.call(latestMatches.component, response);
-        matches.component.$broadcast("updateMatches", response, api.gameSession.LATEST);
+        matches.updateMatches(response, api.gameSession.LATEST);
         header.updateHeader.call(header.component, response.dateCreated);
     });
 
     api.getMatches(api.gameSession.PREVIOUS, function (response) {
         // previousMatches.updateMatches.call(previousMatches.component, response);
         // matches.component.$broadcast("updateMatches", api.gameSession.PREVIOUS);
+        matches.updateMatches(response, api.gameSession.PREVIOUS);
     });
 })();
