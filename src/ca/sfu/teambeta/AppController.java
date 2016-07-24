@@ -389,13 +389,10 @@ public class AppController {
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
 
-            JsonObject successResponse = new JsonObject();
-            String sessionToken = "";
             try {
-                sessionToken = accountManager.login(email, pwd);
-                successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 response.cookie(SESSION_TOKEN_KEY, sessionToken);
-                return gson.toJson(successResponse);
+                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                return gson.toJson(sessionResponse);
             } catch (InternalHashingException |
                     NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
