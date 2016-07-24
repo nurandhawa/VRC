@@ -10,6 +10,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
@@ -42,6 +43,7 @@ public class APITest {
     public static final String EMAIL = "testuser@vrc.com";
     public static final String PASSWORD = "demoPass";
     private static String HOSTNAME = "https://localhost:8000/";
+    private int ladderLength;
 
     @Before
     public void startServer() throws Exception {
@@ -51,6 +53,7 @@ public class APITest {
                 Ladder newLadder = null;
                 try {
                     newLadder = CSVReader.setupTestingLadder();
+                    ladderLength = newLadder.getLadderLength();
                 } catch (Exception e) {
                     System.out.println("INVALID CSV FILE");
                     throw e;
@@ -82,6 +85,7 @@ public class APITest {
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslcontext);
         CloseableHttpClient httpclient = HttpClients.custom()
                 .setSSLSocketFactory(sslsf)
+                .setDefaultCookieStore(new BasicCookieStore())
                 .build();
         Unirest.setHttpClient(httpclient);
     }
@@ -97,6 +101,14 @@ public class APITest {
                 .header("accept", "application/json")
                 .body(gson.toJson(loginParams))
                 .asJson();
+    }
+
+    // Cookie is set automatically by HttpClient silently
+    // Only works if httpClient.setDefaultCookieStore(new BasicCookieStore()) is called
+    private String authenticateAndSetCookie() throws UnirestException {
+        HttpResponse<JsonNode> jsonResponse = login(EMAIL, PASSWORD);
+        JsonNode node = jsonResponse.getBody();
+        return node.getObject().getString("sessionToken");
     }
 
     @Test
@@ -118,4 +130,15 @@ public class APITest {
         node.getObject().get("sessionToken");
     }
 
+    @Test
+    public void testGetLadder() throws UnirestException {
+        authenticateAndSetCookie();
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+
+        assertEquals(200, jsonResponse.getStatus());
+        JsonNode node = jsonResponse.getBody();
+        assertEquals(ladderLength, node.getArray().length());
+    }
 }
