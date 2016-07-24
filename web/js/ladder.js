@@ -5,7 +5,7 @@ var Ladder = (function () {
 
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
         'class="btn btn-raised btn-xs toggle-button ';
-    var TIME_SELECT_HTML = '<button class="btn-link" v-on:click="timeSelection()" id="timeSelect">preferred time</button>';
+    var TIME_SELECT_HTML = '<button class="btn-link" id="timeSelect">preferred time</button>';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
@@ -31,13 +31,14 @@ var Ladder = (function () {
         var ladderPages = [];
         var currentPage = [];
         var searchText = 'none';
+        var timeSelectButton;
 
         playingButton = Vue.extend({
             data: function () {
                 return {status: "Playing"};
             },
             props: ['index'],
-            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX + TIME_SELECT_HTML,
+            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX,
             methods: {
                 changeStatus: function () {
                     this.$parent.changeStatus(this.index);
@@ -49,6 +50,11 @@ var Ladder = (function () {
             }
         });
         Vue.component('playing-button', playingButton);
+
+        timeSelectButton = Vue.extend({
+            template: TIME_SELECT_HTML
+        });
+        Vue.component('time-select-button', timeSelectButton);
 
         notPlayingButton = Vue.extend({
             data: function () {
