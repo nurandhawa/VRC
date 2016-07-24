@@ -6,8 +6,8 @@ var EDIT_BUTTON_HTML = '<a v-on:click="editMatch()" class="edit-button btn btn-i
 
 var Matches = (function () {
     function Matches(matchData, elementId) {
-        Vue.component('matches', {
-            template: '#matches-template',
+        Vue.component('matches-modal', {
+            template: '#matchesModalTemplate',
             props: {
                 active: "active",
                 isActive: "isActive",
@@ -30,41 +30,124 @@ var Matches = (function () {
         });
 
 
-        var editButton;
-        var blankButton;
-        editButton = Vue.extend({
-            props: ['column','index'],
-            template: EDIT_BUTTON_HTML,
-            methods: {
-                editMatch: function() {
-                    this.$parent.openModal(this.index);
-                }
-             }
-        });
-        Vue.component('edit-button', editButton);
-
-        blankButton = Vue.extend({
-            template: "<a></a>"
-        });
+        // var editButton;
+        // var blankButton;
+        // editButton = Vue.extend({
+        //     props: ['column','index'],
+        //     template: EDIT_BUTTON_HTML,
+        //     methods: {
+        //         editMatch: function() {
+        //             this.$parent.openModal(this.index);
+        //         }
+        //      }
+        // });
+        // Vue.component('edit-button', editButton);
+        //
+        // blankButton = Vue.extend({
+        //     template: "<a></a>"
+        // });
+        //
+        // var matchesComponent = Vue.extend({
+        //     template: "matchesTemplate",
+        //     data: function() {
+        //         return {
+        //             active: 0,
+        //             showModal: false,
+        //             matches: matchData,
+        //             allDone: false,
+        //             mode: 'read'
+        //         };
+        //     },
+        //     props: ['index'],
+        //     methods: {
+        //         openModal: this.openModal,
+        //         updateMatches: this.updateMatches,
+        //         validateResults: this.validateResults
+        //     },
+        //     watch: {
+        //         "allDone": function(newVal, oldVal) {
+        //             this.$emit("matchesDone", newVal);
+        //         }
+        //     },
+        //     components: {
+        //         edit: editButton,
+        //         read: blankButton
+        //     }
+        // });
+        // Vue.component("matches", matchesComponent);
 
         this.component = new Vue({
-            el: elementId,
-            data: {
-                active: 0,
-                showModal: false,
-                matches: matchData,
-                allDone: false,
-                mode: 'read'
-            },
-            methods: {
-                openModal: this.openModal,
-                updateMatches: this.updateMatches,
-                validateResults: this.validateResults
-            },
-            components: {
-                edit: editButton,
-                read: blankButton
-            }
+          el: "#tabs",
+          data: {
+              activeTab: 'latest',
+              allDone: false
+          },
+          methods: {
+              setActive: function (tabClicked) {
+                  this.activeTab = tabClicked;
+              }
+          },
+          watch: {
+              'activeTab': function (newVal, oldVal) {
+                  if (newVal === "previous") {
+                      $("#reorderLadderButton").prop("disabled", false);
+                  }
+                  else {
+                      $("#reorderLadderButton").prop("disabled", this.allDone);
+                  }
+              }
+          },
+          events: {
+              'matchesDone': function (newVal) {
+                  if (newVal === true) {
+                      this.allDone = true;
+                      $("#reorderLadderButton").prop("disabled", false);
+                  }
+                  else {
+                      this.allDone = false;
+                      $("#reorderLadderButton").prop("disabled", true);
+                  }
+              }
+          },
+          components: {
+              'matches': Vue.extend({
+                  template: "matchesTemplate",
+                  data: function() {
+                      return {
+                          active: 0,
+                          showModal: false,
+                          matches: matchData,
+                          allDone: false,
+                          mode: 'read'
+                      };
+                  },
+                  props: ['index'],
+                  methods: {
+                      openModal: this.openModal,
+                      updateMatches: this.updateMatches,
+                      validateResults: this.validateResults
+                  },
+                  watch: {
+                      "allDone": function(newVal, oldVal) {
+                          this.$emit("matchesDone", newVal);
+                      }
+                  },
+                  components: {
+                      edit: Vue.extend({
+                          props: ['column','index'],
+                          template: EDIT_BUTTON_HTML,
+                          methods: {
+                              editMatch: function() {
+                                  this.$parent.openModal(this.index);
+                              }
+                           }
+                      }),
+                      read: Vue.extend({
+                          template: "<a></a>"
+                      })
+                  }
+              })
+          }
         });
     }
 
