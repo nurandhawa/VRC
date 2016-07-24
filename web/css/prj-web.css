@@ -56,6 +56,31 @@
     text-align: start;
 }
 
+#timeSelect {
+    font-size: x-small;
+    float: right;
+    clear: right;
+    text-decoration: underline;
+}
+
+#timeSelectModalContent {
+    margin: 50% auto;
+    padding: 20px;
+    padding-bottom: 5px;
+    width: 60%;
+    border: 2px solid;
+    border-color: #03a9f4;
+}
+
+#time-modal-footer {
+    padding: 0%;
+}
+
+.checkbox-label {
+    color: black;
+    font-size: small;
+}
+
 .position {
     margin-right: 10px;
     font-size: 1.2em;

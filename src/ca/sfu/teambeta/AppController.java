@@ -1,27 +1,22 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.*;
+
+import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.util.List;
-
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
+
 import ca.sfu.teambeta.persistence.DBManager;
+
+import java.util.List;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -38,8 +33,6 @@ import static spark.Spark.staticFiles;
  * Created by NoorUllah on 2016-06-16.
  */
 public class AppController {
-    public static final String PLAYING_STATUS = "playing";
-    public static final String NOT_PLAYING_STATUS = "not playing";
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
@@ -47,9 +40,16 @@ public class AppController {
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
+
+    private static final String TIME_SLOT_1 = "08:00 pm";
+    private static final String TIME_SLOT_2 = "09:30 pm";
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
+
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
+
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
@@ -133,6 +133,7 @@ public class AppController {
             }
 
             int newPosition = -1;
+
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
@@ -147,6 +148,7 @@ public class AppController {
 
             boolean validNewPos = InputValidator.checkLadderPosition(newPosition,
                     dbManager.getLadderSize(gameSession));
+
             boolean validStatus = InputValidator.checkPlayingStatus(status);
 
             if (!InputValidator.checkPairExists(dbManager, id)) {
@@ -169,7 +171,7 @@ public class AppController {
                         response.status(NOT_FOUND);
                         return getErrResponse(
                                 "Player " + firstName + " "
-                                + lastName + " is already playing");
+                                        + lastName + " is already playing");
                     }
                 } else if (status.equals(NOT_PLAYING_STATUS)) {
                     dbManager.setPairInactive(gameSession, id);
@@ -390,7 +392,8 @@ public class AppController {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InternalHashingException |
+                    NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
@@ -417,6 +420,38 @@ public class AppController {
 
             response.status(400);
             return getErrResponse(message);
+        });
+
+        patch("/api/ladder/time/:id", (request, response) -> {
+            int id;
+            try {
+                id = Integer.parseInt(request.params(ID));
+            } catch (Exception e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(ID_NOT_INT);
+            }
+
+            if (!InputValidator.checkPairExists(dbManager, id)) {
+                response.status(NOT_FOUND);
+                return getErrResponse(PAIR_NOT_FOUND + id);
+            }
+
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String time = extractedData.getTime();
+
+            if (time.equalsIgnoreCase(TIME_SLOT_1)) {
+                dbManager.setTimeSlot(id, Time.SLOT_1);
+            } else if (time.equalsIgnoreCase(TIME_SLOT_2)) {
+                dbManager.setTimeSlot(id, Time.SLOT_2);
+            } else {
+                dbManager.setTimeSlot(id, Time.NO_SLOT);
+            }
+
+            GameSession gameSession = dbManager.getGameSessionLatest();
+            VrcTimeSelection timeSelector = new VrcTimeSelection();
+            timeSelector.distributePairs(gameSession.getScorecards());
+            return getOkResponse("");
         });
 
         exception(Exception.class, (exception, request, response) -> {

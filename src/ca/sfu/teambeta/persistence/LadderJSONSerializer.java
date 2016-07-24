@@ -38,6 +38,7 @@ public class LadderJSONSerializer implements JSONSerializer {
         int positionChange = ( pair.getLastWeekPosition() - position );
         pairJson.addProperty("positionChange", positionChange);
         pairJson.addProperty("isPlaying", isPlaying);
+        pairJson.addProperty("timeSlot", pair.getTimeSlot().toString());
         return pairJson;
     }
 

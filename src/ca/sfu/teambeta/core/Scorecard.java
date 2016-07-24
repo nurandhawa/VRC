@@ -37,6 +37,9 @@ public class Scorecard extends Persistable {
     @Transient
     Observer observer = null;
     int finishedGameCount = 0;
+    @Transient
+    @Expose
+    private Time timeSlot;
 
     public Scorecard() {
 
@@ -129,4 +132,11 @@ public class Scorecard extends Persistable {
         return 47 * pairs.hashCode();
     }
 
+    public Time getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(Time timeSlot) {
+        this.timeSlot = timeSlot;
+    }
 }

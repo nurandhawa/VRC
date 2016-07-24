@@ -61,6 +61,3 @@ dependencies {
     compile group: 'com.java-adventures.security', name: 'secure-password-hash', version: '1.0.1'
     compile files('web')
 }
-
-
-

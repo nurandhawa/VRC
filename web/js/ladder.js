@@ -5,6 +5,7 @@ var Ladder = (function () {
 
     var STATUS_BUTTON_HTML_PREFIX = '<a v-on:click="changeStatus()"' +
         'class="btn btn-raised btn-xs toggle-button ';
+    var TIME_SELECT_HTML = '<button class="btn-link" v-on:click="timeSelection()" id="timeSelect">preferred time</button>';
     var STATUS_BUTTON_HTML_SUFFIX = ' ">{{ status }}</a>';
 
     var EDIT_BUTTON_HTML = '<a v-on:click="editPair()" class="edit-button btn btn-info btn-fab btn-fab-mini"><i class="material-icons md-light">create</i></a>';
@@ -35,10 +36,14 @@ var Ladder = (function () {
                 return {status: "Playing"};
             },
             props: ['index'],
-            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX,
+            template: STATUS_BUTTON_HTML_PREFIX + 'btn-success' + STATUS_BUTTON_HTML_SUFFIX + TIME_SELECT_HTML,
             methods: {
                 changeStatus: function () {
                     this.$parent.changeStatus(this.index);
+                },
+
+                timeSelection: function () {
+                    this.$parent.fillTimeModal(this.index);
                 }
             }
         });
@@ -124,7 +129,9 @@ var Ladder = (function () {
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
                 onValid: onValid,
-                onInvalid: onInvalid
+                onInvalid: onInvalid,
+                setTime: this.setTime,
+                fillTimeModal: this.fillTimeModal
             }
         });
     }
@@ -171,6 +178,22 @@ var Ladder = (function () {
             var api = new API();
             api.removePair(this.ladder[index].id, this.refreshLadder);
             hideModal(index);
+        }
+    };
+
+    Ladder.prototype.setTime = function (index) {
+        $("#timeSelectModal" + index).modal("hide");
+        var pair = this.ladder[index];
+        var api = new API();
+        if (document.getElementById("checkbox8pm" + index).checked) {
+            api.setTime("08:00 pm", pair.id);
+            pair.timeSlot = "SLOT_1";
+        } else if (document.getElementById("checkbox9pm" + index).checked) {
+            api.setTime("09:30 pm", pair.id);
+            pair.timeSlot = "SLOT_2";
+        } else {
+            api.setTime("NO_SLOT", pair.id);
+            pair.timeSlot = "NO_SLOT";
         }
     };
 
@@ -241,6 +264,38 @@ var Ladder = (function () {
                 entry.playingStatus = entry.isPlaying ? 'playing' : 'notplaying';
             });
         }
+    };
+
+    Ladder.prototype.fillTimeModal = function (index) {
+        var timeModal = document.getElementById("timeSelectModal" + index);
+        var firstCheckBox = document.getElementById("checkbox8pm" + index);
+        var secondCheckBox = document.getElementById("checkbox9pm" + index);
+
+        $("#timeSelectModal" + index).modal("show");
+
+        var pair = this.ladder[index];
+        if (pair.timeSlot == "SLOT_1") {
+            firstCheckBox.checked = true;
+            secondCheckBox.checked = false;
+        } else if (pair.timeSlot == "SLOT_2") {
+            firstCheckBox.checked = false;
+            secondCheckBox.checked = true;
+        } else {
+            firstCheckBox.checked = false;
+            secondCheckBox.checked = false;
+        }
+
+        window.onclick = function (event) {
+            if (event.target == timeModal) {
+                $("#timeSelectModal" + index).modal("hide");
+            }
+        };
+        firstCheckBox.onclick = function () {
+            secondCheckBox.checked = false;
+        };
+        secondCheckBox.onclick = function () {
+            firstCheckBox.checked = false;
+        };
     };
 
     return Ladder;

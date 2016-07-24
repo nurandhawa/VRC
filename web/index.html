@@ -164,8 +164,25 @@
                 <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
                 <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
               {{ entry.teamName }}
-              <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
+                <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
               </component>
+              <div id="timeSelectModal{{entry.position - 1}}" class="modal">
+                <div class="modal-dialog">
+                  <div id="timeSelectModalContent" class="modal-content">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <label><input id="checkbox8pm{{entry.position - 1}}" type="checkbox">
+                      <label class="checkbox-label">Thursday, 08:00 pm.</label></label><br>
+                    <label><input id="checkbox9pm{{entry.position - 1}}" type="checkbox">
+                      <label class="checkbox-label">Thursday, 09:30 pm.</label></label>
+                    <div id="time-modal-footer" class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+                      <button type="button" class="btn btn-success" id="timeSaveButton{{entry.position - 1}}"
+                              v-on:click="setTime(entry.position - 1)">Save</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div id="modal{{ entry.position - 1 }}" class="modal">
                 <div class="modal-dialog">
                   <div class="modal-content">

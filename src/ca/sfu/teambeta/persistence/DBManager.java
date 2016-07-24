@@ -1,7 +1,7 @@
 package ca.sfu.teambeta.persistence;
 
 import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -23,10 +23,14 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.VrcLadderReorderer;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 
 /**
  * Utility class that reads and writes data to the database
@@ -236,7 +240,8 @@ public class DBManager {
         }
     }
 
-    public synchronized void inputMatchResults(GameSession gameSession, Scorecard s, String[][] results) {
+    public synchronized void inputMatchResults(
+            GameSession gameSession, Scorecard s, String[][] results) {
         List<Pair> teams = s.getReorderedPairs();
         int rows = results.length;
         int cols = teams.size();
@@ -256,7 +261,7 @@ public class DBManager {
                 }
             }
             if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon,teamLost);
+                s.setGameResults(teamWon, teamLost);
             }
             winCount = 0;
             teamLost = null;
@@ -289,6 +294,7 @@ public class DBManager {
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             removed = ladder.removePair(pair);
+            pair.setTimeSlot(Time.NO_SLOT);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -304,11 +310,13 @@ public class DBManager {
         Pair pair = getPairFromID(pairId);
 
         removePair(pairId);
+
         gameSession.addNewPairAtIndex(pair, newPosition);
         persistEntity(gameSession);
     }
 
-    public synchronized Player getAlreadyActivePlayer(GameSession gameSession, int id) throws Exception {
+    public synchronized Player getAlreadyActivePlayer(
+            GameSession gameSession, int id) throws Exception {
         Pair pair = getPairFromID(id);
         Player player;
         try {
@@ -321,8 +329,9 @@ public class DBManager {
 
     public synchronized boolean setPairActive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
+        pair.setTimeSlot(Time.NO_SLOT);
         boolean activated = gameSession.setPairActive(pair);
-        gameSession.createGroups(new VrcScorecardGenerator());
+        gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
         return activated;
     }
@@ -330,7 +339,7 @@ public class DBManager {
     public synchronized void setPairInactive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
         gameSession.setPairInactive(pair);
-        gameSession.createGroups(new VrcScorecardGenerator());
+        gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
     }
 
@@ -460,7 +469,7 @@ public class DBManager {
     }
 
     public synchronized void reorderLadder(GameSession gameSession) {
-        gameSession.reorderLadder(new VrcLadderReorderer());
+        gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());
     }
 
     public synchronized GameSession createNewGameSession(GameSession sourceGameSession) {
@@ -475,5 +484,20 @@ public class DBManager {
     public enum GameSessionVersion {
         CURRENT,
         PREVIOUS
+    }
+
+    public synchronized void setTimeSlot(int pairId, Time time) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        gameSession.setTimeSlot(pair, time);
+        persistEntity(gameSession);
+    }
+
+    public Time getTimeSlot(int pairId) {
+        GameSession gameSession = getGameSessionLatest();
+        Pair pair = getPairFromID(pairId);
+        Time time = pair.getTimeSlot();
+        persistEntity(gameSession);
+        return time;
     }
 }

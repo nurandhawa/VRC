@@ -24,6 +24,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.persistence.Persistable;
 
 @Entity(name = "session")
@@ -54,7 +55,7 @@ public class GameSession extends Persistable {
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
         initializeActivePlayers();
-        createGroups(new VrcScorecardGenerator());
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
 
         setTimestamp();
     }
@@ -63,7 +64,7 @@ public class GameSession extends Persistable {
     public GameSession(Ladder ladder, long timestamp) {
         this.ladder = ladder;
         initializeActivePlayers();
-        createGroups(new VrcScorecardGenerator());
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
 
         this.timestamp = timestamp;
     }
@@ -72,8 +73,12 @@ public class GameSession extends Persistable {
         this.timestamp = Instant.now().getEpochSecond();
     }
 
-    public List<Scorecard> createGroups(ScorecardGenerator generator) {
+    public List<Scorecard> createGroups(ScorecardGenerator generator, TimeSelection timeSelector) {
+        //Generate groups
         scorecards = generator.generateScorecards(getActivePairs());
+        //Set dominant time slots for each group
+        timeSelector.distributePairs(scorecards);
+
         return Collections.unmodifiableList(scorecards);
     }
 
@@ -170,7 +175,7 @@ public class GameSession extends Persistable {
         return active;
     }
 
-    public void reorderLadder(LadderReorderer reorderer) {
+    public void reorderLadder(LadderReorderer reorderer, TimeSelection timeSelector) {
         updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
@@ -179,6 +184,7 @@ public class GameSession extends Persistable {
         } else {
             reorderedLadder.setNewPairs(reorderedList);
         }
+        timeSelector.clearTimeSlots(reorderedLadder);
         for (Pair p : getAllPairs()) {
             p.setPairScore(0);
         }
@@ -240,5 +246,17 @@ public class GameSession extends Persistable {
         return null;
     }
 
+    public void setTimeSlot(Pair pair, Time time) {
+        if (ladder.contains(pair)) {
+            int index = ladder.getPairs().indexOf(pair);
+            Pair pairFromLadder = ladder.getPairAtIndex(index);
+            pairFromLadder.setTimeSlot(time);
+            ladder.removePair(pairFromLadder);
+            ladder.insertAtIndex(index, pairFromLadder);
+        }
+    }
 
+    public void setScorecards(List<Scorecard> scorecards) {
+        this.scorecards = scorecards;
+    }
 }
