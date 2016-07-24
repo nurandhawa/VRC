@@ -1,10 +1,10 @@
 package ca.sfu.teambeta.core;
 
+import ca.sfu.teambeta.persistence.Persistable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
-
-import ca.sfu.teambeta.persistence.Persistable;
 
 /**
  * The User class holds the notion of a database-user.
@@ -21,12 +21,15 @@ public class User extends Persistable {
     private String firstName = "";
     private String lastName = "";
     private String phoneNumber = "";
+    private String securityQuestion = "";
+    private String securityAnswerHash = "";
 
     @OneToOne
     private Player associatedPlayer = null;
 
+
     // MARK: - Constructors
-    // Dafault constructor for Hibernate
+    // Default Constructor for Hibernate
     public User() {
 
     }
@@ -34,23 +37,6 @@ public class User extends Persistable {
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
-    }
-
-    public User(String email, String passwordHash, String phoneNumber) {
-        this(email, passwordHash);
-        this.phoneNumber = phoneNumber;
-    }
-
-    public User(String email, String passwordHash, String firstName, String lastName) {
-        this(email, passwordHash);
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    public User(String email, String passwordHash,
-                String firstName, String lastName, String phoneNumber) {
-        this(email, passwordHash, firstName, lastName);
-        this.phoneNumber = phoneNumber;
     }
 
 
@@ -75,6 +61,46 @@ public class User extends Persistable {
         return phoneNumber;
     }
 
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
+
+    public String getSecurityAnswerHash() {
+        return securityAnswerHash;
+    }
+
+
+    // MARK: Setters
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public void setSecurityAnswerHash(String securityAnswerHash) {
+        this.securityAnswerHash = securityAnswerHash;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+
+    // MARK: Misc Methods
     public void associatePlayer(Player player) {
         this.associatedPlayer = player;
     }
@@ -83,6 +109,8 @@ public class User extends Persistable {
         this.associatedPlayer = null;
     }
 
+
+    // MARK: Helper Methods
     @Override
     public boolean equals(Object o) {
         if (this == o) {
