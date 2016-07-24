@@ -389,6 +389,7 @@ public class AppController {
             try {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
+                response.cookie(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
             } catch (InternalHashingException | NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
