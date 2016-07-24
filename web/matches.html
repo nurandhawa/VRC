@@ -100,6 +100,7 @@
                 <div class="panel" v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
                     <div id="match{{match.scorecardIndex}}" class="match-heading panel-heading">
                         <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <h3 class="match-title panel-title" style="text-align: right">{{match.timeSlot}}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
                         </component>
                     </div>
