@@ -1,8 +1,5 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
-
-import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -15,16 +12,19 @@ import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 import ca.sfu.teambeta.persistence.DBManager;
-
-import java.util.List;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;

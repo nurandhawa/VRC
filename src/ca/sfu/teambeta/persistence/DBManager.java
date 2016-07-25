@@ -1,7 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -16,15 +14,21 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcLadderReorderer;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 
 /**
  * Utility class that reads and writes data to the database
@@ -65,7 +69,7 @@ public class DBManager {
         config.configure(LOCAL_TESTING_CFG_XML);
         config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
-            config.setProperty("hibernate.hbm2ddl.auto", "create");
+            config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
