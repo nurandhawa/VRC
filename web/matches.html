@@ -25,7 +25,7 @@
     <!-- Custom styles for this template -->
     <link href="css/prj-web.css" rel="stylesheet">
 
-    <script type="x/template" id="matches-template">
+    <script type="x/template" id="matchesModalTemplate">
         <div class="mymodal-mask" v-show="show" transition="matches">
             <div class="mymodal-wrapper">
                 <div id="modal{{$index}}" v-for="match in matchlist" v-if="modalActiveContent($index)">
@@ -91,7 +91,36 @@
     </script>
 
     <script type="x/template" id="reorderLadderButtonTemplate">
-        <button id="reorderLadderButton" class="btn btn-raised btn-success header-button" v-on:click="saveResults()"disabled="{{ disabled }}">Reorder Ladder</button>
+        <button class="btn btn-raised btn-success header-button" v-on:click="saveResults()"disabled="{{ disabled }}">Reorder Ladder</button>
+    </script>
+
+    <script type="x/template" id="matchesComponentTemplate">
+        <div class="matches">
+            <div class="match-item" v-for="match in matches">
+                <div class="panel" v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
+                    <div id="match{{match.scorecardIndex}}" class="match-heading panel-heading">
+                        <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <h3 class="match-title panel-title" style="text-align: right">{{match.timeSlot}}</h3>
+                        <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
+                        </component>
+                    </div>
+                    <div class="panel-body">
+                        <div class="pair-name match-pair" v-for="pair in match.pairs">
+                            <div class="col-sm-1 label label-info position">{{ $index + 1 }}
+                            </div>
+                            <div>
+                                {{ pair.players[0].firstName }}
+                                {{pair.players[0].lastName }} and
+                                {{ pair.players[1].firstName }}
+                                {{pair.players[1].lastName}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <matches-modal :show.sync="showModal" :matchlist="matches"
+                     :active.sync="active"></matches-modal>
+         </div>
     </script>
 
 
@@ -132,7 +161,7 @@
     <div class="header-right header-item">
         <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
         <div v-if="mode === 'edit'" transition="fade" transition-mode="out-in">
-            <reorder-ladder-button></reorder-ladder-button>
+            <reorder-ladder-button id="reorderLadderButton"></reorder-ladder-button>
         </div>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
@@ -151,69 +180,10 @@
     </ul>
     <div id="tabContent" class="tab-content">
         <div class="tab-pane fade" id="lastweek">
-            <div id="matches-previous" class="matches">
-                <div class="match-item" v-for="match in matches">
-                    <div class="panel"
-                         v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
-                        <div id="match{{match.scorecardIndex}}"
-                             class="match-heading panel-heading">
-                            <h3 class="match-title panel-title">Match {{
-                                match.scorecardIndex + 1 }}</h3>
-                            <component :is="mode" column="left" :index="$index"
-                                       transition="fade" transition-mode="out-in">
-                            </component>
-                        </div>
-                        <div class="panel-body">
-                            <div class="pair-name match-pair" v-for="pair in match.pairs">
-                                <div class="col-sm-1 label label-info position">{{ $index +
-                                    1 }}
-                                </div>
-                                <div>
-                                    {{ pair.players[0].firstName }}
-                                    {{pair.players[0].lastName }} and
-                                    {{ pair.players[1].firstName }}
-                                    {{pair.players[1].lastName}}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <matches :show.sync="showModal" :matchlist="matches"
-                         :active.sync="active"></matches>
-            </div>
+            <matches game-session="previous"></matches>
         </div>
         <div class="tab-pane fade active in" id="thisweek">
-            <div id="matches-latest" class="matches">
-                    <div class="match-item" v-for="match in matches">
-                            <div class="panel"
-                                 v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
-                                <div id="match{{match.scorecardIndex}}"
-                                     class="match-heading panel-heading">
-                                    <h3 class="match-title panel-title">Match {{
-                                        match.scorecardIndex + 1 }}</h3>
-                                    <h3 class="match-title panel-title" style="text-align: right">{{match.timeSlot}}</h3>
-                                    <component :is="mode" column="left" :index="$index"
-                                               transition="fade" transition-mode="out-in">
-                                    </component>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="pair-name match-pair" v-for="pair in match.pairs">
-                                        <div class="col-sm-1 label label-info position">{{ $index +
-                                            1 }}
-                                        </div>
-                                        <div>
-                                            {{ pair.players[0].firstName }}
-                                            {{pair.players[0].lastName }} and
-                                            {{ pair.players[1].firstName }}
-                                            {{pair.players[1].lastName}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
-                <matches :show.sync="showModal" :matchlist="matches"
-                         :active.sync="active"></matches>
-            </div>
+            <matches game-session="latest"></matches>
         </div>
     </div>
 </div>
