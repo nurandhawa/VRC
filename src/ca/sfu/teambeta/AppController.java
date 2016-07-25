@@ -314,7 +314,8 @@ public class AppController {
                 response.status(OK);
                 return json;
             } else {
-                response.status(NOT_FOUND);
+                // Request was fine so the server should still send 200
+                response.status(OK);
                 return getErrResponse("No scorecards were found");
             }
         });

@@ -16,6 +16,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.hibernate.SessionFactory;
 import org.json.JSONException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,9 +36,14 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import static spark.Spark.awaitInitialization;
+import static spark.Spark.stop;
 
 /**
- * Created by Gordon Shieh on 23/07/16.
+ * API testing using the Unirest library.
+ * Every test will spawn a fresh SparkJava server, and will use an In-Memory database for performance reasons
+ * All Unirest calls will throw the "UnirestException" and should not be caught in the tests.
+ * Under the hood, Unirest uses Apache's HTTP Libraries which support the use of cookies,
+ * and require NO calls in the testing code involving cookies
  */
 public class APITest {
     public static final String EMAIL = "testuser@vrc.com";
@@ -58,7 +64,7 @@ public class APITest {
                     System.out.println("INVALID CSV FILE");
                     throw e;
                 }
-                SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+                SessionFactory sessionFactory = DBManager.getHSQLSession();
 
                 GameSession gameSession = new GameSession(newLadder);
                 gameSession.setUpLastWeekPositions();
@@ -90,6 +96,11 @@ public class APITest {
         Unirest.setHttpClient(httpclient);
     }
 
+    @After
+    public void stopServer() {
+        stop();
+    }
+
     private HttpResponse<JsonNode> login(String email, String password) throws UnirestException {
         Map<String, String> loginParams = new HashMap<>();
         loginParams.put("email", email);
@@ -103,12 +114,16 @@ public class APITest {
                 .asJson();
     }
 
-    // Cookie is set automatically by HttpClient silently
-    // Only works if httpClient.setDefaultCookieStore(new BasicCookieStore()) is called
-    private String authenticateAndSetCookie() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = login(EMAIL, PASSWORD);
-        JsonNode node = jsonResponse.getBody();
-        return node.getObject().getString("sessionToken");
+    private HttpResponse<JsonNode> changePairToPlaying(int pairId) throws UnirestException {
+        return Unirest.patch(HOSTNAME + "api/ladder/" + pairId)
+                .queryString("newStatus", "playing")
+                .asJson();
+    }
+
+    private HttpResponse<JsonNode> changePairToNotPlaying(int pairId) throws UnirestException {
+        return Unirest.patch(HOSTNAME + "api/ladder/1")
+                .queryString("newStatus", "not playing")
+                .asJson();
     }
 
     @Test
@@ -131,8 +146,8 @@ public class APITest {
     }
 
     @Test
-    public void testGetLadder() throws UnirestException {
-        authenticateAndSetCookie();
+    public void testGetLadderLoggedIn() throws UnirestException {
+        login(EMAIL, PASSWORD);
         HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
                 .header("accept", "application/json")
                 .asJson();
@@ -140,5 +155,72 @@ public class APITest {
         assertEquals(200, jsonResponse.getStatus());
         JsonNode node = jsonResponse.getBody();
         assertEquals(ladderLength, node.getArray().length());
+    }
+
+    @Test
+    public void testGetLadderNotLoggedIn() throws UnirestException {
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+
+        assertEquals(401, jsonResponse.getStatus());
+    }
+
+    @Test
+    public void testChangePlayingStatusLoggedIn() throws UnirestException {
+        login(EMAIL, PASSWORD);
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(HOSTNAME + "api/ladder/1")
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        assertEquals(200, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
+        login(EMAIL, PASSWORD);
+
+        changePairToPlaying(1);
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+
+        assertEquals(404, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void testChangePlayingStatusNotLoggedIn() throws UnirestException {
+        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+
+        assertEquals(401, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void testGetLatestMatchesEmptyLoggedIn() throws UnirestException {
+        login(EMAIL, PASSWORD);
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
+                .queryString("gameSession", "latest")
+                .header("accept", "application/json")
+                .asJson();
+
+        assertEquals(200, jsonResponse.getStatus());
+    }
+
+    @Test
+    public void testGetLatestMatchesLoggedIn() throws UnirestException {
+        login(EMAIL, PASSWORD);
+        for (int i = 1; i <= 10; i++) {
+            changePairToPlaying(i);
+        }
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
+                .queryString("gameSession", "latest")
+                .header("accept", "application/json")
+                .asJson();
+
+        assertEquals(200, jsonResponse.getStatus());
+
+        JsonNode node = jsonResponse.getBody();
+        assertEquals(3, node.getArray().length());
     }
 }
