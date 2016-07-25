@@ -270,10 +270,10 @@ var API = (function() {
             });
     };
 
-    API.prototype.removePairFromMatch = function (pairId, doneCallback, failCallback) {
+    API.prototype.removePairFromMatch = function (gameSession, pairId, doneCallback, failCallback) {
         $.ajax({
             method: "DELETE",
-            url: SERVER_URL + "/matches/" + pairId
+            url: SERVER_URL + "/matches/" + pairId + GAMESESSION_PARAM + gameSession,
         })
             .done(function (response) {
                 if (doneCallback) {

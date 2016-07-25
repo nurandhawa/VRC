@@ -41,6 +41,14 @@ var Matches = (function () {
                     api.addPenalty(gameSession, pair.id, penaltyType, function(response) {
                     });
                 },
+                removeMatchPair: function(pair, gameSession){
+                    var api = new API();
+
+                    api.removePairFromMatch(gameSession, pair.id, function() {
+                        this.refreshMatches(gameSession);
+                    });
+
+                },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
                     var results = match.results;
