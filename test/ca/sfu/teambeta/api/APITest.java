@@ -64,7 +64,7 @@ public class APITest {
                     System.out.println("INVALID CSV FILE");
                     throw e;
                 }
-                SessionFactory sessionFactory = DBManager.getHSQLSession();
+                SessionFactory sessionFactory = DBManager.getTestingSession(true);
 
                 GameSession gameSession = new GameSession(newLadder);
                 gameSession.setUpLastWeekPositions();
