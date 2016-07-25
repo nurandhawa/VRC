@@ -30,6 +30,7 @@ var Ladder = (function () {
         var pageButton;
         var ladderPages = [];
         var currentPage = [];
+        var searchText = 'none';
 
         playingButton = Vue.extend({
             data: function () {
@@ -98,6 +99,7 @@ var Ladder = (function () {
                 ladder: ladderData,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
+                searchText: searchText,
                 newPairData: {
                     player1: {
                         firstName: "",
