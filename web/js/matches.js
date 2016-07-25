@@ -43,19 +43,10 @@ var Matches = (function () {
                 },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
-                    var results = [];
-
-                    for (var round = 0; round < match.pairs.length; round++) {
-                        var roundResult = [];
-                        for (var pair in match.pairs) {
-                            roundResult.push(match.results[pair][round]);
-                        }
-                        results.push(roundResult);
-                    }
-
+                    var results = match.results;
                     var api = new API();
                     api.inputMatchResults(gameSession, match.id, results, function() {
-                        this.refreshMatches(gameSession);
+                        this.refreshMatches();
                     }.bind(this));
                     this.closeModal();
                 },
