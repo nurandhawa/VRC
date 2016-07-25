@@ -46,8 +46,8 @@ var Matches = (function () {
 
                     api.removePairFromMatch(gameSession, pair.id, function() {
                         this.refreshMatches(gameSession);
-                    });
-
+                    }.bind(this));
+                    this.closeModal();
                 },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
@@ -56,7 +56,7 @@ var Matches = (function () {
                     api.inputMatchResults(gameSession, match.id, results, function() {
                         this.refreshMatches();
                     }.bind(this));
-                    this.closeModal();
+                    location.reload(true);
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
