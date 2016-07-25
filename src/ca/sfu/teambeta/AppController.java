@@ -16,6 +16,7 @@ import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 import ca.sfu.teambeta.persistence.DBManager;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static spark.Spark.before;
@@ -64,6 +65,7 @@ public class AppController {
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
+    private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
@@ -124,133 +126,145 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
-            int id;
-            try {
-                id = Integer.parseInt(request.params(ID));
-            } catch (Exception e) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(ID_NOT_INT);
-            }
-
-            int newPosition = -1;
-
-            try {
-                newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
-            } catch (Exception ignored) {
-            }
-
-            String status = request.queryParams(STATUS);
-            if (status == null) {
-                status = "";
-            }
-
-            GameSession gameSession = dbManager.getGameSessionLatest();
-
-            boolean validNewPos = InputValidator.checkLadderPosition(newPosition,
-                    dbManager.getLadderSize(gameSession));
-
-            boolean validStatus = InputValidator.checkPlayingStatus(status);
-
-            if (!InputValidator.checkPairExists(dbManager, id)) {
-                response.status(NOT_FOUND);
-                return getErrResponse(PAIR_NOT_FOUND + id);
-            }
-
-            if (!validStatus && !validNewPos) {
-                response.status(BAD_REQUEST);
-                return getErrResponse("Specify what to update: position or status");
-            } else if (validStatus && !validNewPos) {
-                if (status.equals(PLAYING_STATUS)) {
-                    boolean statusChanged = dbManager.setPairActive(gameSession, id);
-                    if (statusChanged) {
-                        return getOkResponse("");
-                    } else {
-                        Player activePlayer = dbManager.getAlreadyActivePlayer(gameSession, id);
-                        String firstName = activePlayer.getFirstName();
-                        String lastName = activePlayer.getLastName();
-                        response.status(NOT_FOUND);
-                        return getErrResponse(
-                                "Player " + firstName + " "
-                                        + lastName + " is already playing");
-                    }
-                } else if (status.equals(NOT_PLAYING_STATUS)) {
-                    dbManager.setPairInactive(gameSession, id);
-                    return getOkResponse("");
+            if (!TimeManager.getInstance().isExpired()) {
+                int id;
+                try {
+                    id = Integer.parseInt(request.params(ID));
+                } catch (Exception e) {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse(ID_NOT_INT);
                 }
 
-            } else if (!validStatus && validNewPos) {
-                dbManager.movePair(gameSession, id, newPosition);
+                int newPosition = -1;
+
+                try {
+                    newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
+                } catch (Exception ignored) {
+                }
+
+                String status = request.queryParams(STATUS);
+                if (status == null) {
+                    status = "";
+                }
+
+                GameSession gameSession = dbManager.getGameSessionLatest();
+
+                boolean validNewPos = InputValidator.checkLadderPosition(newPosition,
+                        dbManager.getLadderSize(gameSession));
+
+                boolean validStatus = InputValidator.checkPlayingStatus(status);
+
+                if (!InputValidator.checkPairExists(dbManager, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(PAIR_NOT_FOUND + id);
+                }
+
+                if (!validStatus && !validNewPos) {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse("Specify what to update: position or status");
+                } else if (validStatus && !validNewPos) {
+                    if (status.equals(PLAYING_STATUS)) {
+                        boolean statusChanged = dbManager.setPairActive(gameSession, id);
+                        if (statusChanged) {
+                            return getOkResponse("");
+                        } else {
+                            Player activePlayer = dbManager.getAlreadyActivePlayer(gameSession, id);
+                            String firstName = activePlayer.getFirstName();
+                            String lastName = activePlayer.getLastName();
+                            response.status(NOT_FOUND);
+                            return getErrResponse(
+                                    "Player " + firstName + " "
+                                            + lastName + " is already playing");
+                        }
+                    } else if (status.equals(NOT_PLAYING_STATUS)) {
+                        dbManager.setPairInactive(gameSession, id);
+                        return getOkResponse("");
+                    }
+
+                } else if (!validStatus && validNewPos) {
+                    dbManager.movePair(gameSession, id, newPosition);
+                    return getOkResponse("");
+
+                } else {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse("Cannot change both: position and status");
+                }
+
                 return getOkResponse("");
-
             } else {
-                response.status(BAD_REQUEST);
-                return getErrResponse("Cannot change both: position and status");
+                return getErrResponse(LADDER_DISABLED);
             }
-
-            return getOkResponse("");
         });
 
         //add pair to ladder
         //in case of adding a pair at the end of ladder, position is length of ladder
         post("/api/ladder", (request, response) -> {
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            final int MAX_SIZE = 2;
+            if (!TimeManager.getInstance().isExpired()) {
+                String body = request.body();
+                JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+                final int MAX_SIZE = 2;
 
-            GameSession gameSession = dbManager.getGameSessionLatest();
+                GameSession gameSession = dbManager.getGameSessionLatest();
 
-            boolean validPos = InputValidator.checkLadderPosition(
-                    extractedData.getPosition(), dbManager.getLadderSize(gameSession));
+                boolean validPos = InputValidator.checkLadderPosition(
+                        extractedData.getPosition(), dbManager.getLadderSize(gameSession));
 
-            List<Player> newPlayers = extractedData.getPlayers();
+                List<Player> newPlayers = extractedData.getPlayers();
 
-            try {
-                InputValidator.validateNewPlayers(newPlayers, MAX_SIZE);
-            } catch (InvalidInputException exception) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(exception.getMessage());
-            }
-
-            for (int i = 0; i < MAX_SIZE; i++) {
-                Integer existingId = newPlayers.get(i).getExistingId();
-                if (existingId != null && existingId >= 0) {
-                    newPlayers.remove(i);
-                    newPlayers.add(i, dbManager.getPlayerFromID(existingId));
+                try {
+                    InputValidator.validateNewPlayers(newPlayers, MAX_SIZE);
+                } catch (InvalidInputException exception) {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse(exception.getMessage());
                 }
-            }
 
-            Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+                for (int i = 0; i < MAX_SIZE; i++) {
+                    Integer existingId = newPlayers.get(i).getExistingId();
+                    if (existingId != null && existingId >= 0) {
+                        newPlayers.remove(i);
+                        newPlayers.add(i, dbManager.getPlayerFromID(existingId));
+                    }
+                }
 
-            if (validPos) {
-                dbManager.addPair(gameSession, pair, extractedData.getPosition() - 1);
-                response.status(OK);
+                Pair pair = new Pair(newPlayers.get(0), newPlayers.get(1));
+
+                if (validPos) {
+                    dbManager.addPair(gameSession, pair, extractedData.getPosition() - 1);
+                    response.status(OK);
+                } else {
+                    dbManager.addPair(gameSession, pair);
+                    response.status(OK);
+                }
+
+                return getOkResponse("");
             } else {
-                dbManager.addPair(gameSession, pair);
-                response.status(OK);
+                return getErrResponse(LADDER_DISABLED);
             }
-
-            return getOkResponse("");
         });
 
         //remove player from ladder
         delete("/api/ladder/:id", (request, response) -> {
-            int id;
-            try {
-                id = Integer.parseInt(request.params(ID));
-            } catch (Exception e) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(ID_NOT_INT);
+            if (!TimeManager.getInstance().isExpired()) {
+                int id;
+                try {
+                    id = Integer.parseInt(request.params(ID));
+                } catch (Exception e) {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse(ID_NOT_INT);
+                }
+
+                if (!InputValidator.checkPairExists(dbManager, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(PAIR_NOT_FOUND + id);
+                }
+
+                dbManager.removePair(id);
+                response.status(OK);
+
+                return getOkResponse("");
+            } else {
+                return getErrResponse(LADDER_DISABLED);
             }
-
-            if (!InputValidator.checkPairExists(dbManager, id)) {
-                response.status(NOT_FOUND);
-                return getErrResponse(PAIR_NOT_FOUND + id);
-            }
-
-            dbManager.removePair(id);
-            response.status(OK);
-
-            return getOkResponse("");
         });
 
         post("/api/matches", ((request, response) -> {
@@ -265,6 +279,8 @@ public class AppController {
                 dbManager.saveGameSession(newGameSession);
             }
 
+            //Update timeManager which enables ladder editing
+            TimeManager.getInstance().updateTime();
             return getOkResponse("");
         }));
 
@@ -423,35 +439,39 @@ public class AppController {
         });
 
         patch("/api/ladder/time/:id", (request, response) -> {
-            int id;
-            try {
-                id = Integer.parseInt(request.params(ID));
-            } catch (Exception e) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(ID_NOT_INT);
-            }
+            if (!TimeManager.getInstance().isExpired()) {
+                int id;
+                try {
+                    id = Integer.parseInt(request.params(ID));
+                } catch (Exception e) {
+                    response.status(BAD_REQUEST);
+                    return getErrResponse(ID_NOT_INT);
+                }
 
-            if (!InputValidator.checkPairExists(dbManager, id)) {
-                response.status(NOT_FOUND);
-                return getErrResponse(PAIR_NOT_FOUND + id);
-            }
+                if (!InputValidator.checkPairExists(dbManager, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(PAIR_NOT_FOUND + id);
+                }
 
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String time = extractedData.getTime();
+                String body = request.body();
+                JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+                String time = extractedData.getTime();
 
-            if (time.equalsIgnoreCase(TIME_SLOT_1)) {
-                dbManager.setTimeSlot(id, Time.SLOT_1);
-            } else if (time.equalsIgnoreCase(TIME_SLOT_2)) {
-                dbManager.setTimeSlot(id, Time.SLOT_2);
+                if (time.equalsIgnoreCase(TIME_SLOT_1)) {
+                    dbManager.setTimeSlot(id, Time.SLOT_1);
+                } else if (time.equalsIgnoreCase(TIME_SLOT_2)) {
+                    dbManager.setTimeSlot(id, Time.SLOT_2);
+                } else {
+                    dbManager.setTimeSlot(id, Time.NO_SLOT);
+                }
+
+                GameSession gameSession = dbManager.getGameSessionLatest();
+                VrcTimeSelection timeSelector = new VrcTimeSelection();
+                timeSelector.distributePairs(gameSession.getScorecards());
+                return getOkResponse("");
             } else {
-                dbManager.setTimeSlot(id, Time.NO_SLOT);
+                return getErrResponse(LADDER_DISABLED);
             }
-
-            GameSession gameSession = dbManager.getGameSessionLatest();
-            VrcTimeSelection timeSelector = new VrcTimeSelection();
-            timeSelector.distributePairs(gameSession.getScorecards());
-            return getOkResponse("");
         });
 
         exception(Exception.class, (exception, request, response) -> {
