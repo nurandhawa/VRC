@@ -67,7 +67,6 @@ public class APITest {
                 SessionFactory sessionFactory = DBManager.getTestingSession(true);
 
                 GameSession gameSession = new GameSession(newLadder);
-                gameSession.setUpLastWeekPositions();
                 dbManager = new DBManager(sessionFactory);
                 dbManager.persistEntity(gameSession);
 
