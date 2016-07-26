@@ -29,7 +29,7 @@ class Main {
             dbManager.persistEntity(gameSession);
         }
         AccountManager am = new AccountManager(dbManager);
-        am.register("testuser@vrc.com", "demoPass");
+        am.register("admin_billy@vrc.ca", "demoPass");
 
         AppController appController =
                 new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
