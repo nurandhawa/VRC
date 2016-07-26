@@ -30,7 +30,7 @@
             <div class="mymodal-wrapper">
                 <div id="modal{{$index}}" v-for="match in matchlist" v-if="modalActiveContent($index)">
                     <div class="modal-dialog">
-                        <div class="modal-content">
+                        <div class="modal-content mymodal-content">
                             <div class="modal-header">
                                 Edit Match {{ match.scorecardIndex + 1 }}
                             </div>
@@ -136,7 +136,7 @@
 
 </head>
 
-<body>
+<body style="min-width:450px">
 
 <nav class="navbar navbar-info">
     <div class="container-fluid">
