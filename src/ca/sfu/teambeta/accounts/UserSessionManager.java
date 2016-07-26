@@ -1,13 +1,10 @@
-package ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.accounts;
 
-import ca.sfu.teambeta.core.SessionInformation;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.UserRole;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.logic.InputValidator;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
@@ -25,7 +22,7 @@ import java.util.Hashtable;
  */
 
 public class UserSessionManager {
-    private static Dictionary<String, SessionInformation> sessions = new Hashtable<>();
+    private static Dictionary<String, UserSessionMetadata> sessions = new Hashtable<>();
 
 
     // MARK: - The Core Session Methods
@@ -33,9 +30,9 @@ public class UserSessionManager {
         String sessionId = generateRandomSessionID();
         String userEmail = user.getEmail();
 
-        SessionInformation userSessionInformation = new SessionInformation(userEmail, role);
+        UserSessionMetadata metadata = new UserSessionMetadata(userEmail, role);
 
-        sessions.put(sessionId, userSessionInformation);
+        sessions.put(sessionId, metadata);
 
         return sessionId;
 
@@ -67,9 +64,9 @@ public class UserSessionManager {
         }
 
         // Get the session metadata and check if it's expired
-        SessionInformation sessionInformation = getSessionInformation(sessionId);
+        UserSessionMetadata metadata = getSessionMetadata(sessionId);
 
-        if (sessionInformation.isSessionExpired() == false) {
+        if (metadata.isSessionExpired() == false) {
             return true;
         } else {
             deleteSession(sessionId);
@@ -87,9 +84,9 @@ public class UserSessionManager {
             throw new NoSuchSessionException("Invalid SessionId");
         }
 
-        SessionInformation sessionInformation = sessions.get(sessionId);
+        UserSessionMetadata metadata = sessions.get(sessionId);
 
-        return sessionInformation.isAdministratorSession();
+        return metadata.isAdministratorSession();
 
     }
 
@@ -103,40 +100,31 @@ public class UserSessionManager {
             throw new NoSuchSessionException("Invalid SessionId");
         }
 
-        SessionInformation sessionInformation = sessions.get(sessionId);
+        UserSessionMetadata metadata = sessions.get(sessionId);
 
-        return sessionInformation.getEmail();
+        return metadata.getEmail();
     }
 
 
     // MARK: Helper Methods
-    private static SessionInformation getSessionInformation(String sessionId)
+    private static UserSessionMetadata getSessionMetadata(String sessionId)
             throws NoSuchSessionException {
 
-        SessionInformation sessionInformation = sessions.get(sessionId);
+        UserSessionMetadata metadata = sessions.get(sessionId);
 
-        if (sessionInformation == null) {
+        if (metadata == null) {
             throw new NoSuchSessionException("Invalid SessionId");
         } else {
-            return sessionInformation;
+            return metadata;
         }
     }
 
     private static String generateRandomSessionID() {
-        // See citations.txt for more information
-
-        // DO NOT CHANGE THESE VALUES
-        final int MAX_BIT_LENGTH = 130;
-        final int ENCODING_BASE = 32;
-
-        SecureRandom random = new SecureRandom();
-        String sessionId = "";
-
-        sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+       String sessionId = TokenGenerator.generateRandomToken();
 
         // Make sure we don't have two of the same sessionId's
         while (sessions.get(sessionId) != null) {
-            sessionId = new BigInteger(MAX_BIT_LENGTH, random).toString(ENCODING_BASE);
+            sessionId = TokenGenerator.generateRandomToken();
         }
 
         return sessionId;

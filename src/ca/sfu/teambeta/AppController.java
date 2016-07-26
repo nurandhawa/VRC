@@ -1,5 +1,7 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.UserSessionManager;
 import ca.sfu.teambeta.core.*;
 
 import ca.sfu.teambeta.logic.*;
