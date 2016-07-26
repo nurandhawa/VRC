@@ -15,4 +15,12 @@ public class SessionResponse {
         this.sessionToken = sessionId;
         this.userRole = userRole;
     }
+
+    public String getSessionToken() {
+        return sessionToken;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
 }
