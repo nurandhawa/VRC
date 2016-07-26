@@ -91,6 +91,35 @@ var Ladder = (function () {
             }
         });
 
+        var onValidityChanged = function (property, category, isValid) {
+            if (property === "position") {
+                this.newPairValid.position = isValid;
+            }
+            else if (property === "player1") {
+                this.newPairValid.player1[category] = isValid;
+            }
+            else if (property === "player2") {
+                this.newPairValid.player2[category] = isValid;
+            }
+        };
+
+        var checkValidity = function () {
+            var positionValid = this.newPairValid.position === true;
+
+            var player1Valid = this.newPairData.player1.type === 'new' ?
+                this.newPairValid.player1.new : this.newPairValid.player1.existing;
+
+            var player2Valid = this.newPairData.player2.type === 'new' ?
+                this.newPairValid.player2.new : this.newPairValid.player2.existing;
+
+            if (positionValid && player1Valid && player2Valid) {
+                this.onValid("#newPairSave");
+            }
+            else {
+                this.onInvalid("#newPairSave");
+            }
+        };
+
         var onValid = function (elementId) {
             $(elementId).prop("disabled", false);
         };
@@ -124,7 +153,42 @@ var Ladder = (function () {
                     },
                     position: ""
                 },
+                newPairValid: {
+                    position: false,
+                    player1: {
+                        new: false,
+                        existing: false
+                    },
+                    player2: {
+                        new: false,
+                        existing: false
+                    }
+                },
                 mode: 'read'
+            },
+            watch: {
+                'newPairValid': {
+                    handler: checkValidity,
+                    deep: true
+                },
+                'newPairData.player1.type': checkValidity,
+                'newPairData.player2.type': checkValidity,
+                'newPairData.player1.existingPlayer': function (val) {
+                    if (val) {
+                        onValidityChanged.call(this, 'player1', 'existing', true);
+                    }
+                    else {
+                        onValidityChanged.call(this, 'player1', 'existing', false);
+                    }
+                },
+                'newPairData.player2.existingPlayer': function (val) {
+                    if (val) {
+                        onValidityChanged.call(this, 'player2', 'existing', true);
+                    }
+                    else {
+                        onValidityChanged.call(this, 'player2', 'existing', false);
+                    }
+                }
             },
             components: {
                 playing: playingButton,
@@ -142,6 +206,7 @@ var Ladder = (function () {
                 refreshLadder: this.refreshLadder,
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
+                onValidityChanged: onValidityChanged,
                 onValid: onValid,
                 onInvalid: onInvalid,
                 setTime: this.setTime,
