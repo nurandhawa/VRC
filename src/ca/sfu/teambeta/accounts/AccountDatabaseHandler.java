@@ -6,8 +6,12 @@ import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.persistence.DBManager;
 
 /**
- * This class handles the api interactions between the account and user
- * related methods, and the database.
+ * This class handles the api interactions between the account/user
+ * related methods, and the database. In the future a logger can be
+ * implemented in this intermediary class to log all account related
+ * interactions for debugging and security purposes. Furthermore, a
+ * local in-memory version of this class can be passed into other
+ * objects, if ever needed.
  *
  */
 
@@ -34,7 +38,7 @@ public class AccountDatabaseHandler {
     }
 
 
-    // MARK: Database Save/Update Methods
+    // MARK: Database Save/Update/Remove Methods
     public void saveNewUser(User user) throws AccountRegistrationException {
         dbManager.addNewUser(user);
     }
@@ -42,5 +46,14 @@ public class AccountDatabaseHandler {
     public void updateExistingUser(User user) {
         // TODO: Implement this update function
     }
+
+    public void addAdministrator(String email) {
+
+    }
+
+    public void removeAdministrator(String email) {
+
+    }
+
 
 }

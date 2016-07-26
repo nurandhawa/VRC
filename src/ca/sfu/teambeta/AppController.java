@@ -1,20 +1,15 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.UserSessionManager;
 import ca.sfu.teambeta.core.*;
 
+import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 import ca.sfu.teambeta.persistence.DBManager;
 
@@ -69,7 +64,8 @@ public class AppController {
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
-        final AccountManager accountManager = new AccountManager(dbManager);
+        final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -412,7 +408,7 @@ public class AppController {
             try {
                 accountManager.register(email, pwd);
                 return getOkResponse("Account registered");
-            } catch (InternalHashingException e) {
+            } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();
