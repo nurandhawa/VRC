@@ -56,12 +56,12 @@ var Matches = (function () {
                     api.inputMatchResults(gameSession, match.id, results, function() {
                         this.refreshMatches();
                     }.bind(this));
-                    location.reload(true);
+
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
                     api.getMatches(gameSession, function(matchData) {
-                        this.$broadcast("updateMatches", matchData, gameSession);
+                        this.$dispatch("updateMatches", matchData, gameSession);
                     }.bind(this));
                 }
             }
