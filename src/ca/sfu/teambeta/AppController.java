@@ -1,9 +1,11 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.UserSessionManager;
 import ca.sfu.teambeta.core.*;
 
+import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -81,7 +83,8 @@ public class AppController {
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
-        final AccountManager accountManager = new AccountManager(dbManager);
+        final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -417,7 +420,7 @@ public class AppController {
             try {
                 accountManager.register(email, pwd);
                 return getOkResponse("Account registered");
-            } catch (InternalHashingException e) {
+            } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();

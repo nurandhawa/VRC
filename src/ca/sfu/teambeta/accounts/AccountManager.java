@@ -4,11 +4,7 @@ import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.persistence.DBManager;
 import com.ja.security.PasswordHash;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * AccountManager handles:
@@ -28,9 +24,9 @@ import java.util.List;
  */
 
 public class AccountManager {
-    private DBManager dbManager;
+    private AccountDatabaseHandler accountDBHandler;
+    private UserRoleHandler userRoleHandler;
     private PasswordHash passwordHasher = new PasswordHash();
-    private List<String> administrators;
 
 
 /*
@@ -46,25 +42,22 @@ public class AccountManager {
 
 
     // MARK: Constructor
-    public AccountManager(DBManager dbManager) {
-        this.dbManager = dbManager;
-        administrators = new ArrayList<>();
+    public AccountManager(AccountDatabaseHandler accountDBHandler) {
+        this.accountDBHandler = accountDBHandler;
 
-        administrators = getAdministrators();
+        userRoleHandler = new UserRoleHandler(accountDBHandler);
     }
 
 
     // MARK: - The Core Login/Registration Methods
 
-    public SessionResponse login(String email, String password)
-            throws InternalHashingException, NoSuchUserException,
-            InvalidCredentialsException {
+    public SessionResponse login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
 
         // Authenticate and if successful get the user from the database
         User user = authenticateUser(email, password);
 
         // Create a session for the user
-        UserRole role = getUserClearanceLevel(user.getEmail());
+        UserRole role = userRoleHandler.getUserClearanceLevel(user.getEmail());
 
         return UserSessionManager.createNewSession(user, role);
     }
@@ -73,28 +66,21 @@ public class AccountManager {
         UserSessionManager.deleteSession(sessionId);
     }
 
-    public void register(String email, String password) throws InternalHashingException,
-            InvalidInputException, AccountRegistrationException {
+    public void register(String email, String password) throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
         // Hash the user's password
-        String passwordHash;
-
-        try {
-            passwordHash = passwordHasher.createHash(password);
-        } catch (Exception e) {
-            // Rethrow a simpler Exception following
-            // from the abstract Exceptions thrown by ".createHash()"
-            throw new InternalHashingException(
-                    "Could not create password hash, "
-                            + "please contact an administrator if the problem persists");
-        }
+        String passwordHash = CredentialsManager.getHash(password, "Could not create the account");
 
         User newUser = new User(email, passwordHash);
 
         // Save the user to the database, no Exception marks success
-        saveNewUser(newUser);
+        accountDBHandler.saveNewUser(newUser);
+
+    }
+
+    public void registerNewAdministratorAccount(String email, String password) {
 
     }
 
@@ -103,7 +89,7 @@ public class AccountManager {
     private User authenticateUser(String email, String password) throws InternalHashingException,
             NoSuchUserException, InvalidCredentialsException {
         // Get the user from the database
-        User user = getUserFromDB(email);
+        User user = accountDBHandler.getUser(email);
 
         // Validate the entered password with the hash
         boolean isPasswordCorrect;
@@ -123,73 +109,6 @@ public class AccountManager {
         } else {
             return user;
         }
-
-    }
-
-    private List<String> getAdministrators() {
-        // In the future this method can be changed to fetch
-        //  a list of admin emails from the database, or a file, etc.
-
-        List<String> admins = new ArrayList<>();
-
-        final String DEMO_ADMIN_1 = "admin_billy@vrc.ca";
-        final String DEMO_ADMIN_2 = "admin_zong@vrc.ca";
-
-        admins.add(DEMO_ADMIN_1);
-        admins.add(DEMO_ADMIN_2);
-
-        return admins;
-
-    }
-
-    private UserRole getUserClearanceLevel(String email) {
-        if (administrators.contains(email)) {
-            return UserRole.ADMINISTRATOR;
-        } else {
-            return UserRole.REGULAR;
-        }
-
-    }
-
-    // MARK: - Database Methods
-    private User getUserFromDB(String email) throws NoSuchUserException {
-        /*
-        // Uncomment to retrieve users from in-memory
-        for (User user : usersInMemory) {
-            if (user.getEmail().equals(email)) {
-                return user;
-            }
-        }
-
-        throw new NoSuchUserException("The user '" + email + "' does not exist");
-        */
-
-        // Get the user from the database
-        User user = dbManager.getUser(email);
-
-        if (user == null) {
-            throw new NoSuchUserException("The user '" + email + "' does not exist");
-        }
-
-        return user;
-
-    }
-
-    private void saveNewUser(User newUser) throws AccountRegistrationException {
-        /*
-        // Uncomment to save users in-memory
-        for (User user : usersInMemory) {
-            if (user.getEmail().equals(newUser.getEmail())) {
-                throw new AccountRegistrationException(
-                "The email '" + newUser.getEmail() + "' is already in use");
-            }
-        }
-
-        usersInMemory.add(newUser);
-        */
-
-        // Add the user to the database
-        dbManager.addNewUser(newUser);
 
     }
 

@@ -1,5 +1,6 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.core.Ladder;
@@ -28,8 +29,9 @@ class Main {
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
-        AccountManager am = new AccountManager(dbManager);
-        am.register("admin_billy@vrc.ca", "demoPass");
+        AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        AccountManager am = new AccountManager(accountDatabaseHandler);
+        am.register("testuser@vrc.com", "demoPass");
 
         AppController appController =
                 new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
