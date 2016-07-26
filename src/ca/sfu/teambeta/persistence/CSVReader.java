@@ -2,7 +2,6 @@ package ca.sfu.teambeta.persistence;
 
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +16,7 @@ import ca.sfu.teambeta.core.Player;
  */
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
+    private static final String TESTING_FILENAME = "ladder_junit.csv";
 
     public static void main(String[] args) throws Exception {
         try {
@@ -27,12 +27,12 @@ public class CSVReader {
     }
 
     public static Ladder setupLadder() throws Exception {
+        return setupLadder(DEFAULT_FILENAME);
+    }
+
+    private static Ladder setupLadder(String fileName) throws Exception {
         Map<Integer, Pair> pairs;
-        try {
-            pairs = getInformationAboutPairs();
-        } catch (Exception exception) {
-            throw exception;
-        }
+        pairs = getInformationAboutPairs(fileName);
 
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
@@ -43,11 +43,15 @@ public class CSVReader {
         return ladder;
     }
 
-    private static Map<Integer, Pair> getInformationAboutPairs() throws Exception {
+    public static Ladder setupTestingLadder() throws Exception {
+        return setupLadder(TESTING_FILENAME);
+    }
+
+    private static Map<Integer, Pair> getInformationAboutPairs(String fileName) throws Exception {
         Map<Integer, Pair> pairs = new HashMap<>();
 
         try (com.opencsv.CSVReader reader =
-                     new com.opencsv.CSVReader(new FileReader(DEFAULT_FILENAME))) {
+                     new com.opencsv.CSVReader(new FileReader(fileName))) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
 
@@ -75,7 +79,7 @@ public class CSVReader {
             }
             reader.close();
         } catch (IOException e) {
-            throw new Exception("Error reading file " + DEFAULT_FILENAME);
+            throw new Exception("Error reading file " + fileName);
         }
 
         return pairs;
