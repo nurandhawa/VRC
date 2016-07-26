@@ -39,6 +39,12 @@ public class User extends Persistable {
         this.passwordHash = passwordHash;
     }
 
+    public User(String email, String passwordHash, String securityQuestion, String securityAnswerHash) {
+        this(email, passwordHash);
+        this.securityQuestion = securityQuestion;
+        this.securityAnswerHash = securityAnswerHash;
+    }
+
 
     // MARK: - Getters
     public String getEmail() {

@@ -1,25 +1,26 @@
-package ca.sfu.teambeta.core;
+package ca.sfu.teambeta.accounts;
 
 import java.util.Calendar;
 
 /**
- * The SessionInformation class holds all the related information on a logged in user's session.
+ * The UserSessionMetadata class holds all the related information on a logged in user's session.
  */
 
-public class SessionInformation {
-    // TTL is calculated in days
-    private static final int TIME_TO_LIVE = 7;
+public class UserSessionMetadata {
+    private static final int TIME_TO_LIVE = 7; // TTL is calculated in days
     private String email;
     private Calendar expiryDate;
     private UserRole role;
 
+
     // MARK: Constructor
-    public SessionInformation(String email, UserRole role) {
+    public UserSessionMetadata(String email, UserRole role) {
         this.email = email;
         this.role = role;
         this.expiryDate = Calendar.getInstance();
         expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE);
     }
+
 
     // MARK: Getters
     public Calendar getExpiryDate() {
@@ -34,6 +35,7 @@ public class SessionInformation {
     // Method in here if in future explicit role is needed
     public UserRole getRole() { return role; }
     */
+
 
     // MARK: Helper Methods
     public boolean isSessionExpired() {
@@ -52,6 +54,7 @@ public class SessionInformation {
         }
     }
 
+    /*
     public static void main(String[] args) {
         Calendar time = Calendar.getInstance();
         System.out.println("Current Time:     " + time.getTime());
@@ -68,7 +71,7 @@ public class SessionInformation {
         System.out.println(currentTime.compareTo(past));
         System.out.println(currentTime.compareTo(future));
 
-        SessionInformation info = new SessionInformation("email", UserRole.REGULAR);
+        UserSessionMetadata info = new UserSessionMetadata("email", UserRole.REGULAR);
         System.out.println(info.getExpiryDate().getTime());
         //For testing set TTL on 6 seconds
         System.out.println("Expired? (Expected: false) " + info.isSessionExpired());
@@ -80,4 +83,5 @@ public class SessionInformation {
         }
         System.out.println("Expired? (Expected: true) " + info.isSessionExpired());
     }
+    */
 }

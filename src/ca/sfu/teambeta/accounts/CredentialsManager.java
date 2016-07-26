@@ -1,0 +1,176 @@
+package ca.sfu.teambeta.accounts;
+
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import com.ja.security.PasswordHash;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * This class handles:
+ * - Authenticating password reset requests
+ * - Resetting the password via a security question
+ *
+ */
+
+public class CredentialsManager {
+    private List<String> passwordResetVouchers;
+    private AccountDatabaseHandler accountDBHandler;
+    private TokenGenerator tokenGenerator;
+
+
+    // MARK: Constructor
+    public CredentialsManager(AccountDatabaseHandler accountDBHandler) {
+        passwordResetVouchers = new ArrayList<>();
+        this.accountDBHandler = accountDBHandler;
+        tokenGenerator = new TokenGenerator();
+    }
+
+
+    // MARK: The Core Methods for Managing a Password
+    public void changePassword(String email, String newPassword, String resetToken) throws NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
+        boolean tokenExists = passwordResetVouchers.contains(resetToken);
+        boolean tokenExpired = false;
+
+        if (tokenExists) {
+            if (tokenExpired) {
+                passwordResetVouchers.remove(resetToken);
+                throw new InvalidCredentialsException("The password reset session has expired");
+            }
+
+            // Hash the user's new password
+            String newPasswordHash = getHash(newPassword, "The password could not be changed");
+
+            // Update the user
+            User user = accountDBHandler.getUser(email);
+            user.setPasswordHash(newPasswordHash);
+            accountDBHandler.updateExistingUser(user);
+
+            passwordResetVouchers.remove(resetToken);
+        } else {
+            // Token does not exist
+            throw new InvalidCredentialsException("No password reset session exists");
+        }
+    }
+
+    public void changePasswordByAdmin(String userEmail, String newUserPassword, String adminSessionId) throws NoSuchSessionException, InvalidCredentialsException, GeneralUserAccountException, NoSuchUserException {
+        boolean isAdmin = UserSessionManager.isAdministratorSession(adminSessionId);
+
+        if (!isAdmin) {
+            throw new InvalidCredentialsException("An administrator may only change the password");
+        }
+
+        // Hash the new password
+        String newPasswordHash = getHash(newUserPassword, "The password cannot be changed");
+
+        User user = accountDBHandler.getUser(userEmail);
+        user.setPasswordHash(newPasswordHash);
+        accountDBHandler.updateExistingUser(user);
+
+    }
+
+
+    // MARK: Methods for Resetting a Password (Via a Security Question)
+    public String getUserSecurityQuestion(String email) throws NoSuchUserException, GeneralUserAccountException {
+        User user = accountDBHandler.getUser(email);
+
+        String securityQuestion = user.getSecurityQuestion();
+
+        if (securityQuestion == null || securityQuestion == "") {
+            throw new GeneralUserAccountException("No security question set up");
+        }
+
+        return securityQuestion;
+    }
+
+    public void setSecurityQuestion(String userEmail, String question, String answer, String sessionId) throws NoSuchUserException, GeneralUserAccountException, InvalidCredentialsException, NoSuchSessionException {
+        // Although a user may be logged in with a valid sessionId, we must check they are
+        //  setting their own security question.
+        String sessionEmail = UserSessionManager.getEmailFromSessionId(sessionId);
+        boolean emailsMatch = userEmail.equalsIgnoreCase(sessionEmail);
+
+        if (!emailsMatch) {
+            throw new InvalidCredentialsException("Invalid email address");
+        }
+
+        // Hash the user's security question answer
+        String answerHash = getHash(answer, "The security question could not be set");
+
+        User user = accountDBHandler.getUser(userEmail);
+
+        user.setSecurityQuestion(question);
+        user.setSecurityAnswerHash(answerHash);
+
+        accountDBHandler.updateExistingUser(user);
+    }
+
+    public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer) throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
+        User user = accountDBHandler.getUser(email);
+
+        String securityQuestionAnswerHash = user.getSecurityAnswerHash();
+
+        if (securityQuestionAnswerHash == null || securityQuestionAnswerHash == "") {
+            throw new GeneralUserAccountException("No security question set");
+        }
+
+        boolean correctAnswer = checkHash(securityQuestionAnswer, securityQuestionAnswerHash, "The answer could not be validated");
+
+        if (correctAnswer) {
+            String token = tokenGenerator.generateUniqueRandomToken();
+            passwordResetVouchers.add(token);
+
+            return token;
+        } else {
+            throw new InvalidCredentialsException("Incorrect security question answer");
+        }
+
+    }
+
+
+    // MARK: General Helper Methods
+    // This method encapsulates the hashing of a string while also handling any internal hashing exceptions
+    public static String getHash(String stringToHash, String friendlyErrorMessage) throws GeneralUserAccountException {
+        if (friendlyErrorMessage == null || friendlyErrorMessage == "") {
+            friendlyErrorMessage = "Something went wrong. Please contact an administrator.";
+        } else {
+            friendlyErrorMessage = friendlyErrorMessage + ". Please contact an administrator.";
+        }
+
+        PasswordHash passwordHasher = new PasswordHash();
+        String hash;
+
+        try {
+            hash = passwordHasher.createHash(stringToHash);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            // Rethrow a simpler Exception
+            throw new GeneralUserAccountException(friendlyErrorMessage);
+        }
+
+        return hash;
+    }
+
+    public static boolean checkHash(String originalString, String hashedString, String friendlyErrorMessage) throws GeneralUserAccountException {
+        if (friendlyErrorMessage == null || friendlyErrorMessage == "") {
+            friendlyErrorMessage = "Validation cannot be done at this done. Please contact the administrator.";
+        }
+
+        PasswordHash passwordHasher = new PasswordHash();
+        boolean matches;
+
+        try {
+            matches = passwordHasher.validatePassword(originalString, hashedString);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            // Rethrow a simpler Exception
+            throw new GeneralUserAccountException(friendlyErrorMessage);
+        }
+
+        return matches;
+    }
+
+}

@@ -1,22 +1,11 @@
-package ca.sfu.teambeta.logic;
-
-import com.ja.security.PasswordHash;
+package ca.sfu.teambeta.accounts;
 
 import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import com.ja.security.PasswordHash;
-
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.UserRole;
 import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.persistence.DBManager;
+import com.ja.security.PasswordHash;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -262,7 +251,7 @@ public class AccountManager {
             return;
         }
 
-        System.out.println("User SessionInformation ID: " + userSessionId);
+        System.out.println("User UserSessionMetadata ID: " + userSessionId);
 
         boolean admin;
 
