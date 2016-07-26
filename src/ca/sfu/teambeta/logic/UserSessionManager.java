@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.logic;
 
 import ca.sfu.teambeta.core.SessionInformation;
+import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.UserRole;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
@@ -29,7 +30,7 @@ public class UserSessionManager {
 
 
     // MARK: - The Core Session Methods
-    public static String createNewSession(User user, UserRole role) {
+    public static SessionResponse createNewSession(User user, UserRole role) {
         String sessionId = generateRandomSessionID();
         String userEmail = user.getEmail();
 
@@ -37,7 +38,7 @@ public class UserSessionManager {
 
         sessions.put(sessionId, userSessionInformation);
 
-        return sessionId;
+        return new SessionResponse(sessionId, role);
 
     }
 

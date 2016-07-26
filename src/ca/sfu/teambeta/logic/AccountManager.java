@@ -2,6 +2,7 @@ package ca.sfu.teambeta.logic;
 
 import com.ja.security.PasswordHash;
 
+import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
@@ -66,7 +67,7 @@ public class AccountManager {
 
     // MARK: - The Core Login/Registration Methods
 
-    public String login(String email, String password)
+    public SessionResponse login(String email, String password)
             throws InternalHashingException, NoSuchUserException,
             InvalidCredentialsException {
 

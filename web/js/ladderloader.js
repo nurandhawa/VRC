@@ -32,7 +32,9 @@
         ladder.changeMode.call(ladder.component);
     };
 
-    var header = new Header("Ladder", "Edit Ladder", ladderData.dateCreated, editFunction);
+    var userRole = Cookies.get("userRole");
+
+    var header = new Header("Ladder", "Edit Ladder", ladderData.dateCreated, editFunction, userRole);
 
     var addPairButton = Vue.extend({
         template: '<a v-on:click="addPair()" class="btn btn-raised btn-success header-button">Add Pair</a>',

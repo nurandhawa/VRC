@@ -112,7 +112,7 @@ var Matches = (function () {
                           return this.active;
                       },
                       validateResults: function (currentMatch, newVal, oldVal) {
-                          var ROUNDS_TO_PLAY = 3;
+                          var ROUNDS_TO_PLAY = currentMatch.pairs.length;
                           var results = currentMatch.results;
 
                           var numPlayed = 0;

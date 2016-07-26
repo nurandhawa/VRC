@@ -12,6 +12,7 @@ import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
@@ -389,13 +390,10 @@ public class AppController {
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
 
-            JsonObject successResponse = new JsonObject();
-            String sessionToken = "";
             try {
-                sessionToken = accountManager.login(email, pwd);
-                successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
-                response.cookie(SESSION_TOKEN_KEY, sessionToken);
-                return gson.toJson(successResponse);
+                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
+                return gson.toJson(sessionResponse);
             } catch (InternalHashingException |
                     NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
