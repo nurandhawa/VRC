@@ -26,7 +26,7 @@
 
   </head>
 
-  <body>
+  <body style="min-width:450px">
 
   <nav class="navbar navbar-info">
     <div class="container-fluid">
@@ -60,23 +60,24 @@
     <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
 
     <div class="header-right header-item">
-      <div class = "header-button">
         <component :is="mode" transition="fade" transition-mode="out-in">
         </component>
-        <a v-on:click="onClick()" class="btn btn-raised btn-primary ">{{ buttonTitle }}</a>
-      </div>
+        <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
   </div>
 
 
   <div id="ladder" >
-    <div class="pages-container" style="margin-left: 35%">
+    <div class="pages-container">
       <ul class="pagination pages-buttons">
         <li v-for="entry in ladderPages">
           <page-button :index="$index + 1"></page-button>
         </li>
       </ul>
-      <input type="text" v-model="searchText" placeholder="Search"    value=""  style="float:right;margin-right:10%;margin-top: 20px;">
+    </div>
+
+    <div class="search-box-container">
+      <input type="text" v-model="searchText" placeholder="Search"    value=""  class="search-box">
     </div>
 
   <div class="ladder">
