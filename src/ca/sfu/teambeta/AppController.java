@@ -453,7 +453,7 @@ public class AppController {
 
             GameSession gameSession = dbManager.getGameSessionLatest();
             VrcTimeSelection timeSelector = new VrcTimeSelection();
-            timeSelector.distributePairs(gameSession.getScorecards());
+            timeSelector.distributePairs(gameSession.getScorecards(), gameSession.getTimeSlots());
             return getOkResponse("");
         });
 
