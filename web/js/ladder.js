@@ -12,6 +12,37 @@ var Ladder = (function () {
     var PAGE_BUTTON_PREFIX = '<a v-on:click="changeCurrentPage()"> Page {{ ';
     var PAGE_BUTTON_SUFFIX = ' }} </a>';
 
+    var EMPTY_NEW_PAIR_DATA =
+    {
+        player1: {
+            type: "",
+            existingPlayer: "",
+            firstName: "",
+            lastName: "",
+            phoneNumber: ""
+        },
+        player2: {
+            type: "",
+            existingPlayer: "",
+            firstName: "",
+            lastName: "",
+            phoneNumber: ""
+        },
+        position: ""
+    };
+    var EMPTY_NEW_PAIR_VALID =
+    {
+        position: true,
+        player1: {
+            new: false,
+            existing: false
+        },
+        player2: {
+            new: false,
+            existing: false
+        }
+    };
+
     var showModal = function (index) {
         var modalId = "#modal" + index;
         $(modalId).modal("show");
@@ -136,34 +167,8 @@ var Ladder = (function () {
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
-                newPairData: {
-                    player1: {
-                        type: "",
-                        existingPlayer: "",
-                        firstName: "",
-                        lastName: "",
-                        phoneNumber: ""
-                    },
-                    player2: {
-                        type: "",
-                        existingPlayer: "",
-                        firstName: "",
-                        lastName: "",
-                        phoneNumber: ""
-                    },
-                    position: ""
-                },
-                newPairValid: {
-                    position: false,
-                    player1: {
-                        new: false,
-                        existing: false
-                    },
-                    player2: {
-                        new: false,
-                        existing: false
-                    }
-                },
+                newPairData: jQuery.extend(true, {}, EMPTY_NEW_PAIR_DATA),
+                newPairValid: jQuery.extend(true, {}, EMPTY_NEW_PAIR_VALID),
                 mode: 'read'
             },
             watch: {
@@ -304,7 +309,11 @@ var Ladder = (function () {
             ladderPosition = -1;
         }
 
-        api.addPair([player1, player2], ladderPosition, this.refreshLadder);
+        api.addPair([player1, player2], ladderPosition, function () {
+            this.newPairData = jQuery.extend(true, {}, EMPTY_NEW_PAIR_DATA);
+            this.newPairValid = jQuery.extend(true, {}, EMPTY_NEW_PAIR_VALID);
+            this.refreshLadder();
+        }.bind(this));
         $("#addPairModal").modal("hide");
     };
 
