@@ -100,9 +100,9 @@ public class CSVReader {
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 7;
         for (int i = 0; i < pairs.size(); i++) {
-            Pair p = pairs.get(i);
-            Player p1 = p.getPlayers().get(0);
-            Player p2 = p.getPlayers().get(1);
+            Pair pair = pairs.get(i);
+            Player p1 = pair.getPlayers().get(0);
+            Player p2 = pair.getPlayers().get(1);
             String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
             entry[0] = p1.getLastName();
             entry[1] = p1.getFirstName();

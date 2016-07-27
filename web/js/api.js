@@ -377,6 +377,28 @@ var API = (function() {
             });
     };
 
+    API.prototype.downloadLadder = function (doneCallback, failCallback) {
+        console.log("HELLO");
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/ladder/download",
+            data: JSON.stringify({
+                "time": time,
+            })
+        })
+
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
+    };
+
     return API;
 
 })();
