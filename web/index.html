@@ -60,8 +60,6 @@
     <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
 
     <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
-      <div class = "header-button">
-    <div class="header-right header-item">
         <component :is="mode" transition="fade" transition-mode="out-in">
         </component>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
@@ -69,7 +67,7 @@
   </div>
 
 
-  <div id="ladder" >
+  <div id="ladder">
     <div class="pages-container">
       <ul class="pagination pages-buttons">
         <li v-for="entry in ladderPages">
