@@ -4,6 +4,9 @@ import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * AccountManager handles:
  * - User Login/Logout
@@ -18,6 +21,9 @@ import ca.sfu.teambeta.logic.InputValidator;
 public class AccountManager {
     private AccountDatabaseHandler accountDBHandler;
     private UserRoleHandler userRoleHandler;
+    private TokenGenerator tokenGenerator;
+    private List<String> anonymousCodes;
+
 
 /*
     // User for testing purposes
@@ -31,6 +37,10 @@ public class AccountManager {
         this.accountDBHandler = accountDBHandler;
 
         userRoleHandler = new UserRoleHandler(accountDBHandler);
+        tokenGenerator = new TokenGenerator();
+
+        anonymousCodes = new ArrayList<>();
+
     }
 
 
@@ -60,6 +70,18 @@ public class AccountManager {
         return sessionId;
     }
 
+    public String loginAnonymousUser(String anonymousCode) throws InvalidCredentialsException {
+        boolean validAnonymousCode = anonymousCodes.contains(anonymousCode);
+
+        if (!validAnonymousCode) {
+            throw new InvalidCredentialsException("Incorrect anonymous code");
+        }
+
+        String sessionId = UserSessionManager.createNewAnonymousSession(anonymousCode);
+
+        return sessionId;
+    }
+
     public void logout(String sessionId) throws NoSuchSessionException {
         UserSessionManager.deleteSession(sessionId);
     }
@@ -78,10 +100,48 @@ public class AccountManager {
 
     }
 
-    public void registerNewAdministratorAccount(String email, String password) {
+    public void registerNewAdministratorAccount(String email, String password) throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
+        register(email, password);
 
+        try {
+            userRoleHandler.setAdminPrivilege(email);
+        } catch (NoSuchUserException e) {
+            // Although this should not be reached as we are explicity
+            //  saving the user in the "register" method, something sometime
+            //  could go wrong with the database and/or have concurrency
+            //  issues.
+
+            throw new GeneralUserAccountException("Could not make " + email + " an admin");
+        }
     }
 
+    public String registerAnonymousUser() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
+        String accountName = tokenGenerator.generateUniqueRandomToken();
+        String password = tokenGenerator.generateUniqueRandomToken();
+
+        String emailAddress = accountName + "@" + "vrc.teambeta";
+
+        register(emailAddress, password);
+
+        String anonymousCode = accountName.substring(0, 6);
+
+        // Update the appropriate classes to let them know user is anonymous
+        try {
+            // The role is set so the front-end may further limit access to certain things
+            userRoleHandler.setAsAnonymousUser(emailAddress);
+        } catch (NoSuchUserException e) {
+            // Although this should not be reached as we are explicity
+            //  saving the user in the "register" method, something sometime
+            //  could go wrong with the database and/or have concurrency
+            //  issues.
+
+            throw new GeneralUserAccountException("Could not make " + emailAddress + " an anonymous user");
+        }
+
+        anonymousCodes.add(anonymousCode);
+
+        return anonymousCode;
+    }
 
     // MARK: - Main Function
 /*
