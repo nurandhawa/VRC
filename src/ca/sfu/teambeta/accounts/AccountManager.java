@@ -4,19 +4,12 @@ import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
-import com.ja.security.PasswordHash;
 
 /**
  * AccountManager handles:
- * - User Login
+ * - User Login/Logout
  * - User Registration
  * <p>
- * <p>
- * Coming Soon:
- * - Password Reset
- * -- Via Email
- * -- Via Text Message (Pass back last 2 digits of phone)
- * -- Via Security Questions (Hash answer)
  * <p>
  * - Anonymous Users
  * <p>
@@ -26,19 +19,12 @@ import com.ja.security.PasswordHash;
 public class AccountManager {
     private AccountDatabaseHandler accountDBHandler;
     private UserRoleHandler userRoleHandler;
-    private PasswordHash passwordHasher = new PasswordHash();
-
 
 /*
     // User for testing purposes
     private static final String DEMO_EMAIL = "testuser@vrc.com";
     private static final String DEMO_PASSWORD = "demoPass";
 */
-
-    /*
-    // When testing, uncomment and use this array to mimic database interaction
-    private static List<User> usersInMemory = new ArrayList<>();
-    */
 
 
     // MARK: Constructor
@@ -50,16 +36,26 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
+    public SessionResponse login(String email, String password) throws InvalidInputException, NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
+        InputValidator.validateEmailFormat(email);
+        InputValidator.validatePasswordFormat(password);
 
-    public SessionResponse login(String email, String password) throws InternalHashingException, NoSuchUserException, InvalidCredentialsException {
+        // Authenticate the password
+        // Get the user from the database
+        User user = accountDBHandler.getUser(email);
 
-        // Authenticate and if successful get the user from the database
-        User user = authenticateUser(email, password);
+        // Validate the entered password with the hash
+        boolean isPasswordCorrect = CredentialsManager.checkHash(password, user.getPasswordHash(), "The user cannot be authenticated");
+
+        if (!isPasswordCorrect) {
+            throw new InvalidCredentialsException("Incorrect password");
+        }
+
 
         // Create a session for the user
-        UserRole role = userRoleHandler.getUserClearanceLevel(user.getEmail());
+        UserRole role = userRoleHandler.getUserClearanceLevel(email);
 
-        return UserSessionManager.createNewSession(user, role);
+        return UserSessionManager.createNewSession(email, role);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {
@@ -81,34 +77,6 @@ public class AccountManager {
     }
 
     public void registerNewAdministratorAccount(String email, String password) {
-
-    }
-
-
-    // MARK: - Helper Methods
-    private User authenticateUser(String email, String password) throws InternalHashingException,
-            NoSuchUserException, InvalidCredentialsException {
-        // Get the user from the database
-        User user = accountDBHandler.getUser(email);
-
-        // Validate the entered password with the hash
-        boolean isPasswordCorrect;
-
-        try {
-            isPasswordCorrect = passwordHasher.validatePassword(password, user.getPasswordHash());
-        } catch (Exception e) {
-            // Rethrow a simpler Exception following from
-            // the abstract Exceptions thrown by ".validatePassword()"
-            throw new InternalHashingException(
-                    "Password cannot be determined as correct or incorrect, "
-                            + "please contact an administrator if this problem persists");
-        }
-
-        if (!isPasswordCorrect) {
-            throw new InvalidCredentialsException("Incorrect password");
-        } else {
-            return user;
-        }
 
     }
 

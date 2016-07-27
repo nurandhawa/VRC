@@ -31,11 +31,6 @@ public class UserSessionMetadata {
         return email;
     }
 
-    /*
-    // Method in here if in future explicit role is needed
-    public UserRole getRole() { return role; }
-    */
-
 
     // MARK: Helper Methods
     public boolean isSessionExpired() {

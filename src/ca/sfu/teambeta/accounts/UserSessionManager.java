@@ -14,24 +14,21 @@ import java.util.Hashtable;
  * - Creating a new session
  * - Authenticating an existing session token
  * - Deleting a session
- * <p>
- * <p>
- * Coming Soon:
- * - Backing session's up to database
- * <p>
- * <p>
+ * - Checking if a session belongs to an administrator
+ * - Getting the number of users logged in
+ *
  */
 
 public class UserSessionManager {
     private static Dictionary<String, UserSessionMetadata> sessions = new Hashtable<>();
+    private static TokenGenerator tokenGenerator = new TokenGenerator();
 
 
     // MARK: - The Core Session Methods
-    public static SessionResponse createNewSession(User user, UserRole role) {
-        String sessionId = generateRandomSessionID();
-        String userEmail = user.getEmail();
+    public static SessionResponse createNewSession(String email, UserRole role) {
+        String sessionId = tokenGenerator.generateUniqueRandomToken();
 
-        UserSessionMetadata metadata = new UserSessionMetadata(userEmail, role);
+        UserSessionMetadata metadata = new UserSessionMetadata(email, role);
 
         sessions.put(sessionId, metadata);
 
@@ -75,8 +72,7 @@ public class UserSessionManager {
         }
     }
 
-    public static boolean isAdministratorSession(String sessionId)
-            throws NoSuchSessionException {
+    public static boolean isAdministratorSession(String sessionId) throws NoSuchSessionException {
 
         // Validate the input
         try {
@@ -91,8 +87,7 @@ public class UserSessionManager {
 
     }
 
-    public static String getEmailFromSessionId(String sessionId)
-            throws NoSuchSessionException {
+    public static String getEmailFromSessionId(String sessionId) throws NoSuchSessionException {
 
         // Validate the input
         try {
@@ -108,8 +103,7 @@ public class UserSessionManager {
 
 
     // MARK: Helper Methods
-    private static UserSessionMetadata getSessionMetadata(String sessionId)
-            throws NoSuchSessionException {
+    private static UserSessionMetadata getSessionMetadata(String sessionId) throws NoSuchSessionException {
 
         UserSessionMetadata metadata = sessions.get(sessionId);
 
@@ -118,17 +112,6 @@ public class UserSessionManager {
         } else {
             return metadata;
         }
-    }
-
-    private static String generateRandomSessionID() {
-       String sessionId = TokenGenerator.generateRandomToken();
-
-        // Make sure we don't have two of the same sessionId's
-        while (sessions.get(sessionId) != null) {
-            sessionId = TokenGenerator.generateRandomToken();
-        }
-
-        return sessionId;
     }
 
 
