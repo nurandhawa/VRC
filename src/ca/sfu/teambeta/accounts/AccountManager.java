@@ -11,12 +11,19 @@ import java.util.List;
 /**
  * AccountManager handles:
  * - User Login/Logout
+ *
  * - User Registration
- * <p>
- * <p>
- * - Anonymous Users
- * <p>
- * <p>
+ *  - Registering a user as administrator
+ *  - Registering a user as anonymous
+ *   - The flow to register a user as anonymous is:
+ *     first call registerAnonymousUser which will
+ *     pass back a 6 digit code (aka anonymous code).
+ *     Since registration is done by the admin, this
+ *     code is given to the person to input on a
+ *     separate login page. If successful the anon.
+ *     user will notice no difference once logged in
+ *     from a regular user.
+ *
  */
 
 public class AccountManager {
