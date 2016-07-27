@@ -12,6 +12,37 @@ var Ladder = (function () {
     var PAGE_BUTTON_PREFIX = '<a v-on:click="changeCurrentPage()"> Page {{ ';
     var PAGE_BUTTON_SUFFIX = ' }} </a>';
 
+    var EMPTY_NEW_PAIR_DATA =
+    {
+        player1: {
+            type: "",
+            existingPlayer: "",
+            firstName: "",
+            lastName: "",
+            phoneNumber: ""
+        },
+        player2: {
+            type: "",
+            existingPlayer: "",
+            firstName: "",
+            lastName: "",
+            phoneNumber: ""
+        },
+        position: ""
+    };
+    var EMPTY_NEW_PAIR_VALID =
+    {
+        position: true,
+        player1: {
+            new: false,
+            existing: false
+        },
+        player2: {
+            new: false,
+            existing: false
+        }
+    };
+
     var showModal = function (index) {
         var modalId = "#modal" + index;
         $(modalId).modal("show");
@@ -91,6 +122,35 @@ var Ladder = (function () {
             }
         });
 
+        var onValidityChanged = function (property, category, isValid) {
+            if (property === "position") {
+                this.newPairValid.position = isValid;
+            }
+            else if (property === "player1") {
+                this.newPairValid.player1[category] = isValid;
+            }
+            else if (property === "player2") {
+                this.newPairValid.player2[category] = isValid;
+            }
+        };
+
+        var checkValidity = function () {
+            var positionValid = this.newPairValid.position === true;
+
+            var player1Valid = this.newPairData.player1.type === 'new' ?
+                this.newPairValid.player1.new : this.newPairValid.player1.existing;
+
+            var player2Valid = this.newPairData.player2.type === 'new' ?
+                this.newPairValid.player2.new : this.newPairValid.player2.existing;
+
+            if (positionValid && player1Valid && player2Valid) {
+                this.onValid("#newPairSave");
+            }
+            else {
+                this.onInvalid("#newPairSave");
+            }
+        };
+
         var onValid = function (elementId) {
             $(elementId).prop("disabled", false);
         };
@@ -102,29 +162,44 @@ var Ladder = (function () {
         this.component = new Vue({
             el: '#ladder',
             data: {
-                ladder: ladderData,
+                ladder: ladderData.pairs,
+                players: ladderData.players,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
-                newPairData: {
-                    player1: {
-                        firstName: "",
-                        lastName: "",
-                        phoneNumber: ""
-                    },
-                    player2: {
-                        firstName: "",
-                        lastName: "",
-                        phoneNumber: ""
-                    },
-                    position: ""
-                },
+                newPairData: jQuery.extend(true, {}, EMPTY_NEW_PAIR_DATA),
+                newPairValid: jQuery.extend(true, {}, EMPTY_NEW_PAIR_VALID),
                 mode: 'read'
+            },
+            watch: {
+                'newPairValid': {
+                    handler: checkValidity,
+                    deep: true
+                },
+                'newPairData.player1.type': checkValidity,
+                'newPairData.player2.type': checkValidity,
+                'newPairData.player1.existingPlayer': function (val) {
+                    if (val) {
+                        onValidityChanged.call(this, 'player1', 'existing', true);
+                    }
+                    else {
+                        onValidityChanged.call(this, 'player1', 'existing', false);
+                    }
+                },
+                'newPairData.player2.existingPlayer': function (val) {
+                    if (val) {
+                        onValidityChanged.call(this, 'player2', 'existing', true);
+                    }
+                    else {
+                        onValidityChanged.call(this, 'player2', 'existing', false);
+                    }
+                }
             },
             components: {
                 playing: playingButton,
                 notplaying: notPlayingButton,
-                edit: editButton
+                edit: editButton,
+                'v-select': VueSelect.VueSelect
             },
             methods: {
                 changeStatus: this.changeStatus,
@@ -136,6 +211,7 @@ var Ladder = (function () {
                 refreshLadder: this.refreshLadder,
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
+                onValidityChanged: onValidityChanged,
                 onValid: onValid,
                 onInvalid: onInvalid,
                 setTime: this.setTime,
@@ -209,19 +285,35 @@ var Ladder = (function () {
         var api = new API();
 
         var player1Data = this.newPairData.player1;
-        var player1 = api.prepareNewPlayer(player1Data.firstName,
-            player1Data.lastName, player1Data.phoneNumber);
+        var player1 = null;
+        if (player1Data.type === "existing") {
+            player1 = api.prepareExistingPlayer(player1Data.existingPlayer.id);
+        }
+        else {
+            player1 = api.prepareNewPlayer(player1Data.firstName,
+                player1Data.lastName, player1Data.phoneNumber);
+        }
 
         var player2Data = this.newPairData.player2;
-        var player2 = api.prepareNewPlayer(player2Data.firstName,
-            player2Data.lastName, player2Data.phoneNumber);
+        var player2 = null;
+        if (player2Data.type === "existing") {
+            player2 = api.prepareExistingPlayer(player2Data.existingPlayer.id);
+        }
+        else {
+            player2 = api.prepareNewPlayer(player2Data.firstName,
+              player2Data.lastName, player2Data.phoneNumber);
+        }
 
         var ladderPosition = this.newPairData.position;
         if (ladderPosition === "") {
             ladderPosition = -1;
         }
 
-        api.addPair([player1, player2], ladderPosition, this.refreshLadder);
+        api.addPair([player1, player2], ladderPosition, function () {
+            this.newPairData = jQuery.extend(true, {}, EMPTY_NEW_PAIR_DATA);
+            this.newPairValid = jQuery.extend(true, {}, EMPTY_NEW_PAIR_VALID);
+            this.refreshLadder();
+        }.bind(this));
         $("#addPairModal").modal("hide");
     };
 
@@ -237,16 +329,17 @@ var Ladder = (function () {
     };
 
     Ladder.prototype.updateLadder = function (ladderData) {
-        this.ladder = ladderData;
+        this.ladder = ladderData.pairs;
+        this.players = ladderData.players;
         var ladderPages = [];
-        if (ladderData) {
-            var numPages = Math.floor(ladderData.length / NUM_ENTRIES_PER_PAGE) + 1;
+        if (ladderData.pairs) {
+            var numPages = Math.floor(ladderData.pairs.length / NUM_ENTRIES_PER_PAGE) + 1;
             for (var i = 0; i < numPages; i++) {
                 ladderPages[i] = [];
             }
-            for (i = 0; i < ladderData.length; i++) {
-                var pageIndex = Math.floor((ladderData[i].position - 1) / NUM_ENTRIES_PER_PAGE);
-                ladderPages[pageIndex].push(ladderData[i]);
+            for (i = 0; i < ladderData.pairs.length; i++) {
+                var pageIndex = Math.floor((ladderData.pairs[i].position - 1) / NUM_ENTRIES_PER_PAGE);
+                ladderPages[pageIndex].push(ladderData.pairs[i]);
             }
         }
         this.ladderPages = ladderPages;
