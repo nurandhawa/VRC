@@ -13,13 +13,11 @@ import java.util.Calendar;
 
 public class PasswordResetVoucherMetadata {
     private static final int TIME_TO_LIVE = 15; // TTL is calculated in minutes
-    private String token;
     private Calendar expiryDate;
 
 
     // MARK: Constructor
-    PasswordResetVoucherMetadata(String token) {
-        this.token = token;
+    PasswordResetVoucherMetadata() {
         this.expiryDate = Calendar.getInstance();
         expiryDate.add(Calendar.MINUTE, TIME_TO_LIVE);
     }

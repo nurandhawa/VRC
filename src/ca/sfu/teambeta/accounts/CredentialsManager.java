@@ -3,43 +3,54 @@ package ca.sfu.teambeta.accounts;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import com.ja.security.PasswordHash;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class handles:
  * - Authenticating a password reset request via a security question
  * - Resetting the password
  *
+ * How to reset a password:
+ *  When a user correctly answers the security question they are granted a
+ *  password reset voucher (in our case a unique secure string) which is to be
+ *  sent along with the users email and new password to the changePassword
+ *  method.
+ *
  */
 
 public class CredentialsManager {
-    private List<String> passwordResetVouchers;
+    private static Map<String, PasswordResetVoucherMetadata> passwordResetVouchers;
     private AccountDatabaseHandler accountDBHandler;
     private TokenGenerator tokenGenerator;
 
 
     // MARK: Constructor
     public CredentialsManager(AccountDatabaseHandler accountDBHandler) {
-        passwordResetVouchers = new ArrayList<>();
         this.accountDBHandler = accountDBHandler;
+
+        passwordResetVouchers = new HashMap<>();
         tokenGenerator = new TokenGenerator();
+
     }
 
 
     // MARK: The Core Methods for Managing a Password
-    public void changePassword(String email, String newPassword, String resetToken) throws NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
-        boolean tokenExists = passwordResetVouchers.contains(resetToken);
-        boolean tokenExpired = false;
+    public void changePassword(String email, String newPassword, String voucherCode) throws NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
+        PasswordResetVoucherMetadata voucherMetadata = passwordResetVouchers.get(voucherCode);
 
-        if (tokenExists) {
-            if (tokenExpired) {
-                passwordResetVouchers.remove(resetToken);
+        boolean voucherExists = (voucherMetadata != null); // Since it's a dictionary, invalid key returns null value
+        boolean voucherExpired = voucherMetadata.isExpired();
+
+        if (voucherExists) {
+            if (voucherExpired) {
+                passwordResetVouchers.remove(voucherCode);
                 throw new InvalidCredentialsException("The password reset session has expired");
             }
 
@@ -51,15 +62,15 @@ public class CredentialsManager {
             user.setPasswordHash(newPasswordHash);
             accountDBHandler.updateExistingUser(user);
 
-            passwordResetVouchers.remove(resetToken);
+            passwordResetVouchers.remove(voucherCode);
         } else {
-            // Token does not exist
+            // Voucher does not exist
             throw new InvalidCredentialsException("No password reset session exists");
         }
+
     }
 
-    /*
-    // Incomplete: Authentication oversight's to be addressed
+
     public void changePasswordByAdmin(String userEmail, String newUserPassword, String adminSessionId) throws NoSuchSessionException, InvalidCredentialsException, GeneralUserAccountException, NoSuchUserException {
         boolean isAdmin = UserSessionManager.isAdministratorSession(adminSessionId);
 
@@ -75,7 +86,7 @@ public class CredentialsManager {
         accountDBHandler.updateExistingUser(user);
 
     }
-    */
+
 
     // MARK: Methods for Resetting a Password (Via a Security Question)
     public String getUserSecurityQuestion(String email) throws NoSuchUserException, GeneralUserAccountException {
@@ -90,8 +101,7 @@ public class CredentialsManager {
         return securityQuestion;
     }
 
-    /*
-    // Incomplete: Authentication oversight's to be addressed
+
     public void setSecurityQuestion(String userEmail, String question, String answer, String sessionId) throws NoSuchUserException, GeneralUserAccountException, InvalidCredentialsException, NoSuchSessionException {
         // Although a user may be logged in with a valid sessionId, we must check they are
         //  setting their own security question.
@@ -112,7 +122,7 @@ public class CredentialsManager {
 
         accountDBHandler.updateExistingUser(user);
     }
-    */
+
 
     public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer) throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
         User user = accountDBHandler.getUser(email);
@@ -126,10 +136,12 @@ public class CredentialsManager {
         boolean correctAnswer = checkHash(securityQuestionAnswer, securityQuestionAnswerHash, "The answer could not be validated");
 
         if (correctAnswer) {
-            String token = tokenGenerator.generateUniqueRandomToken();
-            passwordResetVouchers.add(token);
+            String voucherCode = tokenGenerator.generateUniqueRandomToken();
+            PasswordResetVoucherMetadata voucherMetadata = new PasswordResetVoucherMetadata();
 
-            return token;
+            passwordResetVouchers.put(voucherCode, voucherMetadata);
+
+            return voucherCode;
         } else {
             throw new InvalidCredentialsException("Incorrect security question answer");
         }
@@ -159,6 +171,7 @@ public class CredentialsManager {
         return hash;
     }
 
+    // This method encapsulates checking a string againest it's hash, while also handling any internal hashing exceptions
     public static boolean checkHash(String originalString, String hashedString, String friendlyErrorMessage) throws GeneralUserAccountException {
         if (friendlyErrorMessage == null || friendlyErrorMessage == "") {
             friendlyErrorMessage = "Validation cannot be done at this done. Please contact the administrator.";
