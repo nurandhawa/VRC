@@ -6,6 +6,7 @@ var Header = (function() {
             template: "<a></a>"
         });
 
+
         this.component = new Vue({
             el: '#header',
             data: {

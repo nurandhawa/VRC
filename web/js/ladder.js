@@ -164,6 +164,7 @@ var Ladder = (function () {
             data: {
                 ladder: ladderData.pairs,
                 players: ladderData.players,
+                timeStamp: ladderData.timeStamp,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
