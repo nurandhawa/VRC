@@ -6,8 +6,10 @@ import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.logic.InputValidator;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * UserSessionManager handles:
@@ -20,7 +22,7 @@ import java.util.Hashtable;
  */
 
 public class UserSessionManager {
-    private static Dictionary<String, UserSessionMetadata> sessions = new Hashtable<>();
+    private static Map<String, UserSessionMetadata> sessions = new HashMap<>();
     private static TokenGenerator tokenGenerator = new TokenGenerator();
 
 
@@ -73,7 +75,6 @@ public class UserSessionManager {
     }
 
     public static boolean isAdministratorSession(String sessionId) throws NoSuchSessionException {
-
         // Validate the input
         try {
             InputValidator.validateSessionIdFormat(sessionId);
@@ -88,7 +89,6 @@ public class UserSessionManager {
     }
 
     public static String getEmailFromSessionId(String sessionId) throws NoSuchSessionException {
-
         // Validate the input
         try {
             InputValidator.validateSessionIdFormat(sessionId);
@@ -114,9 +114,30 @@ public class UserSessionManager {
         }
     }
 
+    public static void clearExpiredSessions() {
+        List<String> sessionsToRemove = new ArrayList<>();
+
+        // Get a list of expired sessionId's
+        for (Map.Entry<String, UserSessionMetadata> sessionEntry : sessions.entrySet()) {
+            String sessionId = sessionEntry.getKey();
+            UserSessionMetadata metadata = sessionEntry.getValue();
+
+            if (metadata.isSessionExpired()) {
+                sessionsToRemove.add(sessionId);
+            }
+        }
+
+        // Remove the sessions
+        for (String sessionId : sessionsToRemove) {
+            sessions.remove(sessionId);
+        }
+
+    }
+
 
     // MARK: Misc Methods
     public static int numUsersLoggedIn() {
         return sessions.size();
     }
+
 }

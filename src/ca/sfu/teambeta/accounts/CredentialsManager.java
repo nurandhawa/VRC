@@ -3,7 +3,6 @@ package ca.sfu.teambeta.accounts;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import com.ja.security.PasswordHash;
 
@@ -14,8 +13,8 @@ import java.util.List;
 
 /**
  * This class handles:
- * - Authenticating password reset requests
- * - Resetting the password via a security question
+ * - Authenticating a password reset request via a security question
+ * - Resetting the password
  *
  */
 
@@ -59,6 +58,8 @@ public class CredentialsManager {
         }
     }
 
+    /*
+    // Incomplete: Authentication oversight's to be addressed
     public void changePasswordByAdmin(String userEmail, String newUserPassword, String adminSessionId) throws NoSuchSessionException, InvalidCredentialsException, GeneralUserAccountException, NoSuchUserException {
         boolean isAdmin = UserSessionManager.isAdministratorSession(adminSessionId);
 
@@ -74,7 +75,7 @@ public class CredentialsManager {
         accountDBHandler.updateExistingUser(user);
 
     }
-
+    */
 
     // MARK: Methods for Resetting a Password (Via a Security Question)
     public String getUserSecurityQuestion(String email) throws NoSuchUserException, GeneralUserAccountException {
@@ -89,6 +90,8 @@ public class CredentialsManager {
         return securityQuestion;
     }
 
+    /*
+    // Incomplete: Authentication oversight's to be addressed
     public void setSecurityQuestion(String userEmail, String question, String answer, String sessionId) throws NoSuchUserException, GeneralUserAccountException, InvalidCredentialsException, NoSuchSessionException {
         // Although a user may be logged in with a valid sessionId, we must check they are
         //  setting their own security question.
@@ -109,6 +112,7 @@ public class CredentialsManager {
 
         accountDBHandler.updateExistingUser(user);
     }
+    */
 
     public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer) throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
         User user = accountDBHandler.getUser(email);

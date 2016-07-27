@@ -3,29 +3,25 @@ package ca.sfu.teambeta.accounts;
 import java.util.Calendar;
 
 /**
- * This class holds the token that authenticates whether a user
- * can change their password. This token is usually granted by
- * a method such as the one that validates the security question answer
+ * The PasswordResetVoucherMetadata class holds all the related
+ * information (metadata) about a password reset voucher, such
+ * as it's expiry.
+ *
+ * And yes, it has a long name.
  *
  */
 
-public class PasswordResetToken {
+public class PasswordResetVoucherMetadata {
     private static final int TIME_TO_LIVE = 15; // TTL is calculated in minutes
     private String token;
     private Calendar expiryDate;
 
 
     // MARK: Constructor
-    PasswordResetToken(String token) {
+    PasswordResetVoucherMetadata(String token) {
         this.token = token;
         this.expiryDate = Calendar.getInstance();
         expiryDate.add(Calendar.MINUTE, TIME_TO_LIVE);
-    }
-
-
-    // MARK: Getter
-    public String getToken() {
-        return token;
     }
 
 
