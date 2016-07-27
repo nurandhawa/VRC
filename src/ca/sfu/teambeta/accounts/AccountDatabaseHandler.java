@@ -47,11 +47,14 @@ public class AccountDatabaseHandler {
         dbManager.updateExistingUser(user);
     }
 
-    public void addAdministrator(String email) {
+    // Invoking the admin methods without going through the
+    //  UserRoleHandler class will result in the changes not
+    //  taking effect until the server is restarted.
+    public void addEmailToAdminList(String email) {
 
     }
 
-    public void removeAdministrator(String email) {
+    public void removeEmailFromAdminList(String email) {
 
     }
 

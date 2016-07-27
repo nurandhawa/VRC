@@ -386,12 +386,12 @@ public class AppController {
 
             JsonObject successResponse = new JsonObject();
             String sessionToken = "";
+
             try {
                 sessionToken = accountManager.login(email, pwd);
                 successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
                 return gson.toJson(successResponse);
-            } catch (InternalHashingException |
-                    NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InvalidInputException | NoSuchUserException | InvalidCredentialsException | GeneralUserAccountException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }

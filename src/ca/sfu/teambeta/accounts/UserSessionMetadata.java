@@ -3,11 +3,14 @@ package ca.sfu.teambeta.accounts;
 import java.util.Calendar;
 
 /**
- * The UserSessionMetadata class holds all the related information on a logged in user's session.
+ * The UserSessionMetadata class holds all the related information (metadata) on a logged in user's session.
  */
 
 public class UserSessionMetadata {
-    private static final int TIME_TO_LIVE = 7; // TTL is calculated in days
+    // TTL is calculated in days
+    private static final int TIME_TO_LIVE_ADMIN = 2;
+    private static final int TIME_TO_LIVE_REG_USER = 15;
+
     private String email;
     private Calendar expiryDate;
     private UserRole role;
@@ -18,7 +21,15 @@ public class UserSessionMetadata {
         this.email = email;
         this.role = role;
         this.expiryDate = Calendar.getInstance();
-        expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE);
+
+        if (role == UserRole.REGULAR) {
+            expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_REG_USER);
+        } else if (role == UserRole.ADMINISTRATOR) {
+            expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_ADMIN);
+        } else {
+            // In case another role is added in the future this won't break
+            expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_REG_USER);
+        }
     }
 
 

@@ -34,16 +34,16 @@ public class UserRoleHandler {
 
 
     // MARK: Addition/Removal of an Admin
-    public void addAdministrator(String email) {
+    public void addNewAdministrator(String email) {
         // Add the email to the database for persistence and
         //  cache the administrator locally.
 
-        accountDBHandler.addAdministrator(email);
+        accountDBHandler.addEmailToAdminList(email);
         administrators.add(email);
     }
 
     public void removeAdministrator(String email) {
-        accountDBHandler.removeAdministrator(email);
+        accountDBHandler.removeEmailFromAdminList(email);
         administrators.remove(email);
     }
 
