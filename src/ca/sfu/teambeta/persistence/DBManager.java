@@ -1,18 +1,19 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcLadderReorderer;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 import java.util.List;
 import java.util.Map;
@@ -382,6 +383,18 @@ public class DBManager {
         if (!uniqueEmail) {
             throw new AccountRegistrationException("The email '" + email + "' is already in use");
         }
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(user);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public synchronized void updateExistingUser(User user) {
 
         Transaction tx = null;
         try {
