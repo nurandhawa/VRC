@@ -61,7 +61,7 @@
 
     <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
       <div class = "header-button">
-        <a v-on:click="downloadLadder()" title="Download Ladder" class="btn btn-raised btn-primary">
+        <a v-on:click=downloadLadder() title="Download Ladder" class="btn btn-raised btn-primary">
           <i class="glyphicon glyphicon-download-alt"></i>
         </a>
         <component :is="mode" transition="fade" transition-mode="out-in">

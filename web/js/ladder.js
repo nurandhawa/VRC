@@ -306,10 +306,5 @@ var Ladder = (function () {
         };
     };
 
-    Ladder.prototype.downloadLadder = function () {
-        var api = new API();
-        api.downloadLadder();
-    };
-
     return Ladder;
 })();

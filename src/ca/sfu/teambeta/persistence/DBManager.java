@@ -447,7 +447,7 @@ public class DBManager {
         return time;
     }
 
-    public void writeToCsvFile() {
-        CSVReader.exportCsv(getLatestLadder().getPairs());
+    public void writeToCsvFile(GameSession gameSession) {
+        CSVReader.exportCsv(gameSession.getAllPairs());
     }
 }
