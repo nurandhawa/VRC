@@ -351,6 +351,7 @@ var Ladder = (function () {
         var api = new API();
         api.getLadder(function (ladderData) {
             this.updateLadder(ladderData);
+            this.timeStamp = ladderData.timeStamp;
             this.refreshMode();
         }.bind(this));
     };
