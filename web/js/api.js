@@ -208,8 +208,10 @@ var API = (function() {
                     match.gameSession = gameSession;
                     if(match.timeSlot === "SLOT_1") {
                         match.timeSlot = "08:00 pm";
-                    } else {
+                    } else if(match.timeSlot === "SLOT_2"){
                         match.timeSlot = "09:30 pm";
+                    } else {
+                        match.timeSlot = "00:00";
                     }
                     match.resultsValid = false;
                     match.results = [];
