@@ -3,6 +3,8 @@ package ca.sfu.teambeta.api;
 
 import com.google.gson.Gson;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -15,6 +17,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.hibernate.SessionFactory;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
@@ -153,7 +156,8 @@ public class APITest {
 
         assertEquals(200, jsonResponse.getStatus());
         JsonNode node = jsonResponse.getBody();
-        assertEquals(ladderLength, node.getArray().length());
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(ladderLength, ladder.length());
     }
 
     @Test
