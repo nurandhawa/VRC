@@ -62,9 +62,9 @@ public class LadderJSONSerializer implements JSONSerializer {
 
     private String getMostRecentTimeStamp() {
         Date mostRecentDate = new Date(0);
-        for(Pair pair: pairList){
+        for (Pair pair: pairList) {
             Date date = pair.getDateCreated();
-            if(date.after(mostRecentDate)){
+            if (date.after(mostRecentDate)) {
                 mostRecentDate = date;
             }
         }
