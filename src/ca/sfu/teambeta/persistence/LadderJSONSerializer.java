@@ -3,6 +3,7 @@ package ca.sfu.teambeta.persistence;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ import ca.sfu.teambeta.core.Player;
 public class LadderJSONSerializer implements JSONSerializer {
     List<Pair> pairList;
     Set<Pair> activePairs;
+
 
     LadderJSONSerializer(List<Pair> pairList, Set<Pair> activePairs) {
         this.pairList = pairList;
@@ -39,12 +41,13 @@ public class LadderJSONSerializer implements JSONSerializer {
         pairJson.addProperty("positionChange", positionChange);
         pairJson.addProperty("isPlaying", isPlaying);
         pairJson.addProperty("timeSlot", pair.getTimeSlot().toString());
-        pairJson.addProperty("timeStamp", pair.getDateCreated().toString());
         return pairJson;
     }
 
     @Override
     public String toJson() {
+        JsonObject ladderObject = new JsonObject();
+        ladderObject.addProperty("timeStamp", getMostRecentTimeStamp());
         JsonArray pairsArray = new JsonArray();
         int position = 1;
         for (Pair pair : pairList) {
@@ -53,6 +56,18 @@ public class LadderJSONSerializer implements JSONSerializer {
             position++;
             pairsArray.add(pairJson);
         }
-        return pairsArray.toString();
+        ladderObject.add("pairs", pairsArray);
+        return ladderObject.toString();
+    }
+
+    private String getMostRecentTimeStamp() {
+        Date mostRecentDate = new Date(0);
+        for(Pair pair: pairList){
+            Date date = pair.getDateCreated();
+            if(date.after(mostRecentDate)){
+                mostRecentDate = date;
+            }
+        }
+        return mostRecentDate.toString();
     }
 }

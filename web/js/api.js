@@ -37,7 +37,7 @@ var API = (function() {
         .done(function(response) {
             if (doneCallback) {
                 var ladderData = {};
-                ladderData.pairs = JSON.parse(response);
+                ladderData = JSON.parse(response);
                 ladderData.players = [];
                 ladderData.pairs.forEach(function(pair) {
                     var player1 = pair.players[0];
