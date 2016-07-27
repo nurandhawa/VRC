@@ -446,4 +446,8 @@ public class DBManager {
         persistEntity(gameSession);
         return time;
     }
+
+    public void writeToCsvFile() {
+        CSVReader.exportCsv(getLatestLadder().getPairs());
+    }
 }
