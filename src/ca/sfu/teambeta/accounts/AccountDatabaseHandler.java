@@ -44,7 +44,7 @@ public class AccountDatabaseHandler {
     }
 
     public void updateExistingUser(User user) {
-        // TODO: Implement this update function
+        dbManager.updateExistingUser(user);
     }
 
     public void addAdministrator(String email) {
