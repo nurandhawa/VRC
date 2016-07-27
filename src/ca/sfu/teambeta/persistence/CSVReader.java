@@ -1,15 +1,16 @@
 package ca.sfu.teambeta.persistence;
 
+import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import com.opencsv.CSVWriter;
 
 /**
  * Created by constantin on 29/06/16.
@@ -83,5 +84,43 @@ public class CSVReader {
         }
 
         return pairs;
+    }
+
+    public static void exportCsv(List<Pair> pairs) {
+        String home = System.getProperty("user.home");
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        File csvFile = new File(home + "/Downloads" + "/ladder_" + dateFormat.format(date) + ".csv");
+        FileWriter fileWriter = null;
+        try {
+            fileWriter = new FileWriter(csvFile);
+        } catch (Exception e) {
+        }
+        CSVWriter writer = new CSVWriter(fileWriter);
+        List<String[]> entries = new ArrayList<>();
+        final int NUM_OF_COLUMNS_IN_CSV = 7;
+        for (int i = 0; i < pairs.size(); i++) {
+            Pair pair = pairs.get(i);
+            Player p1 = pair.getPlayers().get(0);
+            Player p2 = pair.getPlayers().get(1);
+            String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
+            entry[0] = p1.getLastName();
+            entry[1] = p1.getFirstName();
+            entry[2] = String.valueOf(p1.getID());
+            entry[3] = p2.getLastName();
+            entry[4] = p2.getFirstName();
+            entry[5] = String.valueOf(p2.getID());
+            entry[6] = String.valueOf(i + 1);
+            entries.add(entry);
+        }
+        writer.writeAll(entries, false);
+        try {
+            writer.flush();
+            writer.close();
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (Exception e) {
+
+        }
     }
 }

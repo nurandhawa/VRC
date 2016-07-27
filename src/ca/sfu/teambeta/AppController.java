@@ -424,6 +424,7 @@ public class AppController {
             return getErrResponse(message);
         });
 
+        //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
             int id;
             try {
@@ -453,6 +454,13 @@ public class AppController {
             GameSession gameSession = dbManager.getGameSessionLatest();
             VrcTimeSelection timeSelector = new VrcTimeSelection();
             timeSelector.distributePairs(gameSession.getScorecards());
+            return getOkResponse("");
+        });
+
+        //download ladder to a new csv file
+        post("/api/ladder/download", (request, response) -> {
+            GameSession gameSession = getRequestedGameSession(dbManager, GAMESESSION_LATEST);
+            dbManager.writeToCsvFile(gameSession);
             return getOkResponse("");
         });
 

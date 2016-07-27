@@ -29,6 +29,11 @@ var Header = (function() {
                         this.mode = "read";
                         editOnClick();
                     }
+                },
+                
+                downloadLadder: function () {
+                    var api = new API();
+                    api.downloadLadder();
                 }
             }
         });
