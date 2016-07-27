@@ -5,10 +5,7 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created by constantin on 11/07/16.
@@ -90,7 +87,7 @@ public class VrcTimeSelection implements TimeSelection {
 
     //Count how many pairs selected particular time slot
     private Time getDominantTime(List<Time> timeSlots) {
-        Map<Time, Integer> timeFrequency = new HashMap<>();
+        Map<Time, Integer> timeFrequency = new LinkedHashMap<>();
 
         //Initialize values
         for (Time time : Time.values()) {
