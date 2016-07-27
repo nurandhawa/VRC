@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class handles user roles
+ * This class handles:
+ * - User roles
+ * - Addition of an admin
+ * - Removal of an admin
  *
  */
 
@@ -29,6 +32,8 @@ public class UserRoleHandler {
 
     }
 
+
+    // MARK: Addition/Removal of an Admin
     public void addAdministrator(String email) {
         // Add the email to the database for persistence and
         //  cache the administrator locally.
