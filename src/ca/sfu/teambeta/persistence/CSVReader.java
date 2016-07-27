@@ -1,8 +1,10 @@
 package ca.sfu.teambeta.persistence;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import ca.sfu.teambeta.core.Ladder;
@@ -85,7 +87,10 @@ public class CSVReader {
     }
 
     public static void exportCsv(List<Pair> pairs) {
-        String csvFile = "exportedLadder.csv";
+        String home = System.getProperty("user.home");
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        File csvFile = new File(home + "/Downloads" + "/ladder_" + dateFormat.format(date) + ".csv");
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(csvFile);
@@ -109,7 +114,7 @@ public class CSVReader {
             entries.add(entry);
         }
         writer.writeAll(entries, false);
-        try{
+        try {
             writer.flush();
             writer.close();
             fileWriter.flush();
