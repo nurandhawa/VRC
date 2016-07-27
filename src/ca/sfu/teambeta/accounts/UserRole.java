@@ -6,5 +6,5 @@ package ca.sfu.teambeta.accounts;
  */
 
 public enum UserRole {
-    REGULAR, ADMINISTRATOR
+    REGULAR, ADMINISTRATOR, ANONYMOUS
 }

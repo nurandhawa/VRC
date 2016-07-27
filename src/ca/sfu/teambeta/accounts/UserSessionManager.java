@@ -38,6 +38,16 @@ public class UserSessionManager {
 
     }
 
+    public static String createNewAnonymousSession(String anonymousCode) {
+        String sessionId = tokenGenerator.generateUniqueRandomToken();
+
+        UserSessionMetadata metadata = new UserSessionMetadata(anonymousCode, UserRole.ANONYMOUS);
+
+        sessions.put(sessionId, metadata);
+
+        return sessionId;
+    }
+
     public static void deleteSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
         try {

@@ -1,5 +1,8 @@
 package ca.sfu.teambeta.accounts;
 
+import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,17 +37,26 @@ public class UserRoleHandler {
 
 
     // MARK: Addition/Removal of an Admin
-    public void addNewAdministrator(String email) {
-        // Add the email to the database for persistence and
-        //  cache the administrator locally.
+    public void setAdminPrivilege(String email) throws NoSuchUserException {
+        User user = accountDBHandler.getUser(email);
+        user.setUserRole(UserRole.ADMINISTRATOR);
+        accountDBHandler.updateExistingUser(user);
 
-        accountDBHandler.addEmailToAdminList(email);
         administrators.add(email);
     }
 
-    public void removeAdministrator(String email) {
-        accountDBHandler.removeEmailFromAdminList(email);
+    public void removeAdminPrivilege(String email) throws NoSuchUserException {
+        User user = accountDBHandler.getUser(email);
+        user.setUserRole(UserRole.REGULAR);
+        accountDBHandler.updateExistingUser(user);
+
         administrators.remove(email);
+    }
+
+    public void setAsAnonymousUser(String email) throws NoSuchUserException {
+        User user = accountDBHandler.getUser(email);
+        user.setUserRole(UserRole.ANONYMOUS);
+        accountDBHandler.updateExistingUser(user);
     }
 
 
