@@ -5,7 +5,11 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 
-import java.util.*;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Created by constantin on 11/07/16.
@@ -146,7 +150,8 @@ public class VrcTimeSelection implements TimeSelection {
                     //If the difference between time slots is on 1 pair
                     //do not move the whole group
                     //some groups have 4 pairs and some 3, time slots cannot be perfectly equal
-                    moveOverflowedGroupsToNextTimeSlot(amount, avgPairsPerTimeSlot, extraPairs, time, allScorecards);
+                    moveOverflowedGroupsToNextTimeSlot(
+                            amount, avgPairsPerTimeSlot, extraPairs, time, allScorecards);
                 }
             }
         }
@@ -226,7 +231,8 @@ public class VrcTimeSelection implements TimeSelection {
             boolean crowded = extra > 0;
             if (crowded) {
                 //Move extra groups to the next time slot, do that for all time slots
-                moveOverflowedGroupsToNextTimeSlot(amount, MAX_NUM_PAIRS_PER_SLOT, extra, time, allScorecards);
+                moveOverflowedGroupsToNextTimeSlot(
+                        amount, MAX_NUM_PAIRS_PER_SLOT, extra, time, allScorecards);
             }
 
         }

@@ -32,7 +32,8 @@ public class PasswordManager {
 
 
     // MARK: The Core Methods for Managing a Password
-    public void changePassword(String email, String newPassword, String token) throws InternalHashingException {
+    public void changePassword(String email, String newPassword, String token)
+            throws InternalHashingException {
         boolean tokenExists = passwordResetTokens.contains(token);
         boolean tokenExpired = false;
 
@@ -73,7 +74,8 @@ public class PasswordManager {
         return securityQuestion;
     }
 
-    public String validateSecurityQuestionAnswer(String email, String answer) throws InternalHashingException,
+    public String validateSecurityQuestionAnswer(String email, String answer)
+            throws InternalHashingException,
             InvalidCredentialsException, NoSuchUserException {
         User user = getUserFromDB(email);
 

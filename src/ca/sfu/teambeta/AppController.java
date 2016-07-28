@@ -152,6 +152,7 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
+                ignored.getMessage();
             }
 
             String status = request.queryParams(STATUS);
@@ -403,8 +404,9 @@ public class AppController {
                 SessionResponse sessionResponse = accountManager.login(email, pwd);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
-            } catch (InternalHashingException |
-                    NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InternalHashingException
+                    | NoSuchUserException
+                    | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }

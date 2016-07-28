@@ -12,9 +12,9 @@ import java.util.Calendar;
  * they information again up till next week.
  */
 public class TimeManager {
-    private static final int DAY = Calendar.THURSDAY;
+    private static final int DAY = Calendar.THURSDAY - 1;
     private static final int HOUR = 18;
-    private static final int MINUTE = 0;
+    private static final int MINUTE = 48;
     private static final int SECOND = 0;
     private static Calendar Block_Time = Calendar.getInstance();
     private static TimeManager timeManager = null;
@@ -26,7 +26,7 @@ public class TimeManager {
         Block_Time.set(Calendar.SECOND, SECOND);
     }
 
-    public synchronized static TimeManager getInstance() {
+    public static synchronized TimeManager getInstance() {
         if (timeManager == null) {
             timeManager = new TimeManager();
         }

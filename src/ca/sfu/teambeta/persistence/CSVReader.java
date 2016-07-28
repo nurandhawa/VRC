@@ -5,7 +5,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Date;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -95,6 +100,8 @@ public class CSVReader {
         try {
             fileWriter = new FileWriter(csvFile);
         } catch (Exception e) {
+            //TODO handle exception
+            e.getMessage();
         }
         CSVWriter writer = new CSVWriter(fileWriter);
         List<String[]> entries = new ArrayList<>();
@@ -102,11 +109,11 @@ public class CSVReader {
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
             Player p1 = pair.getPlayers().get(0);
-            Player p2 = pair.getPlayers().get(1);
             String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
             entry[0] = p1.getLastName();
             entry[1] = p1.getFirstName();
             entry[2] = String.valueOf(p1.getID());
+            Player p2 = pair.getPlayers().get(1);
             entry[3] = p2.getLastName();
             entry[4] = p2.getFirstName();
             entry[5] = String.valueOf(p2.getID());
@@ -120,7 +127,8 @@ public class CSVReader {
             fileWriter.flush();
             fileWriter.close();
         } catch (Exception e) {
-
+            //TODO handle exception
+            e.getMessage();
         }
     }
 }
