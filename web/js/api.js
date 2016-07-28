@@ -412,6 +412,27 @@ var API = (function() {
             });
     };
 
+    API.prototype.uploadLadder = function (file, doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/ladder/upload",
+            data: JSON.stringify({
+                "file": file
+            })
+        })
+
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
+    };
+
     return API;
 
 })();

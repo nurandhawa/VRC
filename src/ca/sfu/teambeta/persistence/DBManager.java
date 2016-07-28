@@ -450,4 +450,8 @@ public class DBManager {
     public void writeToCsvFile(GameSession gameSession) {
         CSVReader.exportCsv(gameSession.getAllPairs());
     }
+
+    public void importLadderFromCsv(String filePath) {
+        CSVReader.importCsv(filePath);
+    }
 }

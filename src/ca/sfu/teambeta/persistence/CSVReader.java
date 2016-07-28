@@ -123,4 +123,14 @@ public class CSVReader {
 
         }
     }
+
+    public static Ladder importCsv(String filePath) {
+        Ladder newLadder = null;
+        try{
+            newLadder = setupLadder(filePath);
+        } catch (Exception e) {
+
+        }
+        return newLadder;
+    }
 }

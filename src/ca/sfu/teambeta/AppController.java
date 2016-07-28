@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -461,6 +462,22 @@ public class AppController {
         post("/api/ladder/download", (request, response) -> {
             GameSession gameSession = getRequestedGameSession(dbManager, GAMESESSION_LATEST);
             dbManager.writeToCsvFile(gameSession);
+            return getOkResponse("");
+        });
+
+        //upload a csv file to create new ladder
+        post("/api/ladder/upload", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            File dummyFile = new File(extractedData.getFile());
+            String fileName = dummyFile.getName();
+            String home = System.getProperty("user.home");
+            File ladderFile = new File(home + "/Downloads" + "/" + fileName);
+            if (!ladderFile.exists()) {
+                return getErrResponse("File does not exist in Download folder");
+            } else {
+                dbManager.importLadderFromCsv(ladderFile.getAbsolutePath());
+            }
             return getOkResponse("");
         });
 
