@@ -3,7 +3,6 @@ package ca.sfu.teambeta.core;
 import com.google.gson.annotations.Expose;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -15,28 +14,21 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
-import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.persistence.Persistable;
 
 
 @Entity(name = "Scorecard")
 public class Scorecard extends Persistable {
-    private static final int WIN = 1;
-    private static final int NO_SCORE = 0;
-    private static final int LOSE = -1;
-    private static final int NUM_GAMES = 4;
 
     @OneToMany(cascade = CascadeType.ALL)
-    Set<Game> games = new HashSet<>();
+    Set<PairRanking> pairRankings = new HashSet<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
-    List<Pair> pairs;
+    private List<Pair> pairs;
     @Expose
-    boolean isDone;
-    @Transient
-    Observer observer = null;
-    int finishedGameCount = 0;
+    private boolean isDone;
+
     @Transient
     @Expose
     private Time timeSlot;
@@ -49,58 +41,36 @@ public class Scorecard extends Persistable {
         // Better make a copy of pairs, just in case it changes
         this.pairs = new ArrayList<>(pairs);
         this.isDone = false;
-        this.observer = obs;
     }
 
-    public static void main(String[] args) {
-        Pair p1 = new Pair(new Player("A", "A"), new Player("B", "B"));
-        Pair p2 = new Pair(new Player("C", "C"), new Player("D", "D"));
-        Pair p3 = new Pair(new Player("E", "E"), new Player("F", "F"));
-        List<Pair> pairs = Arrays.asList(p1, p2, p3);
-        Scorecard sc = new Scorecard(pairs, null);
-
-        sc.setGameResults(p2, p1);
-        sc.setGameResults(p3, p2);
-        sc.setGameResults(p3, p1);
-
-        for (Pair p : sc.getReorderedPairs()) {
-            System.out.println(p.toString());
-        }
-
-        DBManager dbManager = new DBManager(DBManager.getTestingSession(true));
-        dbManager.persistEntity(sc);
-    }
-
-    public void setGameResults(Pair winner, Pair loser) {
-        games.add(new Game(winner, loser));
-        winner.setPairScore(winner.getPairScore() + 1);
-        loser.setPairScore(loser.getPairScore() - 1);
-        finishedGameCount++;
-
-        if (pairs.size() == NUM_GAMES) {
-            if (finishedGameCount == 1 || finishedGameCount == 2) {
-                winner.setPairScore(winner.getPairScore() + 1);
-            }
-        }
-        if (finishedGameCount == pairs.size()) {
-            this.pairs = getReorderedPairs();
-            this.isDone = true;
+    public void setGameResults(Pair winner, int rank) {
+        pairRankings.add(new PairRanking(winner, rank));
+        if (pairRankings.size() == pairs.size()) {
+            isDone = true;
         }
     }
 
     public int getPairScore(Pair pair) {
-        return pair.getPairScore();
+        for (PairRanking ranking : pairRankings) {
+            if (ranking.hasPair(pair)) {
+                return ranking.getRank();
+            }
+        }
+        return 0;
     }
 
+    public List<Pair> getPairs() {
+        return Collections.unmodifiableList(pairs);
+    }
 
     public List<Pair> getReorderedPairs() {
         List<Pair> orderedPairs = new ArrayList<>(pairs);
-        Collections.sort(orderedPairs, (pair1, pair2) -> getPairScore(pair2) - getPairScore(pair1));
+        Collections.sort(orderedPairs, (pair1, pair2) -> getPairScore(pair1) - getPairScore(pair2));
         return orderedPairs;
     }
 
-    public boolean hasPair(Pair p) {
-        return pairs.contains(p);
+    public boolean isDone() {
+        return isDone;
     }
 
     @Override
@@ -124,7 +94,7 @@ public class Scorecard extends Persistable {
         }
 
         final Scorecard otherScorecard = (Scorecard) other;
-        return pairs.equals(otherScorecard.pairs) && games.equals(otherScorecard.games);
+        return pairs.equals(otherScorecard.pairs) && pairRankings.equals(otherScorecard.pairRankings);
     }
 
     @Override

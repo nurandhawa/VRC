@@ -36,11 +36,26 @@ var API = (function() {
         })
         .done(function(response) {
             if (doneCallback) {
-                var ladderData = JSON.parse(response);
-                ladderData.forEach(function(pair) {
-                    pair.teamName = pair.players[0].firstName + " " + pair.players[0].lastName + " and " +
-                        pair.players[1].firstName + " " + pair.players[1].lastName;
+                var ladderData = {};
+                ladderData.pairs = JSON.parse(response);
+                ladderData.players = [];
+                ladderData.pairs.forEach(function(pair) {
+                    var player1 = pair.players[0];
+                    var player2 = pair.players[1];
+
+                    var player1Name = player1.firstName + " " + player1.lastName;
+                    var player2Name = player2.firstName + " " + player2.lastName;
+
+                    pair.teamName = player1Name + " and " + player2Name;
                     pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+                    ladderData.players.push({
+                        label: player1Name,
+                        id: player1.id
+                    });
+                    ladderData.players.push({
+                        label: player2Name,
+                        id: player2.id
+                    });
                 });
                 doneCallback(ladderData);
             }
@@ -62,20 +77,20 @@ var API = (function() {
             method: "PATCH",
             url: SERVER_URL + LADDER_ENDPOINT + "/" + pairId + STATUS_PARAM + newStatus
         })
-        .done(function(response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function(response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.updatePairPosition = function(pairId, newPosition, doneCallback, failCallback) {
@@ -83,27 +98,27 @@ var API = (function() {
             method: "PATCH",
             url: SERVER_URL + LADDER_ENDPOINT + "/" + pairId + POSITION_PARAM + newPosition
         })
-        .done(function(response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function(response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.prepareNewPlayer = function(firstName, lastName, phoneNumber) {
         var onlyDigitsRegex = /\d/g;
         var sanitizedPhoneNumber = "";
         if (phoneNumber !== "") {
-          sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
+            sanitizedPhoneNumber = phoneNumber.match(onlyDigitsRegex).join("");
         }
         return {
             "firstName": firstName,
@@ -129,20 +144,20 @@ var API = (function() {
                 "position": position
             })
         })
-        .done(function(response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function(response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.removePair = function (pairId, doneCallback, failCallback) {
@@ -150,20 +165,20 @@ var API = (function() {
             method: "DELETE",
             url: SERVER_URL + "/ladder/" + pairId
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     // Valid penalties are "late", "miss" or "accident"
@@ -171,22 +186,22 @@ var API = (function() {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/matches/" + pairId + GAMESESSION_PARAM + gameSession +
-                 PENALTY_PARAM + penalty
+            PENALTY_PARAM + penalty
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.reorderLadder = function(gameSession) {
@@ -201,46 +216,49 @@ var API = (function() {
             method: "GET",
             url: SERVER_URL + "/matches" + GAMESESSION_PARAM + gameSession
         })
-        .done(function (response) {
-            var matches = JSON.parse(response);
-            matches.forEach(function(match, i) {
-                match.scorecardIndex = i;
-                match.gameSession = gameSession;
-                if(match.timeSlot === "SLOT_1") {
-                    match.timeSlot = "08:00 pm";
-                } else {
-                    match.timeSlot = "09:30 pm";
-                }
-                match.resultsValid = false;
-                match.results = [];
-                match.pairs.forEach(function(pair) {
-                    var resultsArr = [];
-                    for (var i in match.pairs) {
-                        resultsArr.push("-");
+            .done(function (response) {
+                var matches = JSON.parse(response);
+                matches.forEach(function(match, i) {
+                    match.scorecardIndex = i;
+                    match.gameSession = gameSession;
+                    if(match.timeSlot === "SLOT_1") {
+                        match.timeSlot = "08:00 pm";
+                    } else if(match.timeSlot === "SLOT_2"){
+                        match.timeSlot = "09:30 pm";
+                    } else {
+                        match.timeSlot = "00:00";
                     }
-                    match.results.push(resultsArr);
+                    match.resultsValid = false;
+                    match.results = [];
+                    match.pairs.forEach(function(pair) {
+                        var result = {
+                            pairId: 0,
+                            newRanking: 0,
+                            beenPlayed: false
+                        };
+                        match.results.push(result);
 
-                    pair.absentPenalty = {
-                        'btn-raised': false
-                    };
-                    pair.latePenalty = {
-                        'btn-raised': false
-                    };
+                        pair.absentPenalty = {
+                            'btn-raised': false
+                        };
+                        pair.latePenalty = {
+                            'btn-raised': false
+                        };
+                    });
                 });
+                if (doneCallback) {
+                    doneCallback(matches);
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
             });
-            if (doneCallback) {
-                doneCallback(matches);
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
     };
 
     API.prototype.inputMatchResults = function (gameSession, matchId, results, doneCallback, failCallback) {
@@ -251,20 +269,20 @@ var API = (function() {
                 results: results
             })
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.removePairFromMatch = function (pairId, doneCallback, failCallback) {
@@ -272,20 +290,20 @@ var API = (function() {
             method: "DELETE",
             url: SERVER_URL + "/matches/" + pairId
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.userLogin = function (email, password, doneCallback, failCallback) {
@@ -297,20 +315,20 @@ var API = (function() {
                 "password": password
             })
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.userRegistration = function (email, password, doneCallback, failCallback) {
@@ -322,20 +340,20 @@ var API = (function() {
                 "password": password
             })
         })
-        .done(function (response) {
-            if (doneCallback) {
-                doneCallback(JSON.parse(response));
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     API.prototype.userLogout = function (doneCallback, failCallback) {
@@ -363,7 +381,7 @@ var API = (function() {
                 "time": time,
             })
         })
-            
+
             .done(function (response) {
                 if (doneCallback) {
                     doneCallback(JSON.parse(response));
@@ -375,7 +393,25 @@ var API = (function() {
                 }
             });
     };
-    
+
+    API.prototype.downloadLadder = function (doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/ladder/download"
+        })
+
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+            });
+    };
+
     return API;
 
 })();

@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.accounts;
 
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 
 public class AccountManager {
-    private AccountDatabaseHandler accountDBHandler;
+    private AccountDatabaseHandler accountDbHandler;
     private UserRoleHandler userRoleHandler;
     private TokenGenerator tokenGenerator;
     private Map<String, String> anonymousLoginCodes;
@@ -40,10 +41,10 @@ public class AccountManager {
 
 
     // MARK: Constructor
-    public AccountManager(AccountDatabaseHandler accountDBHandler) {
-        this.accountDBHandler = accountDBHandler;
+    public AccountManager(AccountDatabaseHandler accountDbHandler) {
+        this.accountDbHandler = accountDbHandler;
 
-        userRoleHandler = new UserRoleHandler(accountDBHandler);
+        userRoleHandler = new UserRoleHandler(accountDbHandler);
         tokenGenerator = new TokenGenerator();
 
         anonymousLoginCodes = new HashMap<>();
@@ -52,17 +53,16 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password)
+    public SessionResponse login(String email, String password)
             throws InvalidInputException, NoSuchUserException,
             InvalidCredentialsException, GeneralUserAccountException {
 
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
-
         // Authenticate the password
         // Get the user from the database
-        User user = accountDBHandler.getUser(email);
+        User user = accountDbHandler.getUser(email);
 
         // Validate the entered password with the hash
         boolean isPasswordCorrect = CredentialsManager
@@ -76,14 +76,10 @@ public class AccountManager {
         // Create a session for the user
         UserRole role = userRoleHandler.getUserRole(email);
 
-        String sessionId = UserSessionManager.createNewSession(email, role);
-
-        //System.out.println("Logging in with sessionId: " + sessionId);
-
-        return sessionId;
+        return UserSessionManager.createNewSession(email, role);
     }
 
-    public String loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
+    public SessionResponse loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
         boolean validAnonymousLoginCode = (anonymousLoginCodes.get(anonymousLoginCode) != null);
 
         if (!validAnonymousLoginCode) {
@@ -92,9 +88,7 @@ public class AccountManager {
 
         String email = anonymousLoginCodes.get(anonymousLoginCode);
 
-        String sessionId = UserSessionManager.createNewSession(email, UserRole.ANONYMOUS);
-
-        return sessionId;
+        return UserSessionManager.createNewSession(email, UserRole.ANONYMOUS);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {
@@ -127,11 +121,11 @@ public class AccountManager {
         newUser.setSecurityAnswerHash(securityQuestionAnswerHash);
 
         // Get the associated player
-        Player player = accountDBHandler.getPlayer(playerId);
+        Player player = accountDbHandler.getPlayer(playerId);
         newUser.associatePlayer(player);
 
         // Finally save the user
-        accountDBHandler.saveNewUser(newUser);
+        accountDbHandler.saveNewUser(newUser);
     }
 
     public void registerUser(String email, String password)
@@ -145,7 +139,7 @@ public class AccountManager {
         User newUser = new User(email, passwordHash);
 
         // Save the user to the database, no Exception marks success
-        accountDBHandler.saveNewUser(newUser);
+        accountDbHandler.saveNewUser(newUser);
     }
 
     public void registerNewAdministratorAccount(String email, String password)
@@ -198,6 +192,7 @@ public class AccountManager {
     }
 
 
+    // !! TODO: DELETE THE MAIN FUNCTION - WILL BE REFACTORED INTO TESTS !!
     // MARK: - Main Function
 /*
     public static void main(String[] args) {

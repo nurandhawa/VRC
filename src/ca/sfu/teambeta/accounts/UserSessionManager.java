@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.accounts;
 
+import ca.sfu.teambeta.core.SessionResponse;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.logic.InputValidator;
@@ -25,14 +27,14 @@ public class UserSessionManager {
 
 
     // MARK: Methods for creating/deleting a session
-    public static String createNewSession(String email, UserRole role) {
+    public static SessionResponse createNewSession(String email, UserRole role) {
         String sessionId = tokenGenerator.generateUniqueRandomToken();
 
         UserSessionMetadata metadata = new UserSessionMetadata(email, role);
 
         sessions.put(sessionId, metadata);
 
-        return sessionId;
+        return new SessionResponse(sessionId, role);
 
     }
 

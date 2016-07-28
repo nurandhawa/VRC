@@ -43,19 +43,10 @@ var Matches = (function () {
                 },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
-                    var results = [];
-
-                    for (var round = 0; round < match.pairs.length; round++) {
-                        var roundResult = [];
-                        for (var pair in match.pairs) {
-                            roundResult.push(match.results[pair][round]);
-                        }
-                        results.push(roundResult);
-                    }
-
+                    var results = match.results;
                     var api = new API();
                     api.inputMatchResults(gameSession, match.id, results, function() {
-                        this.refreshMatches(gameSession);
+                        this.refreshMatches();
                     }.bind(this));
                     this.closeModal();
                 },
@@ -121,17 +112,28 @@ var Matches = (function () {
                           return this.active;
                       },
                       validateResults: function (currentMatch, newVal, oldVal) {
-                          var numRounds = newVal.length;
-                          var CORRECT_ROUNDS_PLAYED = 2;
-                          var CORRECT_ROUNDS_NOT_PLAYED = numRounds - CORRECT_ROUNDS_PLAYED;
+                          var ROUNDS_TO_PLAY = currentMatch.pairs.length;
+                          var results = currentMatch.results;
 
-                          var isValid = newVal.every(function (pairRecord) {
-                              var roundsNotPlayed = pairRecord.filter(function (entry) {
-                                  return entry === "-";
-                              }).length;
-                              return roundsNotPlayed === CORRECT_ROUNDS_NOT_PLAYED;
+                          var numPlayed = 0;
+                          var ranksTaken = [];
+                          results.forEach(function(result){
+                              if(result.beenPlayed === true){
+                                  var thisRanking = result.newRanking;
+                                  var isRankTaken = false;
+                                  for (var i = 0; i < ranksTaken.length; i++) {
+                                      if (ranksTaken[i] === thisRanking){
+                                          isRankTaken = true;
+                                      }
+                                  }
+                                  if(!isRankTaken){
+                                      ranksTaken.push(thisRanking);
+                                      numPlayed++;
+                                  }
+                              }
                           });
 
+                          var isValid = ROUNDS_TO_PLAY === numPlayed;
                           currentMatch.resultsValid = isValid;
                       }
                   },
@@ -139,14 +141,20 @@ var Matches = (function () {
                       "updateMatches": function (matchData, gameSession) {
                           if (gameSession === this.gameSession) {
                               this.matches = matchData;
-                              this.matches.forEach(function(match, index) {
-                                  this.$watch("matches[" + index + "].results", this.validateResults.bind(this, match));
+                              this.matches.forEach(function (match, matchIndex) {
+                                  var thisMatch = this.matches[matchIndex];
+                                  var thisVue = this;
+                                  thisMatch.pairs.forEach(function (pair, pairIndex) {
+                                      thisVue.$watch(
+                                          "matches[" + matchIndex + "].results[" + pairIndex + "]",
+                                          thisVue.validateResults.bind(thisVue, match));
+                                  });
                               }.bind(this));
-
+                              
                               var matchesDone = this.matches.every(function(match) {
                                   return match.isDone;
                               });
-
+    
                               if (gameSession === "latest") {
                                   this.$dispatch("matchesDone", matchesDone);
                               }

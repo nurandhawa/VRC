@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import ca.sfu.teambeta.core.Game;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
@@ -118,53 +117,24 @@ public class GameSessionTest extends PersistenceTest {
         assert (newGameSession.getScorecards().equals(gameSession.getScorecards()));
     }
 
-    @Test
-    public void testModifyScorecard() {
-        saveGameSession();
-        Session session = getSession();
-        Scorecard firstCard = session.get(Scorecard.class, 1);
-        List<Pair> activePairs = gameSession.getActivePairs();
-
-
-        firstCard.setGameResults(davidBob, richardRobin);
-        firstCard.setGameResults(kevinJasmin, richardRobin);
-        firstCard.setGameResults(kevinJasmin, davidBob);
-        Transaction tx = session.beginTransaction();
-        session.update(firstCard);
-
-        Scorecard secondCard = session.get(Scorecard.class, 2);
-
-        secondCard.setGameResults(ianCamden, anastasiaVictoria);
-        secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
-        secondCard.setGameResults(ianCamden, tonyAngelica);
-        session.update(secondCard);
-        tx.commit();
-
-        Game testGame1 = session.get(Game.class, 2);
-        session.close();
-        Pair pair3 = activePairs.get(2);
-        assert (testGame1.getWinner().equals(pair3));
-    }
 
     @Test
     public void testReordering() {
         int key = saveGameSession();
+        Session session = getSession();
 
         List<Scorecard> scorecards = gameSession.getScorecards();
 
         Scorecard firstCard = scorecards.get(0);
-
-        firstCard.setGameResults(davidBob, richardRobin);
-        firstCard.setGameResults(kevinJasmin, richardRobin);
-        firstCard.setGameResults(kevinJasmin, davidBob);
-
         Scorecard secondCard = scorecards.get(1);
 
-        secondCard.setGameResults(ianCamden, anastasiaVictoria);
-        secondCard.setGameResults(tonyAngelica, anastasiaVictoria);
-        secondCard.setGameResults(ianCamden, tonyAngelica);
+        firstCard.setGameResults(davidBob, 2);
+        firstCard.setGameResults(kevinJasmin, 1);
+        firstCard.setGameResults(richardRobin, 3);
 
-        Session session = getSession();
+        secondCard.setGameResults(ianCamden, 1);
+        secondCard.setGameResults(tonyAngelica, 2);
+        secondCard.setGameResults(anastasiaVictoria, 3);
         session.update(secondCard);
 
         gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());

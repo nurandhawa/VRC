@@ -26,7 +26,6 @@ class Main {
             SessionFactory sessionFactory = DBManager.getMySQLSession(true);
 
             GameSession gameSession = new GameSession(newLadder);
-            gameSession.setUpLastWeekPositions();
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }

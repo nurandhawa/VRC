@@ -13,32 +13,32 @@ import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 public class UserRoleHandler {
     //private List<String> administrators;
-    private AccountDatabaseHandler accountDBHandler;
+    private AccountDatabaseHandler accountDbHandler;
 
     // MARK: Constructor
-    public UserRoleHandler(AccountDatabaseHandler accountDBHandler) {
-        this.accountDBHandler = accountDBHandler;
+    public UserRoleHandler(AccountDatabaseHandler accountDbHandler) {
+        this.accountDbHandler = accountDbHandler;
 
     }
 
 
     // MARK: The Core UserRole Handler Method(s)
     public UserRole getUserRole(String email) throws NoSuchUserException {
-        User user = accountDBHandler.getUser(email);
+        User user = accountDbHandler.getUser(email);
         UserRole role = user.getUserRole();
 
         return role;
     }
 
     public boolean setUserRole(String userEmail, UserRole newRole) throws NoSuchUserException {
-        User user = accountDBHandler.getUser(userEmail);
+        User user = accountDbHandler.getUser(userEmail);
 
         if (user.getUserRole() == newRole) {
             return false;
         }
 
         user.setUserRole(newRole);
-        accountDBHandler.updateExistingUser(user);
+        accountDbHandler.updateExistingUser(user);
 
         return true;
     }

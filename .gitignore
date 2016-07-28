@@ -2,6 +2,7 @@
 build
 out
 gradle
+classes
 
 .DS_Store
 .DS_Store?
