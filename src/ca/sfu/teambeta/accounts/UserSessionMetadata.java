@@ -49,6 +49,10 @@ public class UserSessionMetadata {
         return email;
     }
 
+    public UserRole getRole() {
+        return role;
+    }
+
 
     // MARK: Helper Methods
     public boolean isSessionExpired() {
@@ -59,7 +63,4 @@ public class UserSessionMetadata {
         return expired;
     }
 
-    public boolean isAdministratorSession() {
-        return role == UserRole.ADMINISTRATOR;
-    }
 }

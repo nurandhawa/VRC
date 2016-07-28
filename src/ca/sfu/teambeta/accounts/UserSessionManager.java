@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.accounts;
 
 import ca.sfu.teambeta.core.SessionResponse;
-import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.logic.InputValidator;
@@ -85,7 +84,21 @@ public class UserSessionManager {
 
         UserSessionMetadata metadata = sessions.get(sessionId);
 
-        return metadata.isAdministratorSession();
+        return (metadata.getRole() == UserRole.ADMINISTRATOR);
+
+    }
+
+    public static boolean isAnonymousSession(String sessionId) throws NoSuchSessionException {
+        // Validate the input
+        try {
+            InputValidator.validateSessionIdFormat(sessionId);
+        } catch (InvalidInputException e) {
+            throw new NoSuchSessionException("Invalid SessionId");
+        }
+
+        UserSessionMetadata metadata = sessions.get(sessionId);
+
+        return (metadata.getRole() == UserRole.ANONYMOUS);
 
     }
 
@@ -113,6 +126,11 @@ public class UserSessionManager {
             return metadata;
         }
 
+    }
+
+    public static void clearAllSessions() {
+        // This will cause everyone to re-authenticate
+        sessions.clear();
     }
 
     public static void clearExpiredSessions() {

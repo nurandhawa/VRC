@@ -80,7 +80,13 @@ public class AccountManager {
         return UserSessionManager.createNewSession(email, role);
     }
 
-    // Not in use
+    /**
+     * NOT IN USE:
+     * This method can be used to extend the functionality of anonymous
+     * users in the future. Or simply provide a way to give limited access
+     * to users.
+     *
+     */
     public SessionResponse loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
         boolean validAnonymousLoginCode = (anonymousLoginCodes.get(anonymousLoginCode) != null);
 
@@ -170,7 +176,13 @@ public class AccountManager {
         }
     }
 
-    // Not in use
+    /**
+     * NOT IN USE:
+     * This method can be used to extend the functionality of anonymous
+     * users in the future. Or simply provide a way to give limited access
+     * to users. IE: Single sign in
+     *
+     */
     public String registerNewAnonymousAccount() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         String accountName = tokenGenerator.generateUniqueRandomToken();
         String password = tokenGenerator.generateUniqueRandomToken();
@@ -200,7 +212,7 @@ public class AccountManager {
         return anonymousLoginCode;
     }
 
-    // Not in use
+    // NOT IN USE
     public Map<String, String> deleteAllAnonymousUsers() {
         // HashMap is structured <Email, Reason Not Deleted>
         Map<String, String> nonDeletableUsers = new HashMap<>();
