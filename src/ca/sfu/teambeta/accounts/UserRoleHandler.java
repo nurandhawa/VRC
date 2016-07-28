@@ -3,9 +3,6 @@ package ca.sfu.teambeta.accounts;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class handles:
  * - User roles
@@ -15,65 +12,36 @@ import java.util.List;
  */
 
 public class UserRoleHandler {
-    private List<String> administrators;
+    //private List<String> administrators;
     private AccountDatabaseHandler accountDBHandler;
 
     // MARK: Constructor
     public UserRoleHandler(AccountDatabaseHandler accountDBHandler) {
         this.accountDBHandler = accountDBHandler;
-        populateAdministratorList();
+
     }
 
 
-    // MARK: The Core Role Handler Method(s)
-    public UserRole getUserClearanceLevel(String email) {
-        if (administrators.contains(email)) {
-            return UserRole.ADMINISTRATOR;
-        } else {
-            return UserRole.REGULAR;
+    // MARK: The Core UserRole Handler Method(s)
+    public UserRole getUserRole(String email) throws NoSuchUserException {
+        User user = accountDBHandler.getUser(email);
+        UserRole role = user.getUserRole();
+
+        return role;
+    }
+
+    public boolean setUserRole(String userEmail, UserRole newRole) throws NoSuchUserException {
+        User user = accountDBHandler.getUser(userEmail);
+
+        if (user.getUserRole() == newRole) {
+            return false;
         }
 
-    }
-
-
-    // MARK: Addition/Removal of an Admin
-    public void setAdminPrivilege(String email) throws NoSuchUserException {
-        User user = accountDBHandler.getUser(email);
-        user.setUserRole(UserRole.ADMINISTRATOR);
+        user.setUserRole(newRole);
         accountDBHandler.updateExistingUser(user);
 
-        administrators.add(email);
+        return true;
     }
 
-    public void removeAdminPrivilege(String email) throws NoSuchUserException {
-        User user = accountDBHandler.getUser(email);
-        user.setUserRole(UserRole.REGULAR);
-        accountDBHandler.updateExistingUser(user);
-
-        administrators.remove(email);
-    }
-
-    public void setAsAnonymousUser(String email) throws NoSuchUserException {
-        User user = accountDBHandler.getUser(email);
-        user.setUserRole(UserRole.ANONYMOUS);
-        accountDBHandler.updateExistingUser(user);
-    }
-
-
-    // MARK: Helper Method(s)
-        private void populateAdministratorList() {
-        // In the future this method can be changed to fetch
-        //  a list of admin emails from the database, or a file, etc.
-
-        List<String> admins = new ArrayList<>();
-
-        final String DEMO_ADMIN_1 = "admin_billy@vrc.ca";
-        final String DEMO_ADMIN_2 = "admin_zong@vrc.ca";
-
-        admins.add(DEMO_ADMIN_1);
-        admins.add(DEMO_ADMIN_2);
-
-        administrators = admins;
-    }
 
 }

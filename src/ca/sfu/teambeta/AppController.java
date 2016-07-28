@@ -418,7 +418,7 @@ public class AppController {
 
             String message = "";
             try {
-                accountManager.register(email, pwd);
+                accountManager.registerUser(email, pwd);
                 return getOkResponse("Account registered");
             } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
