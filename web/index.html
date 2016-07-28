@@ -207,34 +207,34 @@
           </div>
         </div>
       </div>
-      <validator name="pairValidator">
-        <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
-          <div class="panel-body">
-            <div class="pair-name">
-              <span class="label label-info position">{{ entry.position }}</span>
-                <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
-                <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
-              {{ entry.teamName }}
-                <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
-              </component>
-              <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)></time-select-button>
-              <div id="timeSelectModal{{entry.position - 1}}" class="modal">
-                <div class="modal-dialog">
-                  <div id="timeSelectModalContent" class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <label><input id="checkbox8pm{{entry.position - 1}}" type="checkbox">
-                      <label class="checkbox-label">Thursday, 08:00 pm.</label></label><br>
-                    <label><input id="checkbox9pm{{entry.position - 1}}" type="checkbox">
-                      <label class="checkbox-label">Thursday, 09:30 pm.</label></label>
-                    <div id="time-modal-footer" class="modal-footer">
-                      <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
-                      <button type="button" class="btn btn-success" id="timeSaveButton{{entry.position - 1}}"
-                              v-on:click="setTime(entry.position - 1)">Save</button>
-                    </div>
+      <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
+        <div class="panel-body">
+          <div class="pair-name">
+            <span class="label label-info position">{{ entry.position }}</span>
+              <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
+              <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
+            {{ entry.teamName }}
+              <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
+            </component>
+            <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)></time-select-button>
+            <div id="timeSelectModal{{entry.position - 1}}" class="modal">
+              <div class="modal-dialog">
+                <div id="timeSelectModalContent" class="modal-content">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <label><input id="checkbox8pm{{entry.position - 1}}" type="checkbox">
+                    <label class="checkbox-label">Thursday, 08:00 pm.</label></label><br>
+                  <label><input id="checkbox9pm{{entry.position - 1}}" type="checkbox">
+                    <label class="checkbox-label">Thursday, 09:30 pm.</label></label>
+                  <div id="time-modal-footer" class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
+                    <button type="button" class="btn btn-success" id="timeSaveButton{{entry.position - 1}}"
+                            v-on:click="setTime(entry.position - 1)">Save</button>
                   </div>
                 </div>
               </div>
+            </div>
 
+            <validator name="pairValidator">
               <div id="modal{{ entry.position - 1 }}" class="modal">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -246,9 +246,9 @@
                       <div class="form-group modal-form-group" v-validate-class>
                         <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
                         <div class="col-md-10">
-                          <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
-                                 :field="entry.teamName" v-validate="['required', 'position']" :classes="{ invalid: 'has-error', }"
-                                 @valid="onValid('#editPairSave' + (entry.position - 1))", @invalid="onInvalid('#editPairSave' + (entry.position - 1))">
+                           <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
+                                  v-validate:position="['required', 'position']" :classes="{ invalid: 'has-error', }"
+                                  @valid="onValid('#editPairSave' + (entry.position - 1))", @invalid="onInvalid('#editPairSave' + (entry.position - 1))">
                           <p class="help-block">Position must be greater than 0.</p>
                         </div>
                       </div>
@@ -263,10 +263,10 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </validator>
           </div>
         </div>
-      </validator>
+      </div>
     </div>
     <div class="pages-container">
       <ul class="pagination pages-buttons">
