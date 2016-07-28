@@ -1,7 +1,9 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.accounts.UserRole;
 import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
@@ -17,19 +19,6 @@ import org.hibernate.criterion.*;
 
 import java.util.List;
 import java.util.Map;
-
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.VrcLadderReorderer;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
 
 /**
  * Utility class that reads and writes data to the database
@@ -375,6 +364,38 @@ public class DBManager {
             tx.rollback();
         }
         return user;
+    }
+
+    public synchronized List<User> getAllUsersOfRole(UserRole role) {
+        Transaction tx = null;
+        List<User> anonymousUsers = null;
+
+        try {
+            tx = session.beginTransaction();
+            anonymousUsers = session.createCriteria(User.class).add(Restrictions.eq("role", role)).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return anonymousUsers;
+    }
+
+    public synchronized void deleteUser(String userEmail) throws NoSuchUserException {
+
+        User user = getUser(userEmail);
+
+        if (user == null) {
+            throw new NoSuchUserException("No user exists for email: " + userEmail);
+        }
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.delete(user);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
     }
 
     public synchronized void addNewUser(User user) throws AccountRegistrationException {
