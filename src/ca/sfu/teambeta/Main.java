@@ -32,7 +32,8 @@ class Main {
         }
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         AccountManager am = new AccountManager(accountDatabaseHandler);
-        am.register("testuser@vrc.com", "demoPass");
+        am.registerUser("testuser@vrc.com", "demoPass");
+        am.registerNewAdministratorAccount("admin_billy@vrc.com", "adminPass");
 
         AppController appController =
                 new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,

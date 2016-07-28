@@ -8,8 +8,9 @@ import java.util.Calendar;
 
 public class UserSessionMetadata {
     // TTL is calculated in days
-    private static final int TIME_TO_LIVE_ADMIN = 2;
-    private static final int TIME_TO_LIVE_REG_USER = 15;
+    private static final int TIME_TO_LIVE_ADMIN = 3;
+    private static final int TIME_TO_LIVE_ANON_USER = 2;
+    private static final int TIME_TO_LIVE_REG_USER = 30;
 
     private String email;
     private Calendar expiryDate;
@@ -26,6 +27,8 @@ public class UserSessionMetadata {
             expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_REG_USER);
         } else if (role == UserRole.ADMINISTRATOR) {
             expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_ADMIN);
+        } else if (role == UserRole.ANONYMOUS) {
+            expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_ANON_USER);
         } else {
             // In case another role is added in the future this won't break
             expiryDate.add(Calendar.DAY_OF_MONTH, TIME_TO_LIVE_REG_USER);

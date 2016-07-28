@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * UserSessionManager handles:
  * - Creating a new session
- * - Authenticating an existing session token
+ * - Authenticating an existing sessionId
  * - Deleting a session
  * - Checking if a session belongs to an administrator
  * - Getting the number of users logged in
@@ -24,7 +24,7 @@ public class UserSessionManager {
     private static TokenGenerator tokenGenerator = new TokenGenerator();
 
 
-    // MARK: - The Core Session Methods
+    // MARK: Methods for creating/deleting a session
     public static String createNewSession(String email, UserRole role) {
         String sessionId = tokenGenerator.generateUniqueRandomToken();
 
@@ -34,16 +34,6 @@ public class UserSessionManager {
 
         return sessionId;
 
-    }
-
-    public static String createNewAnonymousSession(String anonymousCode) {
-        String sessionId = tokenGenerator.generateUniqueRandomToken();
-
-        UserSessionMetadata metadata = new UserSessionMetadata(anonymousCode, UserRole.ANONYMOUS);
-
-        sessions.put(sessionId, metadata);
-
-        return sessionId;
     }
 
     public static void deleteSession(String sessionId) throws NoSuchSessionException {
@@ -62,6 +52,7 @@ public class UserSessionManager {
         }
 
     }
+
 
     public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
@@ -112,7 +103,6 @@ public class UserSessionManager {
 
     // MARK: Helper Methods
     private static UserSessionMetadata getSessionMetadata(String sessionId) throws NoSuchSessionException {
-
         UserSessionMetadata metadata = sessions.get(sessionId);
 
         if (metadata == null) {
@@ -120,6 +110,7 @@ public class UserSessionManager {
         } else {
             return metadata;
         }
+
     }
 
     public static void clearExpiredSessions() {
