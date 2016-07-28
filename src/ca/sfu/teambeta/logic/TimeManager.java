@@ -1,8 +1,15 @@
 package ca.sfu.teambeta.logic;
+
 import java.util.Calendar;
 
 /**
  * Created by constantin on 24/07/16.
+ * --- This class uses Singleton Pattern ---
+ * <p>
+ * 1) It stores the time after which editing pairs (status and time) is disabled.
+ * 2) Currently Blocking Time is set to -> 6 pm Thursday.
+ * 3) When Admin reorders ladder time is updated. Which means that Users can edit
+ * they information again up till next week.
  */
 public class TimeManager {
     private static final int DAY = Calendar.THURSDAY;
