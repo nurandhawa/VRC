@@ -1,7 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -16,12 +14,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
-import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -31,6 +25,10 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcLadderReorderer;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 
 /**
  * Utility class that reads and writes data to the database
@@ -46,6 +44,11 @@ public class DBManager {
 
     public DBManager(SessionFactory factory) {
         this.session = factory.openSession();
+    }
+
+    // Used for testing purposes where session needs to be closed
+    public DBManager(Session session) {
+        this.session = session;
     }
 
     // Use me if the database is down
@@ -66,7 +69,7 @@ public class DBManager {
         config.configure(LOCAL_TESTING_CFG_XML);
         config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
-            config.setProperty("hibernate.hbm2ddl.auto", "create");
+            config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
@@ -100,7 +103,7 @@ public class DBManager {
         }
         config.configure(HIBERNATE_CLASSES_XML);
         if (create) {
-            config.setProperty("hibernate.hbm2ddl.auto", "create");
+            config.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "update");
         }
@@ -112,20 +115,15 @@ public class DBManager {
         }
     }
 
-    public synchronized int persistEntity(Persistable entity) {
-        Transaction tx = null;
-        int key = 0;
+    public synchronized void persistEntity(Persistable entity) {
+        Transaction tx = session.beginTransaction();
         try {
-            tx = session.beginTransaction();
-            key = (int) session.save(entity);
+            session.saveOrUpdate(entity);
             tx.commit();
         } catch (HibernateException e) {
-            if (tx != null) {
-                tx.rollback();
-            }
+            tx.rollback();
             e.printStackTrace();
         }
-        return key;
     }
 
     private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
@@ -133,7 +131,7 @@ public class DBManager {
         Persistable entity = null;
         try {
             tx = session.beginTransaction();
-            entity = (Persistable) session.get(persistable, id);
+            entity = (Persistable) session.load(persistable, id);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -240,38 +238,8 @@ public class DBManager {
         }
     }
 
-    public synchronized void inputMatchResults(
-            GameSession gameSession, Scorecard s, String[][] results) {
-        List<Pair> teams = s.getReorderedPairs();
-        int rows = results.length;
-        int cols = teams.size();
-
-        Pair teamWon = null;
-        Pair teamLost = null;
-        int winCount = 0;
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                if (results[i][j].equals("W")) {
-                    teamWon = teams.get(j);
-                    winCount++;
-                } else if (results[i][j].equals("L")) {
-                    teamLost = teams.get(j);
-                    winCount--;
-                }
-            }
-            if (winCount == 0 && teamWon != null && teamLost != null) {
-                s.setGameResults(teamWon, teamLost);
-            }
-            winCount = 0;
-            teamLost = null;
-            teamWon = null;
-        }
-        persistEntity(gameSession);
-    }
-
-    public synchronized void addPair(GameSession gameSession, Pair pair, int index) {
-        gameSession.addNewPairAtIndex(pair, index);
+    public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
+        gameSession.addNewPairAtIndex(pair, position);
         persistEntity(gameSession);
     }
 
@@ -365,44 +333,17 @@ public class DBManager {
 
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Scorecard.class, new ScorecardSerializer())
+                .create();
 
-        String json = gson.toJson(scorecards);
-        return json;
+        return gson.toJson(scorecards);
     }
 
     public synchronized String getJSONSession(String sessionToken) {
         //ex: {"email":"test@gmail.com","admin":true}
         JSONSerializer serializer = new SessionJSONSerializer(sessionToken);
         return serializer.toJson();
-    }
-
-    public synchronized void setGameResults(GameSession gameSession, int winningPairId, int losingPairId) {
-        int sessionId = gameSession.getID();
-        Scorecard scorecard = (Scorecard) session.createQuery(
-                "from Scorecard sc \n"
-                        + "join session_Scorecard s_sc on (s_sc.scorecards_id = sc.id) "
-                        + "join Scorecard_Pair sc_pwin on (sc_pwin.Scorecard_id = sc.id) "
-                        + "join Scorecard_Pair sc_plose on (sc_plose.Scorecard_id = sc.id) "
-                        + "where sc_pwin.pairs_id = :winning_pair_id "
-                        + "and sc_plose.pairs_id = :losing_pair_id "
-                        + "and s_sc.session_id = :session_id")
-                .setInteger("winning_pair_id", winningPairId)
-                .setInteger("losing_pair_id", winningPairId)
-                .setInteger("session_id", sessionId)
-                .uniqueResult();
-        Pair winningPair = session.load(Pair.class, winningPairId);
-        Pair losingPair = session.load(Pair.class, losingPairId);
-        scorecard.setGameResults(winningPair, losingPair);
-
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(scorecard);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
     }
 
     private GameSession getGameSession(int gameSessionId) {
@@ -463,9 +404,14 @@ public class DBManager {
         }
     }
 
-    public synchronized Scorecard getScorecardFromGame(GameSession gameSession, int index) {
-        persistEntity(gameSession);
-        return gameSession.getScorecardByIndex(index);
+    // Rankings are in a format of pairID -> position in scorecard
+    public synchronized void setMatchResults(int scorecardId, Map<Integer, Integer> rankings) {
+        Scorecard sc = (Scorecard) getEntityFromID(Scorecard.class, scorecardId);
+        for (Map.Entry<Integer, Integer> entry : rankings.entrySet()) {
+            Pair pair = getPairFromID(entry.getKey());
+            sc.setGameResults(pair, entry.getValue());
+        }
+        persistEntity(sc);
     }
 
     public synchronized void reorderLadder(GameSession gameSession) {
@@ -499,5 +445,9 @@ public class DBManager {
         Time time = pair.getTimeSlot();
         persistEntity(gameSession);
         return time;
+    }
+
+    public void writeToCsvFile(GameSession gameSession) {
+        CSVReader.exportCsv(gameSession.getAllPairs());
     }
 }

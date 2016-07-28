@@ -1,23 +1,32 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
-
-import ca.sfu.teambeta.logic.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.SessionResponse;
+import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.InternalHashingException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.logic.TimeManager;
 import ca.sfu.teambeta.persistence.DBManager;
-
-import java.util.Calendar;
-import java.util.List;
 
 import static spark.Spark.before;
 import static spark.Spark.delete;
@@ -332,7 +341,8 @@ public class AppController {
                 response.status(OK);
                 return json;
             } else {
-                response.status(NOT_FOUND);
+                // Request was fine so the server should still send 200
+                response.status(OK);
                 return getErrResponse("No scorecards were found");
             }
         });
@@ -348,19 +358,13 @@ public class AppController {
             }
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-
-            GameSession gameSession = getRequestedGameSession(dbManager,
-                    request.queryParams(GAMESESSION));
-
-            Scorecard scorecard = dbManager.getScorecardFromGame(gameSession, id);
-
-            try {
-                InputValidator.validateResults(scorecard, extractedData.results);
-                dbManager.inputMatchResults(gameSession, scorecard, extractedData.results.clone());
-            } catch (InvalidInputException exception) {
-                response.status(BAD_REQUEST);
-                return getErrResponse(exception.getMessage());
+            Map<Integer, Integer> rankings = new HashMap<Integer, Integer>();
+            for (Map<String, String> map : extractedData.getResults()) {
+                int pairId = Integer.parseInt(map.get("pairId"));
+                int newRanking = Integer.parseInt(map.get("newRanking"));
+                rankings.put(pairId, newRanking);
             }
+            dbManager.setMatchResults(id, rankings);
 
             response.status(OK);
             return getOkResponse("");
@@ -402,12 +406,10 @@ public class AppController {
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
 
-            JsonObject successResponse = new JsonObject();
-            String sessionToken = "";
             try {
-                sessionToken = accountManager.login(email, pwd);
-                successResponse.addProperty(SESSION_TOKEN_KEY, sessionToken);
-                return gson.toJson(successResponse);
+                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
+                return gson.toJson(sessionResponse);
             } catch (InternalHashingException |
                     NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
@@ -438,6 +440,7 @@ public class AppController {
             return getErrResponse(message);
         });
 
+        //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
             if (!TimeManager.getInstance().isExpired()) {
                 int id;
@@ -472,6 +475,13 @@ public class AppController {
             } else {
                 return getErrResponse(LADDER_DISABLED);
             }
+        });
+
+        //download ladder to a new csv file
+        post("/api/ladder/download", (request, response) -> {
+            GameSession gameSession = getRequestedGameSession(dbManager, GAMESESSION_LATEST);
+            dbManager.writeToCsvFile(gameSession);
+            return getOkResponse("");
         });
 
         exception(Exception.class, (exception, request, response) -> {

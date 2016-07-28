@@ -8,7 +8,7 @@
         <mapping class="ca.sfu.teambeta.core.Pair"/>
         <mapping class="ca.sfu.teambeta.core.Ladder"/>
         <mapping class="ca.sfu.teambeta.core.Scorecard"/>
-        <mapping class="ca.sfu.teambeta.core.Game"/>
+        <mapping class="ca.sfu.teambeta.core.PairRanking"/>
         <mapping class="ca.sfu.teambeta.core.Penalty"/>
         <mapping class="ca.sfu.teambeta.core.User"/>
         <mapping class="ca.sfu.teambeta.logic.GameSession"/>

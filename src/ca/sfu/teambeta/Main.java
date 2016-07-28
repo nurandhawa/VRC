@@ -25,12 +25,11 @@ class Main {
             SessionFactory sessionFactory = DBManager.getMySQLSession(true);
 
             GameSession gameSession = new GameSession(newLadder);
-            gameSession.setUpLastWeekPositions();
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
         AccountManager am = new AccountManager(dbManager);
-        am.register("testuser@vrc.com", "demoPass");
+        am.register("admin_billy@vrc.ca", "demoPass");
 
         AppController appController =
                 new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,

@@ -1,7 +1,7 @@
 var Header = (function() {
     "use strict";
 
-    function Header(titleText, buttonText, lastModified, editOnClick) {
+    function Header(titleText, buttonText, lastModified, editOnClick, userRole) {
         var blankButton = Vue.extend({
             template: "<a></a>"
         });
@@ -12,7 +12,8 @@ var Header = (function() {
                 title: titleText,
                 timestamp: lastModified,
                 buttonTitle: buttonText,
-                mode: "read"
+                mode: "read",
+                role: userRole
             },
             components: {
                 read: blankButton,
@@ -28,6 +29,11 @@ var Header = (function() {
                         this.mode = "read";
                         editOnClick();
                     }
+                },
+                
+                downloadLadder: function () {
+                    var api = new API();
+                    api.downloadLadder();
                 }
             }
         });

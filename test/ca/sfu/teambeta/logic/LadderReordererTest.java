@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.logic;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -34,9 +33,9 @@ public class LadderReordererTest {
         List<Pair> pairs1 = Arrays.asList(p1, p2, p3);
         Scorecard sc1 = new Scorecard(pairs1, null);
 
-        sc1.setGameResults(p1, p2);
-        sc1.setGameResults(p3, p2);
-        sc1.setGameResults(p3, p1);
+        sc1.setGameResults(p1, 2);
+        sc1.setGameResults(p3, 1);
+        sc1.setGameResults(p2, 3);
 
         Pair p4 = new Pair(new Player("", "Tony"),
                 new Player("", "Angelica"), true);
@@ -49,9 +48,9 @@ public class LadderReordererTest {
         List<Pair> pairs2 = Arrays.asList(p4, p5, p6);
         Scorecard sc2 = new Scorecard(pairs2, null);
 
-        sc2.setGameResults(p4, p5);
-        sc2.setGameResults(p6, p5);
-        sc2.setGameResults(p6, p4);
+        sc2.setGameResults(p4, 2);
+        sc2.setGameResults(p6, 1);
+        sc2.setGameResults(p5, 3);
 
         List<Scorecard> scorecards = new ArrayList<>();
         scorecards.add(sc1);

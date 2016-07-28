@@ -23,16 +23,19 @@
 
     var ladderData = {
         pairs: [],
+        players: [],
         dateCreated: ""
     };
 
-    var ladder = new Ladder(ladderData.pairs);
+    var ladder = new Ladder(ladderData);
 
     var editFunction = function() {
         ladder.changeMode.call(ladder.component);
     };
 
-    var header = new Header("Ladder", "Edit Ladder", ladderData.dateCreated, editFunction);
+    var userRole = Cookies.get("userRole");
+
+    var header = new Header("Ladder", "Edit Ladder", ladderData.dateCreated, editFunction, userRole);
 
     var addPairButton = Vue.extend({
         template: '<a v-on:click="addPair()" class="btn btn-raised btn-success header-button">Add Pair</a>',

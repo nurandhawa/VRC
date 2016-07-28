@@ -3,6 +3,7 @@ package ca.sfu.teambeta.core;
 import com.google.gson.annotations.Expose;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by NoorUllah on 2016-06-22.
@@ -10,11 +11,11 @@ import java.util.List;
 public class JsonExtractedData {
 
     @Expose
+    public List<Map<String, String>> results;
+    @Expose
     private List<Player> players;
     @Expose
     private int position;
-    @Expose
-    public String[][] results;
     @Expose
     private String email;
     @Expose
@@ -35,8 +36,8 @@ public class JsonExtractedData {
         return position;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public List<Map<String, String>> getResults() {
+        return results;
     }
 
     public String getEmail() {
