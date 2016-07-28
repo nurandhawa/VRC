@@ -16,13 +16,12 @@ import java.util.Map;
  * This class handles:
  * - Authenticating a password reset request via a security question
  * - Resetting the password
- *
+ * <p>
  * How to reset a password:
- *  When a user correctly answers the security question they are granted a
- *  password reset voucher (in our case a unique secure string) which is to be
- *  sent along with the users email and new password to the changePassword
- *  method.
- *
+ * When a user correctly answers the security question they are granted a
+ * password reset voucher (in our case a unique secure string) which is to be
+ * sent along with the users email and new password to the changePassword
+ * method.
  */
 
 public class CredentialsManager {
@@ -42,10 +41,12 @@ public class CredentialsManager {
 
 
     // MARK: The Core Methods for Managing a Password
-    public void changePassword(String email, String newPassword, String voucherCode) throws NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
+    public void changePassword(String email, String newPassword, String voucherCode)
+            throws NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
         PasswordResetVoucherMetadata voucherMetadata = passwordResetVouchers.get(voucherCode);
 
-        boolean voucherExists = (voucherMetadata != null); // Since it's a dictionary, invalid key returns null value
+        // Since it's a dictionary, invalid key returns null value
+        boolean voucherExists = (voucherMetadata != null);
         boolean voucherExpired = voucherMetadata.isExpired();
 
         if (voucherExists) {
@@ -71,7 +72,10 @@ public class CredentialsManager {
     }
 
 
-    public void changePasswordByAdmin(String userEmail, String newUserPassword, String adminSessionId) throws NoSuchSessionException, InvalidCredentialsException, GeneralUserAccountException, NoSuchUserException {
+    public void changePasswordByAdmin(String userEmail, String newUserPassword, String adminSessionId)
+            throws NoSuchSessionException, InvalidCredentialsException,
+            GeneralUserAccountException, NoSuchUserException {
+
         boolean isAdmin = UserSessionManager.isAdministratorSession(adminSessionId);
 
         if (!isAdmin) {
@@ -102,7 +106,10 @@ public class CredentialsManager {
     }
 
 
-    public void setSecurityQuestion(String userEmail, String question, String answer, String sessionId) throws NoSuchUserException, GeneralUserAccountException, InvalidCredentialsException, NoSuchSessionException {
+    public void setSecurityQuestion(String userEmail, String question, String answer, String sessionId)
+            throws NoSuchUserException, GeneralUserAccountException,
+            InvalidCredentialsException, NoSuchSessionException {
+
         // Although a user may be logged in with a valid sessionId, we must check they are
         //  setting their own security question.
         String sessionEmail = UserSessionManager.getEmailFromSessionId(sessionId);
@@ -124,7 +131,8 @@ public class CredentialsManager {
     }
 
 
-    public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer) throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
+    public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer)
+            throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
         User user = accountDBHandler.getUser(email);
 
         String securityQuestionAnswerHash = user.getSecurityAnswerHash();
@@ -133,7 +141,8 @@ public class CredentialsManager {
             throw new GeneralUserAccountException("No security question set");
         }
 
-        boolean correctAnswer = checkHash(securityQuestionAnswer, securityQuestionAnswerHash, "The answer could not be validated");
+        boolean correctAnswer = checkHash(
+                securityQuestionAnswer, securityQuestionAnswerHash, "The answer could not be validated");
 
         if (correctAnswer) {
             String voucherCode = tokenGenerator.generateUniqueRandomToken();
@@ -171,8 +180,9 @@ public class CredentialsManager {
         return hash;
     }
 
-    // This method encapsulates checking a string againest it's hash, while also handling any internal hashing exceptions
-    public static boolean checkHash(String originalString, String hashedString, String friendlyErrorMessage) throws GeneralUserAccountException {
+    // This method encapsulates checking a string against it's hash, while also handling any internal hashing exceptions
+    public static boolean checkHash(String originalString, String hashedString, String friendlyErrorMessage)
+            throws GeneralUserAccountException {
         if (friendlyErrorMessage == null || friendlyErrorMessage == "") {
             friendlyErrorMessage = "Validation cannot be done at this done. Please contact the administrator.";
         }

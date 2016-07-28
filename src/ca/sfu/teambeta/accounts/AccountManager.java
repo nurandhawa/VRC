@@ -52,7 +52,10 @@ public class AccountManager {
 
 
     // MARK: - The Core Login/Registration Methods
-    public String login(String email, String password) throws InvalidInputException, NoSuchUserException, InvalidCredentialsException, GeneralUserAccountException {
+    public String login(String email, String password)
+            throws InvalidInputException, NoSuchUserException,
+            InvalidCredentialsException, GeneralUserAccountException {
+
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
@@ -62,7 +65,8 @@ public class AccountManager {
         User user = accountDBHandler.getUser(email);
 
         // Validate the entered password with the hash
-        boolean isPasswordCorrect = CredentialsManager.checkHash(password, user.getPasswordHash(), "The user cannot be authenticated");
+        boolean isPasswordCorrect = CredentialsManager
+                .checkHash(password, user.getPasswordHash(), "The user cannot be authenticated");
 
         if (!isPasswordCorrect) {
             throw new InvalidCredentialsException("Incorrect password");
@@ -97,22 +101,24 @@ public class AccountManager {
         UserSessionManager.deleteSession(sessionId);
     }
 
-    public void registerUserWithPlayer(String email, String password, int playerId, String securityQuestion, String securityQuestionAnswer) throws InvalidInputException, NoSuchUserException, GeneralUserAccountException, AccountRegistrationException {
+    public void registerUserWithPlayer(String email, String password, int playerId,
+                                       String securityQuestion, String securityQuestionAnswer)
+            throws InvalidInputException, NoSuchUserException,
+            GeneralUserAccountException, AccountRegistrationException {
+
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
-        if ((securityQuestion == null || securityQuestion == "") || (securityQuestionAnswer == null || securityQuestionAnswer == "")) {
+        boolean questionFieldIsEmpty = (securityQuestion == null || securityQuestion == "");
+        boolean answerFieldIsEmpty = (securityQuestionAnswer == null || securityQuestionAnswer == "");
+
+        if (questionFieldIsEmpty || answerFieldIsEmpty ) {
             throw new InvalidInputException("Security question fields cannot be empty");
         }
-
-
-        // Get the associated player
-        Player player = accountDBHandler.getPlayer(playerId);
 
         // Hash the user's password and security question answer
         String passwordHash = CredentialsManager.getHash(password, "Could not create the account");
         String securityQuestionAnswerHash = CredentialsManager.getHash(securityQuestionAnswer, "Could not create the account");
-
 
         // Create a new user and assign the fields
         User newUser = new User(email, passwordHash);
@@ -120,15 +126,16 @@ public class AccountManager {
         newUser.setSecurityQuestion(securityQuestion);
         newUser.setSecurityAnswerHash(securityQuestionAnswerHash);
 
+        // Get the associated player
+        Player player = accountDBHandler.getPlayer(playerId);
         newUser.associatePlayer(player);
-
 
         // Finally save the user
         accountDBHandler.saveNewUser(newUser);
-
     }
 
-    public void registerUser(String email, String password) throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
+    public void registerUser(String email, String password)
+            throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
@@ -139,16 +146,16 @@ public class AccountManager {
 
         // Save the user to the database, no Exception marks success
         accountDBHandler.saveNewUser(newUser);
-
     }
 
-    public void registerNewAdministratorAccount(String email, String password) throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
-        registerUser(email, password);
+    public void registerNewAdministratorAccount(String email, String password)
+            throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
 
+        registerUser(email, password);
         try {
             userRoleHandler.setUserRole(email, UserRole.ADMINISTRATOR);
         } catch (NoSuchUserException e) {
-            // Although this should not be reached as we are explicity
+            // Although this should not be reached as we are explicitly
             //  saving the user in the "register" method, something sometime
             //  could go wrong with the database and/or have concurrency
             //  issues.
@@ -160,8 +167,7 @@ public class AccountManager {
     public String registerNewAnonymousAccount() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         String accountName = tokenGenerator.generateUniqueRandomToken();
         String password = tokenGenerator.generateUniqueRandomToken();
-
-        String email = accountName + "@" + "vrc.teambeta";
+        String email = accountName + "@vrc.teambeta";
 
         registerUser(email, password);
 
@@ -188,7 +194,7 @@ public class AccountManager {
     }
 
     public void deleteAllAnonymousUsers() {
-
+        anonymousLoginCodes.clear();
     }
 
 

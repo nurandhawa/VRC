@@ -17,7 +17,7 @@ public class PasswordResetVoucherMetadata {
 
 
     // MARK: Constructor
-    PasswordResetVoucherMetadata() {
+    public PasswordResetVoucherMetadata() {
         this.expiryDate = Calendar.getInstance();
         expiryDate.add(Calendar.MINUTE, TIME_TO_LIVE);
     }

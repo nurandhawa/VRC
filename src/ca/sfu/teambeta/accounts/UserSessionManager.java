@@ -65,12 +65,12 @@ public class UserSessionManager {
         // Get the session metadata and check if it's expired
         UserSessionMetadata metadata = getSessionMetadata(sessionId);
 
-        if (metadata.isSessionExpired() == false) {
-            return true;
-        } else {
+        if (metadata.isSessionExpired()) {
             deleteSession(sessionId);
             return false;
         }
+
+        return true;
     }
 
     public static boolean isAdministratorSession(String sessionId) throws NoSuchSessionException {
@@ -130,7 +130,6 @@ public class UserSessionManager {
         for (String sessionId : sessionsToRemove) {
             sessions.remove(sessionId);
         }
-
     }
 
 

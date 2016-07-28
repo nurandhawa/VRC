@@ -19,7 +19,7 @@ public class TokenGenerator {
         existingTokens = new ArrayList<>();
     }
 
-    public TokenGenerator(ArrayList<String> existingTokenList) {
+    public TokenGenerator(List<String> existingTokenList) {
         existingTokens = existingTokenList;
     }
 
@@ -42,8 +42,8 @@ public class TokenGenerator {
     }
 
 
-    // MARK: Static Token Generation Method
-    public static String generateRandomToken() {
+    // MARK: Token Generation Method
+    private String generateRandomToken() {
         // See citations.txt for more information
 
         // DO NOT CHANGE THESE VALUES
@@ -55,6 +55,4 @@ public class TokenGenerator {
 
         return token;
     }
-
-
 }
