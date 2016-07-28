@@ -452,6 +452,9 @@ public class DBManager {
     }
 
     public void importLadderFromCsv(String filePath) {
-        CSVReader.importCsv(filePath);
+        Ladder newLadder = CSVReader.importCsv(filePath);
+        GameSession gameSession = getGameSessionLatest();
+        gameSession = new GameSession(newLadder);
+        persistEntity(gameSession);
     }
 }
