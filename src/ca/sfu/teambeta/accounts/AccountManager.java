@@ -75,7 +75,7 @@ public class AccountManager {
         return UserSessionManager.createNewSession(email, role);
     }
 
-    public String loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
+    public SessionResponse loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
         boolean validAnonymousLoginCode = (anonymousLoginCodes.get(anonymousLoginCode) != null);
 
         if (!validAnonymousLoginCode) {
@@ -84,9 +84,7 @@ public class AccountManager {
 
         String email = anonymousLoginCodes.get(anonymousLoginCode);
 
-        String sessionId = UserSessionManager.createNewSession(email, UserRole.ANONYMOUS);
-
-        return sessionId;
+        return UserSessionManager.createNewSession(email, UserRole.ANONYMOUS);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {

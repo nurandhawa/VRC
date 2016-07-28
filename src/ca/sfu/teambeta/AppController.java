@@ -4,9 +4,11 @@ import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.UserSessionManager;
 import ca.sfu.teambeta.core.*;
-
 import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.logic.*;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -15,35 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.SessionResponse;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.secure;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -402,8 +376,7 @@ public class AppController {
                 SessionResponse sessionResponse = accountManager.login(email, pwd);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
-            } catch (InternalHashingException |
-                    NoSuchUserException | InvalidCredentialsException e) {
+            } catch (NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
