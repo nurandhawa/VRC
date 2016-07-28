@@ -73,6 +73,14 @@ public class GameSession extends Persistable {
         this.timestamp = Instant.now().getEpochSecond();
     }
 
+    public void overrideGameSession(Ladder ladder) {
+        this.ladder = ladder;
+        initializeActivePlayers();
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
+
+        setTimestamp();
+    }
+
     public List<Scorecard> createGroups(ScorecardGenerator generator, TimeSelection timeSelector) {
         //Generate groups
         scorecards = generator.generateScorecards(getActivePairs());

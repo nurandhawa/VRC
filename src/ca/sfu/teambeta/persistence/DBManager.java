@@ -456,7 +456,8 @@ public class DBManager {
         if (newLadder == null) {
             return false;
         } else {
-            GameSession gameSession = new GameSession(newLadder);
+            GameSession gameSession = getGameSessionLatest();
+            gameSession.overrideGameSession(newLadder);
             persistEntity(gameSession);
         }
         return true;
