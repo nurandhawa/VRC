@@ -7,6 +7,7 @@ import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,11 +34,11 @@ public class AccountManager {
     private TokenGenerator tokenGenerator;
     private Map<String, String> anonymousLoginCodes;
 
-/*
-    // User for testing purposes
-    private static final String DEMO_EMAIL = "testuser@vrc.com";
-    private static final String DEMO_PASSWORD = "demoPass";
-*/
+    // User's for testing purposes
+    public static final String DEMO_EMAIL = "testuser@vrc.ca";
+    public static final String DEMO_PASSWORD = "userPass";
+    public static final String DEMO_ADMIN_EMAIL = "admin_billy@vrc.ca";
+    public static final String DEMO_ADMIN_PASSWORD = "demoPass";
 
 
     // MARK: Constructor
@@ -52,7 +53,7 @@ public class AccountManager {
     }
 
 
-    // MARK: - The Core Login/Registration Methods
+    // MARK: Login/Logout Methods
     public SessionResponse login(String email, String password)
             throws InvalidInputException, NoSuchUserException,
             InvalidCredentialsException, GeneralUserAccountException {
@@ -79,6 +80,13 @@ public class AccountManager {
         return UserSessionManager.createNewSession(email, role);
     }
 
+    /**
+     * NOT IN USE:
+     * This method can be used to extend the functionality of anonymous
+     * users in the future. Or simply provide a way to give limited access
+     * to users.
+     *
+     */
     public SessionResponse loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
         boolean validAnonymousLoginCode = (anonymousLoginCodes.get(anonymousLoginCode) != null);
 
@@ -95,6 +103,8 @@ public class AccountManager {
         UserSessionManager.deleteSession(sessionId);
     }
 
+
+    // MARK: Registration Methods
     public void registerUserWithPlayer(String email, String password, int playerId,
                                        String securityQuestion, String securityQuestionAnswer)
             throws InvalidInputException, NoSuchUserException,
@@ -128,6 +138,13 @@ public class AccountManager {
         accountDbHandler.saveNewUser(newUser);
     }
 
+    /**
+     * @deprecated
+     * Moving all registration to use the "registerUserWithPlayer" method
+     * to associate players and users. In the future this method will move
+     * to become a private method.
+     */
+    @Deprecated
     public void registerUser(String email, String password)
             throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         InputValidator.validateEmailFormat(email);
@@ -146,6 +163,7 @@ public class AccountManager {
             throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
 
         registerUser(email, password);
+
         try {
             userRoleHandler.setUserRole(email, UserRole.ADMINISTRATOR);
         } catch (NoSuchUserException e) {
@@ -158,6 +176,13 @@ public class AccountManager {
         }
     }
 
+    /**
+     * NOT IN USE:
+     * This method can be used to extend the functionality of anonymous
+     * users in the future. Or simply provide a way to give limited access
+     * to users. IE: Single sign in
+     *
+     */
     public String registerNewAnonymousAccount() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         String accountName = tokenGenerator.generateUniqueRandomToken();
         String password = tokenGenerator.generateUniqueRandomToken();
@@ -187,8 +212,25 @@ public class AccountManager {
         return anonymousLoginCode;
     }
 
-    public void deleteAllAnonymousUsers() {
+    // NOT IN USE
+    public Map<String, String> deleteAllAnonymousUsers() {
+        // HashMap is structured <Email, Reason Not Deleted>
+        Map<String, String> nonDeletableUsers = new HashMap<>();
+
+        List<User> anonymousUsers = accountDbHandler.getAllAnonymousUsers();
+
+        for (int i = 0; i < anonymousUsers.size(); i++) {
+            String email = anonymousUsers.get(i).getEmail();
+
+            try {
+                accountDbHandler.deleteUser(email);
+            } catch (NoSuchUserException e) {
+                nonDeletableUsers.put(email, "No such email was found");
+            }
+        }
+
         anonymousLoginCodes.clear();
+        return nonDeletableUsers;
     }
 
 
@@ -198,11 +240,29 @@ public class AccountManager {
     public static void main(String[] args) {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
+        AccountDatabaseHandler adbh = new AccountDatabaseHandler(dbManager);
 
-        AccountManager accountManager = new AccountManager(new AccountDatabaseHandler(dbManager));
-        // Register a user
+        AccountManager accountManager = new AccountManager(adbh);
+
+        // Register an admin
         try {
             accountManager.registerNewAdministratorAccount("admin_zong@vrc.ca", "adminPass");
+        } catch (InvalidInputException | GeneralUserAccountException | AccountRegistrationException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        // Register an admin
+        try {
+            accountManager.registerNewAdministratorAccount("admin_billy@vrc.ca", "adminPass2");
+        } catch (InvalidInputException | GeneralUserAccountException | AccountRegistrationException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        // Register an anonymous user
+        try {
+            accountManager.registerNewAnonymousAccount();
         } catch (InvalidInputException | GeneralUserAccountException | AccountRegistrationException e) {
             System.out.println(e.getMessage());
             return;
@@ -229,7 +289,8 @@ public class AccountManager {
         String userSessionId = "";
 
         try {
-            userSessionId = accountManager.login("admin_zong@vrc.ca", "adminPass");
+            SessionResponse sesRes = accountManager.login("admin_zong@vrc.ca", "adminPass");
+            userSessionId = sesRes.getSessionToken();
         } catch (InvalidInputException | NoSuchUserException | InvalidCredentialsException | GeneralUserAccountException e) {
             System.out.println(e.getMessage());
             return;
@@ -249,6 +310,12 @@ public class AccountManager {
         }
 
         System.out.println("Is Admin: " + admin);
+
+        List<User> anonymousUsers = adbh.getAllAnonymousUsers();
+
+        for (User user : anonymousUsers) {
+            System.out.println(user.getEmail() + ", Role: " + user.getUserRole());
+        }
     }
 */
 

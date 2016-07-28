@@ -6,6 +6,8 @@ import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.persistence.DBManager;
 
+import java.util.List;
+
 /**
  * This class handles the api interactions between the account/user
  * related classes, and the database. In the future a logger can be
@@ -39,6 +41,10 @@ public class AccountDatabaseHandler {
         return user;
     }
 
+    public List<User> getAllAnonymousUsers() {
+        return dbManager.getAllUsersOfRole(UserRole.ANONYMOUS);
+    }
+
     public Player getPlayer(int playerId) throws NoSuchUserException {
         Player player = dbManager.getPlayerFromID(playerId);
 
@@ -70,4 +76,7 @@ public class AccountDatabaseHandler {
         dbManager.updateExistingUser(user);
     }
 
+    public void deleteUser(String email) throws NoSuchUserException {
+        dbManager.deleteUser(email);
+    }
 }
