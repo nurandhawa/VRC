@@ -27,13 +27,13 @@ import java.util.Map;
 
 public class CredentialsManager {
     private static Map<String, PasswordResetVoucherMetadata> passwordResetVouchers;
-    private AccountDatabaseHandler accountDBHandler;
+    private AccountDatabaseHandler accountDbHandler;
     private TokenGenerator tokenGenerator;
 
 
     // MARK: Constructor
-    public CredentialsManager(AccountDatabaseHandler accountDBHandler) {
-        this.accountDBHandler = accountDBHandler;
+    public CredentialsManager(AccountDatabaseHandler accountDbHandler) {
+        this.accountDbHandler = accountDbHandler;
 
         passwordResetVouchers = new HashMap<>();
         tokenGenerator = new TokenGenerator();
@@ -58,9 +58,9 @@ public class CredentialsManager {
             String newPasswordHash = getHash(newPassword, "The password could not be changed");
 
             // Update the user
-            User user = accountDBHandler.getUser(email);
+            User user = accountDbHandler.getUser(email);
             user.setPasswordHash(newPasswordHash);
-            accountDBHandler.updateExistingUser(user);
+            accountDbHandler.updateExistingUser(user);
 
             passwordResetVouchers.remove(voucherCode);
         } else {
@@ -81,16 +81,16 @@ public class CredentialsManager {
         // Hash the new password
         String newPasswordHash = getHash(newUserPassword, "The password cannot be changed");
 
-        User user = accountDBHandler.getUser(userEmail);
+        User user = accountDbHandler.getUser(userEmail);
         user.setPasswordHash(newPasswordHash);
-        accountDBHandler.updateExistingUser(user);
+        accountDbHandler.updateExistingUser(user);
 
     }
 
 
     // MARK: Methods for Resetting a Password (Via a Security Question)
     public String getUserSecurityQuestion(String email) throws NoSuchUserException, GeneralUserAccountException {
-        User user = accountDBHandler.getUser(email);
+        User user = accountDbHandler.getUser(email);
 
         String securityQuestion = user.getSecurityQuestion();
 
@@ -115,17 +115,17 @@ public class CredentialsManager {
         // Hash the user's security question answer
         String answerHash = getHash(answer, "The security question could not be set");
 
-        User user = accountDBHandler.getUser(userEmail);
+        User user = accountDbHandler.getUser(userEmail);
 
         user.setSecurityQuestion(question);
         user.setSecurityAnswerHash(answerHash);
 
-        accountDBHandler.updateExistingUser(user);
+        accountDbHandler.updateExistingUser(user);
     }
 
 
     public String validateSecurityQuestionAnswer(String email, String securityQuestionAnswer) throws InvalidCredentialsException, NoSuchUserException, GeneralUserAccountException {
-        User user = accountDBHandler.getUser(email);
+        User user = accountDbHandler.getUser(email);
 
         String securityQuestionAnswerHash = user.getSecurityAnswerHash();
 

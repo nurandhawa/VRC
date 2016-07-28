@@ -28,7 +28,7 @@ import java.util.Map;
  */
 
 public class AccountManager {
-    private AccountDatabaseHandler accountDBHandler;
+    private AccountDatabaseHandler accountDbHandler;
     private UserRoleHandler userRoleHandler;
     private TokenGenerator tokenGenerator;
     private Map<String, String> anonymousLoginCodes;
@@ -41,10 +41,10 @@ public class AccountManager {
 
 
     // MARK: Constructor
-    public AccountManager(AccountDatabaseHandler accountDBHandler) {
-        this.accountDBHandler = accountDBHandler;
+    public AccountManager(AccountDatabaseHandler accountDbHandler) {
+        this.accountDbHandler = accountDbHandler;
 
-        userRoleHandler = new UserRoleHandler(accountDBHandler);
+        userRoleHandler = new UserRoleHandler(accountDbHandler);
         tokenGenerator = new TokenGenerator();
 
         anonymousLoginCodes = new HashMap<>();
@@ -59,7 +59,7 @@ public class AccountManager {
 
         // Authenticate the password
         // Get the user from the database
-        User user = accountDBHandler.getUser(email);
+        User user = accountDbHandler.getUser(email);
 
         // Validate the entered password with the hash
         boolean isPasswordCorrect = CredentialsManager.checkHash(password, user.getPasswordHash(), "The user cannot be authenticated");
@@ -101,7 +101,7 @@ public class AccountManager {
 
 
         // Get the associated player
-        Player player = accountDBHandler.getPlayer(playerId);
+        Player player = accountDbHandler.getPlayer(playerId);
 
         // Hash the user's password and security question answer
         String passwordHash = CredentialsManager.getHash(password, "Could not create the account");
@@ -118,7 +118,7 @@ public class AccountManager {
 
 
         // Finally save the user
-        accountDBHandler.saveNewUser(newUser);
+        accountDbHandler.saveNewUser(newUser);
 
     }
 
@@ -132,7 +132,7 @@ public class AccountManager {
         User newUser = new User(email, passwordHash);
 
         // Save the user to the database, no Exception marks success
-        accountDBHandler.saveNewUser(newUser);
+        accountDbHandler.saveNewUser(newUser);
 
     }
 
