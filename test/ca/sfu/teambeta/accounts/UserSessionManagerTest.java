@@ -28,36 +28,26 @@ public class UserSessionManagerTest {
     }
 
     @Test
-    public void deleteSession() {
+    public void deleteSession() throws NoSuchSessionException {
         SessionResponse session =  UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
         String token = session.getSessionToken();
-        try {
-            UserSessionManager.deleteSession(token);
-        } catch (NoSuchSessionException e) {
-            assert false;
-        }
+
+        UserSessionManager.deleteSession(token);
 
         int numUsers = UserSessionManager.numUsersLoggedIn();
         Assert.assertEquals(0, numUsers);
     }
 
     @Test
-    public void authenticateSession() {
+    public void authenticateSession() throws NoSuchSessionException {
         SessionResponse session_1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
         SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
 
         String token_1 = session_1.getSessionToken();
         String token_2 = session_2.getSessionToken();
 
-        boolean authenticated_1 = false;
-        boolean authenticated_2 = false;
-
-        try {
-            authenticated_1 = UserSessionManager.authenticateSession(token_1);
-            authenticated_2 = UserSessionManager.authenticateSession(token_2);
-        } catch (NoSuchSessionException e) {
-            assert false;
-        }
+        boolean authenticated_1 = UserSessionManager.authenticateSession(token_1);
+        boolean authenticated_2 = UserSessionManager.authenticateSession(token_2);
 
         Assert.assertTrue(authenticated_1);
         Assert.assertTrue(authenticated_2);
@@ -69,40 +59,37 @@ public class UserSessionManagerTest {
     }
 
     @Test
-    public void isAdminSession(){
+    public void isAdminSession() throws NoSuchSessionException {
         SessionResponse session_1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
         SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
 
         String token_1 = session_1.getSessionToken();
         String token_2 = session_2.getSessionToken();
 
-        boolean admin_1 = false;
-        boolean admin_2 = false;
+        boolean admin_1 = UserSessionManager.isAdministratorSession(token_1);
+        boolean admin_2 = UserSessionManager.isAdministratorSession(token_2);
 
-        try {
-            admin_1 = UserSessionManager.isAdministratorSession(token_1);
-            admin_2 = UserSessionManager.isAdministratorSession(token_2);
-        } catch (NoSuchSessionException e) {
-            assert false;
-        }
 
         Assert.assertFalse(admin_1);
         Assert.assertTrue(admin_2);
     }
 
     @Test
-    public void checkEmail(){
+    public void checkEmail() throws NoSuchSessionException {
         String expected_email = "maria@gmail.com";
         SessionResponse session = UserSessionManager.createNewSession(expected_email, UserRole.REGULAR);
         String token = session.getSessionToken();
 
-        String actual_email = "";
-        try {
-             actual_email = UserSessionManager.getEmailFromSessionId(token);
-        } catch (NoSuchSessionException e) {
-            assert false;
-        }
+        String actual_email = UserSessionManager.getEmailFromSessionId(token);
 
         Assert.assertEquals(expected_email, actual_email);
+    }
+
+    @Test
+    public void changeUserRole() {
+        SessionResponse session_1 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.REGULAR);
+        SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+
+        Assert.assertTrue(session_1 == session_2);
     }
 }

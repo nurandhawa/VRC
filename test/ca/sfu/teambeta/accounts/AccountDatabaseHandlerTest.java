@@ -15,7 +15,7 @@ import org.junit.Test;
  * Created by constantin on 28/07/16.
  */
 public class AccountDatabaseHandlerTest {
-    DBManager dbManager;
+    private DBManager dbManager;
     private AccountDatabaseHandler handler;
 
     @Before
