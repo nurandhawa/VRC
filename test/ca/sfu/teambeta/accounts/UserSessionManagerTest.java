@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.accounts;
 
-import ca.sfu.teambeta.core.SessionResponse;
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.persistence.DBManager;
 import org.hibernate.SessionFactory;

@@ -3,6 +3,7 @@ package ca.sfu.teambeta;
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import org.hibernate.SessionFactory;
 
+import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.logic.GameSession;
@@ -34,8 +35,9 @@ class Main {
         am.registerUser(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD);
         am.registerNewAdministratorAccount(AccountManager.DEMO_ADMIN_EMAIL, AccountManager.DEMO_ADMIN_PASSWORD);
 
+        CredentialsManager credentialsManager = new CredentialsManager(accountDatabaseHandler);
         AppController appController =
-                new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
+                new AppController(dbManager, credentialsManager, AppController.DEVELOP_SERVER_PORT,
                 AppController.DEVELOP_STATIC_HTML_PATH);
     }
 }

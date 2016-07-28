@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.core;
+package ca.sfu.teambeta.accounts.Responses;
 
 import ca.sfu.teambeta.accounts.UserRole;
 import com.google.gson.annotations.Expose;
