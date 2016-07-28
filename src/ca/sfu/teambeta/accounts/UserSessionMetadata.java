@@ -62,35 +62,4 @@ public class UserSessionMetadata {
     public boolean isAdministratorSession() {
         return role == UserRole.ADMINISTRATOR;
     }
-
-    /*
-    public static void main(String[] args) {
-        Calendar time = Calendar.getInstance();
-        System.out.println("Current Time:     " + time.getTime());
-        time.add(Calendar.DAY_OF_MONTH, 7);
-        System.out.println("Time after 7 days:" + time.getTime());
-
-        Calendar currentTime = Calendar.getInstance();
-        Calendar past = Calendar.getInstance();
-        past.add(Calendar.YEAR, -3);
-
-        Calendar future = Calendar.getInstance();
-        future.add(Calendar.YEAR, 3);
-
-        System.out.println(currentTime.compareTo(past));
-        System.out.println(currentTime.compareTo(future));
-
-        UserSessionMetadata info = new UserSessionMetadata("email", UserRole.REGULAR);
-        System.out.println(info.getExpiryDate().getTime());
-        //For testing set TTL on 6 seconds
-        System.out.println("Expired? (Expected: false) " + info.isSessionExpired());
-        try {
-            //61 sec
-            Thread.sleep(5000);
-        } catch (Exception e) {
-            System.out.println("Interrupted");
-        }
-        System.out.println("Expired? (Expected: true) " + info.isSessionExpired());
-    }
-    */
 }
