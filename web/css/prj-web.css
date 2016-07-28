@@ -34,9 +34,16 @@
 }
 
 .header-button {
-    flex: 1;
-    max-width: 55%;
+    max-width: 100%;
     margin: 5px;
+}
+
+#downloadBtn {
+    background-color: #0398db;
+}
+
+#uploadLadderBtn {
+    background-color: #0398db;
 }
 
 .ladder {
