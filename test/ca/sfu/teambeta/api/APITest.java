@@ -1,13 +1,18 @@
 package ca.sfu.teambeta.api;
 
 
+import ca.sfu.teambeta.AppController;
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
+import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.persistence.CSVReader;
+import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -20,21 +25,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.net.ssl.SSLContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-
-import ca.sfu.teambeta.AppController;
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.persistence.CSVReader;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.fail;
+import static junit.framework.TestCase.*;
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.stop;
 
@@ -70,8 +65,9 @@ public class APITest {
                 dbManager = new DBManager(sessionFactory);
                 dbManager.persistEntity(gameSession);
 
-                AccountManager am = new AccountManager(dbManager);
-                am.register(EMAIL, PASSWORD);
+                AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
+                AccountManager am = new AccountManager(accountDbHandler);
+                am.registerUser(EMAIL, PASSWORD);
 
                 AppController appController =
                         new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
