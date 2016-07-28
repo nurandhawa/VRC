@@ -140,4 +140,8 @@ public class UserSessionManager {
         return sessions.size();
     }
 
+    public static void clearSessions() {
+        sessions.clear();
+    }
+
 }

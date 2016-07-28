@@ -2,6 +2,7 @@ package ca.sfu.teambeta.accounts;
 
 import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,6 +12,11 @@ import org.junit.Test;
  */
 
 public class UserSessionManagerTest {
+    @After
+    public void clearSessions(){
+        UserSessionManager.clearSessions();
+    }
+
     @Test
     public void createIdenticalSessions(){
         UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
@@ -18,7 +24,7 @@ public class UserSessionManagerTest {
         UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
 
         int numUsers = UserSessionManager.numUsersLoggedIn();
-        Assert.assertEquals(2, numUsers);
+        Assert.assertEquals(3, numUsers);
     }
 
     @Test
