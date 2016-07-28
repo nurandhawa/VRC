@@ -186,6 +186,7 @@ public class AccountManager {
     }
 
 
+    // !! TODO: DELETE THE MAIN FUNCTION - WILL BE REFACTORED INTO TESTS !!
     // MARK: - Main Function
 /*
     public static void main(String[] args) {
