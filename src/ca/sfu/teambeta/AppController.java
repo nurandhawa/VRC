@@ -471,12 +471,8 @@ public class AppController {
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             File dummyFile = new File(extractedData.getFile());
             String fileName = dummyFile.getName();
-            String home = System.getProperty("user.home");
-            File ladderFile = new File(home + "/Downloads" + "/" + fileName);
-            if (!ladderFile.exists()) {
-                return getErrResponse("File does not exist in Download folder");
-            } else {
-                dbManager.importLadderFromCsv(ladderFile.getAbsolutePath());
+            if (!dbManager.importLadderFromCsv(fileName)) {
+                return getErrResponse("File does not exist in default location.");
             }
             return getOkResponse("");
         });

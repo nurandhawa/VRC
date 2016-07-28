@@ -18,6 +18,7 @@ import com.opencsv.CSVWriter;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
     private static final String TESTING_FILENAME = "ladder_junit.csv";
+    private static final String DEFAULT_PATH = System.getProperty("user.home") + "/Downloads/";
 
     public static void main(String[] args) throws Exception {
         try {
@@ -87,10 +88,9 @@ public class CSVReader {
     }
 
     public static void exportCsv(List<Pair> pairs) {
-        String home = System.getProperty("user.home");
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        File csvFile = new File(home + "/Downloads" + "/ladder_" + dateFormat.format(date) + ".csv");
+        File csvFile = new File(DEFAULT_PATH + "ladder_" + dateFormat.format(date) + ".csv");
         FileWriter fileWriter = null;
         try {
             fileWriter = new FileWriter(csvFile);
@@ -124,8 +124,9 @@ public class CSVReader {
         }
     }
 
-    public static Ladder importCsv(String filePath) {
+    public static Ladder importCsv(String fileName) {
         Ladder newLadder = null;
+        String filePath = DEFAULT_PATH + fileName;
         try {
             newLadder = setupLadder(filePath);
         } catch (Exception e) {

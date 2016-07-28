@@ -451,10 +451,14 @@ public class DBManager {
         CSVReader.exportCsv(gameSession.getAllPairs());
     }
 
-    public void importLadderFromCsv(String filePath) {
-        Ladder newLadder = CSVReader.importCsv(filePath);
-        GameSession gameSession = getGameSessionLatest();
-        gameSession = new GameSession(newLadder);
-        persistEntity(gameSession);
+    public boolean importLadderFromCsv(String fileName) {
+        Ladder newLadder = CSVReader.importCsv(fileName);
+        if (newLadder == null) {
+            return false;
+        } else {
+            GameSession gameSession = new GameSession(newLadder);
+            persistEntity(gameSession);
+        }
+        return true;
     }
 }
