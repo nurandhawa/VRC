@@ -34,11 +34,11 @@ public class AccountManager {
     private TokenGenerator tokenGenerator;
     private Map<String, String> anonymousLoginCodes;
 
-/*
-    // User for testing purposes
-    private static final String DEMO_EMAIL = "testuser@vrc.com";
-    private static final String DEMO_PASSWORD = "demoPass";
-*/
+    // User's for testing purposes
+    public static final String DEMO_EMAIL = "testuser@vrc.ca";
+    public static final String DEMO_PASSWORD = "userPass";
+    public static final String DEMO_ADMIN_EMAIL = "admin_billy@vrc.ca";
+    public static final String DEMO_ADMIN_PASSWORD = "demoPass";
 
 
     // MARK: Constructor
