@@ -20,7 +20,7 @@ public class AccountManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
         Ladder newLadder = CSVReader.setupLadder();
 
         Pair pair = newLadder.getPairs().get(0);
