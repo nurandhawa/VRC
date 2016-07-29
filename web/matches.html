@@ -57,14 +57,17 @@
                                                 {{ pair.players[1].firstName }} {{pair.players[1].lastName}}
                                             </span>
                                         </div>
-                                        </span> <span class="dropdown">
-                                                <select class="col-sm-6 dropdown-item modal-listing-item" style="margin: 0; padding: 5px" v-model="match.results[pairIndex]">
-                                                   <option v-for="(pairIndex, pair2) in match.pairs"
-                                                           v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1, beenPlayed: true }">
-                                                       {{ pairIndex + 1 }}
-                                                   </option>
-                                                </select>
-                                            </span>
+                                        </span>
+                                        <span class="dropdown">
+                                            <select class="col-sm-6 dropdown-item modal-listing-item"
+                                                    style="margin-right: 10px; padding: 5px"
+                                                    v-model="match.results[pairIndex]">
+                                               <option v-for="(pairIndex, pair2) in match.pairs"
+                                                       v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1, beenPlayed: true }">
+                                                   {{ pairIndex + 1 }}
+                                               </option>
+                                            </select>
+                                        </span>
                                     </div>
                                     <div class="match-pair-right">
                                         <button class="btn btn-xs btn-danger"
