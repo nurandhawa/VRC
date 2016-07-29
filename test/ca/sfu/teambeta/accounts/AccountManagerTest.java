@@ -100,6 +100,6 @@ public class AccountManagerTest {
         boolean wrongPass = CredentialsManager.checkHash(password, anotherPassHash, "Error message");
 
         Assert.assertTrue(correctPass);
-        Assert.assertTrue(wrongPass);
+        Assert.assertFalse(wrongPass);
     }
 }

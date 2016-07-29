@@ -32,7 +32,7 @@ public class CredentialsManagerTest {
         dbManager.persistEntity(gameSession);
         AccountDatabaseHandler handler = new AccountDatabaseHandler(dbManager);
         AccountManager manager = new AccountManager(handler);
-        credManager= new CredentialsManager(handler);
+        credManager = new CredentialsManager(handler);
 
         email = "nick@gmail.com";
         password = "111111";

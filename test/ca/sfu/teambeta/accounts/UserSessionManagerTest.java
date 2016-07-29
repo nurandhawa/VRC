@@ -1,7 +1,9 @@
 package ca.sfu.teambeta.accounts;
 
 import ca.sfu.teambeta.core.SessionResponse;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.persistence.DBManager;
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,12 +15,12 @@ import org.junit.Test;
 
 public class UserSessionManagerTest {
     @After
-    public void clearSessions(){
+    public void clearSessions() {
         UserSessionManager.clearSessions();
     }
 
     @Test
-    public void createIdenticalSessions(){
+    public void createIdenticalSessions() {
         UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
         UserSessionManager.createNewSession("steve@gmail.com", UserRole.REGULAR);
         UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
@@ -29,7 +31,7 @@ public class UserSessionManagerTest {
 
     @Test
     public void deleteSession() throws NoSuchSessionException {
-        SessionResponse session =  UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
+        SessionResponse session = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
         String token = session.getSessionToken();
 
         UserSessionManager.deleteSession(token);
@@ -53,7 +55,7 @@ public class UserSessionManagerTest {
         Assert.assertTrue(authenticated_2);
     }
 
-    @Test (expected = NoSuchSessionException.class)
+    @Test(expected = NoSuchSessionException.class)
     public void invalidSessionId() throws NoSuchSessionException {
         UserSessionManager.authenticateSession("");
     }
@@ -86,10 +88,23 @@ public class UserSessionManagerTest {
     }
 
     @Test
-    public void changeUserRole() {
-        SessionResponse session_1 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.REGULAR);
-        SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+    public void changeUserRole() throws NoSuchSessionException, NoSuchUserException,
+            InvalidInputException, AccountRegistrationException,
+            GeneralUserAccountException, InvalidCredentialsException {
 
-        Assert.assertTrue(session_1 == session_2);
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        AccountDatabaseHandler dbHandler = new AccountDatabaseHandler(dbManager);
+        UserRoleHandler handler = new UserRoleHandler(dbHandler);
+        AccountManager manager = new AccountManager(dbHandler);
+
+        String email = "nick@gmail.com";
+        String password = "secret";
+        manager.registerNewAdministratorAccount(email, password);
+        handler.setUserRole(email, UserRole.REGULAR);
+        SessionResponse sessionResponse = manager.login(email, password);
+        UserRole actualRole = sessionResponse.getUserRole();
+
+        Assert.assertEquals(UserRole.REGULAR, actualRole);
     }
 }
