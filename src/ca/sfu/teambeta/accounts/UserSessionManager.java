@@ -132,11 +132,6 @@ public class UserSessionManager {
 
 
     // MARK: Misc Methods
-    public static void clearAllSessions() {
-        // This will cause everyone to re-authenticate
-        sessions.clear();
-    }
-
     public static void clearExpiredSessions() {
         List<String> sessionsToRemove = new ArrayList<>();
 
@@ -161,6 +156,7 @@ public class UserSessionManager {
     }
 
     public static void clearSessions() {
+        // This will cause everyone to re-authenticate
         sessions.clear();
     }
 
