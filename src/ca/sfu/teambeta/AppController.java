@@ -471,8 +471,10 @@ public class AppController {
             GameSession gameSession = getRequestedGameSession(dbManager, GAMESESSION_LATEST);
 
             OutputStream outputStream = response.raw().getOutputStream();
-            dbManager.writeToCsvFile(outputStream, gameSession);
-            return "";
+            if (!dbManager.writeToCsvFile(outputStream, gameSession)) {
+                return getErrResponse("Invalid File.");
+            }
+            return getOkResponse("");
         });
 
         //upload a csv file to create new ladder
@@ -482,7 +484,7 @@ public class AppController {
             File dummyFile = new File(extractedData.getFile());
             String fileName = dummyFile.getName();
             if (!dbManager.importLadderFromCsv(fileName)) {
-                return getErrResponse("File does not exist in default location.");
+                return getErrResponse("Invalid File.");
             }
             return getOkResponse("");
         });

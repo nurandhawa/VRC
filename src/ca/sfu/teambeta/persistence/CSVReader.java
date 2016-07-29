@@ -91,7 +91,7 @@ public class CSVReader {
         return pairs;
     }
 
-    public static void exportCsv(OutputStream outputStream, List<Pair> pairs) {
+    public static void exportCsv(OutputStream outputStream, List<Pair> pairs) throws IOException {
         OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
         CSVWriter writer = new CSVWriter(streamWriter);
         List<String[]> entries = new ArrayList<>();
@@ -116,18 +116,18 @@ public class CSVReader {
             writer.close();
             streamWriter.flush();
             streamWriter.close();
-        } catch (Exception e) {
-
+        } catch (IOException e) {
+            throw e;
         }
     }
 
-    public static Ladder importCsv(String fileName) {
+    public static Ladder importCsv(String fileName) throws Exception {
         Ladder newLadder = null;
         String filePath = DEFAULT_PATH + fileName;
         try {
             newLadder = setupLadder(filePath);
         } catch (Exception e) {
-
+            throw e;
         }
         return newLadder;
     }

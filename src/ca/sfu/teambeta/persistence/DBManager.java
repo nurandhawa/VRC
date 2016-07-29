@@ -14,6 +14,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
@@ -443,19 +444,25 @@ public class DBManager {
         return time;
     }
 
-    public void writeToCsvFile(OutputStream outputStream, GameSession gameSession) {
-        CSVReader.exportCsv(outputStream, gameSession.getAllPairs());
+    public boolean writeToCsvFile(OutputStream outputStream, GameSession gameSession) {
+        try {
+            CSVReader.exportCsv(outputStream, gameSession.getAllPairs());
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 
     public boolean importLadderFromCsv(String fileName) {
-        Ladder newLadder = CSVReader.importCsv(fileName);
-        if (newLadder == null) {
+        Ladder newLadder = null;
+        try {
+            newLadder = CSVReader.importCsv(fileName);
+        } catch (Exception e) {
             return false;
-        } else {
-            GameSession gameSession = getGameSessionLatest();
-            gameSession.overrideGameSession(newLadder);
-            persistEntity(gameSession);
         }
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.overrideGameSession(newLadder);
+        persistEntity(gameSession);
         return true;
     }
 
