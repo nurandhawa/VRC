@@ -30,10 +30,14 @@ var Header = (function() {
                         editOnClick();
                     }
                 },
-                
-                downloadLadder: function () {
+
+                uploadLadder: function () {
+                    $("#uploadModal").modal("show");
+                },
+
+                onUpload: function () {
+                    $("#uploadModal").modal("hide");
                     var api = new API();
-                    api.downloadLadder();
                 }
             }
         });
