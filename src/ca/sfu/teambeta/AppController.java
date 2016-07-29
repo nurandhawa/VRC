@@ -486,9 +486,12 @@ public class AppController {
             request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
             InputStream inputStream = request.raw().getPart("csv_file").getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            if (!dbManager.importLadderFromCsv(inputStreamReader)) {
+                return getErrResponse("");
+            }
             dbManager.importLadderFromCsv(inputStreamReader);
             response.redirect("/");
-            return "";
+            return getOkResponse("");
         });
 
         exception(Exception.class, (exception, request, response) -> {

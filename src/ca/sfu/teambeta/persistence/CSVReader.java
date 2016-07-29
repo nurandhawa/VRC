@@ -2,10 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import com.opencsv.CSVWriter;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -125,11 +122,11 @@ public class CSVReader {
         }
     }
 
-    public static Ladder importCsvFromStream(InputStreamReader inputStreamReader) {
+    public static Ladder importCsvFromStream(InputStreamReader inputStreamReader) throws Exception {
         try {
             return setupLadder(inputStreamReader);
         } catch (Exception e) {
-            return null;
+            throw e;
         }
     }
 }

@@ -455,14 +455,15 @@ public class DBManager {
     }
 
     public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
-        Ladder newLadder = CSVReader.importCsvFromStream(inputStreamReader);
-        if (newLadder == null) {
+        Ladder newLadder;
+        try {
+            newLadder = CSVReader.importCsvFromStream(inputStreamReader);
+        } catch (Exception e) {
             return false;
-        } else {
-            GameSession gameSession = getGameSessionLatest();
-            gameSession.overrideGameSession(newLadder);
-            persistEntity(gameSession);
         }
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.overrideGameSession(newLadder);
+        persistEntity(gameSession);
         return true;
     }
 
