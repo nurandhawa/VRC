@@ -165,6 +165,7 @@ var Ladder = (function () {
                 currentLadder: ladderData.pairs,
                 ladder: ladderData.pairs,
                 players: ladderData.players,
+                timeStamp: ladderData.timeStamp,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
@@ -372,6 +373,7 @@ var Ladder = (function () {
         var api = new API();
         api.getLadder(function (ladderData) {
             this.updateLadder(ladderData);
+            this.timeStamp = ladderData.timeStamp;
             this.refreshMode();
         }.bind(this));
     };

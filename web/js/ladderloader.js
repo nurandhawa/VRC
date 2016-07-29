@@ -24,7 +24,7 @@
     var ladderData = {
         pairs: [],
         players: [],
-        dateCreated: ""
+        timeStamp: ""
     };
 
     var ladder = new Ladder(ladderData);
@@ -35,7 +35,10 @@
 
     var userRole = Cookies.get("userRole");
 
-    var header = new Header("Ladder", "Edit Ladder", ladderData.dateCreated, editFunction, userRole);
+    var header = new Header("Ladder", "Edit Ladder", ladderData.timeStamp, editFunction, userRole);
+    ladder.component.$watch("timeStamp", function (newVal, oldVal) {
+        header.updateHeader.call(header.component, newVal);
+    });
 
     var addPairButton = Vue.extend({
         template: '<a v-on:click="addPair()" class="btn btn-raised btn-success header-button">Add Pair</a>',
@@ -51,7 +54,7 @@
     var api = new API();
     api.getLadder(function(response) {
         ladder.updateLadder.call(ladder.component, response);
-        header.updateHeader.call(header.component, response.dateCreated);
+        header.updateHeader.call(header.component, response.timeStamp);
     });
 
 })();
