@@ -47,9 +47,10 @@ public class CredentialsManager {
 
         // Since it's a dictionary, invalid key returns null value
         boolean voucherExists = (voucherMetadata != null);
-        boolean voucherExpired = voucherMetadata.isExpired();
 
         if (voucherExists) {
+            boolean voucherExpired = voucherMetadata.isExpired();
+
             if (voucherExpired) {
                 passwordResetVouchers.remove(voucherCode);
                 throw new InvalidCredentialsException("The password reset session has expired");
