@@ -60,8 +60,7 @@
     <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
 
     <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
-      <div class = "header-button">
-        <a v-on:click=downloadLadder() title="Download Ladder" class="btn btn-raised btn-primary">
+        <a v-on:click=downloadLadder() title="Download Ladder" class="btn btn-raised btn-primary header-button">
           <i class="glyphicon glyphicon-download-alt"></i>
         </a>
         <component :is="mode" transition="fade" transition-mode="out-in">
@@ -92,8 +91,9 @@
               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
               <h3 class="modal-title">Add Pair</h3>
             </div>
-            <validator name="newPairValidator" @valid="onValid('#newPairSave')" @invalid="onInvalid('#newPairSave')">
-              <div class="modal-body">
+            <div class="modal-body">
+              <validator name="newPairPositionValidator" @valid="onValidityChanged('position', '', true)"
+                     @invalid="onValidityChanged('position', '', false)">
                 <div class="form-group modal-form-group" v-validate-class>
                   <label for="ladderPosition" class="col-md-2 control-label">Ladder Position</label>
                   <div class="col-md-10">
@@ -102,62 +102,106 @@
                     <p class="help-block">Must be a valid number. Leave blank to insert the pair at the end of the ladder.</p>
                   </div>
                 </div>
-                <h4>Player 1</h4>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player1First" class="col-md-2 control-label">First Name</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player1First" v-model="newPairData.player1.firstName"
-                           v-validate:p1firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p1firstname.invalid">Required field. Alphabetic characters only.</p>
+              </validator>
+              <h4>Player 1</h4>
+              <div class="form-group">
+                  <div class="radio radio-primary">
+                    <label>
+                      <input type="radio" name="player1Radios" v-model="newPairData.player1.type" value="new">
+                      New player
+                    </label>
                   </div>
-                </div>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player1Last" class="col-md-2 control-label">Last Name</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player1Last" v-model="newPairData.player1.lastName"
-                           v-validate:p1lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p1lastname.invalid">Alphabetic characters only.</p>
+                  <div class="radio radio-primary">
+                    <label>
+                      <input type="radio" name="player1Radios" v-model="newPairData.player1.type" value="existing">
+                      Existing player
+                    </label>
                   </div>
-                </div>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player1Phone" class="col-md-2 control-label">Phone Number</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player1Phone" v-model="newPairData.player1.phoneNumber"
-                           v-validate:p1phone="['phone']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p1phone.invalid">Must be a standard 10 digit phone number.</p>
-                  </div>
-                </div>
-                <h4>Player 2</h4>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player2First" class="col-md-2 control-label">First Name</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player2First" v-model="newPairData.player2.firstName"
-                           v-validate:p2firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p2firstname.invalid">Required field. Alphabetic characters only.</p>
-                  </div>
-                </div>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player2Last" class="col-md-2 control-label">Last Name</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player2Last" v-model="newPairData.player2.lastName"
-                           v-validate:p2lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p2lastname.invalid">Alphabetic characters only.</p>
-                  </div>
-                </div>
-                <div class="form-group modal-form-group" v-validate-class>
-                  <label for="player2Phone" class="col-md-2 control-label">Phone Number</label>
-                  <div class="col-md-10">
-                    <input type="text" class="form-control" id="player2Phone" v-model="newPairData.player2.phoneNumber"
-                           v-validate:p2phone="['phone']" :classes="{ invalid: 'has-error', }">
-                    <p class="help-block" v-if="$newPairValidator.p2phone.invalid">Must be a standard 10 digit phone number.</p>
-                  </div>
-                </div>
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <button id="newPairSave" type="button" class="btn btn-success" v-on:click="onAdd" disabled="disabled">Add pair</button>
+              <div v-show="newPairData.player1.type === 'new'">
+                <validator name="newPairPlayer1Validator" @valid="onValidityChanged('player1', 'new', true)"
+                    @invalid="onValidityChanged('player1', 'new', false)">
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player1First" class="col-md-2 control-label">First Name</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player1First" v-model="newPairData.player1.firstName"
+                             v-validate:firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer1Validator.firstname.invalid">Required field. Alphabetic characters only.</p>
+                    </div>
+                  </div>
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player1Last" class="col-md-2 control-label">Last Name</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player1Last" v-model="newPairData.player1.lastName"
+                             v-validate:lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer1Validator.lastname.invalid">Alphabetic characters only.</p>
+                    </div>
+                  </div>
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player1Phone" class="col-md-2 control-label">Phone Number</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player1Phone" v-model="newPairData.player1.phoneNumber"
+                             v-validate:phone="['phone']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer1Validator.phone.invalid">Must be a standard 10 digit phone number.</p>
+                    </div>
+                  </div>
+                </validator>
               </div>
-            </validator>
+              <div v-show="newPairData.player1.type === 'existing'">
+                  <v-select label="label" :value.sync="newPairData.player1.existingPlayer" :options="players" placeholder="Search for a player..."></v-select>
+              </div>
+              <h4>Player 2</h4>
+              <div class="form-group">
+                  <div class="radio radio-primary">
+                    <label>
+                      <input type="radio" name="player2Radios" v-model="newPairData.player2.type" value="new">
+                      New player
+                    </label>
+                  </div>
+                  <div class="radio radio-primary">
+                    <label>
+                      <input type="radio" name="player2Radios" v-model="newPairData.player2.type" value="existing">
+                      Existing player
+                    </label>
+                  </div>
+              </div>
+              <div v-show="newPairData.player2.type === 'new'">
+                <validator name="newPairPlayer2Validator" @valid="onValidityChanged('player2', 'new', true)"
+                    @invalid="onValidityChanged('player2', 'new', false)">
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player2First" class="col-md-2 control-label">First Name</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player2First" v-model="newPairData.player2.firstName"
+                             v-validate:firstname="['required','alpha']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer2Validator.firstname.invalid">Required field. Alphabetic characters only.</p>
+                    </div>
+                  </div>
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player2Last" class="col-md-2 control-label">Last Name</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player2Last" v-model="newPairData.player2.lastName"
+                             v-validate:lastname="['alphaEmpty']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer2Validator.lastname.invalid">Alphabetic characters only.</p>
+                    </div>
+                  </div>
+                  <div class="form-group modal-form-group" v-validate-class>
+                    <label for="player2Phone" class="col-md-2 control-label">Phone Number</label>
+                    <div class="col-md-10">
+                      <input type="text" class="form-control" id="player2Phone" v-model="newPairData.player2.phoneNumber"
+                             v-validate:phone="['phone']" :classes="{ invalid: 'has-error', }">
+                      <p class="help-block" v-if="$newPairPlayer2Validator.phone.invalid">Must be a standard 10 digit phone number.</p>
+                    </div>
+                  </div>
+                </validator>
+              </div>
+              <div v-show="newPairData.player2.type === 'existing'">
+                  <v-select label="label" :value.sync="newPairData.player2.existingPlayer" :options="players" placeholder="Search for a player..."></v-select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button id="newPairSave" type="button" class="btn btn-success" v-on:click="onAdd" disabled="disabled">Add pair</button>
+            </div>
           </div>
         </div>
       </div>
@@ -237,6 +281,7 @@
   <script src="vendors/jquery-1.12.4.js"></script>
   <script src="vendors/vue.js"></script>
   <script src="vendors/vue-validator.js"></script>
+  <script src="vendors/vue-select.js"></script>
   <script src="vendors/jscookie.js"></script>
   <script src="vendors/bootstrap.js"></script>
   <script src="vendors/material.js"></script>
