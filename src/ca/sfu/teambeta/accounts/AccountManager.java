@@ -7,7 +7,6 @@ import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.InputValidator;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -225,17 +224,7 @@ public class AccountManager {
         // HashMap is structured <Email, Reason Not Deleted>
         Map<String, String> nonDeletableUsers = new HashMap<>();
 
-        List<User> anonymousUsers = accountDbHandler.getAllAnonymousUsers();
-
-        for (int i = 0; i < anonymousUsers.size(); i++) {
-            String email = anonymousUsers.get(i).getEmail();
-
-            try {
-                accountDbHandler.deleteUser(email);
-            } catch (NoSuchUserException e) {
-                nonDeletableUsers.put(email, "No such email was found");
-            }
-        }
+        nonDeletableUsers = accountDbHandler.deleteUsersOfRole(UserRole.ANONYMOUS);
 
         anonymousLoginCodes.clear();
         return nonDeletableUsers;

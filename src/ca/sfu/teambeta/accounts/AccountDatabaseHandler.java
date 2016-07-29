@@ -3,10 +3,13 @@ package ca.sfu.teambeta.accounts;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.IllegalDatabaseOperation;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.persistence.DBManager;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class handles the api interactions between the account/user
@@ -76,7 +79,31 @@ public class AccountDatabaseHandler {
         dbManager.updateExistingUser(user);
     }
 
-    public void deleteUser(String email) throws NoSuchUserException {
+    public void deleteUser(String email) throws NoSuchUserException, IllegalDatabaseOperation {
         dbManager.deleteUser(email);
+    }
+
+    public Map<String, String> deleteUsersOfRole(UserRole role) {
+        // HashMap is structured <Email, Reason Not Deleted>
+        Map<String, String> nonDeletableUsers = new HashMap<>();
+
+        List<User> usersToDelete = dbManager.getAllUsersOfRole(role);
+
+        // We'll allow the method to delete as many users as it can
+        //  instead of exiting when an exception is thrown; log the users
+        //  that could not be deleted and the reason.
+        for (int i = 0; i < usersToDelete.size(); i++) {
+            String email = usersToDelete.get(i).getEmail();
+
+            try {
+                deleteUser(email);
+            } catch (NoSuchUserException e) {
+                nonDeletableUsers.put(email, "No such email was found");
+            } catch (IllegalDatabaseOperation e) {
+                nonDeletableUsers.put(email, e.getMessage());
+            }
+        }
+
+        return nonDeletableUsers;
     }
 }
