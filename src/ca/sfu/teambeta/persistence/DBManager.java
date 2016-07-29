@@ -14,6 +14,9 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -277,10 +280,10 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
-
+        int previousPosition = pair.getLastWeekPosition();
         removePair(pairId);
-
         gameSession.addNewPairAtIndex(pair, newPosition);
+        pair.setLastWeekPosition(previousPosition);
         persistEntity(gameSession);
     }
 
@@ -428,11 +431,6 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public enum GameSessionVersion {
-        CURRENT,
-        PREVIOUS
-    }
-
     public synchronized void setTimeSlot(int pairId, Time time) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
@@ -440,7 +438,35 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public void writeToCsvFile(GameSession gameSession) {
-        CSVReader.exportCsv(gameSession.getAllPairs());
+    public boolean writeToCsvFile(OutputStream outputStream, GameSession gameSession) {
+        try {
+            CSVReader.exportCsv(outputStream, gameSession.getAllPairs());
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
+        List<Integer> pairIds;
+        try {
+            pairIds = CSVReader.getPairIdsFromCsvStream(inputStreamReader);
+        } catch (Exception e) {
+            return false;
+        }
+        Ladder ladder = new Ladder();
+        for (int id : pairIds) {
+            Pair pair = getPairFromID(id);
+            ladder.insertAtEnd(pair);
+        }
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.replaceLadder(ladder);
+        persistEntity(gameSession);
+        return true;
+    }
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
     }
 }

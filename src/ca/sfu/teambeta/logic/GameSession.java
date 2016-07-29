@@ -76,6 +76,15 @@ public class GameSession extends Persistable {
         this.timestamp = Instant.now().getEpochSecond();
     }
 
+    // Use me ONLY for importing a CSV file!!
+    public void replaceLadder(Ladder ladder) {
+        this.ladder = ladder;
+        initializeActivePlayers();
+        updatePairsLastWeekPositions();
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
+        setTimestamp();
+    }
+
     public List<Scorecard> createGroups(ScorecardGenerator generator, TimeSelection timeSelector) {
         //Generate groups
         scorecards = generator.generateScorecards(getActivePairs());
@@ -115,6 +124,10 @@ public class GameSession extends Persistable {
 
     public List<Scorecard> getScorecards() {
         return Collections.unmodifiableList(scorecards);
+    }
+
+    public void setScorecards(List<Scorecard> scorecards) {
+        this.scorecards = scorecards;
     }
 
     public Ladder getReorderedLadder() {
@@ -247,9 +260,5 @@ public class GameSession extends Persistable {
 
     public Map<Pair, Time> getTimeSlots() {
         return new HashMap<>(timeSlots);
-    }
-
-    public void setScorecards(List<Scorecard> scorecards) {
-        this.scorecards = scorecards;
     }
 }

@@ -22,6 +22,8 @@ public class JsonExtractedData {
     private String password;
     @Expose
     private String time;
+    @Expose
+    private String file;
 
 
     public JsonExtractedData() {
@@ -62,5 +64,13 @@ public class JsonExtractedData {
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 }

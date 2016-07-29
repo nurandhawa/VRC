@@ -1,16 +1,21 @@
 package ca.sfu.teambeta.persistence;
 
-import java.io.File;
+import com.opencsv.CSVWriter;
+
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import com.opencsv.CSVWriter;
 
 /**
  * Created by constantin on 29/06/16.
@@ -18,6 +23,7 @@ import com.opencsv.CSVWriter;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
     private static final String TESTING_FILENAME = "ladder_junit.csv";
+    private static final String DEFAULT_PATH = System.getProperty("user.home") + "/Downloads/";
 
     public static void main(String[] args) throws Exception {
         try {
@@ -28,12 +34,13 @@ public class CSVReader {
     }
 
     public static Ladder setupLadder() throws Exception {
-        return setupLadder(DEFAULT_FILENAME);
+        FileReader reader = new FileReader(DEFAULT_FILENAME);
+        return setupLadder(reader);
     }
 
-    private static Ladder setupLadder(String fileName) throws Exception {
+    private static Ladder setupLadder(InputStreamReader inputStreamReader) throws Exception {
         Map<Integer, Pair> pairs;
-        pairs = getInformationAboutPairs(fileName);
+        pairs = getInformationAboutPairs(inputStreamReader);
 
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
@@ -45,14 +52,15 @@ public class CSVReader {
     }
 
     public static Ladder setupTestingLadder() throws Exception {
-        return setupLadder(TESTING_FILENAME);
+        FileReader reader = new FileReader(TESTING_FILENAME);
+        return setupLadder(reader);
     }
 
-    private static Map<Integer, Pair> getInformationAboutPairs(String fileName) throws Exception {
+    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader) throws Exception {
         Map<Integer, Pair> pairs = new HashMap<>();
 
         try (com.opencsv.CSVReader reader =
-                     new com.opencsv.CSVReader(new FileReader(fileName))) {
+                     new com.opencsv.CSVReader(inputStreamReader)) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
 
@@ -80,23 +88,15 @@ public class CSVReader {
             }
             reader.close();
         } catch (IOException e) {
-            throw new Exception("Error reading file " + fileName);
+            throw new Exception("Malformed CSV stream");
         }
 
         return pairs;
     }
 
-    public static void exportCsv(List<Pair> pairs) {
-        String home = System.getProperty("user.home");
-        Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        File csvFile = new File(home + "/Downloads" + "/ladder_" + dateFormat.format(date) + ".csv");
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(csvFile);
-        } catch (Exception e) {
-        }
-        CSVWriter writer = new CSVWriter(fileWriter);
+    public static void exportCsv(OutputStream outputStream, List<Pair> pairs) throws IOException {
+        OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
+        CSVWriter writer = new CSVWriter(streamWriter);
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 7;
         for (int i = 0; i < pairs.size(); i++) {
@@ -117,10 +117,31 @@ public class CSVReader {
         try {
             writer.flush();
             writer.close();
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (Exception e) {
+            streamWriter.flush();
+            streamWriter.close();
+        } catch (IOException e) {
+            throw e;
+        }
+    }
 
+    public static List<Integer> getPairIdsFromCsvStream(InputStreamReader inputStreamReader) throws Exception {
+        List<Integer> pairIds = new ArrayList<>();
+        try (com.opencsv.CSVReader reader =
+                     new com.opencsv.CSVReader(inputStreamReader)) {
+            List<String[]> entries = reader.readAll();
+            Iterator<String[]> iterator = entries.iterator();
+
+            String[] pairInfo;
+            while (iterator.hasNext()) {
+                pairInfo = iterator.next();
+
+                int pairId = Integer.parseInt(pairInfo[6]);
+                pairIds.add(pairId);
+            }
+            reader.close();
+            return pairIds;
+        } catch (IOException e) {
+            throw new Exception("Malformed CSV stream");
         }
     }
 }
