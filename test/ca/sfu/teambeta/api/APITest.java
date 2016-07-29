@@ -3,8 +3,6 @@ package ca.sfu.teambeta.api;
 
 import com.google.gson.Gson;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -124,102 +122,6 @@ public class APITest {
 
     public int getLadderLength() {
         return ladderLength;
-    @Test
-    public void loginTest() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = login(EMAIL, PASSWORD);
-
-        assertEquals(200, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        assertNotNull(node.getObject().get("sessionToken"));
     }
 
-    @Test(expected = JSONException.class)
-    public void loginFailureTest() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = login(EMAIL, "");
-
-        assertEquals(401, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        // The sessionToken property shouldn't exists and should throw a JSONException
-        node.getObject().get("sessionToken");
-    }
-
-    @Test
-    public void testGetLadderLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        JSONArray ladder = node.getObject().getJSONArray("pairs");
-        assertEquals(ladderLength, ladder.length());
-    }
-
-    @Test
-    public void testGetLadderNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(401, jsonResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-
-        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(HOSTNAME + "api/ladder/1")
-                .queryString("newStatus", "playing")
-                .asJson();
-
-        assertEquals(200, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-
-        changePairToPlaying(1);
-
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
-
-        assertEquals(404, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
-
-        assertEquals(401, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testGetLatestMatchesEmptyLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
-                .queryString("gameSession", "latest")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-    }
-
-    @Test
-    public void testGetLatestMatchesLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        for (int i = 1; i <= 10; i++) {
-            changePairToPlaying(i);
-        }
-
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
-                .queryString("gameSession", "latest")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-
-        JsonNode node = jsonResponse.getBody();
-        assertEquals(3, node.getArray().length());
-    }
 }
