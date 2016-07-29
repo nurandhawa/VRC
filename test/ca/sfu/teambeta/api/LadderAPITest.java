@@ -5,6 +5,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import org.json.JSONArray;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
@@ -23,7 +24,8 @@ public class LadderAPITest extends APITest {
 
         assertEquals(200, jsonResponse.getStatus());
         JsonNode node = jsonResponse.getBody();
-        assertEquals(getLadderLength(), node.getArray().length());
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getLadderLength(), ladder.length());
     }
 
     @Test
