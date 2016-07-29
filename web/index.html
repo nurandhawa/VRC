@@ -1,5 +1,5 @@
   <!DOCTYPE html>
-  <html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml">
+  <html xmlns:v-on="http://www.w3.org/1999/xhtml" lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -61,7 +61,7 @@
 
     <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
       <div class = "header-button">
-        <a v-if="mode == 'read'" v-on:click=downloadLadder() title="Download Ladder" id="downloadBtn"
+        <a v-if="mode == 'read'" href="api/ladder/download" title="Download Ladder" id="downloadBtn"
            class="btn btn-raised btn-primary">
           <i class="glyphicon glyphicon-download-alt"></i>
         </a>

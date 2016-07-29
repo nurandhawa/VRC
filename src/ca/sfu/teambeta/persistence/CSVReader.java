@@ -1,16 +1,20 @@
 package ca.sfu.teambeta.persistence;
 
-import java.io.File;
+import com.opencsv.CSVWriter;
+
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import com.opencsv.CSVWriter;
 
 /**
  * Created by constantin on 29/06/16.
@@ -87,16 +91,9 @@ public class CSVReader {
         return pairs;
     }
 
-    public static void exportCsv(List<Pair> pairs) {
-        Date date = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        File csvFile = new File(DEFAULT_PATH + "ladder_" + dateFormat.format(date) + ".csv");
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(csvFile);
-        } catch (Exception e) {
-        }
-        CSVWriter writer = new CSVWriter(fileWriter);
+    public static void exportCsv(OutputStream outputStream, List<Pair> pairs) {
+        OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
+        CSVWriter writer = new CSVWriter(streamWriter);
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 7;
         for (int i = 0; i < pairs.size(); i++) {
@@ -117,8 +114,8 @@ public class CSVReader {
         try {
             writer.flush();
             writer.close();
-            fileWriter.flush();
-            fileWriter.close();
+            streamWriter.flush();
+            streamWriter.close();
         } catch (Exception e) {
 
         }
