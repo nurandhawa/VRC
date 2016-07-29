@@ -359,7 +359,7 @@ var API = (function() {
     API.prototype.userLogout = function (doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/logout",
+                   url: SERVER_URL + "/logout"
         })
             .done(function (response) {
                 if (doneCallback) {
@@ -378,26 +378,8 @@ var API = (function() {
             method: "PATCH",
             url: SERVER_URL + "/ladder/time/" + pairId,
             data: JSON.stringify({
-                "time": time,
+                                     "time": time
             })
-        })
-
-            .done(function (response) {
-                if (doneCallback) {
-                    doneCallback(JSON.parse(response));
-                }
-            })
-            .fail(function(response) {
-                if (failCallback) {
-                    failCallback(response);
-                }
-            });
-    };
-
-    API.prototype.downloadLadder = function (doneCallback, failCallback) {
-        $.ajax({
-            method: "POST",
-            url: SERVER_URL + "/ladder/download"
         })
 
             .done(function (response) {

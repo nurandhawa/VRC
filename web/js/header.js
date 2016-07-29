@@ -31,11 +31,6 @@ var Header = (function() {
                     }
                 },
                 
-                downloadLadder: function () {
-                    var api = new API();
-                    api.downloadLadder();
-                }, 
-                
                 uploadLadder: function () {
                     $("#uploadModal").modal("show");
                 },
