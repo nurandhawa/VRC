@@ -59,7 +59,10 @@
                                         </div>
                                         </span> <span class="dropdown">
                                                 <select class="col-sm-6 dropdown-item modal-listing-item" style="margin: 0; padding: 5px" v-model="match.results[pairIndex]">
-                                                   <option v-for="(pairIndex, pair2) in match.pairs"  v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1, beenPlayed: true }">{{ pairIndex + 1 }}</option>
+                                                   <option v-for="(pairIndex, pair2) in match.pairs"
+                                                           v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1, beenPlayed: true }">
+                                                       {{ pairIndex + 1 }}
+                                                   </option>
                                                 </select>
                                             </span>
                                     </div>
@@ -74,9 +77,8 @@
                                                 @click="applyPenalty(match.gameSession, pair, 'miss', $event)">
                                             Absent
                                         </button>
-                                        <button class="btn btn-xs btn-danger"
+                                        <button class="btn btn-danger btn-fab btn-fab-mini glyphicon glyphicon-remove"
                                                 @click="removeMatchPair(pair, match.gameSession)">
-                                            Remove
                                         </button>
                                     </div>
                                 </div>

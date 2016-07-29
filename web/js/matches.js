@@ -43,11 +43,14 @@ var Matches = (function () {
                 },
                 removeMatchPair: function(pair, gameSession){
                     var api = new API();
+                    var answer = confirm("Are you sure you want to delete this pair?");
 
-                    api.removePairFromMatch(gameSession, pair.id, function() {
-                        this.refreshMatches(gameSession);
-                    }.bind(this));
-                    this.closeModal();
+                    if(answer) {
+                        api.removePairFromMatch(gameSession, pair.id, function() {
+                            this.refreshMatches(gameSession);
+                        }.bind(this));
+                        this.closeModal();
+                    }
                 },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
