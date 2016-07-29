@@ -38,14 +38,6 @@
     margin: 5px;
 }
 
-#downloadBtn {
-    background-color: #0398db;
-}
-
-#uploadLadderBtn {
-    background-color: #0398db;
-}
-
 .ladder {
     padding: 20px 15px 10px;
     display: flex;

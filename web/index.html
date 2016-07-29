@@ -61,16 +61,16 @@
 
     <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
       <div class = "header-button">
-        <a v-if="mode == 'read'" href="api/ladder/download" title="Download Ladder" id="downloadBtn"
+        <component :is="mode" transition="fade" transition-mode="out-in">
+        </component>
+        <a v-if="mode == 'edit'" href="api/ladder/download" title="Download Ladder" id="downloadBtn"
            class="btn btn-raised btn-primary">
           <i class="glyphicon glyphicon-download-alt"></i>
         </a>
-        <a v-if="mode == 'read'" v-on:click="uploadLadder()" title="Upload Ladder" id="uploadLadderBtn"
+        <a v-if="mode == 'edit'" v-on:click="uploadLadder()" title="Upload Ladder" id="uploadLadderBtn"
            class="btn btn-raised btn-primary">
           <i class="glyphicon glyphicon-upload"></i>
         </a>
-        <component :is="mode" transition="fade" transition-mode="out-in">
-        </component>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
       </div>
       <div id="uploadModal" class="modal">
