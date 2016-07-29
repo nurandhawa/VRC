@@ -33,7 +33,7 @@
     var onSubmit = function(event) {
         this.spinnerVisibility = true;
         var api = new API();
-        api.userLogin(this.email, this.password, onLoggedIn, onLoginError.bind(this));
+        api.userLogin(this.email, this.password, this.remember, onLoggedIn, onLoginError.bind(this));
     };
 
     Vue.validator('email', function (val) {

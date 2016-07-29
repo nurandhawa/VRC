@@ -12,6 +12,7 @@ import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,10 @@ public class AppController {
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
+
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String REMEMBER_ME = "rememberMe";
 
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
@@ -368,12 +373,14 @@ public class AppController {
         //logging in an existing users
         post("/api/login", (request, response) -> {
             String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String email = extractedData.getEmail();
-            String pwd = extractedData.getPassword();
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(body).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
+            boolean rememberMe = jsonObject.get(REMEMBER_ME).getAsBoolean();
 
             try {
-                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                SessionResponse sessionResponse = accountManager.login(email, password, rememberMe);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
             } catch (NoSuchUserException | InvalidCredentialsException e) {
