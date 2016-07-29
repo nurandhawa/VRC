@@ -77,8 +77,8 @@ public class GameSession extends Persistable {
     public void replaceLadder(Ladder ladder) {
         this.ladder = ladder;
         initializeActivePlayers();
+        updatePairsLastWeekPositions();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         setTimestamp();
     }
 
