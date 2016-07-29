@@ -11,36 +11,31 @@ public class UserSessionMetadata {
     private static final int TIME_MEASUREMENT = Calendar.DAY_OF_MONTH;
     private static final int TIME_TO_LIVE_ADMIN = 3;
     private static final int TIME_TO_LIVE_ANON_USER = 2;
-    private static final int TIME_TO_LIVE_REG_USER = 30;
+    private static final int TIME_TO_LIVE_DEFAULT = 15;
+    private static final int TIME_TO_LIVE_EXTENDED = 60;
 
     private String email;
     private Calendar expiryDate;
     private UserRole role;
 
-    // MARK: Constructor
+    // MARK: Constructors
     public UserSessionMetadata(String email, UserRole role) {
+        this(email, role, false);
+    }
+
+    public UserSessionMetadata(String email, UserRole role, boolean extendSessionExpiry) {
         this.email = email;
         this.role = role;
         this.expiryDate = Calendar.getInstance();
 
-        switch (role) {
-            case REGULAR:
-                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_REG_USER);
-                break;
-            case ADMINISTRATOR:
-                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_ADMIN);
-                break;
-            case ANONYMOUS:
-                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_ANON_USER);
-                break;
-            default:
-                // In case another role is added in the future this won't break
-                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_REG_USER);
-                break;
+        if (extendSessionExpiry) {
+            setExtendedExpiry(role);
+        } else {
+            setNormalExpiry(role);
         }
     }
 
-    // MARK: Getters
+        // MARK: Getters
     public Calendar getExpiryDate() {
         return expiryDate;
     }
@@ -54,7 +49,7 @@ public class UserSessionMetadata {
     }
 
 
-    // MARK: Helper Methods
+    // MARK: Set/Check Expiration Methods
     public boolean isSessionExpired() {
         Calendar currentTime = Calendar.getInstance();
         int value = currentTime.compareTo(expiryDate);
@@ -62,5 +57,42 @@ public class UserSessionMetadata {
 
         return expired;
     }
+
+    private void setNormalExpiry(UserRole role) {
+        switch (role) {
+            case REGULAR:
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_DEFAULT);
+                break;
+            case ADMINISTRATOR:
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_ADMIN);
+                break;
+            case ANONYMOUS:
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_ANON_USER);
+                break;
+            default:
+                // In case another role is added in the future this won't break
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_DEFAULT);
+                break;
+        }
+    }
+
+    private void setExtendedExpiry(UserRole role) {
+        switch (role) {
+            case REGULAR:
+            case ADMINISTRATOR:
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_EXTENDED);
+                break;
+            case ANONYMOUS:
+                // Leave out "remember me" behaviour for anonymous users
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_ANON_USER);
+                break;
+            default:
+                // In case another role is added in the future this won't break
+                expiryDate.add(TIME_MEASUREMENT, TIME_TO_LIVE_DEFAULT);
+                break;
+        }
+    }
+
+
 
 }

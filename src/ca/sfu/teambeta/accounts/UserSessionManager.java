@@ -27,14 +27,17 @@ public class UserSessionManager {
 
     // MARK: Methods for creating/deleting a session
     public static SessionResponse createNewSession(String email, UserRole role) {
+        return createNewSession(email, role, false);
+    }
+
+    public static SessionResponse createNewSession(String email, UserRole role, boolean extendSessionExpiry) {
         String sessionId = tokenGenerator.generateUniqueRandomToken();
 
-        UserSessionMetadata metadata = new UserSessionMetadata(email, role);
+        UserSessionMetadata metadata = new UserSessionMetadata(email, role, extendSessionExpiry);
 
         sessions.put(sessionId, metadata);
 
         return new SessionResponse(sessionId, role);
-
     }
 
     public static void deleteSession(String sessionId) throws NoSuchSessionException {
@@ -53,7 +56,6 @@ public class UserSessionManager {
         }
 
     }
-
 
     public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
@@ -128,11 +130,8 @@ public class UserSessionManager {
 
     }
 
-    public static void clearAllSessions() {
-        // This will cause everyone to re-authenticate
-        sessions.clear();
-    }
 
+    // MARK: Misc Methods
     public static void clearExpiredSessions() {
         List<String> sessionsToRemove = new ArrayList<>();
 
@@ -152,13 +151,12 @@ public class UserSessionManager {
         }
     }
 
-
-    // MARK: Misc Methods
     public static int numUsersLoggedIn() {
         return sessions.size();
     }
 
     public static void clearSessions() {
+        // This will cause everyone to re-authenticate
         sessions.clear();
     }
 

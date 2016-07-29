@@ -58,6 +58,14 @@ public class AccountManager {
             throws InvalidInputException, NoSuchUserException,
             InvalidCredentialsException, GeneralUserAccountException {
 
+        SessionResponse sessionResponse = login(email, password, false);
+        return sessionResponse;
+    }
+
+    public SessionResponse login(String email, String password, boolean extendedSessionExpiry)
+            throws InvalidInputException, NoSuchUserException,
+            InvalidCredentialsException, GeneralUserAccountException {
+
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
@@ -77,7 +85,7 @@ public class AccountManager {
         // Create a session for the user
         UserRole role = userRoleHandler.getUserRole(email);
 
-        return UserSessionManager.createNewSession(email, role);
+        return UserSessionManager.createNewSession(email, role, extendedSessionExpiry);
     }
 
     /**
@@ -180,7 +188,7 @@ public class AccountManager {
      * NOT IN USE:
      * This method can be used to extend the functionality of anonymous
      * users in the future. Or simply provide a way to give limited access
-     * to users. IE: Single sign in
+     * to users.
      *
      */
     public String registerNewAnonymousAccount() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
