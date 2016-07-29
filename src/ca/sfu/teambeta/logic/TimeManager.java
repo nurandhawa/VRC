@@ -12,18 +12,36 @@ import java.util.Calendar;
  * they information again up till next week.
  */
 public class TimeManager {
-    private static final int DAY = Calendar.THURSDAY - 1;
+    private static final int DAY = Calendar.THURSDAY;
     private static final int HOUR = 18;
-    private static final int MINUTE = 48;
+    private static final int MINUTE = 00;
     private static final int SECOND = 0;
+    private static final int WEEK = 7;
     private static Calendar Block_Time = Calendar.getInstance();
     private static TimeManager timeManager = null;
 
+    //Constructor
     private TimeManager() {
         Block_Time.set(Calendar.DAY_OF_WEEK, DAY);
+
+        int currentDayWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        boolean startupAfterDefaultDay = currentDayWeek > DAY;
+
+        //If we run the program after Thursday we have to set the blocking time to next
+        //week's Thursday not previous Thursday on this week
+        if (startupAfterDefaultDay) {
+            int currentDayMonth = Block_Time.get(Calendar.DAY_OF_MONTH);
+
+            int nextWeeksBlockTime = currentDayMonth + WEEK;
+
+            Block_Time.set(Calendar.DAY_OF_MONTH,  nextWeeksBlockTime);
+        }
+
         Block_Time.set(Calendar.HOUR_OF_DAY, HOUR);
         Block_Time.set(Calendar.MINUTE, MINUTE);
         Block_Time.set(Calendar.SECOND, SECOND);
+        System.out.println("BLOCK: " + Block_Time.getTime());
+        System.out.println("NOW: " + Calendar.getInstance().getTime());
     }
 
     public static synchronized TimeManager getInstance() {
@@ -41,7 +59,7 @@ public class TimeManager {
     public void updateTime() {
         if (isExpired()) {
             int day = Block_Time.get(Calendar.DAY_OF_MONTH);
-            int dayNextWeek = day + 7;
+            int dayNextWeek = day + WEEK;
 
             Block_Time.set(Calendar.DAY_OF_MONTH, dayNextWeek);
         }
