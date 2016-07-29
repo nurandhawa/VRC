@@ -1,15 +1,13 @@
 package ca.sfu.teambeta.logic;
 
-import ca.sfu.teambeta.core.Ladder;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
-
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ArrayList;
-
 
 /**
  * Created by constantin on 11/07/16.
@@ -39,16 +37,10 @@ public class VrcTimeSelection implements TimeSelection {
         return amount;
     }
 
-    public void clearTimeSlots(Ladder ladder) {
-        for (Pair pair : ladder.getPairs()) {
-            pair.setTimeSlot(Time.NO_SLOT);
-        }
-    }
-
-    public void distributePairs(List<Scorecard> allScorecards) {
+    public void distributePairs(List<Scorecard> allScorecards, Map<Pair, Time> timeSlotsMap) {
         //Make schedule of groups by selecting most popular time slot
         for (Scorecard scorecard : allScorecards) {
-            List<Time> timeSlots = getTimeSlotsOfGroup(scorecard);
+            List<Time> timeSlots = getTimeSlotsOfGroup(scorecard, timeSlotsMap);
             Time time = getDominantTime(timeSlots);
             scorecard.setTimeSlot(time);
         }
@@ -76,12 +68,12 @@ public class VrcTimeSelection implements TimeSelection {
         return amount;
     }
 
-    private List<Time> getTimeSlotsOfGroup(Scorecard scorecard) {
+    private List<Time> getTimeSlotsOfGroup(Scorecard scorecard, Map<Pair, Time> timeSlotsMap) {
         List<Pair> pairs = scorecard.getReorderedPairs();
         List<Time> timeSlots = new ArrayList<>();
 
         for (Pair pair : pairs) {
-            Time time = pair.getTimeSlot();
+            Time time = timeSlotsMap.get(pair);
             timeSlots.add(time);
         }
 
