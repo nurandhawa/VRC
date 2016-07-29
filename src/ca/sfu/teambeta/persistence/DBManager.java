@@ -251,6 +251,8 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
+    // TODO: Perform Ladder operation on Gamession rather than the ladder object itself
+    // Very risky and WILL be buggy unless this is changed
     public synchronized boolean removePair(int pairId) {
         Transaction tx = null;
         Pair pair = null;
@@ -265,7 +267,6 @@ public class DBManager {
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
             removed = ladder.removePair(pair);
-            pair.setTimeSlot(Time.NO_SLOT);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
@@ -300,8 +301,8 @@ public class DBManager {
 
     public synchronized boolean setPairActive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
-        pair.setTimeSlot(Time.NO_SLOT);
         boolean activated = gameSession.setPairActive(pair);
+        gameSession.setTimeSlot(pair, Time.NO_SLOT);
         gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
         return activated;
@@ -330,7 +331,7 @@ public class DBManager {
     public synchronized String getJSONLadder(GameSession gameSession) {
         List<Pair> ladder = gameSession.getAllPairs();
         JSONSerializer serializer = new LadderJSONSerializer(ladder,
-                gameSession.getActivePairSet());
+                gameSession.getActivePairSet(), gameSession.getTimeSlots());
         return serializer.toJson();
     }
 
@@ -435,14 +436,6 @@ public class DBManager {
         Pair pair = getPairFromID(pairId);
         gameSession.setTimeSlot(pair, time);
         persistEntity(gameSession);
-    }
-
-    public Time getTimeSlot(int pairId) {
-        GameSession gameSession = getGameSessionLatest();
-        Pair pair = getPairFromID(pairId);
-        Time time = pair.getTimeSlot();
-        persistEntity(gameSession);
-        return time;
     }
 
     public boolean writeToCsvFile(OutputStream outputStream, GameSession gameSession) {

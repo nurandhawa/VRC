@@ -44,9 +44,6 @@ public class Pair extends Persistable {
     private boolean isPlaying;
     @Expose
     private int pairScore;
-    @Transient
-    @Expose
-    private Time timeSlot;
 
     public Pair() {
     }
@@ -56,7 +53,6 @@ public class Pair extends Persistable {
         players.add(secondPlayer);
         dateCreated = new Date();
         this.isPlaying = false;
-        timeSlot = Time.NO_SLOT;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
@@ -64,7 +60,6 @@ public class Pair extends Persistable {
         players.add(secondPlayer);
         dateCreated = new Date();
         this.isPlaying = isPlaying;
-        timeSlot = Time.NO_SLOT;
     }
 
     public List<Player> getPlayers() {
@@ -118,14 +113,6 @@ public class Pair extends Persistable {
 
     public void setPlaying(boolean playing) {
         isPlaying = playing;
-    }
-
-    public Time getTimeSlot() {
-        return timeSlot;
-    }
-
-    public void setTimeSlot(Time timeSlot) {
-        this.timeSlot = timeSlot;
     }
 
     public int getLastWeekPosition() {
