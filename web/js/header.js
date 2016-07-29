@@ -30,15 +30,10 @@ var Header = (function() {
                         editOnClick();
                     }
                 },
-                
-                uploadLadder: function () {
-                    $("#uploadModal").modal("show");
-                },
 
                 onUpload: function () {
                     $("#uploadModal").modal("hide");
                     var api = new API();
-                    api.uploadLadder($("#file").val());
                 }
             }
         });
