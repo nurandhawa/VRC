@@ -2,10 +2,12 @@ package ca.sfu.teambeta.persistence;
 
 import com.opencsv.CSVWriter;
 
-import java.io.*;
-import java.text.SimpleDateFormat;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -122,11 +124,24 @@ public class CSVReader {
         }
     }
 
-    public static Ladder importCsvFromStream(InputStreamReader inputStreamReader) throws Exception {
-        try {
-            return setupLadder(inputStreamReader);
-        } catch (Exception e) {
-            throw e;
+    public static List<Integer> getPairIdsFromCsvStream(InputStreamReader inputStreamReader) throws Exception {
+        List<Integer> pairIds = new ArrayList<>();
+        try (com.opencsv.CSVReader reader =
+                     new com.opencsv.CSVReader(inputStreamReader)) {
+            List<String[]> entries = reader.readAll();
+            Iterator<String[]> iterator = entries.iterator();
+
+            String[] pairInfo;
+            while (iterator.hasNext()) {
+                pairInfo = iterator.next();
+
+                int pairId = Integer.parseInt(pairInfo[6]);
+                pairIds.add(pairId);
+            }
+            reader.close();
+            return pairIds;
+        } catch (IOException e) {
+            throw new Exception("Malformed CSV stream");
         }
     }
 }

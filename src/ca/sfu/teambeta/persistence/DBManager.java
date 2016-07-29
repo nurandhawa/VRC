@@ -14,8 +14,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
@@ -455,14 +455,19 @@ public class DBManager {
     }
 
     public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
-        Ladder newLadder;
+        List<Integer> pairIds;
         try {
-            newLadder = CSVReader.importCsvFromStream(inputStreamReader);
+            pairIds = CSVReader.getPairIdsFromCsvStream(inputStreamReader);
         } catch (Exception e) {
             return false;
         }
+        Ladder ladder = new Ladder();
+        for (int id : pairIds) {
+            Pair pair = getPairFromID(id);
+            ladder.insertAtEnd(pair);
+        }
         GameSession gameSession = getGameSessionLatest();
-        gameSession.overrideGameSession(newLadder);
+        gameSession.replaceLadder(ladder);
         persistEntity(gameSession);
         return true;
     }
