@@ -489,7 +489,6 @@ public class AppController {
             if (!dbManager.importLadderFromCsv(inputStreamReader)) {
                 return getErrResponse("");
             }
-            dbManager.importLadderFromCsv(inputStreamReader);
             response.redirect("/");
             return getOkResponse("");
         });
