@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.File;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
@@ -11,6 +13,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.MultipartConfigElement;
 
 import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
@@ -479,14 +483,12 @@ public class AppController {
 
         //upload a csv file to create new ladder
         post("/api/ladder/upload", (request, response) -> {
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            File dummyFile = new File(extractedData.getFile());
-            String fileName = dummyFile.getName();
-            if (!dbManager.importLadderFromCsv(fileName)) {
-                return getErrResponse("Invalid File.");
-            }
-            return getOkResponse("");
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            InputStream inputStream = request.raw().getPart("csv_file").getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            dbManager.importLadderFromCsv(inputStreamReader);
+            response.redirect("/");
+            return "";
         });
 
         exception(Exception.class, (exception, request, response) -> {

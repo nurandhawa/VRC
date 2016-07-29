@@ -2,11 +2,13 @@ package ca.sfu.teambeta.persistence;
 
 import com.opencsv.CSVWriter;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,12 +35,13 @@ public class CSVReader {
     }
 
     public static Ladder setupLadder() throws Exception {
-        return setupLadder(DEFAULT_FILENAME);
+        FileReader reader = new FileReader(DEFAULT_FILENAME);
+        return setupLadder(reader);
     }
 
-    private static Ladder setupLadder(String fileName) throws Exception {
+    private static Ladder setupLadder(InputStreamReader inputStreamReader) throws Exception {
         Map<Integer, Pair> pairs;
-        pairs = getInformationAboutPairs(fileName);
+        pairs = getInformationAboutPairs(inputStreamReader);
 
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
@@ -50,14 +53,15 @@ public class CSVReader {
     }
 
     public static Ladder setupTestingLadder() throws Exception {
-        return setupLadder(TESTING_FILENAME);
+        FileReader reader = new FileReader(TESTING_FILENAME);
+        return setupLadder(reader);
     }
 
-    private static Map<Integer, Pair> getInformationAboutPairs(String fileName) throws Exception {
+    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader) throws Exception {
         Map<Integer, Pair> pairs = new HashMap<>();
 
         try (com.opencsv.CSVReader reader =
-                     new com.opencsv.CSVReader(new FileReader(fileName))) {
+                     new com.opencsv.CSVReader(inputStreamReader)) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
 
@@ -85,7 +89,7 @@ public class CSVReader {
             }
             reader.close();
         } catch (IOException e) {
-            throw new Exception("Error reading file " + fileName);
+            throw new Exception("Malformed CSV stream");
         }
 
         return pairs;
@@ -121,14 +125,11 @@ public class CSVReader {
         }
     }
 
-    public static Ladder importCsv(String fileName) throws Exception {
-        Ladder newLadder = null;
-        String filePath = DEFAULT_PATH + fileName;
+    public static Ladder importCsvFromStream(InputStreamReader inputStreamReader) {
         try {
-            newLadder = setupLadder(filePath);
+            return setupLadder(inputStreamReader);
         } catch (Exception e) {
-            throw e;
+            return null;
         }
-        return newLadder;
     }
 }

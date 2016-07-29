@@ -81,15 +81,16 @@
               <h3 class="modal-title">Upload Ladder</h3>
             </div>
             <div class="modal-body">
-              <form method="POST" action="upload" enctype="multipart/form-data" >
+              <form method="POST" action="api/ladder/upload" enctype="multipart/form-data">
                 File:
-                <input type="file" name="file" id="file" /> <br/>
-                </br>
+                <input type="file" name="csv_file" id="file" accept=".csv"/>
+                <br/>
+                <div class="modal-footer">
+                  <input type="submit" class="btn btn-primary" value="Upload" name="upload"
+                         id="uploadBtn"/>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
               </form>
-            </div>
-            <div class="modal-footer">
-              <input v-on:click="onUpload()" type="button" class="btn btn-primary" value="Upload" name="upload" id="uploadBtn" />
-              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
             </div>
           </div>
         </div>

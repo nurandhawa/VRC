@@ -14,6 +14,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -453,16 +454,15 @@ public class DBManager {
         return true;
     }
 
-    public boolean importLadderFromCsv(String fileName) {
-        Ladder newLadder = null;
-        try {
-            newLadder = CSVReader.importCsv(fileName);
-        } catch (Exception e) {
+    public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
+        Ladder newLadder = CSVReader.importCsvFromStream(inputStreamReader);
+        if (newLadder == null) {
             return false;
+        } else {
+            GameSession gameSession = getGameSessionLatest();
+            gameSession.overrideGameSession(newLadder);
+            persistEntity(gameSession);
         }
-        GameSession gameSession = getGameSessionLatest();
-        gameSession.overrideGameSession(newLadder);
-        persistEntity(gameSession);
         return true;
     }
 
