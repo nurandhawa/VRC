@@ -4,10 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.MultipartConfigElement;
 
 import ca.sfu.teambeta.core.JsonExtractedData;
 import ca.sfu.teambeta.core.Pair;
@@ -47,15 +50,13 @@ public class AppController {
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
     public static final int JAR_SERVER_PORT = 443;
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
-
     private static final String TIME_SLOT_1 = "08:00 pm";
     private static final String TIME_SLOT_2 = "09:30 pm";
-    public static final String PLAYING_STATUS = "playing";
-    public static final String NOT_PLAYING_STATUS = "not playing";
-
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
@@ -467,14 +468,12 @@ public class AppController {
 
         //upload a csv file to create new ladder
         post("/api/ladder/upload", (request, response) -> {
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            File dummyFile = new File(extractedData.getFile());
-            String fileName = dummyFile.getName();
-            if (!dbManager.importLadderFromCsv(fileName)) {
-                return getErrResponse("File does not exist in default location.");
-            }
-            return getOkResponse("");
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            InputStream inputStream = request.raw().getPart("csv_file").getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            dbManager.importLadderFromCsv(inputStreamReader);
+            response.redirect("/");
+            return "";
         });
 
         exception(Exception.class, (exception, request, response) -> {

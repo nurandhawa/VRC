@@ -14,6 +14,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 
@@ -427,11 +428,6 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public enum GameSessionVersion {
-        CURRENT,
-        PREVIOUS
-    }
-
     public synchronized void setTimeSlot(int pairId, Time time) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
@@ -451,8 +447,8 @@ public class DBManager {
         CSVReader.exportCsv(gameSession.getAllPairs());
     }
 
-    public boolean importLadderFromCsv(String fileName) {
-        Ladder newLadder = CSVReader.importCsv(fileName);
+    public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
+        Ladder newLadder = CSVReader.importCsvFromStream(inputStreamReader);
         if (newLadder == null) {
             return false;
         } else {
@@ -461,5 +457,10 @@ public class DBManager {
             persistEntity(gameSession);
         }
         return true;
+    }
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
     }
 }
