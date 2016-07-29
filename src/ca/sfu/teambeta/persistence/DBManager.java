@@ -3,6 +3,7 @@ package ca.sfu.teambeta.persistence;
 import ca.sfu.teambeta.accounts.UserRole;
 import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.IllegalDatabaseOperation;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
@@ -380,12 +381,16 @@ public class DBManager {
         return anonymousUsers;
     }
 
-    public synchronized void deleteUser(String userEmail) throws NoSuchUserException {
+    public synchronized void deleteUser(String userEmail) throws NoSuchUserException, IllegalDatabaseOperation {
 
         User user = getUser(userEmail);
 
         if (user == null) {
             throw new NoSuchUserException("No user exists for email: " + userEmail);
+        }
+
+        if (user.getUserRole() == UserRole.ADMINISTRATOR) {
+            throw new IllegalDatabaseOperation("Cannot delete an administrator");
         }
 
         Transaction tx = null;
