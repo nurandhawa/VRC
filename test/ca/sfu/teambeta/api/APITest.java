@@ -111,19 +111,7 @@ public class APITest {
                 .asJson();
     }
 
-    protected HttpResponse<JsonNode> changePairToPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(URI_BASENAME + "api/ladder/" + pairId)
-                .queryString("newStatus", "playing")
-                .asJson();
-    }
-
-    protected HttpResponse<JsonNode> changePairToNotPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(URI_BASENAME + "api/ladder/1")
-                .queryString("newStatus", "not playing")
-                .asJson();
-    }
-
-    public int getLadderLength() {
+    int getLadderLength() {
         return ladderLength;
     }
 

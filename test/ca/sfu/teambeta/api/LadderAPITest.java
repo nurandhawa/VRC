@@ -10,9 +10,6 @@ import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 
-/**
- * Created by gordo on 7/27/2016.
- */
 public class LadderAPITest extends APITest {
 
     @Test
@@ -52,16 +49,22 @@ public class LadderAPITest extends APITest {
     public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
         login(EMAIL, PASSWORD, REMEMBER_ME);
 
-        changePairToPlaying(1);
+        Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
         assertEquals(404, jsonPairUpdateResponse.getStatus());
     }
 
     @Test
     public void testChangePlayingStatusNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
         assertEquals(401, jsonPairUpdateResponse.getStatus());
     }
