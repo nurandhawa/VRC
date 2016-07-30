@@ -251,26 +251,22 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    // TODO: Perform Ladder operation on Gamession rather than the ladder object itself
-    // Very risky and WILL be buggy unless this is changed
     public synchronized boolean removePair(int pairId) {
-        Transaction tx = null;
+        GameSession gameSession = getGameSessionLatest();
+        Transaction tx = session.beginTransaction();
         Pair pair = null;
-        Ladder ladder = null;
-        boolean removed = false;
         try {
-            tx = session.beginTransaction();
-            pair = session.get(Pair.class, pairId);
-            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
-                    .setProjection(Projections.max("id"));
-            ladder = (Ladder) session.createCriteria(Ladder.class)
-                    .add(Property.forName("id").eq(maxId))
-                    .uniqueResult();
-            removed = ladder.removePair(pair);
+            pair = session.load(Pair.class, pairId);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
+            throw e;
         }
+
+        boolean removed = gameSession.removePairFromLadder(pair);
+
+        persistEntity(gameSession);
+
         return removed;
     }
 
