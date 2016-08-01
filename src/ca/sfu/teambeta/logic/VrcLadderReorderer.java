@@ -7,6 +7,8 @@ import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Penalty;
 import ca.sfu.teambeta.core.Scorecard;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
 /**
  * Created by Gordon Shieh on 25/06/16.
  */
@@ -52,6 +54,7 @@ public class VrcLadderReorderer implements LadderReorderer {
 
     private List<Pair> mergeActivePairs(List<Pair> originalPairs, List<Pair> activeReorderedPairs) {
         int activePairIndex = 0;
+        List<Integer> toDeleteIndex = new ArrayList<>();
         for (Pair pair : originalPairs) {
             if (activeReorderedPairs.contains(pair)) {
                 originalPairs.set(originalPairs.indexOf(pair), null);
@@ -63,8 +66,11 @@ public class VrcLadderReorderer implements LadderReorderer {
                 originalPairs.set(i, activeReorderedPairs.get(activePairIndex));
                 activePairIndex++;
             } else if (pair == null && activePairIndex >= activeReorderedPairs.size()) {
-                originalPairs.remove(pair);
+                toDeleteIndex.add(originalPairs.indexOf(pair));
             }
+        }
+        for (int index : toDeleteIndex) {
+            originalPairs.remove(index);
         }
         return originalPairs;
     }
