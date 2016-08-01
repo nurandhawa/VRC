@@ -115,6 +115,7 @@ public class TimeSelectionTest {
         Assert.assertEquals(expectedTime, time);
     }
 
+    @Ignore
     @Test
     public void distributePairsCase_1() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
