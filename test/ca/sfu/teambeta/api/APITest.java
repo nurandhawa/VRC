@@ -3,8 +3,6 @@ package ca.sfu.teambeta.api;
 
 import com.google.gson.Gson;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -17,11 +15,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
 import org.hibernate.SessionFactory;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +30,6 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.stop;
@@ -51,7 +44,7 @@ import static spark.Spark.stop;
 public class APITest {
     public static final String EMAIL = "testuser@vrc.com";
     public static final String PASSWORD = "demoPass";
-    private static String HOSTNAME = "https://localhost:8000/";
+    public static final String URI_BASENAME = "https://localhost:8000/";
     private int ladderLength;
 
     @Before
@@ -76,8 +69,7 @@ public class APITest {
                 AccountManager am = new AccountManager(dbManager);
                 am.register(EMAIL, PASSWORD);
 
-                AppController appController =
-                        new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
+                new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
                                 AppController.DEVELOP_STATIC_HTML_PATH);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -103,127 +95,33 @@ public class APITest {
         stop();
     }
 
-    private HttpResponse<JsonNode> login(String email, String password) throws UnirestException {
+    protected HttpResponse<JsonNode> login(String email, String password) throws UnirestException {
         Map<String, String> loginParams = new HashMap<>();
         loginParams.put("email", email);
         loginParams.put("password", password);
 
         Gson gson = new Gson();
 
-        return Unirest.post(HOSTNAME + "api/login")
+        return Unirest.post(URI_BASENAME + "api/login")
                 .header("accept", "application/json")
                 .body(gson.toJson(loginParams))
                 .asJson();
     }
 
-    private HttpResponse<JsonNode> changePairToPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(HOSTNAME + "api/ladder/" + pairId)
+    protected HttpResponse<JsonNode> changePairToPlaying(int pairId) throws UnirestException {
+        return Unirest.patch(URI_BASENAME + "api/ladder/" + pairId)
                 .queryString("newStatus", "playing")
                 .asJson();
     }
 
-    private HttpResponse<JsonNode> changePairToNotPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(HOSTNAME + "api/ladder/1")
+    protected HttpResponse<JsonNode> changePairToNotPlaying(int pairId) throws UnirestException {
+        return Unirest.patch(URI_BASENAME + "api/ladder/1")
                 .queryString("newStatus", "not playing")
                 .asJson();
     }
 
-    @Test
-    public void loginTest() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = login(EMAIL, PASSWORD);
-
-        assertEquals(200, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        assertNotNull(node.getObject().get("sessionToken"));
+    public int getLadderLength() {
+        return ladderLength;
     }
 
-    @Test(expected = JSONException.class)
-    public void loginFailureTest() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = login(EMAIL, "");
-
-        assertEquals(401, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        // The sessionToken property shouldn't exists and should throw a JSONException
-        node.getObject().get("sessionToken");
-    }
-
-    @Test
-    public void testGetLadderLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-        JsonNode node = jsonResponse.getBody();
-        JSONArray ladder = node.getObject().getJSONArray("pairs");
-        assertEquals(ladderLength, ladder.length());
-    }
-
-    @Test
-    public void testGetLadderNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/ladder")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(401, jsonResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-
-        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(HOSTNAME + "api/ladder/1")
-                .queryString("newStatus", "playing")
-                .asJson();
-
-        assertEquals(200, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-
-        changePairToPlaying(1);
-
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
-
-        assertEquals(404, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testChangePlayingStatusNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
-
-        assertEquals(401, jsonPairUpdateResponse.getStatus());
-    }
-
-    @Test
-    public void testGetLatestMatchesEmptyLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
-                .queryString("gameSession", "latest")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-    }
-
-    @Test
-    public void testGetLatestMatchesLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
-        for (int i = 1; i <= 10; i++) {
-            changePairToPlaying(i);
-        }
-
-        HttpResponse<JsonNode> jsonResponse = Unirest.get(HOSTNAME + "api/matches")
-                .queryString("gameSession", "latest")
-                .header("accept", "application/json")
-                .asJson();
-
-        assertEquals(200, jsonResponse.getStatus());
-
-        JsonNode node = jsonResponse.getBody();
-        assertEquals(3, node.getArray().length());
-    }
 }
