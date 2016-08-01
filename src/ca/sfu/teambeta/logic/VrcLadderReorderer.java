@@ -1,10 +1,6 @@
 package ca.sfu.teambeta.logic;
 
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import ca.sfu.teambeta.core.Pair;
@@ -19,14 +15,14 @@ public class VrcLadderReorderer implements LadderReorderer {
     public List<Pair> reorder(List<Pair> originalPairs, List<Scorecard> scorecards,
                               Set<Pair> activePairs, Map<Pair, Penalty> penalties) {
 
-        List<Pair> intermediateOrdering = swapBetweenGroups(scorecards);
+        List<Pair> intermediateActiveOrdering = swapBetweenGroups(scorecards);
 
-        intermediateOrdering = mergeActivePairs(
-                originalPairs, intermediateOrdering);
+        List<Pair> intermediatePassiveOrdering = applyPassivePenalty(
+                originalPairs, activePairs);
 
-        intermediateOrdering = applyPassivePenalty(
-                originalPairs, intermediateOrdering, activePairs);
-
+        List<Pair> intermediateOrdering = mergeActivePairs(
+                intermediatePassiveOrdering, intermediateActiveOrdering);
+        
         return applyPenalties(intermediateOrdering, penalties);
     }
 
@@ -56,34 +52,41 @@ public class VrcLadderReorderer implements LadderReorderer {
 
     private List<Pair> mergeActivePairs(List<Pair> originalPairs, List<Pair> activeReorderedPairs) {
         int activePairIndex = 0;
+        for (Pair pair : originalPairs) {
+            if (activeReorderedPairs.contains(pair)) {
+                originalPairs.set(originalPairs.indexOf(pair), null);
+            }
+        }
         for (int i = 0; i < originalPairs.size(); i++) {
             Pair pair = originalPairs.get(i);
-            if (activeReorderedPairs.contains(pair)) {
+            if (pair == null && activePairIndex < activeReorderedPairs.size()) {
                 originalPairs.set(i, activeReorderedPairs.get(activePairIndex));
                 activePairIndex++;
+            } else if (pair == null && activePairIndex >= activeReorderedPairs.size()) {
+                originalPairs.remove(pair);
             }
         }
         return originalPairs;
     }
 
     private List<Pair> applyPassivePenalty(
-            List<Pair> originalPairs, List<Pair> activeReorderedPairs,
-            Set<Pair> activePairs) {
+            List<Pair> originalPairs, Set<Pair> activePairs) {
 
-        Set<Pair> passivePairs = originalPairs.stream()
+        Set<Pair> passivePairsSet = originalPairs.stream()
                 .filter(pair -> !activePairs.contains(pair))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
+        List<Pair> passivePairs = new ArrayList<>(passivePairsSet);
+        Collections.reverse(passivePairs);
+        //add two more spots to the ladder to drop passive pairs, will be removed afterwards.
+        originalPairs.add(null);
+        originalPairs.add(null);
         for (Pair pair : passivePairs) {
-            int index = activeReorderedPairs.indexOf(pair);
+            int index = originalPairs.indexOf(pair);
             int newIndex = index + 2;
-            if (newIndex > activeReorderedPairs.size() - 1) {
-                newIndex = activeReorderedPairs.size() - 1;
-            }
-
-            activeReorderedPairs.remove(index);
-            activeReorderedPairs.add(newIndex, pair);
+            originalPairs.set(index, null);
+            originalPairs.set(newIndex, pair);
         }
-        return activeReorderedPairs;
+        return originalPairs;
     }
 
     private List<Pair> applyPenalties(
