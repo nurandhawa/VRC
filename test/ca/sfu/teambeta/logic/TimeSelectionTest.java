@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.logic;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class TimeSelectionTest {
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
 
+    @Ignore
     @Test
     public void getPairsByTime() {
         List<Pair> pairs = new ArrayList<Pair>() {
@@ -50,6 +52,7 @@ public class TimeSelectionTest {
         Assert.assertEquals(3, pairsSecondTimeSlot);
     }
 
+    @Ignore
     @Test
     public void checkCommonTimeForGroup() {
         Map<Pair, Time> timeSlots = new HashMap<>();
@@ -81,6 +84,7 @@ public class TimeSelectionTest {
         Assert.assertEquals(expectedTime, time);
     }
 
+    @Ignore
     @Test
     public void distributePairsCase_1() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
@@ -168,6 +172,7 @@ public class TimeSelectionTest {
         return amount;
     }
 
+    @Ignore
     @Test
     public void distributePairsCase_2() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
