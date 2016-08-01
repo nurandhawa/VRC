@@ -91,7 +91,8 @@ public class Scorecard extends Persistable {
         }
 
         final Scorecard otherScorecard = (Scorecard) other;
-        return pairs.equals(otherScorecard.pairs) && pairRankings.equals(otherScorecard.pairRankings);
+        return pairs.equals(otherScorecard.pairs)
+                && pairRankings.equals(otherScorecard.pairRankings);
     }
 
     @Override

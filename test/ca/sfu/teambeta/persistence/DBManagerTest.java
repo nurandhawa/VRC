@@ -113,7 +113,8 @@ public class DBManagerTest {
     public void testGetPreviousGameSession() {
         LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
 
-        GameSession expectedPrevious = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+        GameSession expectedPrevious = generateGameSession(
+                dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
         GameSession latest = generateGameSession(Instant.now().getEpochSecond());
 
         dbManager.persistEntity(expectedPrevious);
@@ -127,7 +128,8 @@ public class DBManagerTest {
     public void testGetLatestGameSession() {
         LocalDateTime dateTime = LocalDateTime.now().minusWeeks(1);
 
-        GameSession previous = generateGameSession(dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
+        GameSession previous = generateGameSession(
+                dateTime.toEpochSecond(ZoneOffset.ofTotalSeconds(0)));
         GameSession expectedLatest = generateGameSession(Instant.now().getEpochSecond());
 
         dbManager.persistEntity(previous);

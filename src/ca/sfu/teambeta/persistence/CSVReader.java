@@ -4,14 +4,16 @@ import com.opencsv.CSVWriter;
 
 import java.io.FileReader;
 import java.io.IOException;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -97,16 +99,17 @@ public class CSVReader {
     public static void exportCsv(OutputStream outputStream, List<Pair> pairs) throws IOException {
         OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
         CSVWriter writer = new CSVWriter(streamWriter);
+
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 7;
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
             Player p1 = pair.getPlayers().get(0);
-            Player p2 = pair.getPlayers().get(1);
             String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
             entry[0] = p1.getLastName();
             entry[1] = p1.getFirstName();
             entry[2] = String.valueOf(p1.getID());
+            Player p2 = pair.getPlayers().get(1);
             entry[3] = p2.getLastName();
             entry[4] = p2.getFirstName();
             entry[5] = String.valueOf(p2.getID());

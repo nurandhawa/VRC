@@ -33,6 +33,7 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.UserSessionManager;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.logic.TimeManager;
 import ca.sfu.teambeta.persistence.DBManager;
 
 import static spark.Spark.before;
@@ -80,6 +81,7 @@ public class AppController {
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
+    private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
@@ -140,6 +142,10 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -153,6 +159,7 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
+                ignored.getMessage();
             }
 
             String status = request.queryParams(STATUS);
@@ -204,6 +211,7 @@ public class AppController {
             }
 
             return getOkResponse("");
+
         });
 
         //add pair to ladder
@@ -281,6 +289,8 @@ public class AppController {
                 dbManager.saveGameSession(newGameSession);
             }
 
+            //Update timeManager which enables ladder editing
+            TimeManager.getInstance().updateTime();
             return getOkResponse("");
         }));
 
@@ -403,8 +413,9 @@ public class AppController {
                 SessionResponse sessionResponse = accountManager.login(email, pwd);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
-            } catch (InternalHashingException |
-                    NoSuchUserException | InvalidCredentialsException e) {
+            } catch (InternalHashingException
+                    | NoSuchUserException
+                    | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
@@ -435,6 +446,10 @@ public class AppController {
 
         //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -465,6 +480,7 @@ public class AppController {
             timeSelector.distributePairs(gameSession.getScorecards(), gameSession.getTimeSlots());
             dbManager.persistEntity(gameSession);
             return getOkResponse("");
+
         });
 
         //download ladder to a new csv file
