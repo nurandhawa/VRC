@@ -69,6 +69,7 @@ public class AppController {
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
+    private static final String ZERO = "zero";
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
     private static final int NOT_FOUND = 404;
@@ -309,6 +310,8 @@ public class AppController {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.MISSING);
             } else if (penaltyType.equals(ACCIDENT)) {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.ACCIDENT);
+            } else if (penaltyType.equals(ZERO)) {
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.ZERO);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
