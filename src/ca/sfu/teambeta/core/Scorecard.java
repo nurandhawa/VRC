@@ -40,7 +40,13 @@ public class Scorecard extends Persistable {
         this.isDone = false;
     }
 
+    // PairRanking's hash code is the same as Pair, and as such only one
+    // PairRanking can exist for each Pair in a Set
     public void setGameResults(Pair winner, int rank) {
+        PairRanking newRanking = new PairRanking(winner, rank);
+        if (pairRankings.contains(newRanking)) {
+            pairRankings.remove(newRanking);
+        }
         pairRankings.add(new PairRanking(winner, rank));
         if (pairRankings.size() == pairs.size()) {
             isDone = true;

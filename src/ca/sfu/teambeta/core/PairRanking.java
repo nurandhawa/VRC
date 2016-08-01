@@ -38,8 +38,7 @@ public class PairRanking extends Persistable {
         }
 
         final PairRanking otherPairRanking = (PairRanking) other;
-        return pair.equals(otherPairRanking.pair)
-                && rank == otherPairRanking.rank;
+        return pair.equals(otherPairRanking.pair);
     }
 
     @Override
