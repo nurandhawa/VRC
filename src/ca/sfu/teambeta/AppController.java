@@ -514,10 +514,21 @@ public class AppController {
             String securityQuestion = jsonObject.get(SECURITY_QUESTION).getAsString();
             String answer = jsonObject.get(ANSWER).getAsString();
 
-            String sessionId = request.cookie(SESSION_TOKEN_KEY);
-
+            // Authenticate the token, since our normal authentication doesn't run on login endpoints
+            String sessionToken = request.cookie(SESSION_TOKEN_KEY);
             try {
-                credentialsManager.setSecurityQuestion(email, securityQuestion, answer, sessionId);
+                boolean authenticated =
+                        UserSessionManager.authenticateSession(sessionToken);
+                if (!authenticated) {
+                    response.status(NOT_AUTHENTICATED);
+                    return getErrResponse("You need to be logged in to change your security question.");
+                }
+
+                credentialsManager.setSecurityQuestion(email, securityQuestion, answer, sessionToken);
+
+            } catch (NoSuchSessionException exception) {
+                response.status(NOT_AUTHENTICATED);
+                return getErrResponse("You need to be logged in to change your security question.");
             } catch (GeneralUserAccountException e) {
                 response.status(400);
                 return getErrResponse(e.getMessage());
