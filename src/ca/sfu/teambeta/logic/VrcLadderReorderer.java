@@ -24,7 +24,7 @@ public class VrcLadderReorderer implements LadderReorderer {
 
         List<Pair> intermediateOrdering = mergeActivePairs(
                 intermediatePassiveOrdering, intermediateActiveOrdering);
-        
+
         return applyPenalties(intermediateOrdering, penalties);
     }
 
@@ -54,7 +54,6 @@ public class VrcLadderReorderer implements LadderReorderer {
 
     private List<Pair> mergeActivePairs(List<Pair> originalPairs, List<Pair> activeReorderedPairs) {
         int activePairIndex = 0;
-        List<Integer> toDeleteIndex = new ArrayList<>();
         for (Pair pair : originalPairs) {
             if (activeReorderedPairs.contains(pair)) {
                 originalPairs.set(originalPairs.indexOf(pair), null);
@@ -65,12 +64,14 @@ public class VrcLadderReorderer implements LadderReorderer {
             if (pair == null && activePairIndex < activeReorderedPairs.size()) {
                 originalPairs.set(i, activeReorderedPairs.get(activePairIndex));
                 activePairIndex++;
-            } else if (pair == null && activePairIndex >= activeReorderedPairs.size()) {
-                toDeleteIndex.add(originalPairs.indexOf(pair));
             }
         }
-        for (int index : toDeleteIndex) {
-            originalPairs.remove(index);
+        Iterator<Pair> itr = originalPairs.iterator();
+        while (itr.hasNext()) {
+            Pair pair = itr.next();
+            if (pair == null) {
+                itr.remove();
+            }
         }
         return originalPairs;
     }

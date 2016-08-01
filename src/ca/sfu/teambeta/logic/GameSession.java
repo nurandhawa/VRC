@@ -59,7 +59,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         setTimestamp();
     }
 
@@ -68,7 +67,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         this.timestamp = timestamp;
     }
 
