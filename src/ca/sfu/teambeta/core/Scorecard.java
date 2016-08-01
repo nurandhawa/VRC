@@ -47,7 +47,7 @@ public class Scorecard extends Persistable {
         if (pairRankings.contains(newRanking)) {
             pairRankings.remove(newRanking);
         }
-        pairRankings.add(new PairRanking(winner, rank));
+        pairRankings.add(newRanking);
         if (pairRankings.size() == pairs.size()) {
             isDone = true;
         }
