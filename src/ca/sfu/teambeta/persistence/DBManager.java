@@ -325,10 +325,10 @@ public class DBManager {
     }
 
     public synchronized String getJSONLadder(GameSession gameSession) {
-        List<Pair> ladder = gameSession.getAllPairs();
-        JSONSerializer serializer = new LadderJSONSerializer(ladder,
-                gameSession.getActivePairSet(), gameSession.getTimeSlots());
-        return serializer.toJson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(GameSession.class, new LadderJSONSerializer())
+                .create();
+        return gson.toJson(gameSession);
     }
 
     public synchronized String getJSONScorecards(GameSession gameSession) {
