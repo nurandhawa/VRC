@@ -46,14 +46,14 @@ var Matches = (function () {
                     var results = match.results;
                     var api = new API();
                     api.inputMatchResults(gameSession, match.id, results, function() {
-                        this.refreshMatches();
+                        this.refreshMatches(gameSession);
                     }.bind(this));
                     this.closeModal();
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
                     api.getMatches(gameSession, function(matchData) {
-                        this.$broadcast("updateMatches", matchData, gameSession);
+                        this.$dispatch("updateMatches", matchData, gameSession);
                     }.bind(this));
                 }
             }
@@ -150,11 +150,11 @@ var Matches = (function () {
                                           thisVue.validateResults.bind(thisVue, match));
                                   });
                               }.bind(this));
-                              
+
                               var matchesDone = this.matches.every(function(match) {
                                   return match.isDone;
                               });
-    
+
                               if (gameSession === "latest") {
                                   this.$dispatch("matchesDone", matchesDone);
                               }
