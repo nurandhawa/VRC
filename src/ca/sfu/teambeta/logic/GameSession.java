@@ -224,6 +224,13 @@ public class GameSession extends Persistable {
         return pairExists;
     }
 
+    public boolean removePairFromLadder(Pair pair) {
+        activePairs.remove(pair);
+        penalties.remove(pair);
+        timeSlots.remove(pair);
+        return ladder.removePair(pair);
+    }
+
     @Override
     public boolean equals(Object o) {
         return false;
