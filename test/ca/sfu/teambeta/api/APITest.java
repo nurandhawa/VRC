@@ -27,17 +27,7 @@ import javax.net.ssl.SSLContext;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-
-import ca.sfu.teambeta.AppController;
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.persistence.CSVReader;
-import ca.sfu.teambeta.persistence.DBManager;
-
 import static junit.framework.TestCase.fail;
-import static junit.framework.TestCase.*;
 import static spark.Spark.awaitInitialization;
 import static spark.Spark.stop;
 
