@@ -437,7 +437,7 @@ public class AppController {
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
             int playerID = -1;
-            try{
+            try {
                 playerID = Integer.parseInt(extractedData.getPlayerID());
             } catch (Exception e) {
                 message = e.getMessage();
