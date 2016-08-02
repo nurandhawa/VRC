@@ -92,6 +92,9 @@
                                         @click="saveChanges(match.gameSession, $index)"
                                         :disabled="!match.resultsValid">Save changes
                                 </button>
+                                <div id="loginAnimation" v-if="mode === 'loading'">
+                                    <clip-loader :color="#03a9f4"></clip-loader>
+                                </div>
                             </div>
                         </div>
                     </div>
