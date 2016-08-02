@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.core;
+package ca.sfu.teambeta.accounts;
 
 /**
  * This enumerated type holds user role information
@@ -6,5 +6,5 @@ package ca.sfu.teambeta.core;
  */
 
 public enum UserRole {
-    REGULAR, ADMINISTRATOR
+    REGULAR, ADMINISTRATOR, ANONYMOUS
 }

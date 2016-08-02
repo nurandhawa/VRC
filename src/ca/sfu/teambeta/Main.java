@@ -1,9 +1,10 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
@@ -28,8 +29,10 @@ class Main {
             dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
-        AccountManager am = new AccountManager(dbManager);
-        am.register("admin_billy@vrc.ca", "demoPass");
+        AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        AccountManager am = new AccountManager(accountDatabaseHandler);
+        am.registerUser(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD);
+        am.registerNewAdministratorAccount(AccountManager.DEMO_ADMIN_EMAIL, AccountManager.DEMO_ADMIN_PASSWORD);
 
         AppController appController =
                 new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,

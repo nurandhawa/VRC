@@ -306,13 +306,14 @@ var API = (function() {
             });
     };
 
-    API.prototype.userLogin = function (email, password, doneCallback, failCallback) {
+    API.prototype.userLogin = function (email, password, rememberMe, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/login",
             data: JSON.stringify({
                 "email": email,
-                "password": password
+                "password": password,
+                "rememberMe": rememberMe
             })
         })
             .done(function (response) {

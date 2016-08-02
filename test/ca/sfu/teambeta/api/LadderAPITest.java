@@ -17,7 +17,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testGetLadderLoggedIn() throws UnirestException {
-        super.login(EMAIL, PASSWORD);
+        super.login(EMAIL, PASSWORD, REMEMBER_ME);
         HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
                 .header("accept", "application/json")
                 .asJson();
@@ -39,7 +39,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testChangePlayingStatusLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
 
         HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/1")
                 .queryString("newStatus", "playing")
@@ -50,7 +50,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
 
         changePairToPlaying(1);
 

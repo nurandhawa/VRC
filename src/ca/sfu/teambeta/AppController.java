@@ -1,12 +1,23 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
+import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.UserSessionManager;
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.TimeManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import javax.servlet.MultipartConfigElement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,38 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.MultipartConfigElement;
-
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.SessionResponse;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
-import ca.sfu.teambeta.logic.TimeManager;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.secure;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -66,6 +46,10 @@ public class AppController {
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
 
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String REMEMBER_ME = "rememberMe";
+
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
@@ -85,7 +69,8 @@ public class AppController {
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
-        final AccountManager accountManager = new AccountManager(dbManager);
+        final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -405,17 +390,17 @@ public class AppController {
         //logging in an existing users
         post("/api/login", (request, response) -> {
             String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String email = extractedData.getEmail();
-            String pwd = extractedData.getPassword();
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(body).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
+            boolean rememberMe = jsonObject.get(REMEMBER_ME).getAsBoolean();
 
             try {
-                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                SessionResponse sessionResponse = accountManager.login(email, password, rememberMe);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
-            } catch (InternalHashingException
-                    | NoSuchUserException
-                    | InvalidCredentialsException e) {
+            } catch (NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
@@ -430,9 +415,9 @@ public class AppController {
 
             String message = "";
             try {
-                accountManager.register(email, pwd);
+                accountManager.registerUser(email, pwd);
                 return getOkResponse("Account registered");
-            } catch (InternalHashingException e) {
+            } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();

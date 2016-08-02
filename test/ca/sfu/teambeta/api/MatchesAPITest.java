@@ -15,7 +15,7 @@ import static junit.framework.TestCase.assertEquals;
 public class MatchesAPITest extends APITest {
     @Test
     public void testGetLatestMatchesEmptyLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/matches")
                 .queryString("gameSession", "latest")
                 .header("accept", "application/json")
@@ -26,7 +26,7 @@ public class MatchesAPITest extends APITest {
 
     @Test
     public void testGetLatestMatchesLoggedIn() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         for (int i = 1; i <= 10; i++) {
             changePairToPlaying(i);
         }

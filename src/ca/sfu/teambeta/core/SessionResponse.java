@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.core;
 
+import ca.sfu.teambeta.accounts.UserRole;
 import com.google.gson.annotations.Expose;
 
 /**

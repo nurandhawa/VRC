@@ -1,37 +1,28 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.accounts.UserRole;
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.IllegalDatabaseOperation;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.VrcLadderReorderer;
+import ca.sfu.teambeta.logic.VrcScorecardGenerator;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Property;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
-
-import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Scorecard;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.VrcLadderReorderer;
-import ca.sfu.teambeta.logic.VrcScorecardGenerator;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
 
 /**
  * Utility class that reads and writes data to the database
@@ -376,12 +367,60 @@ public class DBManager {
         return user;
     }
 
+    public synchronized List<User> getAllUsersOfRole(UserRole role) {
+        Transaction tx = null;
+        List<User> anonymousUsers = null;
+
+        try {
+            tx = session.beginTransaction();
+            anonymousUsers = session.createCriteria(User.class).add(Restrictions.eq("role", role)).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return anonymousUsers;
+    }
+
+    public synchronized void deleteUser(String userEmail) throws NoSuchUserException, IllegalDatabaseOperation {
+
+        User user = getUser(userEmail);
+
+        if (user == null) {
+            throw new NoSuchUserException("No user exists for email: " + userEmail);
+        }
+
+        if (user.getUserRole() == UserRole.ADMINISTRATOR) {
+            throw new IllegalDatabaseOperation("Cannot delete an administrator");
+        }
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.delete(user);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
     public synchronized void addNewUser(User user) throws AccountRegistrationException {
         String email = user.getEmail();
         boolean uniqueEmail = (getUser(email) == null);
         if (!uniqueEmail) {
             throw new AccountRegistrationException("The email '" + email + "' is already in use");
         }
+
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            session.saveOrUpdate(user);
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+    }
+
+    public synchronized void updateExistingUser(User user) {
 
         Transaction tx = null;
         try {
