@@ -292,8 +292,20 @@
     flex: 1;
 }
 
+.admin-panel-element {
+    margin: auto;
+}
+
+.admin-panel-header {
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
 .loginwrapper {
     display: flex;
+    flex-flow: column;
     justify-content: center;
 }
 
@@ -457,6 +469,7 @@
         margin-right: 12%;
     }
 }
+
 @media screen and (max-width: 500px) {
     .mi-header-teamname {
         font-size: .7em;

@@ -34,41 +34,41 @@ var API = (function() {
             method: "GET",
             url: SERVER_URL + LADDER_ENDPOINT
         })
-        .done(function(response) {
-            if (doneCallback) {
-                var ladderData = {};
-                ladderData = JSON.parse(response);
-                ladderData.players = [];
-                ladderData.pairs.forEach(function(pair) {
-                    var player1 = pair.players[0];
-                    var player2 = pair.players[1];
+            .done(function(response) {
+                if (doneCallback) {
+                    var ladderData = {};
+                    ladderData = JSON.parse(response);
+                    ladderData.players = [];
+                    ladderData.pairs.forEach(function(pair) {
+                        var player1 = pair.players[0];
+                        var player2 = pair.players[1];
 
-                    var player1Name = player1.firstName + " " + player1.lastName;
-                    var player2Name = player2.firstName + " " + player2.lastName;
+                        var player1Name = player1.firstName + " " + player1.lastName;
+                        var player2Name = player2.firstName + " " + player2.lastName;
 
-                    pair.teamName = player1Name + " and " + player2Name;
-                    pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
-                    ladderData.players.push({
-                        label: player1Name,
-                        id: player1.id
+                        pair.teamName = player1Name + " and " + player2Name;
+                        pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+                        ladderData.players.push({
+                            label: player1Name,
+                            id: player1.id
+                        });
+                        ladderData.players.push({
+                            label: player2Name,
+                            id: player2.id
+                        });
                     });
-                    ladderData.players.push({
-                        label: player2Name,
-                        id: player2.id
-                    });
-                });
-                doneCallback(ladderData);
-            }
-        })
-        .fail(function(response) {
-            if (failCallback) {
-                failCallback(response);
-            }
-            else {
-                var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
-            }
-        });
+                    doneCallback(ladderData);
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
     };
 
     // newStatus must be "playing" or "not playing"
@@ -332,13 +332,14 @@ var API = (function() {
             });
     };
 
-    API.prototype.userRegistration = function (email, password, doneCallback, failCallback) {
+    API.prototype.userRegistration = function (email, password, securityInfo, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/login/new",
             data: JSON.stringify({
                 "email": email,
-                "password": password
+                "password": password,
+                "securityInfo": securityInfo
             })
         })
             .done(function (response) {
@@ -360,7 +361,7 @@ var API = (function() {
     API.prototype.userLogout = function (doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-                   url: SERVER_URL + "/logout"
+            url: SERVER_URL + "/logout"
         })
             .done(function (response) {
                 if (doneCallback) {
@@ -379,7 +380,7 @@ var API = (function() {
             method: "PATCH",
             url: SERVER_URL + "/ladder/time/" + pairId,
             data: JSON.stringify({
-                                     "time": time
+                "time": time,
             })
         })
 
@@ -394,7 +395,7 @@ var API = (function() {
                 }
             });
     };
-    
+
     return API;
 
 })();
