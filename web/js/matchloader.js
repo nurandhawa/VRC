@@ -18,16 +18,18 @@
         template: "#reorderLadderButtonTemplate",
         data: function() {
             return {
+                spinnerVisible: false,
                 disabled: !matches.isAllDone()
             };
         },
         methods: {
             saveResults: function() {
                 var header = this.$parent;
-                header.mode = "loading";
+                this.spinnerVisible = true;
                 var api = new API();
                 var doneCallback = function() {
                     header.mode = "edit";
+                    window.location.href = "/";
                 };
                 var failCallback = function(response) {
                     header.mode = "edit";
