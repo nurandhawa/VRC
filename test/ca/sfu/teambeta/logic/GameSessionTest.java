@@ -121,20 +121,20 @@ public class GameSessionTest extends PersistenceTest {
     @Test
     public void testReordering() {
         int key = saveGameSession();
-        Session session = getSession();
-
         List<Scorecard> scorecards = gameSession.getScorecards();
 
         Scorecard firstCard = scorecards.get(0);
-        Scorecard secondCard = scorecards.get(1);
 
         firstCard.setGameResults(davidBob, 2);
         firstCard.setGameResults(kevinJasmin, 1);
         firstCard.setGameResults(richardRobin, 3);
 
+        Scorecard secondCard = scorecards.get(1);
+
         secondCard.setGameResults(ianCamden, 1);
         secondCard.setGameResults(tonyAngelica, 2);
         secondCard.setGameResults(anastasiaVictoria, 3);
+        Session session = getSession();
         session.update(secondCard);
 
         gameSession.reorderLadder(new VrcLadderReorderer(), new VrcTimeSelection());

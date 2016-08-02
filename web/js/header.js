@@ -6,6 +6,7 @@ var Header = (function() {
             template: "<a></a>"
         });
 
+
         this.component = new Vue({
             el: '#header',
             data: {
@@ -30,10 +31,14 @@ var Header = (function() {
                         editOnClick();
                     }
                 },
-                
-                downloadLadder: function () {
+
+                uploadLadder: function () {
+                    $("#uploadModal").modal("show");
+                },
+
+                onUpload: function () {
+                    $("#uploadModal").modal("hide");
                     var api = new API();
-                    api.downloadLadder();
                 }
             }
         });

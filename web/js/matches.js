@@ -28,14 +28,34 @@ var Matches = (function () {
                 },
                 applyPenalty: function(gameSession, pair, penaltyType, event) {
                     if (penaltyType === "late") {
-                        pair.latePenalty = {
-                            "btn-raised": true
-                        };
+                        if (pair.latePenalty.value) {
+                            pair.latePenalty = {
+                                "btn-raised": false,
+                                "value": false
+                            };
+                            penaltyType = "zero";
+                        }
+                        else{
+                            pair.latePenalty = {
+                                "btn-raised": true,
+                                "value": true
+                            };
+                        }
                     }
                     else if (penaltyType === "miss") {
-                        pair.absentPenalty = {
-                            "btn-raised": true
-                        };
+                        if (pair.absentPenalty.value) {
+                            pair.absentPenalty = {
+                                "btn-raised": false,
+                                "value": false
+                            };
+                            penaltyType = "zero";
+                        }
+                        else{
+                            pair.absentPenalty = {
+                                "btn-raised": true,
+                                "value": true
+                            };
+                        }
                     }
                     var api = new API();
                     api.addPenalty(gameSession, pair.id, penaltyType, function(response) {
@@ -46,14 +66,14 @@ var Matches = (function () {
                     var results = match.results;
                     var api = new API();
                     api.inputMatchResults(gameSession, match.id, results, function() {
-                        this.refreshMatches();
+                        this.refreshMatches(gameSession);
                     }.bind(this));
                     this.closeModal();
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
                     api.getMatches(gameSession, function(matchData) {
-                        this.$broadcast("updateMatches", matchData, gameSession);
+                        this.$dispatch("updateMatches", matchData, gameSession);
                     }.bind(this));
                 }
             }
@@ -150,11 +170,11 @@ var Matches = (function () {
                                           thisVue.validateResults.bind(thisVue, match));
                                   });
                               }.bind(this));
-                              
+
                               var matchesDone = this.matches.every(function(match) {
                                   return match.isDone;
                               });
-    
+
                               if (gameSession === "latest") {
                                   this.$dispatch("matchesDone", matchesDone);
                               }

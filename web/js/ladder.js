@@ -162,8 +162,10 @@ var Ladder = (function () {
         this.component = new Vue({
             el: '#ladder',
             data: {
+                currentLadder: ladderData.pairs,
                 ladder: ladderData.pairs,
                 players: ladderData.players,
+                timeStamp: ladderData.timeStamp,
                 ladderPages: ladderPages,
                 currentPage: currentPage,
                 searchText: searchText,
@@ -193,6 +195,16 @@ var Ladder = (function () {
                     else {
                         onValidityChanged.call(this, 'player2', 'existing', false);
                     }
+                },
+                'searchText': function (val) {
+                    var filteredLadder = this.ladder.filter( function (element) {
+                        var teamNameWithoutCase = element.teamName.toLowerCase();
+                        if (teamNameWithoutCase.indexOf(val.toLowerCase()) >= 0 ) {
+                            return true;
+                        } else return false;
+                    });
+                    this.currentLadder = filteredLadder;
+                    this.updatePages();
                 }
             },
             components: {
@@ -211,6 +223,7 @@ var Ladder = (function () {
                 refreshLadder: this.refreshLadder,
                 refreshMode: this.refreshMode,
                 updateLadder: this.updateLadder,
+                updatePages: this.updatePages,
                 onValidityChanged: onValidityChanged,
                 onValid: onValid,
                 onInvalid: onInvalid,
@@ -328,28 +341,39 @@ var Ladder = (function () {
         hideModal(index);
     };
 
-    Ladder.prototype.updateLadder = function (ladderData) {
-        this.ladder = ladderData.pairs;
-        this.players = ladderData.players;
+    Ladder.prototype.updatePages = function () {
         var ladderPages = [];
-        if (ladderData.pairs) {
-            var numPages = Math.floor(ladderData.pairs.length / NUM_ENTRIES_PER_PAGE) + 1;
+        var currentPairs = this.currentLadder;
+        var pageIndex = 0;
+        if (currentPairs) {
+            var numPages = Math.floor(currentPairs.length / NUM_ENTRIES_PER_PAGE) + 1;
             for (var i = 0; i < numPages; i++) {
                 ladderPages[i] = [];
             }
-            for (i = 0; i < ladderData.pairs.length; i++) {
-                var pageIndex = Math.floor((ladderData.pairs[i].position - 1) / NUM_ENTRIES_PER_PAGE);
-                ladderPages[pageIndex].push(ladderData.pairs[i]);
+            for (i = 0; i < currentPairs.length; i++) {
+                if (ladderPages[pageIndex].length >= NUM_ENTRIES_PER_PAGE) {
+                    pageIndex++;
+                }
+                ladderPages[pageIndex].push(currentPairs[i]);
             }
         }
         this.ladderPages = ladderPages;
         this.currentPage = ladderPages[0];
     };
 
+    Ladder.prototype.updateLadder = function (ladderData) {
+        this.ladder = ladderData.pairs;
+        this.players = ladderData.players;
+        this.currentLadder = ladderData.pairs;
+        this.updatePages();
+    };
+
+
     Ladder.prototype.refreshLadder = function () {
         var api = new API();
         api.getLadder(function (ladderData) {
             this.updateLadder(ladderData);
+            this.timeStamp = ladderData.timeStamp;
             this.refreshMode();
         }.bind(this));
     };

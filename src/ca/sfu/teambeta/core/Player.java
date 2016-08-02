@@ -3,6 +3,8 @@ package ca.sfu.teambeta.core;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.UUID;
+
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
@@ -13,7 +15,7 @@ import ca.sfu.teambeta.persistence.Persistable;
  */
 @Entity(name = "Player")
 public class Player extends Persistable {
-
+    private UUID uuid = UUID.randomUUID();
     @Expose
     private String firstName;
     @Expose
@@ -57,13 +59,14 @@ public class Player extends Persistable {
 
         final Player otherPlayer = (Player) other;
         return getFirstName().equals(otherPlayer.getFirstName())
-                && getLastName().equals(otherPlayer.getLastName());
+                && getLastName().equals(otherPlayer.getLastName())
+                && uuid.equals(otherPlayer.uuid);
     }
 
     @Override
     public int hashCode() {
         return 23 * getFirstName().hashCode()
-                * getLastName().hashCode();
+                * getLastName().hashCode() + uuid.hashCode();
     }
 
     public int getExistingId() {

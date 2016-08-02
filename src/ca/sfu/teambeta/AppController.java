@@ -14,10 +14,48 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.File;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.MultipartConfigElement;
+
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.SessionResponse;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.InternalHashingException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.AccountManager;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.logic.TimeManager;
+import ca.sfu.teambeta.persistence.DBManager;
+
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.secure;
+import static spark.Spark.staticFiles;
 import static spark.Spark.*;
 
 /**
@@ -28,15 +66,13 @@ public class AppController {
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
     public static final int JAR_SERVER_PORT = 443;
+    public static final String PLAYING_STATUS = "playing";
+    public static final String NOT_PLAYING_STATUS = "not playing";
     private static final String ID = "id";
     private static final String STATUS = "newStatus";
     private static final String POSITION = "position";
-
     private static final String TIME_SLOT_1 = "08:00 pm";
     private static final String TIME_SLOT_2 = "09:30 pm";
-    public static final String PLAYING_STATUS = "playing";
-    public static final String NOT_PLAYING_STATUS = "not playing";
-
     private static final String GAMESESSION = "gameSession";
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
@@ -49,6 +85,7 @@ public class AppController {
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
+    private static final String ZERO = "zero";
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
     private static final int NOT_FOUND = 404;
@@ -59,6 +96,7 @@ public class AppController {
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
+    private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
     public AppController(DBManager dbManager, int port, String staticFilePath) {
@@ -120,6 +158,10 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -133,6 +175,7 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
+                ignored.getMessage();
             }
 
             String status = request.queryParams(STATUS);
@@ -184,6 +227,7 @@ public class AppController {
             }
 
             return getOkResponse("");
+
         });
 
         //add pair to ladder
@@ -261,6 +305,8 @@ public class AppController {
                 dbManager.saveGameSession(newGameSession);
             }
 
+            //Update timeManager which enables ladder editing
+            TimeManager.getInstance().updateTime();
             return getOkResponse("");
         }));
 
@@ -290,6 +336,8 @@ public class AppController {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.MISSING);
             } else if (penaltyType.equals(ACCIDENT)) {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.ACCIDENT);
+            } else if (penaltyType.equals(ZERO)) {
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.ZERO);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
@@ -414,6 +462,10 @@ public class AppController {
 
         //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -441,14 +493,39 @@ public class AppController {
 
             GameSession gameSession = dbManager.getGameSessionLatest();
             VrcTimeSelection timeSelector = new VrcTimeSelection();
-            timeSelector.distributePairs(gameSession.getScorecards());
+            timeSelector.distributePairs(gameSession.getScorecards(), gameSession.getTimeSlots());
+            dbManager.persistEntity(gameSession);
             return getOkResponse("");
+
         });
 
         //download ladder to a new csv file
-        post("/api/ladder/download", (request, response) -> {
+        get("/api/ladder/download", (request, response) -> {
+
+            Date date = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            String fileName = "ladder_" + dateFormat.format(date) + ".csv";
+
+            response.raw().setContentType("text/csv");
+            response.raw().setHeader("Content-Disposition", "attachment; filename=" + fileName);
             GameSession gameSession = getRequestedGameSession(dbManager, GAMESESSION_LATEST);
-            dbManager.writeToCsvFile(gameSession);
+
+            OutputStream outputStream = response.raw().getOutputStream();
+            if (!dbManager.writeToCsvFile(outputStream, gameSession)) {
+                return getErrResponse("Invalid File.");
+            }
+            return getOkResponse("");
+        });
+
+        //upload a csv file to create new ladder
+        post("/api/ladder/upload", (request, response) -> {
+            request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement("/temp"));
+            InputStream inputStream = request.raw().getPart("csv_file").getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            if (!dbManager.importLadderFromCsv(inputStreamReader)) {
+                return getErrResponse("");
+            }
+            response.redirect("/");
             return getOkResponse("");
         });
 

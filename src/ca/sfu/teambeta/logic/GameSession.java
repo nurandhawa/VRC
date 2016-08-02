@@ -45,6 +45,9 @@ public class GameSession extends Persistable {
     @ElementCollection
     private Map<Pair, Penalty> penalties = new HashMap<>();
 
+    @ElementCollection
+    private Map<Pair, Time> timeSlots = new HashMap<>();
+
     private long timestamp;
 
     // Default constructor for Hibernate
@@ -56,7 +59,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         setTimestamp();
     }
 
@@ -65,7 +67,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         this.timestamp = timestamp;
     }
 
@@ -73,11 +74,20 @@ public class GameSession extends Persistable {
         this.timestamp = Instant.now().getEpochSecond();
     }
 
+    // Use me ONLY for importing a CSV file!!
+    public void replaceLadder(Ladder ladder) {
+        this.ladder = ladder;
+        initializeActivePlayers();
+        updatePairsLastWeekPositions();
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
+        setTimestamp();
+    }
+
     public List<Scorecard> createGroups(ScorecardGenerator generator, TimeSelection timeSelector) {
         //Generate groups
         scorecards = generator.generateScorecards(getActivePairs());
         //Set dominant time slots for each group
-        timeSelector.distributePairs(scorecards);
+        timeSelector.distributePairs(scorecards, timeSlots);
 
         return Collections.unmodifiableList(scorecards);
     }
@@ -114,6 +124,10 @@ public class GameSession extends Persistable {
         return Collections.unmodifiableList(scorecards);
     }
 
+    public void setScorecards(List<Scorecard> scorecards) {
+        this.scorecards = scorecards;
+    }
+
     public Ladder getReorderedLadder() {
         return reorderedLadder;
     }
@@ -122,6 +136,7 @@ public class GameSession extends Persistable {
         try {
             if (getAlreadyActivePlayer(pair) == null) {
                 activePairs.add(pair);
+                timeSlots.put(pair, Time.NO_SLOT);
                 return true;
             } else {
                 return false;
@@ -176,7 +191,6 @@ public class GameSession extends Persistable {
         } else {
             reorderedLadder.setNewPairs(reorderedList);
         }
-        timeSelector.clearTimeSlots(reorderedLadder);
         for (Pair p : getAllPairs()) {
             p.setPairScore(0);
         }
@@ -206,6 +220,13 @@ public class GameSession extends Persistable {
             ladder.insertAtEnd(newPair);
         }
         return pairExists;
+    }
+
+    public boolean removePairFromLadder(Pair pair) {
+        activePairs.remove(pair);
+        penalties.remove(pair);
+        timeSlots.remove(pair);
+        return ladder.removePair(pair);
     }
 
     @Override
@@ -239,16 +260,10 @@ public class GameSession extends Persistable {
     }
 
     public void setTimeSlot(Pair pair, Time time) {
-        if (ladder.contains(pair)) {
-            int index = ladder.getPairs().indexOf(pair);
-            Pair pairFromLadder = ladder.getPairAtIndex(index);
-            pairFromLadder.setTimeSlot(time);
-            ladder.removePair(pairFromLadder);
-            ladder.insertAtIndex(index, pairFromLadder);
-        }
+        timeSlots.put(pair, time);
     }
 
-    public void setScorecards(List<Scorecard> scorecards) {
-        this.scorecards = scorecards;
+    public Map<Pair, Time> getTimeSlots() {
+        return new HashMap<>(timeSlots);
     }
 }

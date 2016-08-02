@@ -77,7 +77,7 @@
                                     </div>
                                 </div>
                                 <div class="alert alert-warning" style="margin-top: 10px" v-if="!match.resultsValid">
-                                    Each column is one round. Make sure only <b>two teams play in a round</b>, and that <b>each pair plays exactly twice</b> over all rounds.
+                                    Please enter post match rankings for all 3 teams.
                                 </div>
                                 <div class="alert alert-success" style="margin-top: 10px" v-if="match.resultsValid">
                                     You are good to go!
@@ -171,7 +171,7 @@
     <div class="header-right header-item">
         <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
         <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in">
-            <reorder-ladder-button></reorder-ladder-button>
+            <reorder-ladder-button id="reorderLadderButton"></reorder-ladder-button>
         </div>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>

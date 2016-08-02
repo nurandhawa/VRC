@@ -18,6 +18,9 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.*;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -240,24 +243,21 @@ public class DBManager {
     }
 
     public synchronized boolean removePair(int pairId) {
-        Transaction tx = null;
+        GameSession gameSession = getGameSessionLatest();
+        Transaction tx = session.beginTransaction();
         Pair pair = null;
-        Ladder ladder = null;
-        boolean removed = false;
         try {
-            tx = session.beginTransaction();
-            pair = session.get(Pair.class, pairId);
-            DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
-                    .setProjection(Projections.max("id"));
-            ladder = (Ladder) session.createCriteria(Ladder.class)
-                    .add(Property.forName("id").eq(maxId))
-                    .uniqueResult();
-            removed = ladder.removePair(pair);
-            pair.setTimeSlot(Time.NO_SLOT);
+            pair = session.load(Pair.class, pairId);
             tx.commit();
         } catch (HibernateException e) {
             tx.rollback();
+            throw e;
         }
+
+        boolean removed = gameSession.removePairFromLadder(pair);
+
+        persistEntity(gameSession);
+
         return removed;
     }
 
@@ -267,10 +267,10 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
-
+        int previousPosition = pair.getLastWeekPosition();
         removePair(pairId);
-
         gameSession.addNewPairAtIndex(pair, newPosition);
+        pair.setLastWeekPosition(previousPosition);
         persistEntity(gameSession);
     }
 
@@ -288,8 +288,8 @@ public class DBManager {
 
     public synchronized boolean setPairActive(GameSession gameSession, int pairId) {
         Pair pair = getPairFromID(pairId);
-        pair.setTimeSlot(Time.NO_SLOT);
         boolean activated = gameSession.setPairActive(pair);
+        gameSession.setTimeSlot(pair, Time.NO_SLOT);
         gameSession.createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         persistEntity(gameSession);
         return activated;
@@ -318,7 +318,7 @@ public class DBManager {
     public synchronized String getJSONLadder(GameSession gameSession) {
         List<Pair> ladder = gameSession.getAllPairs();
         JSONSerializer serializer = new LadderJSONSerializer(ladder,
-                gameSession.getActivePairSet());
+                gameSession.getActivePairSet(), gameSession.getTimeSlots());
         return serializer.toJson();
     }
 
@@ -466,11 +466,6 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public enum GameSessionVersion {
-        CURRENT,
-        PREVIOUS
-    }
-
     public synchronized void setTimeSlot(int pairId, Time time) {
         GameSession gameSession = getGameSessionLatest();
         Pair pair = getPairFromID(pairId);
@@ -478,15 +473,35 @@ public class DBManager {
         persistEntity(gameSession);
     }
 
-    public Time getTimeSlot(int pairId) {
-        GameSession gameSession = getGameSessionLatest();
-        Pair pair = getPairFromID(pairId);
-        Time time = pair.getTimeSlot();
-        persistEntity(gameSession);
-        return time;
+    public boolean writeToCsvFile(OutputStream outputStream, GameSession gameSession) {
+        try {
+            CSVReader.exportCsv(outputStream, gameSession.getAllPairs());
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
     }
 
-    public void writeToCsvFile(GameSession gameSession) {
-        CSVReader.exportCsv(gameSession.getAllPairs());
+    public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
+        List<Integer> pairIds;
+        try {
+            pairIds = CSVReader.getPairIdsFromCsvStream(inputStreamReader);
+        } catch (Exception e) {
+            return false;
+        }
+        Ladder ladder = new Ladder();
+        for (int id : pairIds) {
+            Pair pair = getPairFromID(id);
+            ladder.insertAtEnd(pair);
+        }
+        GameSession gameSession = getGameSessionLatest();
+        gameSession.replaceLadder(ladder);
+        persistEntity(gameSession);
+        return true;
+    }
+
+    public enum GameSessionVersion {
+        CURRENT,
+        PREVIOUS
     }
 }

@@ -12,7 +12,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.Persistable;
 
@@ -28,8 +27,6 @@ public class Scorecard extends Persistable {
     private List<Pair> pairs;
     @Expose
     private boolean isDone;
-
-    @Transient
     @Expose
     private Time timeSlot;
 
@@ -94,7 +91,8 @@ public class Scorecard extends Persistable {
         }
 
         final Scorecard otherScorecard = (Scorecard) other;
-        return pairs.equals(otherScorecard.pairs) && pairRankings.equals(otherScorecard.pairRankings);
+        return pairs.equals(otherScorecard.pairs)
+                && pairRankings.equals(otherScorecard.pairRankings);
     }
 
     @Override

@@ -30,12 +30,10 @@
     margin-right: 20px;
     display: flex;
     justify-content: flex-end;
-    align-items: flex-end;
 }
 
 .header-button {
-    flex: 1;
-    max-width: 55%;
+    max-width: 100%;
     margin: 5px;
 }
 
