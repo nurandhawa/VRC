@@ -425,7 +425,38 @@ public class AppController {
                 message = e.getMessage();
             }
 
-            response.status(400);
+            response.status(BAD_REQUEST);
+            return getErrResponse(message);
+        });
+
+        //registers a new user alongside a player
+        post("/api/login/newFull", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String message = "";
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+            int playerID = -1;
+            try{
+                playerID = Integer.parseInt(extractedData.getPlayerID());
+            } catch (Exception e) {
+                message = e.getMessage();
+            }
+            String securityQuestion = extractedData.getSecurityQuestion();
+            String securityAnswer = extractedData.getSecurityAnswer();
+            try {
+                accountManager.registerUserWithPlayer(email, pwd, playerID, securityQuestion, securityAnswer);
+                response.status(OK);
+                return getOkResponse("Account registered");
+            } catch (GeneralUserAccountException e) {
+                message = e.getMessage();
+            } catch (AccountRegistrationException e) {
+                message = e.getMessage();
+            } catch (InvalidInputException e) {
+                message = e.getMessage();
+            }
+
+            response.status(BAD_REQUEST);
             return getErrResponse(message);
         });
 
