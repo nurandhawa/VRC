@@ -3,6 +3,7 @@ package ca.sfu.teambeta.logic;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -220,6 +221,10 @@ public class GameSession extends Persistable {
             ladder.insertAtEnd(newPair);
         }
         return pairExists;
+    }
+
+    public Date getLadderModificationDate() {
+        return ladder.getModifiedDate();
     }
 
     public boolean removePairFromLadder(Pair pair) {

@@ -1,8 +1,12 @@
 package ca.sfu.teambeta.persistence;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -11,22 +15,16 @@ import java.util.Set;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.logic.GameSession;
 
 /**
- * Created by Gordon Shieh on 30/06/16.
+ * The Type of the Serializer is of GameSession because it requires other info from it in order to
+ * properly serialize the Ladder to JSON
  */
-public class LadderJSONSerializer implements JSONSerializer {
-    private List<Pair> pairList;
-    private Set<Pair> activePairs;
-    private Map<Pair, Time> timeSlots;
-    
-    LadderJSONSerializer(List<Pair> pairList, Set<Pair> activePairs, Map<Pair, Time> timeSlots) {
-        this.pairList = pairList;
-        this.activePairs = activePairs;
-        this.timeSlots = timeSlots;
-    }
+public class LadderJSONSerializer implements JsonSerializer<GameSession> {
 
-    private JsonObject getPairJsonObject(Pair pair, int position, boolean isPlaying) {
+    private JsonObject getPairJsonObject(Pair pair, Map<Pair, Time> timeSlots,
+                                         int position, boolean isPlaying) {
         JsonObject pairJson = new JsonObject();
         JsonArray playersArray = new JsonArray();
         for (Player player : pair.getPlayers()) {
@@ -50,29 +48,23 @@ public class LadderJSONSerializer implements JSONSerializer {
     }
 
     @Override
-    public String toJson() {
+    public JsonElement serialize(GameSession src, Type typeOfSrc, JsonSerializationContext context) {
+        List<Pair> pairList = src.getAllPairs();
+        Set<Pair> activePairs = src.getActivePairSet();
+        Map<Pair, Time> timeSlots = src.getTimeSlots();
+        Date ladderModificationDate = src.getLadderModificationDate();
+
         JsonObject ladderObject = new JsonObject();
-        ladderObject.addProperty("timeStamp", getMostRecentTimeStamp());
+        ladderObject.addProperty("timeStamp", ladderModificationDate.toString());
         JsonArray pairsArray = new JsonArray();
         int position = 1;
         for (Pair pair : pairList) {
-            JsonObject pairJson = getPairJsonObject(pair, position,
+            JsonObject pairJson = getPairJsonObject(pair, timeSlots, position,
                     activePairs.contains(pair));
             position++;
             pairsArray.add(pairJson);
         }
         ladderObject.add("pairs", pairsArray);
-        return ladderObject.toString();
-    }
-
-    private String getMostRecentTimeStamp() {
-        Date mostRecentDate = new Date(0);
-        for (Pair pair: pairList) {
-            Date date = pair.getDateCreated();
-            if (date.after(mostRecentDate)) {
-                mostRecentDate = date;
-            }
-        }
-        return mostRecentDate.toString();
+        return ladderObject;
     }
 }

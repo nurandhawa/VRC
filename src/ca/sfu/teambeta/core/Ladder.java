@@ -28,7 +28,7 @@ public class Ladder extends Persistable {
 
     @Column(name = "date_created")
     @Type(type = "timestamp")
-    private Date dateCreated = new Date();
+    private Date modifiedDate = new Date();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @OrderColumn
@@ -54,6 +54,7 @@ public class Ladder extends Persistable {
         List<Pair> newList = new LinkedList<>(pairs);
         boolean success = newList.remove(pair);
         pairs = newList;
+        modifiedDate = new Date();
         return success;
     }
 
@@ -76,6 +77,7 @@ public class Ladder extends Persistable {
                 return false;
             }
         }
+        modifiedDate = new Date();
         return true;
     }
 
@@ -90,6 +92,7 @@ public class Ladder extends Persistable {
 
         newList.add(pair);
         pairs = newList;
+        modifiedDate = new Date();
     }
 
     public List<Pair> getPairs() {
@@ -107,6 +110,11 @@ public class Ladder extends Persistable {
     // DO NOT USE ME!! Unless you are specifically dealing with manual override
     public void setNewPairs(List<Pair> newPairList) {
         pairs = newPairList;
+        modifiedDate = new Date();
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
     }
 
     @Override
