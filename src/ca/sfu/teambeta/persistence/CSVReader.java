@@ -101,7 +101,7 @@ public class CSVReader {
         CSVWriter writer = new CSVWriter(streamWriter);
 
         List<String[]> entries = new ArrayList<>();
-        final int NUM_OF_COLUMNS_IN_CSV = 7;
+        final int NUM_OF_COLUMNS_IN_CSV = 8;
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
             Player p1 = pair.getPlayers().get(0);
@@ -114,6 +114,7 @@ public class CSVReader {
             entry[4] = p2.getFirstName();
             entry[5] = String.valueOf(p2.getID());
             entry[6] = String.valueOf(i + 1);
+            entry[7] = String.valueOf(pair.getID());
             entries.add(entry);
         }
         writer.writeAll(entries, false);
@@ -138,7 +139,7 @@ public class CSVReader {
             while (iterator.hasNext()) {
                 pairInfo = iterator.next();
 
-                int pairId = Integer.parseInt(pairInfo[6]);
+                int pairId = Integer.parseInt(pairInfo[7]);
                 pairIds.add(pairId);
             }
             reader.close();
