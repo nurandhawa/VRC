@@ -41,6 +41,7 @@ import static spark.Spark.stop;
 public class APITest {
     public static final String EMAIL = "testuser@vrc.com";
     public static final String PASSWORD = "demoPass";
+    public static final String REMEMBER_ME = "false";
     public static final String URI_BASENAME = "https://localhost:8000/";
     private int ladderLength;
 
@@ -93,10 +94,11 @@ public class APITest {
         stop();
     }
 
-    protected HttpResponse<JsonNode> login(String email, String password) throws UnirestException {
+    protected HttpResponse<JsonNode> login(String email, String password, String rememberMe) throws UnirestException {
         Map<String, String> loginParams = new HashMap<>();
         loginParams.put("email", email);
         loginParams.put("password", password);
+        loginParams.put("rememberMe", rememberMe);
 
         Gson gson = new Gson();
 
