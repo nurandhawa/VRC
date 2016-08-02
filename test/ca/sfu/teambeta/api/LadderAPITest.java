@@ -73,7 +73,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testDeletePair() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         Unirest.delete(URI_BASENAME + "api/ladder/" + 1)
                 .asJson();
 
@@ -89,7 +89,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testDeletePairThenActive() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         Unirest.delete(URI_BASENAME + "api/ladder/" + 1)
                 .asJson();
 
@@ -106,7 +106,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testSetSamePlayerActive() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         Unirest.patch(URI_BASENAME + "api/ladder/" + 2)
                 .queryString("newStatus", "playing")
                 .asJson();
@@ -120,7 +120,7 @@ public class LadderAPITest extends APITest {
 
     @Test
     public void testDeletePairThenSamePlayerActive() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
         Unirest.delete(URI_BASENAME + "api/ladder/" + 2)
                 .asJson();
 
@@ -134,7 +134,7 @@ public class LadderAPITest extends APITest {
     @Test
     @Ignore
     public void testDeleteActivePairThenSamePlayerActive() throws UnirestException {
-        login(EMAIL, PASSWORD);
+        login(EMAIL, PASSWORD, REMEMBER_ME);
 
         Unirest.patch(URI_BASENAME + "api/ladder/" + 2)
                 .queryString("newStatus", "playing")
