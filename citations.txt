@@ -5,3 +5,5 @@ Found way to fetch object with max ID from https://stackoverflow.com/questions/2
 Used a wrapper library for password hashing from: https://github.com/ghostfreak3000/password-hash
 Found a regex to check for valid email addresses from: http://www.mkyong.com/regular-expressions/how-to-validate-email-address-with-regular-expression/
 Found method to generate random cryptographically strong session id: http://stackoverflow.com/questions/41107/how-to-generate-a-random-alpha-numeric-string
+Clickable SVG referenced from https://stackoverflow.com/questions/11374059/make-an-html-svg-object-also-a-clickable-link
+
