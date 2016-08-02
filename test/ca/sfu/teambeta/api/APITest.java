@@ -4,6 +4,7 @@ package ca.sfu.teambeta.api;
 import ca.sfu.teambeta.AppController;
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
@@ -68,7 +69,9 @@ public class APITest {
                 AccountManager am = new AccountManager(accountDbHandler);
                 am.registerUser(EMAIL, PASSWORD);
 
-                new AppController(dbManager, AppController.DEVELOP_SERVER_PORT,
+                CredentialsManager cm = new CredentialsManager(accountDbHandler);
+
+                new AppController(dbManager, cm, AppController.DEVELOP_SERVER_PORT,
                                 AppController.DEVELOP_STATIC_HTML_PATH);
             } catch (Exception ex) {
                 ex.printStackTrace();

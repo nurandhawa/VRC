@@ -1,6 +1,6 @@
 package ca.sfu.teambeta.accounts;
 
-import ca.sfu.teambeta.core.SessionResponse;
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
 import ca.sfu.teambeta.logic.InputValidator;
@@ -56,6 +56,7 @@ public class UserSessionManager {
         }
 
     }
+
 
     public static boolean authenticateSession(String sessionId) throws NoSuchSessionException {
         // Validate the input
@@ -151,6 +152,8 @@ public class UserSessionManager {
         }
     }
 
+
+    // MARK: Misc Methods
     public static int numUsersLoggedIn() {
         return sessions.size();
     }

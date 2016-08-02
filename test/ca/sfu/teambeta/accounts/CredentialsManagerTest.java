@@ -1,9 +1,9 @@
 package ca.sfu.teambeta.accounts;
 
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;

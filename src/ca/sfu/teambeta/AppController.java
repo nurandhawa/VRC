@@ -2,6 +2,10 @@ package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.CredentialsManager;
+import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
+import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.accounts.UserSessionManager;
 import ca.sfu.teambeta.core.*;
 import ca.sfu.teambeta.core.exceptions.*;
@@ -46,15 +50,19 @@ public class AppController {
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
 
-    private static final String EMAIL = "email";
-    private static final String PASSWORD = "password";
-    private static final String REMEMBER_ME = "rememberMe";
-
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
     private static final String ZERO = "zero";
+
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String REMEMBER_ME = "rememberMe";
+    private static final String ANSWER = "answer";
+    private static final String VOUCHER_CODE = "voucherCode";
+    private static final String SECURITY_QUESTION = "securityQuestion";
+
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
     private static final int NOT_FOUND = 404;
@@ -68,7 +76,7 @@ public class AppController {
     private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
-    public AppController(DBManager dbManager, int port, String staticFilePath) {
+    public AppController(DBManager dbManager, CredentialsManager credentialsManager, int port, String staticFilePath) {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         port(port);
@@ -406,16 +414,82 @@ public class AppController {
             }
         });
 
+        //get security question for password reset
+        get("/api/login/reset", (request, response) -> {
+            String email = request.queryParams(EMAIL);
+
+            String securityQuestion;
+            try {
+                securityQuestion = credentialsManager.getUserSecurityQuestion(email);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            }
+
+            PasswordResetResponse passwordResetResponse = new PasswordResetResponse(securityQuestion);
+
+            response.status(OK);
+            return gson.toJson(passwordResetResponse);
+        });
+
+        //verify security question for password reset
+        post("/api/login/reset", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String answer = jsonObject.get(ANSWER).getAsString();
+
+            String voucherCode;
+            try {
+                voucherCode = credentialsManager.validateSecurityQuestionAnswer(email, answer);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            } catch (InvalidCredentialsException e) {
+                response.status(NOT_AUTHENTICATED);
+                return getErrResponse("Incorrect answer.");
+            }
+
+            SecurityQuestionResponse securityQuestionResponse = new SecurityQuestionResponse(voucherCode);
+
+            response.status(OK);
+            return gson.toJson(securityQuestionResponse);
+        });
+
+        //change password
+        post("/api/login/change", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String voucherCode = jsonObject.get(VOUCHER_CODE).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
+
+            try {
+                InputValidator.validatePasswordFormat(password);
+                credentialsManager.changePassword(email, password, voucherCode);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            } catch (InvalidInputException e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(e.getMessage());
+            }
+
+            response.status(OK);
+            return getOkResponse("Password reset.");
+        });
+
         //registers a new user
         post("/api/login/new", (request, response) -> {
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String email = extractedData.getEmail();
-            String pwd = extractedData.getPassword();
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
 
             String message = "";
             try {
-                accountManager.registerUser(email, pwd);
+                accountManager.registerUser(email, password);
+
                 return getOkResponse("Account registered");
             } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
@@ -427,6 +501,38 @@ public class AppController {
 
             response.status(400);
             return getErrResponse(message);
+        });
+
+        //set security question
+        patch("/api/login/new", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String securityQuestion = jsonObject.get(SECURITY_QUESTION).getAsString();
+            String answer = jsonObject.get(ANSWER).getAsString();
+
+            // Authenticate the token, since our normal authentication doesn't run on login endpoints
+            String sessionToken = request.cookie(SESSION_TOKEN_KEY);
+            try {
+                boolean authenticated =
+                        UserSessionManager.authenticateSession(sessionToken);
+                if (!authenticated) {
+                    response.status(NOT_AUTHENTICATED);
+                    return getErrResponse("You need to be logged in to change your security question.");
+                }
+
+                credentialsManager.setSecurityQuestion(email, securityQuestion, answer, sessionToken);
+
+            } catch (NoSuchSessionException exception) {
+                response.status(NOT_AUTHENTICATED);
+                return getErrResponse("You need to be logged in to change your security question.");
+            } catch (GeneralUserAccountException e) {
+                response.status(400);
+                return getErrResponse(e.getMessage());
+            }
+
+            response.status(OK);
+            return getOkResponse("Security question set.");
         });
 
         //Set time to a pair and dynamically assign times to scorecards.
