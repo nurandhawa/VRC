@@ -5,8 +5,8 @@
     $.material.init();
 
     var setResponseWithSessionId = function(response) {
-        Cookies.set('sessionToken', response.sessionToken);
-        window.location.href = "/index.html";
+        Cookies.set('sessionToken', "");
+        window.location.href = "/login.html";
     };
 
     var onLogout = function() {
@@ -16,4 +16,3 @@
 
     document.getElementById("logout_nav").onclick = onLogout;
 })();
-
