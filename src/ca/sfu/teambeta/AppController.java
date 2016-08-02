@@ -50,10 +50,6 @@ public class AppController {
     private static final String GAMESESSION_PREVIOUS = "previous";
     private static final String GAMESESSION_LATEST = "latest";
 
-    private static final String EMAIL = "email";
-    private static final String PASSWORD = "password";
-    private static final String REMEMBER_ME = "rememberMe";
-
     private static final String PENALTY = "penalty";
     private static final String LATE = "late";
     private static final String MISS = "miss";
@@ -61,8 +57,9 @@ public class AppController {
     private static final String ZERO = "zero";
 
     private static final String EMAIL = "email";
-    private static final String ANSWER = "answer";
     private static final String PASSWORD = "password";
+    private static final String REMEMBER_ME = "rememberMe";
+    private static final String ANSWER = "answer";
     private static final String VOUCHER_CODE = "voucherCode";
     private static final String SECURITY_QUESTION = "securityQuestion";
 
