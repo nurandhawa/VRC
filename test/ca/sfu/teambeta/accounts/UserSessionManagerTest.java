@@ -42,17 +42,17 @@ public class UserSessionManagerTest {
 
     @Test
     public void authenticateSession() throws NoSuchSessionException {
-        SessionResponse session_1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
-        SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
+        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
 
-        String token_1 = session_1.getSessionToken();
-        String token_2 = session_2.getSessionToken();
+        String token1 = session1.getSessionToken();
+        String token2 = session2.getSessionToken();
 
-        boolean authenticated_1 = UserSessionManager.authenticateSession(token_1);
-        boolean authenticated_2 = UserSessionManager.authenticateSession(token_2);
+        boolean authenticated1 = UserSessionManager.authenticateSession(token1);
+        boolean authenticated2 = UserSessionManager.authenticateSession(token2);
 
-        Assert.assertTrue(authenticated_1);
-        Assert.assertTrue(authenticated_2);
+        Assert.assertTrue(authenticated1);
+        Assert.assertTrue(authenticated2);
     }
 
     @Test(expected = NoSuchSessionException.class)
@@ -62,29 +62,29 @@ public class UserSessionManagerTest {
 
     @Test
     public void isAdminSession() throws NoSuchSessionException {
-        SessionResponse session_1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
-        SessionResponse session_2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
+        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
 
-        String token_1 = session_1.getSessionToken();
-        String token_2 = session_2.getSessionToken();
+        String token1 = session1.getSessionToken();
+        String token2 = session2.getSessionToken();
 
-        boolean admin_1 = UserSessionManager.isAdministratorSession(token_1);
-        boolean admin_2 = UserSessionManager.isAdministratorSession(token_2);
+        boolean admin1 = UserSessionManager.isAdministratorSession(token1);
+        boolean admin2 = UserSessionManager.isAdministratorSession(token2);
 
 
-        Assert.assertFalse(admin_1);
-        Assert.assertTrue(admin_2);
+        Assert.assertFalse(admin1);
+        Assert.assertTrue(admin2);
     }
 
     @Test
     public void checkEmail() throws NoSuchSessionException {
-        String expected_email = "maria@gmail.com";
-        SessionResponse session = UserSessionManager.createNewSession(expected_email, UserRole.REGULAR);
+        String expectedEmail = "maria@gmail.com";
+        SessionResponse session = UserSessionManager.createNewSession(expectedEmail, UserRole.REGULAR);
         String token = session.getSessionToken();
 
-        String actual_email = UserSessionManager.getEmailFromSessionId(token);
+        String actualEmail = UserSessionManager.getEmailFromSessionId(token);
 
-        Assert.assertEquals(expected_email, actual_email);
+        Assert.assertEquals(expectedEmail, actualEmail);
     }
 
     @Test

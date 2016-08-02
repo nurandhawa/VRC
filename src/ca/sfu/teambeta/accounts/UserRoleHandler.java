@@ -5,9 +5,8 @@ import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 
 /**
  * This class handles:
- * - User roles
- * - Addition of an admin
- * - Removal of an admin
+ * - Setting a new role for a user
+ * - Getting a user's role
  *
  */
 

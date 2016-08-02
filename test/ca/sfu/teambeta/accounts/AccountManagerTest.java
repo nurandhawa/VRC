@@ -14,10 +14,13 @@ import org.junit.Test;
  * Created by constantin on 28/07/16.
  */
 public class AccountManagerTest {
-    private AccountManager manager;
+    private AccountManager accountManager;
+    private AccountDatabaseHandler accountDbHandler;
     private DBManager dbManager;
     private Player playerFromDB;
 
+
+    // MARK: Setup tests
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
@@ -29,16 +32,22 @@ public class AccountManagerTest {
         GameSession gameSession = new GameSession(newLadder);
         dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
-        AccountDatabaseHandler handler = new AccountDatabaseHandler(dbManager);
-        manager = new AccountManager(handler);
+
+        accountDbHandler = new AccountDatabaseHandler(dbManager);
+        accountManager = new AccountManager(accountDbHandler);
     }
 
+
+    // MARK: Tests
     @Test
     public void registerNewAdministrator() throws InvalidInputException, AccountRegistrationException,
             GeneralUserAccountException, InvalidCredentialsException, NoSuchUserException {
 
-        manager.registerNewAdministratorAccount("maria@gmail.com", "secret");
-        SessionResponse response = manager.login("maria@gmail.com", "secret");
+        String email = "nick@gmail.com";
+        String password = "password";
+
+        accountManager.registerNewAdministratorAccount(email, password);
+        SessionResponse response = accountManager.login(email, password);
 
         UserRole actualRole = response.getUserRole();
         UserRole expectedRole = UserRole.ADMINISTRATOR;
@@ -50,14 +59,48 @@ public class AccountManagerTest {
     public void registerAnonUser() throws InvalidInputException, AccountRegistrationException,
             GeneralUserAccountException, InvalidCredentialsException {
 
-        String anonCode_1 = manager.registerNewAnonymousAccount();
-        String anonCode_2 = manager.registerNewAnonymousAccount();
+        String anonCode = accountManager.registerNewAnonymousAccount();
 
-        SessionResponse session_1 = manager.loginViaAnonymousCode(anonCode_1);
-        SessionResponse session_2 = manager.loginViaAnonymousCode(anonCode_2);
+        SessionResponse session = accountManager.loginViaAnonymousCode(anonCode);
 
-        Assert.assertEquals(UserRole.ANONYMOUS, session_1.getUserRole());
-        Assert.assertEquals(UserRole.ANONYMOUS, session_2.getUserRole());
+        Assert.assertEquals(UserRole.ANONYMOUS, session.getUserRole());
+    }
+
+    @Test
+    public void registerUserWithPlayer() throws GeneralUserAccountException, AccountRegistrationException,
+            NoSuchUserException, InvalidInputException, InvalidCredentialsException {
+
+        // Fill all information needed to register a User (with a Player)
+        String email = "nick@gmail.com";
+        String password = "password";
+
+        int playerId = playerFromDB.getID();
+
+        String secQuestion = "What is the name of my dog?";
+        String secAnswer = "Max";
+
+
+        // Register the player
+        accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
+
+        // Get the registered User
+        User retrievedUser = accountDbHandler.getUser(email);
+
+        Assert.assertEquals(retrievedUser.getEmail(), email);
+
+    }
+
+    @Test
+    public void login() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException, InvalidCredentialsException, NoSuchUserException, NoSuchSessionException {
+        String email = "maria@gmail.com";
+        String password = "secret";
+
+        accountManager.registerUser(email, password);
+        SessionResponse response = accountManager.login(email, password);
+
+        boolean sessionExists = UserSessionManager.authenticateSession(response.getSessionToken());
+
+        Assert.assertTrue(sessionExists);
     }
 
     @Test(expected = NoSuchSessionException.class)
@@ -67,39 +110,15 @@ public class AccountManagerTest {
         String email = "maria@gmail.com";
         String password = "secret";
 
-        manager.registerUser(email, password);
-        SessionResponse response = manager.login(email, password);
+        accountManager.registerUser(email, password);
+        SessionResponse response = accountManager.login(email, password);
 
         String sessionId = response.getSessionToken();
-        manager.logout(response.getSessionToken());
+        accountManager.logout(response.getSessionToken());
 
-        //Trial to access particular sessionId which doesn't exist
-        //throws No Such Session Exception
+        // Trial to access particular sessionId which doesn't exist
+        //  throws No Such Session Exception
         UserSessionManager.authenticateSession(sessionId);
-    }
 
-    @Test
-    public void checkPassword() throws GeneralUserAccountException, AccountRegistrationException,
-            NoSuchUserException, InvalidInputException {
-
-        String email = "nick@gmail.com";
-        String password = "111111";
-        int playerId = playerFromDB.getID();
-        String secQuestion = "What is the name of my dog?";
-        String secAnswer = "Max";
-
-        manager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
-
-        User user = new User(email, password);
-        String passwordHash = user.getPasswordHash();
-
-        user = new User(email, "another password");
-        String anotherPassHash = user.getPasswordHash();
-
-        boolean correctPass = CredentialsManager.checkHash(password, passwordHash, "Error message");
-        boolean wrongPass = CredentialsManager.checkHash(password, anotherPassHash, "Error message");
-
-        Assert.assertTrue(correctPass);
-        Assert.assertFalse(wrongPass);
     }
 }

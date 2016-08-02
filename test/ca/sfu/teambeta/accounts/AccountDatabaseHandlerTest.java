@@ -12,37 +12,53 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Created by constantin on 28/07/16.
+ * Tests for the intermediary class AccountDatabaseHandler
  */
+
 public class AccountDatabaseHandlerTest {
     private DBManager dbManager;
-    private AccountDatabaseHandler handler;
+    private AccountDatabaseHandler accountDbHandler;
 
+
+    // MARK: Setup tests
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
+
         Ladder newLadder = CSVReader.setupLadder();
         GameSession gameSession = new GameSession(newLadder);
+
         dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
-        handler = new AccountDatabaseHandler(dbManager);
+
+        accountDbHandler = new AccountDatabaseHandler(dbManager);
     }
 
-    @Test
-    public void addNewUser() throws Exception {
-        String email = "maria@gmail.com";
-        User expectedUser = new User(email, "password");
-        handler.saveNewUser(expectedUser);
-        User actualUser = handler.getUser(email);
 
-        Assert.assertEquals(expectedUser, actualUser);
+    // MARK: Tests
+    @Test
+    public void addAndRetrieveUser() throws Exception {
+        // We would have to add a new user before we could
+        //  retrieve them, thus this test inadvertently
+        //  tests both methods.
+
+        String email = "maria@gmail.com";
+        String password = "password";
+
+        User savedUser = new User(email, password);
+
+        accountDbHandler.saveNewUser(savedUser);
+
+        User retrievedUser = accountDbHandler.getUser(email);
+
+        Assert.assertEquals(savedUser, retrievedUser);
     }
 
     @Test
     public void getPlayer() throws Exception {
         Player expectedPlayer = new Player("Jordan", "Richard");
         dbManager.addNewPlayer(expectedPlayer);
-        Player actualPlayer = handler.getPlayer(expectedPlayer.getID());
+        Player actualPlayer = accountDbHandler.getPlayer(expectedPlayer.getID());
 
         Assert.assertEquals(expectedPlayer, actualPlayer);
     }
@@ -51,14 +67,15 @@ public class AccountDatabaseHandlerTest {
     public void updateUser() throws Exception {
         String email = "maria@gmail.com";
         String password = "password";
+
         User user = new User(email, password);
-        handler.saveNewUser(user);
+        accountDbHandler.saveNewUser(user);
 
-        String expectedPassword = "password changed";
+        String expectedPassword = "newPassword";
         user.setPasswordHash(expectedPassword);
-        handler.updateExistingUser(user);
+        accountDbHandler.updateExistingUser(user);
 
-        user = handler.getUser(email);
+        user = accountDbHandler.getUser(email);
         String actualPassword = user.getPasswordHash();
         Assert.assertEquals(expectedPassword, actualPassword);
     }

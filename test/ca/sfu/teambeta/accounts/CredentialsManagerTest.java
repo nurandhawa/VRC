@@ -3,7 +3,7 @@ package ca.sfu.teambeta.accounts;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.User;
+import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.exceptions.*;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
@@ -17,7 +17,8 @@ import org.junit.Test;
  * Created by constantin on 28/07/16.
  */
 public class CredentialsManagerTest {
-    private CredentialsManager credManager;
+    private CredentialsManager credentialsManager;
+    private AccountManager accountManager;
     private String email;
     private String password;
     private String secQuestion;
@@ -25,15 +26,20 @@ public class CredentialsManagerTest {
 
     @Before
     public void setUp() throws Exception {
+        // Setup the database
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         Ladder newLadder = CSVReader.setupLadder();
         GameSession gameSession = new GameSession(newLadder);
+
         DBManager dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
-        AccountDatabaseHandler handler = new AccountDatabaseHandler(dbManager);
-        AccountManager manager = new AccountManager(handler);
-        credManager = new CredentialsManager(handler);
 
+        AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
+        accountManager = new AccountManager(accountDbHandler);
+
+        credentialsManager = new CredentialsManager(accountDbHandler);
+
+        // Setup the test fields
         email = "nick@gmail.com";
         password = "111111";
         secQuestion = "What is the name of my dog?";
@@ -43,37 +49,34 @@ public class CredentialsManagerTest {
         Player playerFromDB = pair.getPlayers().get(0);
         int playerId = playerFromDB.getID();
 
-        manager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
+        accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
     }
 
     @Test
     public void checkQuestion() throws GeneralUserAccountException,
             AccountRegistrationException, NoSuchUserException, InvalidInputException {
 
-        String actualQuestion = credManager.getUserSecurityQuestion(email);
+        String actualQuestion = credentialsManager.getUserSecurityQuestion(email);
         Assert.assertEquals(secQuestion, actualQuestion);
     }
 
     @Test
     public void changePassword() throws GeneralUserAccountException,
-            AccountRegistrationException, NoSuchUserException, InvalidInputException, InvalidCredentialsException {
+            AccountRegistrationException, NoSuchUserException, InvalidInputException, InvalidCredentialsException, NoSuchSessionException {
 
+        // Obtain a voucher and change the password
         String newPassword = "chicken";
-        String voucherCode = credManager.validateSecurityQuestionAnswer(email, secAnswer);
-        credManager.changePassword(email, newPassword, voucherCode);
+        String voucherCode = credentialsManager.validateSecurityQuestionAnswer(email, secAnswer);
+        credentialsManager.changePassword(email, newPassword, voucherCode);
 
-        //Try to use new password
-        User user = new User(email, newPassword);
-        String passwordHashNew = user.getPasswordHash();
+        // Try to use new password
+        SessionResponse response = accountManager.login(email, newPassword);
 
-        boolean correctPass = CredentialsManager.checkHash(newPassword, passwordHashNew, "Error message");
-        Assert.assertTrue(correctPass);
+        // Check the user session token
+        boolean sessionExists = UserSessionManager.authenticateSession(response.getSessionToken());
 
-        //Try to use old password
-        user = new User(email, password);
-        String passwordHashOld = user.getPasswordHash();
+        Assert.assertTrue(sessionExists);
+        
 
-        boolean wrongPass = CredentialsManager.checkHash(password, passwordHashOld, "Error message");
-        Assert.assertFalse(wrongPass);
     }
 }
