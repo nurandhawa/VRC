@@ -28,6 +28,7 @@
 
   <body>
 
+
       <nav class="navbar navbar-info">
         <div class="container-fluid">
           <!-- Brand and toggle get grouped for better mobile display -->
@@ -74,11 +75,17 @@
                    v-validate:password="['required']" initial="off" :classes="{ invalid: 'has-error', }">
                   <p class="help-block" v-if="$loginFormValidator.password.invalid">You must enter a valid password.</p>
                 </div>
+
+
                 <div class="checkbox">
                   <label>
                     <input type="checkbox" v-model="remember"> Remember me
                   </label>
                 </div>
+                <div style="margin-top: 20px; margin-bottom: 10px;">
+                  <a href="pwRecovery.html" >Forgot your password?</a>
+                </div>
+
                 <div class="col-md-10 center">
                   <button id="submitButton" type="submit" class="btn btn-success btn-raised" disabled="disabled">Submit</button>
                   <div id="loginAnimation" v-if="spinnerVisibility">
