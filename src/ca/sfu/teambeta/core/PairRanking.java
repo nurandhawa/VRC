@@ -28,6 +28,10 @@ public class PairRanking extends Persistable {
         return rank;
     }
 
+    void setRank(int rank) {
+        this.rank = rank;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -38,8 +42,7 @@ public class PairRanking extends Persistable {
         }
 
         final PairRanking otherPairRanking = (PairRanking) other;
-        return pair.equals(otherPairRanking.pair)
-                && rank == otherPairRanking.rank;
+        return pair.equals(otherPairRanking.pair);
     }
 
     @Override

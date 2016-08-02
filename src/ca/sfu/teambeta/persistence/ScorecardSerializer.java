@@ -25,7 +25,7 @@ public class ScorecardSerializer implements JsonSerializer<Scorecard> {
         jsonElement.addProperty("timeSlot", src.getTimeSlot().toString());
 
         JsonArray pairsJsonArray = new JsonArray();
-        for (Pair pair : src.getPairs()) {
+        for (Pair pair : src.getReorderedPairs()) {
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
                     .create();
