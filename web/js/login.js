@@ -13,7 +13,7 @@
 
     var onLoggedIn = function(response) {
         Cookies.set('sessionToken', response.sessionToken);
-        - Cookies.set('userRole', response.userRole);
+        Cookies.set('userRole', response.userRole);
         window.location.href = "/";
     };
 
