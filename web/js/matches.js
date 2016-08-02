@@ -41,6 +41,17 @@ var Matches = (function () {
                     api.addPenalty(gameSession, pair.id, penaltyType, function(response) {
                     });
                 },
+                removeMatchPair: function(pair, gameSession){
+                    var api = new API();
+                    var answer = confirm("Are you sure you want to delete this pair?");
+
+                    if(answer) {
+                        api.removePairFromMatch(gameSession, pair.id, function() {
+                            this.refreshMatches(gameSession);
+                        }.bind(this));
+                        this.closeModal();
+                    }
+                },
                 saveChanges: function (gameSession, index) {
                     var match = this.matchlist[index];
                     var results = match.results;
@@ -48,12 +59,12 @@ var Matches = (function () {
                     api.inputMatchResults(gameSession, match.id, results, function() {
                         this.refreshMatches();
                     }.bind(this));
-                    this.closeModal();
+
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
                     api.getMatches(gameSession, function(matchData) {
-                        this.$broadcast("updateMatches", matchData, gameSession);
+                        this.$dispatch("updateMatches", matchData, gameSession);
                     }.bind(this));
                 }
             }

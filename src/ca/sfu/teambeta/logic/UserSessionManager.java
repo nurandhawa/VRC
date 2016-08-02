@@ -1,16 +1,16 @@
 package ca.sfu.teambeta.logic;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 import ca.sfu.teambeta.core.SessionInformation;
 import ca.sfu.teambeta.core.SessionResponse;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.UserRole;
 import ca.sfu.teambeta.core.exceptions.InvalidInputException;
 import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-
-import java.math.BigInteger;
-import java.security.SecureRandom;
-import java.util.Dictionary;
-import java.util.Hashtable;
 
 /**
  * UserSessionManager handles:
@@ -108,7 +108,6 @@ public class UserSessionManager {
 
         return sessionInformation.getEmail();
     }
-
 
     // MARK: Helper Methods
     private static SessionInformation getSessionInformation(String sessionId)
