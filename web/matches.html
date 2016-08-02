@@ -92,9 +92,6 @@
                                         @click="saveChanges(match.gameSession, $index)"
                                         :disabled="!match.resultsValid">Save changes
                                 </button>
-                                <div id="loginAnimation" v-if="mode === 'loading'">
-                                    <clip-loader :color="#03a9f4"></clip-loader>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -105,6 +102,9 @@
 
     <script type="x/template" id="reorderLadderButtonTemplate">
         <button class="btn btn-raised btn-success header-button" v-on:click="saveResults()"disabled="{{ disabled }}">Reorder Ladder</button>
+        <div id="reorderAnimation">
+            <clip-loader :color="#03a9f4"></clip-loader>
+        </div>
     </script>
 
     <script type="x/template" id="matchesComponentTemplate">

@@ -35,6 +35,9 @@
                 };
                 api.reorderLadder(matches.component.activeGameSession, doneCallback.bind(this), failCallback.bind(this));
             }
+        },
+                                             components: {
+                                                 'ClipLoader': VueSpinner.ClipLoader
         }
     });
     Vue.component('reorder-ladder-button', reorderLadderButton);
