@@ -81,12 +81,12 @@
                                             Absent
                                         </button>
                                         <button class="btn btn-danger btn-fab btn-fab-mini glyphicon glyphicon-remove"
-                                                @click="removeMatchPair(pair, match.gameSession)">
+                                                id="removePairInMatch" @click="removeMatchPair(pair, match.gameSession)">
                                         </button>
                                     </div>
                                 </div>
                                 <div class="alert alert-warning" style="margin-top: 10px" v-if="!match.resultsValid">
-                                    Please enter post match rankings for all 3 teams.
+                                    Please enter post match rankings for all teams.
                                 </div>
                                 <div class="alert alert-success" style="margin-top: 10px" v-if="match.resultsValid">
                                     You are good to go!
@@ -114,7 +114,7 @@
             <clip-loader :color="#03a9f4"></clip-loader>
         </div>
         <button class="btn btn-raised btn-success header-button" v-else v-on:click="saveResults()"
-                disabled="{{ disabled }}">Reorder Ladder
+                id="reorderLadderButton" disabled="{{ disabled }}">Reorder Ladder
         </button>
     </script>
 
@@ -174,7 +174,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li v-if="role === 'ADMINISTRATOR'"><a href="registration.html">Admin Panel</a></li>
-                <li><a href="login.html">Log Out</a></li>
+                <li><a id="logout_nav" href="login.html">Log Out</a></li>
             </ul>
         </div>
 
@@ -184,11 +184,10 @@
 <div id="header" class="header">
     <div class = header-item>
         <h1 class="header-initial">{{ title }}</h1></div>
-    <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
     <div class="header-right header-item">
         <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
         <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in">
-            <reorder-ladder-button id="reorderLadderButton"></reorder-ladder-button>
+            <reorder-ladder-button></reorder-ladder-button>
         </div>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
