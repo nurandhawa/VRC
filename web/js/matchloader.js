@@ -48,7 +48,7 @@
 
     var navbar = new Navbar(userRole);
 
-    var header = new Header("Matches", "Edit Matches", "TBD", editFunction, userRole);
+    var header = new Header("Groups", "Edit Groups", "TBD", editFunction, userRole);
 
     var api = new API();
     api.getMatches(api.gameSession.LATEST, function (response) {

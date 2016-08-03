@@ -357,8 +357,8 @@ public class AppController {
                 response.status(OK);
                 return json;
             } else {
-                // Request was fine so the server should still send 200
-                response.status(OK);
+                // Request was fine, but we want to show an error message on the front end to notify the user
+                response.status(NOT_FOUND);
                 return getErrResponse("No scorecards were found");
             }
         });

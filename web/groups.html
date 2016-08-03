@@ -174,7 +174,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li v-if="role === 'ADMINISTRATOR'"><a href="registration.html">Admin Panel</a></li>
-                <li><a id="logout_nav" href="login.html">Log Out</a></li>
+                <li><a id="logout_nav" href="index.html">Log Out</a></li>
             </ul>
         </div>
 
@@ -185,7 +185,7 @@
     <div class = header-item>
         <h1 class="header-initial">{{ title }}</h1></div>
     <div class="header-right header-item">
-        <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
+        <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Groups</a>
         <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in">
             <reorder-ladder-button></reorder-ladder-button>
         </div>
