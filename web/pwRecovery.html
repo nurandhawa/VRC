@@ -26,11 +26,11 @@
 
 </head>
 
-<body>
+<body style="min-width: 575px;">
 
 
 
-<nav class="navbar navbar-info">
+<nav class="navbar navbar-info" >
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
@@ -54,7 +54,7 @@
 </nav>
 
 <div class="loginwrapper">
-    <div id="recoveryForm" class="login panel panel-default">
+    <div id="recoveryForm" class="login panel panel-default" style="margin: auto;">
         <validator name="emailValidator" @valid="onValid" @invalid="onInvalid">
             <form class="form-horizontal" v-on:submit.prevent="onEmailSubmit($event)">
                 <fieldset>
