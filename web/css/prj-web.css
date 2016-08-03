@@ -22,6 +22,8 @@
 }
 
 .header-mid {
+    float: right;
+    margin-right: 60px;
     text-align: center;
     font-size: .85em;
 }
