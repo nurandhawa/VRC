@@ -107,13 +107,13 @@
                     <h5> (Must be at least 6 characters) </h5>
                     <div class="form-group label-floating" v-validate-class>
                         <label for="inputPassword" class="control-label">New Password</label>
-                        <input class="form-control" id="inputPassword" v-model="password"
+                        <input type="password" class="form-control" id="inputPassword" v-model="password"
                                v-validate:password="['required'], ['minLength']" initial="" :classes="{ invalid: 'has-error', }"
                                v-on:change="onPasswordChange">
                     </div>
                     <div class="form-group label-floating" v-validate-class>
                         <label for="inputPasswordConfirm" class="control-label">Re-enter New Password</label>
-                        <input class="form-control" id="inputPasswordConfirm" group="passwordGroup" v-model="passwordConfirm"
+                        <input type="password" class="form-control" id="inputPasswordConfirm" group="passwordGroup" v-model="passwordConfirm"
                                v-validate:passwordConfirm="['required'], ['passwordConfirm']" initial="off" :classes="{ invalid: 'has-error', }">
                     </div>
 

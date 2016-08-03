@@ -19,12 +19,16 @@
 
     var onRegError = function (response) {
         this.spinnerVisibility = false;
-        alert("Registration failed.");
+        var failureMessage = "Registration failed.\n";
+
         if (response.status == 401) {
             this.invalidCredentials = true;
             $("#inputEmail").parent().addClass("has-error");
             $("#inputEmail").focus();
         }
+        var responseBody = JSON.parse(response.responseText);
+        failureMessage += responseBody.message;
+        alert(failureMessage);
     };
 
     var onEmailChange = function () {
@@ -49,6 +53,10 @@
         if (this._vm.existingPlayer) {
             return true;
         }
+    });
+
+    Vue.validator('minLength', function (val) {
+        return /^.{6,}$/.test(val);
     });
 
     var onValid = function() {

@@ -83,7 +83,7 @@
                     <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
                         <label for="inputPassword" class="control-label">Password:</label>
                         <input type="password" class="form-control" id="inputPassword" v-model="password"
-                               v-validate:password="['required']"  :classes="{ invalid: 'has-error', }">
+                               v-validate:password="['required'], ['minLength']"  :classes="{ invalid: 'has-error', }">
                         <p class="help-block" v-if="$registrationFormValidator.password.invalid">You must enter a valid password.</p>
                     </div>
                     <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
