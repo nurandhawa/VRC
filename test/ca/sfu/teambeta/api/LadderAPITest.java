@@ -131,6 +131,13 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, jsonPairUpdateResponse.getStatus());
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() - 1, ladder.length());
     }
 
     @Test
@@ -149,6 +156,13 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, jsonPairUpdateResponse.getStatus());
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() - 1, ladder.length());
     }
 
     @Test
@@ -170,6 +184,13 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, addPairResponse.getStatus());
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() + 1, ladder.length());
     }
 
     @Test
@@ -195,6 +216,13 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, addPairResponse.getStatus());
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() + 1, ladder.length());
     }
 
     @Test
@@ -222,5 +250,12 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, addPairResponse.getStatus());
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() + 1, ladder.length());
     }
 }
