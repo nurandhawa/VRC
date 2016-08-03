@@ -60,14 +60,12 @@
   <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
 
   <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
-    <div class = "header-button">
-      <a v-on:click=downloadLadder() title="Download Ladder" class="btn btn-raised btn-primary">
+      <a v-on:click=downloadLadder() title="Download Ladder" class="btn btn-raised btn-primary header-button">
         <i class="glyphicon glyphicon-download-alt"></i>
       </a>
       <component :is="mode" transition="fade" transition-mode="out-in">
       </component>
       <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
-    </div>
   </div>
 </div>
 
@@ -214,8 +212,13 @@
             <span class="label label-info position">{{ entry.position }}</span>
             <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
             <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
-            {{ entry.teamName }}
-            <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
+            <span>
+              {{ entry.p1Name }} +
+            </span>
+            <span>
+              {{ entry.p2Name }}
+            </span>
+            <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in" style="margin-top: 1em; width: 8vw;">
             </component>
             <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)></time-select-button>
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">
@@ -266,6 +269,7 @@
           </div>
         </div>
       </div>
+      <div class="filler ladder-element"></div>
     </validator>
   </div>
   <div class="pages-container">

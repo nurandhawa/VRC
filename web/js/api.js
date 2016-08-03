@@ -48,6 +48,8 @@ var API = (function() {
                         var player2Name = player2.firstName + " " + player2.lastName;
                         
                         pair.teamName = player1Name + " and " + player2Name;
+                        pair.p1Name = player1Name;
+                        pair.p2Name = player2Name;
                         pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
                         ladderData.players.push({
                             label: player1Name,
