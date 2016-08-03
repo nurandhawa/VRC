@@ -94,6 +94,10 @@ public class InputValidator {
             throw new InvalidInputException("A Pair cannot have more than 2 players.");
         }
 
+        if (newPlayers.get(0).equals(newPlayers.get(1))) {
+            throw new InvalidInputException("Players cannot be be the same");
+        }
+
         for (Player player : newPlayers) {
             Integer existingId = player.getExistingId();
             // Ignore player objects that will be replaced by existing player objects

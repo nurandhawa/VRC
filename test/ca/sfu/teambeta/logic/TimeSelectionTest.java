@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.logic;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class TimeSelectionTest {
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
 
+    @Ignore
     @Test
     public void getPairsByTime() {
         List<Pair> pairs = new ArrayList<Pair>() {
@@ -50,6 +52,7 @@ public class TimeSelectionTest {
         Assert.assertEquals(3, pairsSecondTimeSlot);
     }
 
+    @Ignore
     @Test
     public void checkCommonTimeForGroup() {
         Map<Pair, Time> timeSlots = new HashMap<>();
@@ -81,6 +84,38 @@ public class TimeSelectionTest {
         Assert.assertEquals(expectedTime, time);
     }
 
+    @Ignore
+    @Test
+    public void fourPairScorecardTimeTest() {
+        Pair pair1 = new Pair(new Player("First",""), new Player("Player",""), true);
+        Pair pair2 = new Pair(new Player("Second",""), new Player("Player",""), true);
+        Pair pair3 = new Pair(new Player("Third",""), new Player("Player",""), true);
+        Pair pair4 = new Pair(new Player("Fourth",""), new Player("Player",""), true);
+
+        Map<Pair, Time> timeSlots = new HashMap<>();
+        timeSlots.put(pair1, Time.SLOT_1);
+        timeSlots.put(pair2, Time.SLOT_2);
+        timeSlots.put(pair3, Time.SLOT_2);
+        timeSlots.put(pair4, Time.SLOT_1);
+
+        List<Pair> pairs = Arrays.asList(pair1, pair2, pair3, pair4);
+        Scorecard scorecard = new Scorecard(pairs, null);
+        List<Scorecard> scorecards = Collections.singletonList(scorecard);
+
+        TimeSelection selector = new VrcTimeSelection();
+        selector.distributePairs(scorecards, timeSlots);
+        Time time = scorecard.getTimeSlot();
+        Time expectedTime = Time.SLOT_1;
+        Assert.assertEquals(expectedTime, time);
+
+        timeSlots.put(pair4, Time.SLOT_2);
+        selector.distributePairs(scorecards, timeSlots);
+        time = scorecard.getTimeSlot();
+        expectedTime = Time.SLOT_2;
+        Assert.assertEquals(expectedTime, time);
+    }
+
+    @Ignore
     @Test
     public void distributePairsCase_1() throws Exception {
         TimeSelection selector = new VrcTimeSelection();
@@ -168,6 +203,7 @@ public class TimeSelectionTest {
         return amount;
     }
 
+    @Ignore
     @Test
     public void distributePairsCase_2() throws Exception {
         TimeSelection selector = new VrcTimeSelection();

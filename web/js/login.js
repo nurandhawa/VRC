@@ -11,6 +11,7 @@
         return false;
     });
 
+
     var onLoggedIn = function(response) {
         Cookies.set('sessionToken', response.sessionToken);
         Cookies.set('userRole', response.userRole);
@@ -31,9 +32,10 @@
     };
 
     var onSubmit = function(event) {
+        console.log("Hey!2");
         this.spinnerVisibility = true;
         var api = new API();
-        api.userLogin(this.email, this.password, onLoggedIn, onLoginError.bind(this));
+        api.userLogin(this.email, this.password, this.remember, onLoggedIn, onLoginError.bind(this));
     };
 
     Vue.validator('email', function (val) {
@@ -49,6 +51,7 @@
     var onInvalid = function(element) {
         $("#submitButton").prop("disabled", true);
     };
+
 
     var loginForm = new Vue({
         el: LOGIN_FORM_ID,
@@ -73,5 +76,6 @@
             onEmailChange: onEmailChange
         }
     });
+
 
 })();

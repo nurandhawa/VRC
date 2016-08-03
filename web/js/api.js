@@ -7,6 +7,7 @@ var API = (function() {
     var POSITION_PARAM = "?position=";
     var PENALTY_PARAM = "&penalty=";
     var GAMESESSION_PARAM = "?gameSession=";
+    var EMAIL_PARAM = "?email=";
 
     function API() {
         this.playingStatus = Object.freeze({
@@ -306,13 +307,14 @@ var API = (function() {
             });
     };
 
-    API.prototype.userLogin = function (email, password, doneCallback, failCallback) {
+    API.prototype.userLogin = function (email, password, rememberMe, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/login",
             data: JSON.stringify({
                 "email": email,
-                "password": password
+                "password": password,
+                "rememberMe": rememberMe
             })
         })
             .done(function (response) {
@@ -337,6 +339,104 @@ var API = (function() {
             url: SERVER_URL + "/login/new",
             data: JSON.stringify({
                 "email": email,
+                "password": password
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
+    API.prototype.setUserSecurityQuestion = function (email, securityQuestion, answer, doneCallback, failCallback) {
+        $.ajax({
+            method: "PATCH",
+            url: SERVER_URL + "/login/new",
+            data: JSON.stringify({
+                "email": email,
+                "securityQuestion": securityQuestion,
+                "answer": answer
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
+    API.prototype.getUserSecurityQuestion = function (email, doneCallback, failCallback) {
+        $.ajax({
+            method: "GET",
+            url: SERVER_URL + "/login/reset" + EMAIL_PARAM + email
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
+    API.prototype.answerSecurityQuestion = function (email, answer, doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/login/reset",
+            data: JSON.stringify({
+                "email": email,
+                "answer": answer
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
+    API.prototype.changePassword = function (email, voucherCode, password, doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/login/change",
+            data: JSON.stringify({
+                "email": email,
+                "voucherCode": voucherCode,
                 "password": password
             })
         })

@@ -1,12 +1,27 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
+import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.CredentialsManager;
+import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
+import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
+import ca.sfu.teambeta.accounts.UserSessionManager;
+import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.TimeManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import javax.servlet.MultipartConfigElement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -14,37 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.MultipartConfigElement;
-
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.SessionResponse;
-import ca.sfu.teambeta.core.Time;
-import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
-import ca.sfu.teambeta.core.exceptions.InternalHashingException;
-import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
-import ca.sfu.teambeta.core.exceptions.InvalidInputException;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
-import ca.sfu.teambeta.logic.AccountManager;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.UserSessionManager;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
-import ca.sfu.teambeta.persistence.DBManager;
-
-import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.exception;
-import static spark.Spark.get;
-import static spark.Spark.halt;
-import static spark.Spark.patch;
-import static spark.Spark.port;
-import static spark.Spark.post;
-import static spark.Spark.secure;
-import static spark.Spark.staticFiles;
+import static spark.Spark.*;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -69,6 +54,15 @@ public class AppController {
     private static final String LATE = "late";
     private static final String MISS = "miss";
     private static final String ACCIDENT = "accident";
+    private static final String ZERO = "zero";
+
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+    private static final String REMEMBER_ME = "rememberMe";
+    private static final String ANSWER = "answer";
+    private static final String VOUCHER_CODE = "voucherCode";
+    private static final String SECURITY_QUESTION = "securityQuestion";
+
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
     private static final int NOT_FOUND = 404;
@@ -79,10 +73,12 @@ public class AppController {
     private static final String KEYSTORE_LOCATION = "testkeystore.jks";
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
+    private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
-    public AppController(DBManager dbManager, int port, String staticFilePath) {
-        final AccountManager accountManager = new AccountManager(dbManager);
+    public AppController(DBManager dbManager, CredentialsManager credentialsManager, int port, String staticFilePath) {
+        final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
+        final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -139,6 +135,10 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -152,6 +152,7 @@ public class AppController {
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
             } catch (Exception ignored) {
+                ignored.getMessage();
             }
 
             String status = request.queryParams(STATUS);
@@ -203,6 +204,7 @@ public class AppController {
             }
 
             return getOkResponse("");
+
         });
 
         //add pair to ladder
@@ -280,6 +282,8 @@ public class AppController {
                 dbManager.saveGameSession(newGameSession);
             }
 
+            //Update timeManager which enables ladder editing
+            TimeManager.getInstance().updateTime();
             return getOkResponse("");
         }));
 
@@ -309,6 +313,8 @@ public class AppController {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.MISSING);
             } else if (penaltyType.equals(ACCIDENT)) {
                 dbManager.addPenaltyToPair(gameSession, id, Penalty.ACCIDENT);
+            } else if (penaltyType.equals(ZERO)) {
+                dbManager.addPenaltyToPair(gameSession, id, Penalty.ZERO);
             } else {
                 response.status(BAD_REQUEST);
                 return getErrResponse("Invalid Penalty Type");
@@ -392,33 +398,100 @@ public class AppController {
         //logging in an existing users
         post("/api/login", (request, response) -> {
             String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String email = extractedData.getEmail();
-            String pwd = extractedData.getPassword();
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(body).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
+            boolean rememberMe = jsonObject.get(REMEMBER_ME).getAsBoolean();
 
             try {
-                SessionResponse sessionResponse = accountManager.login(email, pwd);
+                SessionResponse sessionResponse = accountManager.login(email, password, rememberMe);
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
-            } catch (InternalHashingException |
-                    NoSuchUserException | InvalidCredentialsException e) {
+            } catch (NoSuchUserException | InvalidCredentialsException e) {
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
         });
 
+        //get security question for password reset
+        get("/api/login/reset", (request, response) -> {
+            String email = request.queryParams(EMAIL);
+
+            String securityQuestion;
+            try {
+                securityQuestion = credentialsManager.getUserSecurityQuestion(email);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            }
+
+            PasswordResetResponse passwordResetResponse = new PasswordResetResponse(securityQuestion);
+
+            response.status(OK);
+            return gson.toJson(passwordResetResponse);
+        });
+
+        //verify security question for password reset
+        post("/api/login/reset", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String answer = jsonObject.get(ANSWER).getAsString();
+
+            String voucherCode;
+            try {
+                voucherCode = credentialsManager.validateSecurityQuestionAnswer(email, answer);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            } catch (InvalidCredentialsException e) {
+                response.status(NOT_AUTHENTICATED);
+                return getErrResponse("Incorrect answer.");
+            }
+
+            SecurityQuestionResponse securityQuestionResponse = new SecurityQuestionResponse(voucherCode);
+
+            response.status(OK);
+            return gson.toJson(securityQuestionResponse);
+        });
+
+        //change password
+        post("/api/login/change", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String voucherCode = jsonObject.get(VOUCHER_CODE).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
+
+            try {
+                InputValidator.validatePasswordFormat(password);
+                credentialsManager.changePassword(email, password, voucherCode);
+            } catch (NoSuchUserException e) {
+                response.status(NOT_FOUND);
+                return getErrResponse("User " + email + " not found");
+            } catch (InvalidInputException e) {
+                response.status(BAD_REQUEST);
+                return getErrResponse(e.getMessage());
+            }
+
+            response.status(OK);
+            return getOkResponse("Password reset.");
+        });
+
         //registers a new user
         post("/api/login/new", (request, response) -> {
-            String body = request.body();
-            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
-            String email = extractedData.getEmail();
-            String pwd = extractedData.getPassword();
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String password = jsonObject.get(PASSWORD).getAsString();
 
             String message = "";
             try {
-                accountManager.register(email, pwd);
+                accountManager.registerUser(email, password);
+
                 return getOkResponse("Account registered");
-            } catch (InternalHashingException e) {
+            } catch (GeneralUserAccountException e) {
                 message = e.getMessage();
             } catch (AccountRegistrationException e) {
                 message = e.getMessage();
@@ -430,8 +503,44 @@ public class AppController {
             return getErrResponse(message);
         });
 
+        //set security question
+        patch("/api/login/new", (request, response) -> {
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
+            String email = jsonObject.get(EMAIL).getAsString();
+            String securityQuestion = jsonObject.get(SECURITY_QUESTION).getAsString();
+            String answer = jsonObject.get(ANSWER).getAsString();
+
+            // Authenticate the token, since our normal authentication doesn't run on login endpoints
+            String sessionToken = request.cookie(SESSION_TOKEN_KEY);
+            try {
+                boolean authenticated =
+                        UserSessionManager.authenticateSession(sessionToken);
+                if (!authenticated) {
+                    response.status(NOT_AUTHENTICATED);
+                    return getErrResponse("You need to be logged in to change your security question.");
+                }
+
+                credentialsManager.setSecurityQuestion(email, securityQuestion, answer, sessionToken);
+
+            } catch (NoSuchSessionException exception) {
+                response.status(NOT_AUTHENTICATED);
+                return getErrResponse("You need to be logged in to change your security question.");
+            } catch (GeneralUserAccountException e) {
+                response.status(400);
+                return getErrResponse(e.getMessage());
+            }
+
+            response.status(OK);
+            return getOkResponse("Security question set.");
+        });
+
         //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
+            if (TimeManager.getInstance().isExpired()) {
+                response.status(NOT_FOUND);
+                return getErrResponse(LADDER_DISABLED);
+            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
@@ -462,6 +571,7 @@ public class AppController {
             timeSelector.distributePairs(gameSession.getScorecards(), gameSession.getTimeSlots());
             dbManager.persistEntity(gameSession);
             return getOkResponse("");
+
         });
 
         //download ladder to a new csv file

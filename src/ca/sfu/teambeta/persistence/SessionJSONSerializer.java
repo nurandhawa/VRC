@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.core.SessionInformation;
-import ca.sfu.teambeta.logic.UserSessionManager;
+import ca.sfu.teambeta.accounts.UserSessionManager;
 import com.google.gson.JsonObject;
 
 /**

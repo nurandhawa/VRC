@@ -3,6 +3,7 @@ package ca.sfu.teambeta.logic;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -59,7 +60,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         setTimestamp();
     }
 
@@ -68,7 +68,6 @@ public class GameSession extends Persistable {
         this.ladder = ladder;
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
-
         this.timestamp = timestamp;
     }
 
@@ -222,6 +221,17 @@ public class GameSession extends Persistable {
             ladder.insertAtEnd(newPair);
         }
         return pairExists;
+    }
+
+    public Date getLadderModificationDate() {
+        return ladder.getModifiedDate();
+    }
+
+    public boolean removePairFromLadder(Pair pair) {
+        activePairs.remove(pair);
+        penalties.remove(pair);
+        timeSlots.remove(pair);
+        return ladder.removePair(pair);
     }
 
     @Override

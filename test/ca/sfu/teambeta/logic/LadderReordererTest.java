@@ -21,36 +21,54 @@ import ca.sfu.teambeta.core.Scorecard;
  */
 
 public class LadderReordererTest {
+    private Pair kateNick = new Pair(new Player("", "Kate"),
+            new Player("", "Nick"), false);
+
+    private Pair jimRyan = new Pair(new Player("", "Jim"),
+            new Player("", "Ryan"), false);
+
+    private Pair davidBob = new Pair(new Player("", "David"),
+            new Player("", "Bob"), true);
+
+    private Pair richardRobin = new Pair(new Player("", "Richard"),
+            new Player("", "Robin"), true);
+
+    private Pair kevinJasmin = new Pair(new Player("", "Kevin"),
+            new Player("", "Jasmin"), true);
+
+    private Pair amyMaria = new Pair(new Player("", "Amy"),
+            new Player("", "Maria"), false);
+
+    private Pair tonyAngelica = new Pair(new Player("", "Tony"),
+            new Player("", "Angelica"), true);
+
+    private Pair anastasiaVictoria = new Pair(new Player("", "Anastasia"),
+            new Player("", "Victoria"), true);
+
+    private Pair ianCamden = new Pair(new Player("", "Ian"),
+            new Player("", "Camden"), true);
+
+    private List<Pair> originalList = new ArrayList<>(Arrays.asList(kateNick, jimRyan, davidBob, richardRobin,
+            kevinJasmin, amyMaria, tonyAngelica, anastasiaVictoria, ianCamden));
+
+    private List<Pair> reorderedLadder = new ArrayList<>(Arrays.asList(kevinJasmin, kateNick, jimRyan, ianCamden,
+            tonyAngelica, amyMaria, anastasiaVictoria, richardRobin, davidBob));
 
     @Test
     public void testLogicFunctionality() {
-        Pair p1 = new Pair(new Player("", "David"),
-                new Player("", "Bob"), true);
-        Pair p2 = new Pair(new Player("", "Richard"),
-                new Player("", "Robin"), true);
-        Pair p3 = new Pair(new Player("", "Kevin"),
-                new Player("", "Jasmin"), true);
-        List<Pair> pairs1 = Arrays.asList(p1, p2, p3);
+        List<Pair> pairs1 = Arrays.asList(davidBob, richardRobin, kevinJasmin);
         Scorecard sc1 = new Scorecard(pairs1, null);
 
-        sc1.setGameResults(p1, 2);
-        sc1.setGameResults(p3, 1);
-        sc1.setGameResults(p2, 3);
+        sc1.setGameResults(davidBob, 2);
+        sc1.setGameResults(kevinJasmin, 1);
+        sc1.setGameResults(richardRobin, 3);
 
-        Pair p4 = new Pair(new Player("", "Tony"),
-                new Player("", "Angelica"), true);
-
-        Pair p5 = new Pair(new Player("", "Anastasia"),
-                new Player("", "Victoria"), true);
-
-        Pair p6 = new Pair(new Player("", "Ian"),
-                new Player("", "Camden"), true);
-        List<Pair> pairs2 = Arrays.asList(p4, p5, p6);
+        List<Pair> pairs2 = Arrays.asList(tonyAngelica, anastasiaVictoria, ianCamden);
         Scorecard sc2 = new Scorecard(pairs2, null);
 
-        sc2.setGameResults(p4, 2);
-        sc2.setGameResults(p6, 1);
-        sc2.setGameResults(p5, 3);
+        sc2.setGameResults(tonyAngelica, 2);
+        sc2.setGameResults(ianCamden, 1);
+        sc2.setGameResults(anastasiaVictoria, 3);
 
         List<Scorecard> scorecards = new ArrayList<>();
         scorecards.add(sc1);
@@ -60,106 +78,15 @@ public class LadderReordererTest {
         activePairs.addAll(pairs1);
         activePairs.addAll(pairs2);
 
-
-        Pair p7 = new Pair(new Player("", "Kate"),
-                new Player("", "Nick"), false);
-        Pair p8 = new Pair(new Player("", "Jim"),
-                new Player("", "Ryan"), false);
-        Pair p9 = new Pair(new Player("", "Amy"),
-                new Player("", "Maria"), false);
-
         Map<Pair, Penalty> penalties = new HashMap<>();
-        penalties.put(p1, Penalty.MISSING);
-        penalties.put(p2, Penalty.LATE);
+        penalties.put(davidBob, Penalty.MISSING);
+        penalties.put(richardRobin, Penalty.LATE);
 
         LadderReorderer ladderReorderer = new VrcLadderReorderer();
         List<Pair> afterProcessing = ladderReorderer.reorder(
-                fakeDB(), scorecards, activePairs, penalties);
+                originalList, scorecards, activePairs, penalties);
 
-        Assert.assertEquals(afterProcessing, processedFakeDB());
+        Assert.assertEquals(afterProcessing, reorderedLadder);
     }
 
-    private List<Pair> fakeDB() {
-        List<Pair> db = new ArrayList<>();
-
-        Pair pair = new Pair(new Player("", "Kate"),
-                new Player("", "Nick"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Jim"),
-                new Player("", "Ryan"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "David"),
-                new Player("", "Bob"), true);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Richard"),
-                new Player("", "Robin"), true);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Kevin"),
-                new Player("", "Jasmin"), true);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Amy"),
-                new Player("", "Maria"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Tony"),
-                new Player("", "Angelica"), true);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Anastasia"),
-                new Player("", "Victoria"), true);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Ian"),
-                new Player("", "Camden"), true);
-        db.add(pair);
-
-        return db;
-    }
-
-    private List<Pair> processedFakeDB() {
-        List<Pair> db = new ArrayList<>();
-
-        Pair pair = new Pair(new Player("", "Kevin"),
-                new Player("", "Jasmin"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Kate"),
-                new Player("", "Nick"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Jim"),
-                new Player("", "Ryan"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Ian"),
-                new Player("", "Camden"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Tony"),
-                new Player("", "Angelica"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Amy"),
-                new Player("", "Maria"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Anastasia"),
-                new Player("", "Victoria"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "Richard"),
-                new Player("", "Robin"), false);
-        db.add(pair);
-
-        pair = new Pair(new Player("", "David"),
-                new Player("", "Bob"), false);
-        db.add(pair);
-
-        return db;
-    }
 }

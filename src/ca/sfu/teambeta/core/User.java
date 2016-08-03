@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.core;
 
+import ca.sfu.teambeta.accounts.UserRole;
 import ca.sfu.teambeta.persistence.Persistable;
 
 import javax.persistence.Column;
@@ -23,6 +24,7 @@ public class User extends Persistable {
     private String phoneNumber = "";
     private String securityQuestion = "";
     private String securityAnswerHash = "";
+    private UserRole role = UserRole.REGULAR;
 
     @OneToOne
     private Player associatedPlayer = null;
@@ -37,6 +39,12 @@ public class User extends Persistable {
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
+    }
+
+    public User(String email, String passwordHash, String securityQuestion, String securityAnswerHash) {
+        this(email, passwordHash);
+        this.securityQuestion = securityQuestion;
+        this.securityAnswerHash = securityAnswerHash;
     }
 
 
@@ -59,6 +67,10 @@ public class User extends Persistable {
 
     public String getPhoneNumber() {
         return phoneNumber;
+    }
+
+    public UserRole getUserRole() {
+        return role;
     }
 
     public String getSecurityQuestion() {
@@ -97,6 +109,10 @@ public class User extends Persistable {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public void setUserRole(UserRole role) {
+        this.role = role;
     }
 
 
