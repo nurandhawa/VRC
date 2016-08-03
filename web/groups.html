@@ -184,9 +184,9 @@
 <div id="header" class="header">
     <div class = header-item>
         <h1 class="header-initial">{{ title }}</h1></div>
-    <div class="header-right header-item">
+    <div class="header-right header-item" style="margin-top: 20px;">
         <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Groups</a>
-        <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in">
+        <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in" class="header-button">
             <reorder-ladder-button></reorder-ladder-button>
         </div>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
