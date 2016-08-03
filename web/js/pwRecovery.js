@@ -12,7 +12,6 @@
     });
 
     var onEmailSubmit = function() {
-        recoveryForm.emailRetrieved = true;
         $("#submitEmailButton").prop("disabled", true);
         this.spinnerVisibilityTop = true;
         var api = new API();
@@ -20,13 +19,12 @@
     };
 
     var onGotQuestion = function (securityQuestion){
-        console.log("Hello!");
+        recoveryForm.emailRetrieved = true;
         this.spinnerVisibilityTop = false;
         recoveryForm.securityQuestion = securityQuestion;
     };
 
     var onGotQuestionError = function (response) {
-        console.log("Hello!2");
         this.spinnerVisibilityTop = false;
         if (response.status == 401) {
             this.invalidCredentials = true;
@@ -36,7 +34,6 @@
     };
 
     var onAnswerSubmit = function() {
-        this.questionAnswered = true;
         this.spinnerVisibilityMid = true;
         var api = new API();
         api.answerSecurityQuestion(this.email, this.securityAnswer, onAnsweredQuestion, onAnsweredQuestionError.bind(this));
@@ -99,13 +96,9 @@
     });
 
     var onValid = function() {
-        console.log(this.$emailValidator.touched);
-        console.log(this.$securityValidator.touched);
-        console.log(this.$passwordValidator.touched);
         if (this.$emailValidator.touched && !recoveryForm.emailRetrieved && !recoveryForm.questionAnswered) {
             $("#submitEmailButton").prop("disabled", false);
         } else if (this.$passwordValidator.touched && recoveryForm.emailRetrieved && !recoveryForm.questionAnswered) {
-            console.log("sec valid");
             $("#submitAnswerButton").prop("disabled", false);
         } else if (this.$passwordValidator.touched && recoveryForm.emailRetrieved && recoveryForm.questionAnswered) {
             $("#submitPasswordButton").prop("disabled", false);
@@ -144,11 +137,7 @@
             onEmailSubmit: onEmailSubmit,
             onValid: onValid,
             onInvalid: onInvalid,
-            onPasswordSubmit: onPasswordSubmit,
-            openModal: function () {
-                console.log("Hey!");
-                $("#forgPassModal").modal("show");
-            }
+            onPasswordSubmit: onPasswordSubmit
         }
     });
 
