@@ -78,7 +78,9 @@
     font-size: x-small;
     float: right;
     clear: right;
-    text-decoration: underline;
+    margin-top: 3px;
+    color: white;
+    background: #707070;
 }
 
 #timeSelectModalContent {
