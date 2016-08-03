@@ -6,7 +6,7 @@
 
     var setResponseWithSessionId = function(response) {
         Cookies.set('sessionToken', "");
-        window.location.href = "/login.html";
+        window.location.href = "/";
     };
 
     var onLogout = function() {

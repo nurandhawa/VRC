@@ -15,7 +15,7 @@
     var onLoggedIn = function(response) {
         Cookies.set('sessionToken', response.sessionToken);
         Cookies.set('userRole', response.userRole);
-        window.location.href = "/";
+        window.location.href = "/ladder.html";
     };
 
     var onLoginError = function (response) {
