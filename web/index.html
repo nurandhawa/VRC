@@ -62,6 +62,8 @@
 
   <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
     <div class = "header-button">
+      <component :is="mode" transition="fade" transition-mode="out-in">
+      </component>
       <a v-if="mode == 'edit'" href="api/ladder/download" title="Download Ladder" id="downloadBtn"
          class="btn btn-raised btn-primary">
         <i class="glyphicon glyphicon-download-alt"></i>
@@ -70,9 +72,29 @@
          class="btn btn-raised btn-primary">
         <i class="glyphicon glyphicon-upload"></i>
       </a>
-      <component :is="mode" transition="fade" transition-mode="out-in">
-      </component>
       <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
+    </div>
+    <div id="uploadModal" class="modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 class="modal-title">Upload Ladder</h3>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="api/ladder/upload" enctype="multipart/form-data">
+              File:
+              <input type="file" name="csv_file" id="file" accept=".csv"/>
+              <br/>
+              <div class="modal-footer">
+                <input type="submit" class="btn btn-primary" value="Upload" name="upload"
+                       id="uploadBtn"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
