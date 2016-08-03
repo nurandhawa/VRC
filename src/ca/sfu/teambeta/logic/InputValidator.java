@@ -93,8 +93,10 @@ public class InputValidator {
         if (newPlayers.size() != maxSize) {
             throw new InvalidInputException("A Pair cannot have more than 2 players.");
         }
-
-        if (newPlayers.get(0).equals(newPlayers.get(1))) {
+        Player firstPlayer = newPlayers.get(0);
+        Player secondPlayer = newPlayers.get(1);
+        boolean bothExistingPlayers = firstPlayer.getFirstName() != null && secondPlayer.getFirstName() != null;
+        if (bothExistingPlayers && firstPlayer.equals(secondPlayer)) {
             throw new InvalidInputException("Players cannot be be the same");
         }
 
