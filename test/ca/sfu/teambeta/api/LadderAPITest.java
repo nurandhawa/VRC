@@ -6,6 +6,7 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -148,5 +149,78 @@ public class LadderAPITest extends APITest {
                 .asJson();
 
         assertEquals(200, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void addPairToLadderTwoExisting() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+
+        JSONObject firstPlayer = new JSONObject()
+                .put("existingId", 1);
+        JSONObject secondPlayer = new JSONObject()
+                .put("existingId", 3);
+
+        JSONObject payload = new JSONObject()
+                .append("players", firstPlayer)
+                .append("players", secondPlayer)
+                .put("position", -1);
+
+        HttpResponse<JsonNode> addPairResponse = Unirest.post(URI_BASENAME + "api/ladder")
+                .body(payload)
+                .asJson();
+
+        assertEquals(200, addPairResponse.getStatus());
+    }
+
+    @Test
+    public void addPairToLadderOneExistingOneNew() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+
+        JSONObject firstPlayer = new JSONObject()
+                .put("existingId", -1)
+                .put("firstName", "mario")
+                .put("lastName", "mario");
+
+        JSONObject secondPlayer = new JSONObject()
+                .put("existingId", 3);
+
+        JSONObject payload = new JSONObject()
+                .append("players", firstPlayer)
+                .append("players", secondPlayer)
+                .put("position", -1);
+
+
+        HttpResponse<JsonNode> addPairResponse = Unirest.post(URI_BASENAME + "api/ladder")
+                .body(payload.toString())
+                .asJson();
+
+        assertEquals(200, addPairResponse.getStatus());
+    }
+
+    @Test
+    public void addPairToLadderTwoNew() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+
+        JSONObject firstPlayer = new JSONObject()
+                .put("existingId", -1)
+                .put("firstName", "mario")
+                .put("lastName", "mario");
+
+        JSONObject secondPlayer = new JSONObject()
+                .put("existingId", -1)
+                .put("firstName", "luigi")
+                .put("lastName", "mario");
+
+        JSONObject payload = new JSONObject()
+                .append("players", firstPlayer)
+                .append("players", secondPlayer)
+                .put("position", 1);
+
+
+        HttpResponse<JsonNode> addPairResponse = Unirest.post(URI_BASENAME + "api/ladder")
+                .body(payload.toString())
+                .asJson();
+
+        assertEquals(200, addPairResponse.getStatus());
     }
 }

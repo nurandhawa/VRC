@@ -1,25 +1,10 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
-import ca.sfu.teambeta.accounts.AccountManager;
-import ca.sfu.teambeta.accounts.CredentialsManager;
-import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
-import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
-import ca.sfu.teambeta.accounts.Responses.SessionResponse;
-import ca.sfu.teambeta.accounts.UserSessionManager;
-import ca.sfu.teambeta.core.*;
-import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.InputValidator;
-import ca.sfu.teambeta.logic.TimeManager;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
-import ca.sfu.teambeta.persistence.DBManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import javax.servlet.MultipartConfigElement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -29,7 +14,42 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static spark.Spark.*;
+import javax.servlet.MultipartConfigElement;
+
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
+import ca.sfu.teambeta.accounts.AccountManager;
+import ca.sfu.teambeta.accounts.CredentialsManager;
+import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
+import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
+import ca.sfu.teambeta.accounts.UserSessionManager;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.InputValidator;
+import ca.sfu.teambeta.logic.TimeManager;
+import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.persistence.DBManager;
+
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.halt;
+import static spark.Spark.patch;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.secure;
+import static spark.Spark.staticFiles;
 
 /**
  * Created by NoorUllah on 2016-06-16.
@@ -229,8 +249,8 @@ public class AppController {
             }
 
             for (int i = 0; i < MAX_SIZE; i++) {
-                Integer existingId = newPlayers.get(i).getExistingId();
-                if (existingId != null && existingId >= 0) {
+                int existingId = newPlayers.get(i).getExistingId();
+                if (existingId >= 0) {
                     newPlayers.remove(i);
                     newPlayers.add(i, dbManager.getPlayerFromID(existingId));
                 }
