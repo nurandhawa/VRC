@@ -48,6 +48,7 @@
           <li><a href="matches.html">Matches</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a href="registration.html">Admin Panel</a></li>
           <li><a id="logout_nav" href="login.html">Log Out</a></li>
         </ul>
       </div>
@@ -60,15 +61,15 @@
   <div class="header-item"><h1 class = "header-mid">Last modified on {{ timestamp }}</h1></div>
 
   <div v-if="role === 'ADMINISTRATOR'" class="header-right header-item">
-    <div class = "header-button">
+
       <component :is="mode" transition="fade" transition-mode="out-in">
       </component>
       <a v-if="mode == 'edit'" href="api/ladder/download" title="Download Ladder" id="downloadBtn"
-         class="btn btn-raised btn-primary">
+         class="btn btn-raised btn-primary header-button">
         <i class="glyphicon glyphicon-download-alt"></i>
       </a>
       <a v-if="mode == 'edit'" v-on:click="uploadLadder()" title="Upload Ladder" id="uploadLadderBtn"
-         class="btn btn-raised btn-primary">
+         class="btn btn-raised btn-primary header-button">
         <i class="glyphicon glyphicon-upload"></i>
       </a>
       <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
@@ -237,14 +238,26 @@
     <validator name="pairValidator">
       <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
         <div class="panel-body">
-          <div class="pair-name">
-            <span class="label label-info position">{{ entry.position }}</span>
+          <div class="pair-name flex-row">
+              <div class="label label-info position" style="width: 2.5em; height: 2.2em; text-align: center; margin-right: 20px;">
+                  <span style="display: inline-block; line-height: 1.5em;">{{ entry.position }}</span>
+              </div>
             <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
             <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
-            {{ entry.teamName }}
-            <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
-            </component>
-            <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)></time-select-button>
+            <div  class="flex-row-element" style="flex: 2;">
+
+            <span>
+              {{ entry.p1Name }} and <br>
+              {{ entry.p2Name }}
+            </span>
+            </div>
+              <div>
+                  <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
+                  </component>
+                  <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)
+                                      class="btn btn-raised btn-xs toggle-button" style="color: white; background:#707070;"></time-select-button>
+              </div>
+
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">
               <div class="modal-dialog">
                 <div id="timeSelectModalContent" class="modal-content">
@@ -293,6 +306,7 @@
           </div>
         </div>
       </div>
+      <div class="filler ladder-element"></div>
     </validator>
   </div>
   <div class="pages-container">

@@ -39,17 +39,28 @@
 
 .ladder {
     padding: 20px 15px 10px;
+    margin-left: 2vw;
     display: flex;
-    height: 57.5em;
+    height: 68em;
     flex-flow: column wrap;
     vertical-align: text-top;
-    align-items: center;
+    justify-content: flex-start
 }
 
 .ladder-element {
     width: 47%;
-    height: 4em;
+    height: 5em;
     align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+
+.ladder-team-name {
+
+}
+
+.filler {
+    height: 0em;
 }
 
 .pair-name {
@@ -342,6 +353,15 @@
 
 /**/
 
+.flex-row {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.flex-row-element {
+    flex: 1;
+}
+
 .position-label {
     font-size: 1.5em;
     margin: auto;
@@ -441,14 +461,19 @@
     }
 
     .ladder {
+        margin-left: 0;
         flex-flow: row wrap;
         justify-content: center;
-        align-content: flex-start;
-        height: 112em;
+        align-items: flex-start;
+        height: 136em;
     }
 
     .ladder-element {
-        width: 80%
+        width: 80%;
+    }
+
+    .filler {
+        height: 100%;
     }
 
     .match-item {
