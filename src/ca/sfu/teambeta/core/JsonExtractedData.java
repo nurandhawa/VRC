@@ -23,7 +23,11 @@ public class JsonExtractedData {
     @Expose
     private String time;
     @Expose
-    private String file;
+    private String securityQuestion;
+    @Expose
+    private String securityAnswer;
+    @Expose
+    private String PlayerId;
 
 
     public JsonExtractedData() {
@@ -66,11 +70,27 @@ public class JsonExtractedData {
         this.time = time;
     }
 
-    public String getFile() {
-        return file;
+    public String getSecurityQuestion() {
+        return securityQuestion;
     }
 
-    public void setFile(String file) {
-        this.file = file;
+    public void setSecurityQuestion(String securityQuestion) {
+        this.securityQuestion = securityQuestion;
+    }
+
+    public String getSecurityAnswer() {
+        return securityAnswer;
+    }
+
+    public void setSecurityAnswer(String securityAnswer) {
+        this.securityAnswer = securityAnswer;
+    }
+
+    public String getPlayerId() {
+        return PlayerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        PlayerId = playerId;
     }
 }
