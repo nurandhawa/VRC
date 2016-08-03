@@ -242,8 +242,8 @@
               <div class="label label-info position" style="width: 2.5em; height: 2.2em; text-align: center; margin-right: 20px;">
                   <span style="display: inline-block; line-height: 1.5em;">{{ entry.position }}</span>
               </div>
-            <span v-if="entry.positionChange > 0" style="color:green" class="position-arrow">&#9650{{ entry.positionChange }}  </span>
-            <span v-if="entry.positionChange < 0" style="color:red" class="position-arrow">&#9660{{ -entry.positionChange }}  </span>
+            <span v-if="entry.positionChange > 0" class="position-arrow arrow-up">&#9650{{ entry.positionChange }}  </span>
+            <span v-if="entry.positionChange < 0" class="position-arrow arrow-down">&#9660{{ -entry.positionChange }}  </span>
             <div  class="flex-row-element" style="flex: 2;">
 
             <span>

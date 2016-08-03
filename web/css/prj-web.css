@@ -63,6 +63,14 @@
     margin-right: 1%;
 }
 
+.arrow-up {
+    color: green;
+}
+
+.arrow-down {
+    color: red;
+}
+
 .ladder-team-name {
 
 }
