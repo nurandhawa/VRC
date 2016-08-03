@@ -51,6 +51,10 @@
         }
     });
 
+    Vue.validator('minLength', function (val) {
+        return /^.{6,}$/.test(val);
+    });
+
     var onValid = function() {
         if (this.$registrationFormValidator.touched) {
             $("#submitButton").prop("disabled", false);
