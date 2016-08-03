@@ -91,6 +91,26 @@ public class AccountManagerTest {
 
     }
 
+    @Test(expected = AccountRegistrationException.class)
+    public void registerTwice() throws GeneralUserAccountException, AccountRegistrationException, NoSuchUserException, InvalidInputException {
+        // Fill all information needed to register a User (with a Player)
+        String email = "nick@gmail.com";
+        String password = "password";
+
+        int playerId = playerFromDB.getID();
+
+        String secQuestion = "What is the name of my dog?";
+        String secAnswer = "Max";
+
+
+        // Register the player
+        accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
+
+        // Register again
+        accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
+
+    }
+
     @Test
     public void login() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException, InvalidCredentialsException, NoSuchUserException, NoSuchSessionException {
         String email = "maria@gmail.com";
@@ -102,6 +122,28 @@ public class AccountManagerTest {
         boolean sessionExists = UserSessionManager.authenticateSession(response.getSessionToken());
 
         Assert.assertTrue(sessionExists);
+    }
+
+    @Test(expected = NoSuchUserException.class)
+    public void loginWithNonExistentUser() throws GeneralUserAccountException, NoSuchUserException, InvalidInputException, InvalidCredentialsException {
+        accountManager.login("noEmail@noDomain.com", "password");
+    }
+
+    @Test(expected = InvalidCredentialsException.class)
+    public void loginWithWrongCredentials() throws GeneralUserAccountException, NoSuchUserException, InvalidInputException, InvalidCredentialsException, AccountRegistrationException {
+        String email = "maria@gmail.com";
+        String password = "secret";
+
+        accountManager.registerUser(email, password);
+        accountManager.login(email, "wrongPassword");
+    }
+
+    @Test(expected = InvalidInputException.class)
+    public void loginWithInvalidEmailInput() throws GeneralUserAccountException, NoSuchUserException, InvalidInputException, InvalidCredentialsException {
+        // User registration uses the same input validation, so don't need
+        //  to add another test for that.
+
+        accountManager.login("invalidEmail", "somePassword");
     }
 
     @Test(expected = NoSuchSessionException.class)
