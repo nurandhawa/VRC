@@ -57,7 +57,8 @@
 
 .position-arrow {
     align-self: center;
-    margin-left: 2%;
+    margin-left: -1%;
+    margin-right: 1%;
 }
 
 .ladder-team-name {
@@ -210,6 +211,12 @@
 
 .match-pair-button {
 
+}
+
+#removePairInMatch {
+    min-width: 15px;
+    height: 25px;
+    font-size: small;
 }
 
 .modal-pair {
