@@ -1,25 +1,25 @@
+/* jshint -W100 */
 (function () {
     "use strict";
 
     $.material.options.validate = false;
     $.material.init();
 
-    var LOGIN_FORM_ID = "#loginForm";
+    var REGISTRATION_FORM_ID = "#registrationForm";
 
     // Override the submit button redirect
-    $(LOGIN_FORM_ID).submit(function () {
+    $(REGISTRATION_FORM_ID).submit(function () {
         return false;
     });
 
-
-    var onLoggedIn = function(response) {
-        Cookies.set('sessionToken', response.sessionToken);
-        Cookies.set('userRole', response.userRole);
-        window.location.href = "/";
+    var onRegSuccess = function (response) {
+        registrationForm.spinnerVisibility = false;
+        alert("Registration successful!");
     };
 
-    var onLoginError = function (response) {
+    var onRegError = function (response) {
         this.spinnerVisibility = false;
+        alert("Registration failed.");
         if (response.status == 401) {
             this.invalidCredentials = true;
             $("#inputEmail").parent().addClass("has-error");
@@ -32,21 +32,24 @@
     };
 
     var onSubmit = function(event) {
-        console.log("Hey!2");
         this.spinnerVisibility = true;
         var api = new API();
-        api.userLogin(this.email, this.password, this.remember, onLoggedIn, onLoginError.bind(this));
+        api.userRegistration(this.email, this.password, this.securityInfo, onRegSuccess, onRegError.bind(this));
     };
 
     Vue.validator('email', function (val) {
         return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
     });
     Vue.validator('passwordConfirmation', function (val) {
-        return (loginForm.password === val);
+        if (registrationForm){
+            return (registrationForm.password === val);
+        } else {
+            return false;
+        }
     });
 
     var onValid = function() {
-        if (this.$loginFormValidator.touched) {
+        if (this.$registrationFormValidator.touched) {
             $("#submitButton").prop("disabled", false);
         }
     };
@@ -55,20 +58,22 @@
         $("#submitButton").prop("disabled", true);
     };
 
-
-    var loginForm = new Vue({
-        el: LOGIN_FORM_ID,
-        bind: {
-            onLoginError: onLoginError
-        },
+    var registrationForm = new Vue({
+        el: REGISTRATION_FORM_ID,
         components: {
             'ClipLoader': VueSpinner.ClipLoader
         },
         data: {
+            firstName: "",
+            lastName: "",
+            phoneNumber: "",
             email: "",
             password: "",
             passwordConfirmation: "",
-            remember: false,
+            securityInfo: {
+                question: "",
+                answer: ""
+            },
             color: '#03a9f4',
             spinnerVisibility: false,
             invalidCredentials: false
@@ -80,6 +85,5 @@
             onEmailChange: onEmailChange
         }
     });
-
 
 })();

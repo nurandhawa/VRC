@@ -26,14 +26,13 @@
 
 </head>
 
-<body>
+<body style="min-width: 575px;">
 
 <nav class="navbar navbar-info">
     <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -48,8 +47,8 @@
                 <li><a href="matches.html">Matches</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li class="active"><a href="login.html">Login</a></li>
-                <li class="active"><a href="registration.html">Sign Up</a></li>
+                <li class="active"><a href="registration.html">Admin Panel</a></li>
+                <li><a id="logout_nav" href="login.html">Log Out</a></li>
             </ul>
         </div>
 
@@ -58,62 +57,49 @@
 </nav>
 
 <div class="loginwrapper">
-    <div id="loginForm" class="login panel panel-default">
-        <validator name="loginFormValidator" @valid="onValid" @invalid="onInvalid">
+    <h4 class="admin-panel-element admin-panel-header"> Admin Panel </h4>
+    <div id="registrationForm" class="login panel panel-default admin-panel-element">
+        <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
             <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
                 <fieldset>
-                    <legend>Sign Up</legend>
-                    <div class="form-group label-floating" v-validate-class>
-                        <div class="col-md-10">
-                            <input type="text" placeholder="First Name" class="form-control" id="firstName">
+                    <legend style="margin-left: .5em;">Register User</legend>
+                    <span style="margin-left: 1.5em"> (All fields must be filled.) </span>
+                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                        <label for="inputEmail" class="control-label">Email:</label>
+                        <input type="text" class="form-control" id="inputEmail" v-model="email"
+                               v-validate:email="['required', 'email']"
+                               :classes="{ invalid: 'has-error', }">
+                        <p class="help-block" v-if="$registrationFormValidator.email.invalid">You must enter a valid email.</p>
+                    </div>
+                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                        <label for="inputPassword" class="control-label">Password:</label>
+                        <input type="password" class="form-control" id="inputPassword" v-model="password"
+                               v-validate:password="['required']"  :classes="{ invalid: 'has-error', }">
+                        <p class="help-block" v-if="$registrationFormValidator.password.invalid">You must enter a valid password.</p>
+                    </div>
+                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                        <label for="inputPasswordConfirmation" class="control-label">Re-enter Password:</label>
+                        <input type="password" class="form-control" id="inputPasswordConfirmation" group="passwordGroup" v-model="passwordConfirmation"
+                               v-validate:passwordConfirmation="['required', 'passwordConfirmation']" :classes="{ invalid: 'has-error', }">
+                        <p class="help-block" v-if="$registrationFormValidator.passwordGroup.invalid">Your password does not match.</p>
+                    </div>
+                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; ">
+                        <label for="inputSecQues" class="control-label">Please create a security question:</label>
+                        <input class="form-control" id="inputSecQues" v-model="securityInfo.question"
+                               v-validate:question="['required']" :classes="{ invalid: 'has-error', }">
+                    </div>
+                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                        <label for="inputSecAns" class="control-label">Security Answer:</label>
+                        <input class="form-control" id="inputSecAns" v-model="securityInfo.answer"
+                               v-validate:answer="['required']" :classes="{ invalid: 'has-error', }">
+                    </div>
+                    <div class="col-md-10 ">
+                        <button id="submitButton" type="submit" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
+                        <div id="loginAnimation" v-if="spinnerVisibility">
+                            <clip-loader :color="color"></clip-loader>
                         </div>
                     </div>
-                    <div class="form-group label-floating" v-validate-class>
-                        <div class="col-md-10">
-                            <input type="text" placeholder="Last Name" class="form-control" id="lastName">
-                        </div>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class>
-                        <div class="col-md-10">
-                            <input type="text" placeholder="Email" class="form-control" id="inputEmail" v-model="email"
-                                   v-validate:email="['required', 'email']" initial="off"
-                                   :classes="{ invalid: 'has-error', }">
-                            <p class="help-block" v-if="$loginFormValidator.email.invalid">You must enter a valid
-                                email.</p>
-                        </div>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class>
-                        <div class="col-md-10">
-                            <input type="password" placeholder="Password" class="form-control" id="inputPassword"
-                                   v-model="password"
-                                   v-validate:password="['required']" initial="off"
-                                   :classes="{ invalid: 'has-error', }">
-                            <p class="help-block" v-if="$loginFormValidator.password.invalid">You must enter a valid
-                                password.</p>
-                        </div>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class>
-                        <div class="col-md-10">
-                            <input type="password" placeholder="Re-Enter Password" class="form-control"
-                                   id="reInputPassword" v-model="reInputPassword"
-                                   v-validate:password="['required']" initial="off"
-                                   :classes="{ invalid: 'has-error', }">
-                            <p class="help-block" v-if="$loginFormValidator.password.invalid">You password does not
-                                match.</p>
-                        </div>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" v-model="remember"> Remember me
-                        </label>
-                    </div>
-                    <div class="col-md-10">
-                        <center>
-                            <button id="submitButton" type="submit" class="btn btn-success btn-raised"
-                                    disabled="disabled">Submit
-                            </button>
-                        </center>
-                    </div>
+
                 </fieldset>
             </form>
         </validator>
@@ -122,15 +108,17 @@
 
 </body>
 
+<!-- Scripts run after DOM is loaded -->
 <script src="vendors/jquery-1.12.4.js"></script>
 <script src="vendors/vue.js"></script>
 <script src="vendors/vue-validator.js"></script>
+<script src="vendors/vue-spinner.js"></script>
 <script src="vendors/jscookie.js"></script>
 <script src="vendors/bootstrap.js"></script>
 <script src="vendors/material.js"></script>
 <script src="vendors/ripples.js"></script>
 <script src="js/header.js"></script>
 <script src="js/api.js"></script>
-<script src="js/login.js"></script>
+<script src="js/registration.js"></script>
 
 </html>
