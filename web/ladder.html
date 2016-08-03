@@ -243,12 +243,12 @@
               <div class="label label-info position" style="width: 2.5em; height: 2.2em; text-align: center; margin-right: 20px;">
                   <span style="display: inline-block; line-height: 1.5em;">{{ entry.position }}</span>
               </div>
-            <span v-if="entry.positionChange > 0" style="color:green">&#9650{{ entry.positionChange }}  </span>
-            <span v-if="entry.positionChange < 0" style="color:red">&#9660{{ -entry.positionChange }}  </span>
+            <span v-if="entry.positionChange > 0" class="position-arrow arrow-up">&#9650{{ entry.positionChange }}  </span>
+            <span v-if="entry.positionChange < 0" class="position-arrow arrow-down">&#9660{{ -entry.positionChange }}  </span>
             <div  class="flex-row-element" style="flex: 2;">
 
             <span>
-              {{ entry.p1Name }} and <br>
+              {{ entry.p1Name }} <br>
               {{ entry.p2Name }}
             </span>
             </div>
@@ -256,7 +256,7 @@
                   <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
                   </component>
                   <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)
-                                      class="btn btn-raised btn-xs toggle-button" style="color: white; background:#707070;"></time-select-button>
+                                      class="btn btn-raised btn-xs toggle-button"></time-select-button>
               </div>
 
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">

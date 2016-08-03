@@ -32,7 +32,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content mymodal-content">
                             <div class="modal-header">
-                                Edit Match {{ match.scorecardIndex + 1 }}
+                                Edit Group {{ match.scorecardIndex + 1 }}
                             </div>
 
                             <div class="modal-body">
@@ -123,7 +123,7 @@
             <div class="match-item" v-for="match in matches">
                 <div class="panel" v-bind:class="{ 'panel-info': !match.isDone, 'panel-success': match.isDone }">
                     <div id="match{{match.scorecardIndex}}" class="match-heading panel-heading">
-                        <h3 class="match-title panel-title">Match {{ match.scorecardIndex + 1 }}</h3>
+                        <h3 class="match-title panel-title">Group {{ match.scorecardIndex + 1 }}</h3>
                         <h3 class="match-title panel-title" style="text-align: right">{{match.timeSlot}}</h3>
                         <component :is="mode" column="left" :index="$index" transition="fade" transition-mode="out-in">
                         </component>
