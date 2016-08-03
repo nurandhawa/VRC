@@ -28,7 +28,9 @@ public class MatchesAPITest extends APITest {
     public void testGetLatestMatchesLoggedIn() throws UnirestException {
         login(EMAIL, PASSWORD, REMEMBER_ME);
         for (int i = 1; i <= 10; i++) {
-            changePairToPlaying(i);
+            Unirest.patch(URI_BASENAME + "api/ladder/" + i)
+                    .queryString("newStatus", "playing")
+                    .asJson();
         }
 
         HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/matches")

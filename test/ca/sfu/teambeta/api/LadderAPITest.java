@@ -6,13 +6,11 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import org.json.JSONArray;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;
 
-/**
- * Created by gordo on 7/27/2016.
- */
 public class LadderAPITest extends APITest {
 
     @Test
@@ -25,7 +23,7 @@ public class LadderAPITest extends APITest {
         assertEquals(200, jsonResponse.getStatus());
         JsonNode node = jsonResponse.getBody();
         JSONArray ladder = node.getObject().getJSONArray("pairs");
-        assertEquals(getLadderLength(), ladder.length());
+        assertEquals(getOriginalLadderLength(), ladder.length());
     }
 
     @Test
@@ -52,17 +50,103 @@ public class LadderAPITest extends APITest {
     public void testChangePlayingStatusTwiceLoggedIn() throws UnirestException {
         login(EMAIL, PASSWORD, REMEMBER_ME);
 
-        changePairToPlaying(1);
+        Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
         assertEquals(404, jsonPairUpdateResponse.getStatus());
     }
 
     @Test
     public void testChangePlayingStatusNotLoggedIn() throws UnirestException {
-        HttpResponse<JsonNode> jsonPairUpdateResponse = changePairToPlaying(1);
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
 
         assertEquals(401, jsonPairUpdateResponse.getStatus());
+    }
+
+
+    @Test
+    public void testDeletePair() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+        Unirest.delete(URI_BASENAME + "api/ladder/" + 1)
+                .asJson();
+
+        HttpResponse<JsonNode> jsonResponse = Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+
+        assertEquals(200, jsonResponse.getStatus());
+        JsonNode node = jsonResponse.getBody();
+        JSONArray ladder = node.getObject().getJSONArray("pairs");
+        assertEquals(getOriginalLadderLength() - 1, ladder.length());
+    }
+
+    @Test
+    public void testDeletePairThenActive() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+        Unirest.delete(URI_BASENAME + "api/ladder/" + 1)
+                .asJson();
+
+        Unirest.get(URI_BASENAME + "api/ladder")
+                .header("accept", "application/json")
+                .asJson();
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 1)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        assertEquals(500, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    @Ignore("The UUID field of Player will result in two Players of the same name to be not equal")
+    public void testSetSamePlayerActive() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+        Unirest.patch(URI_BASENAME + "api/ladder/" + 2)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 17)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        assertEquals(404, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void testDeletePairThenSamePlayerActive() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+        Unirest.delete(URI_BASENAME + "api/ladder/" + 2)
+                .asJson();
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 17)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        assertEquals(200, jsonPairUpdateResponse.getStatus());
+    }
+
+    @Test
+    public void testDeleteActivePairThenSamePlayerActive() throws UnirestException {
+        login(EMAIL, PASSWORD, REMEMBER_ME);
+
+        Unirest.patch(URI_BASENAME + "api/ladder/" + 2)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        Unirest.delete(URI_BASENAME + "api/ladder/" + 2)
+                .asJson();
+
+        HttpResponse<JsonNode> jsonPairUpdateResponse = Unirest.patch(URI_BASENAME + "api/ladder/" + 17)
+                .queryString("newStatus", "playing")
+                .asJson();
+
+        assertEquals(200, jsonPairUpdateResponse.getStatus());
     }
 }

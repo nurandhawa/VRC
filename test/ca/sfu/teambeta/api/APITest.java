@@ -44,7 +44,7 @@ public class APITest {
     public static final String PASSWORD = "demoPass";
     public static final String REMEMBER_ME = "false";
     public static final String URI_BASENAME = "https://localhost:8000/";
-    private int ladderLength;
+    private int originalLadderLength;
 
     @Before
     public void startServer() throws Exception {
@@ -54,7 +54,7 @@ public class APITest {
                 Ladder newLadder = null;
                 try {
                     newLadder = CSVReader.setupTestingLadder();
-                    ladderLength = newLadder.getLadderLength();
+                    originalLadderLength = newLadder.getLadderLength();
                 } catch (Exception e) {
                     System.out.println("INVALID CSV FILE");
                     throw e;
@@ -111,20 +111,8 @@ public class APITest {
                 .asJson();
     }
 
-    protected HttpResponse<JsonNode> changePairToPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(URI_BASENAME + "api/ladder/" + pairId)
-                .queryString("newStatus", "playing")
-                .asJson();
-    }
-
-    protected HttpResponse<JsonNode> changePairToNotPlaying(int pairId) throws UnirestException {
-        return Unirest.patch(URI_BASENAME + "api/ladder/1")
-                .queryString("newStatus", "not playing")
-                .asJson();
-    }
-
-    public int getLadderLength() {
-        return ladderLength;
+    int getOriginalLadderLength() {
+        return originalLadderLength;
     }
 
 }
