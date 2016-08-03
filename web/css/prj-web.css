@@ -55,6 +55,11 @@
     align-content: center;
 }
 
+.position-arrow {
+    align-self: center;
+    margin-left: 2%;
+}
+
 .ladder-team-name {
 
 }
