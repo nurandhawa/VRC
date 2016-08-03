@@ -27,7 +27,7 @@ public class JsonExtractedData {
     @Expose
     private String securityAnswer;
     @Expose
-    private String PlayerId;
+    private String playerId;
 
 
     public JsonExtractedData() {
@@ -87,10 +87,10 @@ public class JsonExtractedData {
     }
 
     public String getPlayerId() {
-        return PlayerId;
+        return playerId;
     }
 
     public void setPlayerId(String playerId) {
-        PlayerId = playerId;
+        this.playerId = playerId;
     }
 }

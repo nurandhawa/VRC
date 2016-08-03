@@ -46,6 +46,8 @@
 
     var userRole = Cookies.get("userRole");
 
+    var navbar = new Navbar(userRole);
+
     var header = new Header("Matches", "Edit Matches", "TBD", editFunction, userRole);
 
     var api = new API();

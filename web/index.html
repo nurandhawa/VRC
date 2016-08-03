@@ -27,7 +27,7 @@
 </head>
 
 <body style="min-width:450px">
-  <nav class="navbar navbar-info">
+  <nav id="nav" class="navbar navbar-info">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -48,7 +48,7 @@
           <li><a href="matches.html">Matches</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li class="active"><a href="registration.html">Admin Panel</a></li>
+          <li v-if="role === 'ADMINISTRATOR'"><a href="registration.html">Admin Panel</a></li>
           <li><a id="logout_nav" href="login.html">Log Out</a></li>
         </ul>
       </div>
@@ -331,6 +331,7 @@
 <script src="vendors/material.js"></script>
 <script src="vendors/ripples.js"></script>
 <script src="js/api.js"></script>
+<script src="js/navbar.js"></script>
 <script src="js/header.js"></script>
 <script src="js/ladder.js"></script>
 <script src="js/ladderloader.js"></script>
