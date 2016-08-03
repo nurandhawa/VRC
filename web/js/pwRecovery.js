@@ -15,13 +15,13 @@
         $("#submitEmailButton").prop("disabled", true);
         this.spinnerVisibilityTop = true;
         var api = new API();
-        api.getUserSecurityQuestion(this.email, onGotQuestion, onGotQuestionError.bind(this));
+        api.getUserSecurityQuestion(this.email, onGotQuestion.bind(this), onGotQuestionError.bind(this));
     };
 
-    var onGotQuestion = function (securityQuestion){
+    var onGotQuestion = function (response){
         recoveryForm.emailRetrieved = true;
         this.spinnerVisibilityTop = false;
-        recoveryForm.securityQuestion = securityQuestion;
+        recoveryForm.securityQuestion = response.securityQuestion;
     };
 
     var onGotQuestionError = function (response) {
@@ -36,13 +36,13 @@
     var onAnswerSubmit = function() {
         this.spinnerVisibilityMid = true;
         var api = new API();
-        api.answerSecurityQuestion(this.email, this.securityAnswer, onAnsweredQuestion, onAnsweredQuestionError.bind(this));
+        api.answerSecurityQuestion(this.email, this.securityAnswer, onAnsweredQuestion.bind(this), onAnsweredQuestionError.bind(this));
     };
 
-    var onAnsweredQuestion = function (voucherCode) {
+    var onAnsweredQuestion = function (response) {
         this.spinnerVisibilityMid = false;
         recoveryForm.questionAnswered = true;
-        this.voucherCode = voucherCode;
+        this.voucherCode = response.voucherCode;
     };
 
      var onAnsweredQuestionError = function (response) {
@@ -58,7 +58,7 @@
         if (this.password === this.passwordConfirm){
             this.spinnerVisibilityBottom = true;
             var api = new API();
-            api.changePassword(this.email, this.voucherCode, this.password, onChangedPassword, onChangedPasswordError.bind(this));
+            api.changePassword(this.email, this.voucherCode, this.password, onChangedPassword.bind(this), onChangedPasswordError.bind(this));
         } else {
             $("#submitPasswordButton").prop("disabled", true);
             alert("Passwords must match.");

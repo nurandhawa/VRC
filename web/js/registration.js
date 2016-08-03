@@ -13,7 +13,7 @@
     });
 
     var onRegSuccess = function (response) {
-        registrationForm.spinnerVisibility = false;
+        this.spinnerVisibility = false;
         alert("Registration successful!");
     };
 
@@ -34,17 +34,20 @@
     var onSubmit = function(event) {
         this.spinnerVisibility = true;
         var api = new API();
-        api.userRegistration(this.email, this.password, this.securityInfo, onRegSuccess, onRegError.bind(this));
+        api.userRegistration(this.email, this.password, this.securityInfo, this.existingPlayer.id, onRegSuccess.bind(this), onRegError.bind(this));
     };
 
     Vue.validator('email', function (val) {
         return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
     });
+
     Vue.validator('passwordConfirmation', function (val) {
-        if (registrationForm){
-            return (registrationForm.password === val);
-        } else {
-            return false;
+        return (this._vm.password === val);
+    });
+
+    Vue.validator('existingPlayer', function (val) {
+        if (this._vm.existingPlayer) {
+            return true;
         }
     });
 
@@ -58,32 +61,43 @@
         $("#submitButton").prop("disabled", true);
     };
 
-    var registrationForm = new Vue({
-        el: REGISTRATION_FORM_ID,
-        components: {
-            'ClipLoader': VueSpinner.ClipLoader
-        },
-        data: {
-            firstName: "",
-            lastName: "",
-            phoneNumber: "",
-            email: "",
-            password: "",
-            passwordConfirmation: "",
-            securityInfo: {
-                question: "",
-                answer: ""
+    var api = new API();
+    api.getLadder(function (ladderData) {
+        var registrationForm = new Vue({
+            el: REGISTRATION_FORM_ID,
+            components: {
+                'ClipLoader': VueSpinner.ClipLoader,
+                'v-select': VueSelect.VueSelect
             },
-            color: '#03a9f4',
-            spinnerVisibility: false,
-            invalidCredentials: false
-        },
-        methods: {
-            onSubmit: onSubmit,
-            onValid: onValid,
-            onInvalid: onInvalid,
-            onEmailChange: onEmailChange
-        }
+            data: {
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+                email: "",
+                password: "",
+                passwordConfirmation: "",
+                securityInfo: {
+                    question: "",
+                    answer: ""
+                },
+                existingPlayer: "",
+                existingPlayers: ladderData.players,
+                color: '#03a9f4',
+                spinnerVisibility: false,
+                invalidCredentials: false
+            },
+            methods: {
+                onSubmit: onSubmit,
+                onValid: onValid,
+                onInvalid: onInvalid,
+                onEmailChange: onEmailChange
+            },
+            watch: {
+                "existingPlayer": function (newVal, oldVal) {
+                    this.$validate();
+                }
+            }
+        });
     });
 
 })();

@@ -46,7 +46,7 @@ var API = (function() {
 
                         var player1Name = player1.firstName + " " + player1.lastName;
                         var player2Name = player2.firstName + " " + player2.lastName;
-                        
+
                         pair.teamName = player1Name + " and " + player2Name;
                         pair.p1Name = player1Name;
                         pair.p2Name = player2Name;
@@ -349,14 +349,16 @@ var API = (function() {
             });
     };
 
-    API.prototype.userRegistration = function (email, password, securityInfo, doneCallback, failCallback) {
+    API.prototype.userRegistration = function (email, password, securityInfo, playerId, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/login/new",
+            url: SERVER_URL + "/login/newFull",
             data: JSON.stringify({
                 "email": email,
                 "password": password,
-                "securityInfo": securityInfo
+                "securityQuestion": securityInfo.question,
+                "securityAnswer": securityInfo.answer,
+                "playerId": playerId
             })
         })
             .done(function (response) {

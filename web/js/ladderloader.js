@@ -35,6 +35,8 @@
 
     var userRole = Cookies.get("userRole");
 
+    var navbar = new Navbar(userRole);
+
     var header = new Header("Ladder", "Edit Ladder", ladderData.timeStamp, editFunction, userRole);
     ladder.component.$watch("timeStamp", function (newVal, oldVal) {
         header.updateHeader.call(header.component, newVal);
