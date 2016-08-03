@@ -219,7 +219,7 @@
             <span>
               {{ entry.p2Name }}
             </span>
-            <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in" style="margin-top: 1em; width: 8vw;">
+            <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in" style="margin-top: 1em;">
             </component>
             <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)></time-select-button>
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">
