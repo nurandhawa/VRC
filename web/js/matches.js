@@ -81,7 +81,7 @@ var Matches = (function () {
                     api.inputMatchResults(gameSession, match.id, results, function() {
                         this.refreshMatches(gameSession);
                     }.bind(this));
-
+                    this.closeModal();
                 },
                 refreshMatches: function(gameSession) {
                     var api = new API();
