@@ -46,7 +46,7 @@ var API = (function() {
 
                         var player1Name = player1.firstName + " " + player1.lastName;
                         var player2Name = player2.firstName + " " + player2.lastName;
-
+                        
                         pair.teamName = player1Name + " and " + player2Name;
                         pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
                         ladderData.players.push({
@@ -205,10 +205,24 @@ var API = (function() {
             });
     };
 
-    API.prototype.reorderLadder = function(gameSession) {
+    API.prototype.reorderLadder = function (gameSession, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
             url: SERVER_URL + "/matches" + GAMESESSION_PARAM + gameSession
+        })
+        .done(function (response) {
+            if (doneCallback) {
+                doneCallback(response);
+            }
+        })
+        .fail(function (response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                alert(responseBody.message);
+            }
         });
     };
 

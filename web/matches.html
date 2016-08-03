@@ -110,7 +110,12 @@
     </script>
 
     <script type="x/template" id="reorderLadderButtonTemplate">
-        <button class="btn btn-raised btn-success header-button" v-on:click="saveResults()"disabled="{{ disabled }}">Reorder Ladder</button>
+        <div id="reorderAnimation" v-show="spinnerVisible">
+            <clip-loader :color="#03a9f4"></clip-loader>
+        </div>
+        <button class="btn btn-raised btn-success header-button" v-else v-on:click="saveResults()"
+                disabled="{{ disabled }}">Reorder Ladder
+        </button>
     </script>
 
     <script type="x/template" id="matchesComponentTemplate">
@@ -216,6 +221,7 @@
 <script src="vendors/vue.js"></script>
 <script src="vendors/vue-validator.js"></script>
 <script src="vendors/jscookie.js"></script>
+<script src="vendors/vue-spinner.js"></script>
 <script src="vendors/bootstrap.js"></script>
 <script src="vendors/material.js"></script>
 <script src="vendors/ripples.js"></script>
