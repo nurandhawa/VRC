@@ -114,7 +114,7 @@
             <clip-loader :color="#03a9f4"></clip-loader>
         </div>
         <button class="btn btn-raised btn-success header-button" v-else v-on:click="saveResults()"
-                disabled="{{ disabled }}">Reorder Ladder
+                id="reorderLadderButton" disabled="{{ disabled }}">Reorder Ladder
         </button>
     </script>
 
@@ -187,7 +187,7 @@
     <div class="header-right header-item">
         <a href="matchestemplate.html" class="btn btn-raised btn-primary header-button">Print Matches</a>
         <div v-if="mode === 'edit' && role === 'ADMINISTRATOR'" transition="fade" transition-mode="out-in">
-            <reorder-ladder-button id="reorderLadderButton"></reorder-ladder-button>
+            <reorder-ladder-button></reorder-ladder-button>
         </div>
         <a v-on:click="onClick()" class="btn btn-raised btn-primary header-button">{{ buttonTitle }}</a>
     </div>
