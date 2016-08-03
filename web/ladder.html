@@ -236,7 +236,6 @@
         </div>
       </div>
     </div>
-    <validator name="pairValidator">
       <div class="panel panel-default ladder-element" v-for="entry in currentPage | filterBy searchText in 'teamName'">
         <div class="panel-body">
           <div class="pair-name flex-row">
@@ -277,39 +276,40 @@
               </div>
             </div>
 
-            <div id="modal{{ entry.position - 1 }}" class="modal">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 class="modal-title">Edit Pair</h3>
-                  </div>
-                  <div class="modal-body">
-                    <div class="form-group modal-form-group" v-validate-class>
-                      <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
-                      <div class="col-md-10">
-                        <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
-                               :field="entry.teamName" v-validate="['required', 'position']" :classes="{ invalid: 'has-error', }"
-                               @valid="onValid('#editPairSave' + (entry.position - 1))", @invalid="onInvalid('#editPairSave' + (entry.position - 1))">
-                        <p class="help-block">Position must be greater than 0.</p>
+            <validator name="pairValidator">
+              <div id="modal{{ entry.position - 1 }}" class="modal">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                      <h3 class="modal-title">Edit Pair</h3>
+                    </div>
+                    <div class="modal-body">
+                      <div class="form-group modal-form-group" v-validate-class>
+                        <h4 for="ladderPosition" class="col-md-2">Ladder Position</h4>
+                        <div class="col-md-10">
+                          <input type="text" class="form-control" id="ladderPosition" v-model="entry.newPosition" value="{{ entry.position }}"
+                                 v-validate:position="['required', 'position']" :classes="{ invalid: 'has-error', }"
+                                 @valid="onValid('#editPairSave' + (entry.position - 1))", @invalid="onInvalid('#editPairSave' + (entry.position - 1))">
+                          <p class="help-block">Position must be greater than 0.</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete(entry.position - 1)">Delete pair</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="editPairSave{{ entry.position - 1 }}" type="button" class="btn btn-success" v-on:click="onUpdate(entry.position - 1)" disabled="disabled">
-                      Save changes
-                    </button>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-danger modal-button-left" v-on:click="onDelete(entry.position - 1)">Delete pair</button>
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                      <button id="editPairSave{{ entry.position - 1 }}" type="button" class="btn btn-success" v-on:click="onUpdate(entry.position - 1)" disabled="disabled">
+                        Save changes
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </validator>
           </div>
         </div>
       </div>
       <div class="filler ladder-element"></div>
-    </validator>
   </div>
   <div class="pages-container">
     <ul class="pagination pages-buttons">
