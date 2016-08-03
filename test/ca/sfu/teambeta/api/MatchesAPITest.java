@@ -21,7 +21,7 @@ public class MatchesAPITest extends APITest {
                 .header("accept", "application/json")
                 .asJson();
 
-        assertEquals(200, jsonResponse.getStatus());
+        assertEquals(404, jsonResponse.getStatus());
     }
 
     @Test
