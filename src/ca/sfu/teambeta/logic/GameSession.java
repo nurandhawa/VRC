@@ -302,7 +302,7 @@ public class GameSession extends Persistable {
             if (oldPosition == -1) {
                 positionsChanges.put(pair, 0);
             } else {
-                positionsChanges.put(pair, position - oldPosition);
+                positionsChanges.put(pair, oldPosition - position);
             }
         }
         return positionsChanges;
