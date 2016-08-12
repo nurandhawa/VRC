@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -49,6 +50,9 @@ public class GameSession extends Persistable {
     @ElementCollection
     private Map<Pair, Time> timeSlots = new HashMap<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    private GameSession previousGameSession = null;
+
     private long timestamp;
 
     // Default constructor for Hibernate
@@ -58,6 +62,14 @@ public class GameSession extends Persistable {
 
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
+        initializeActivePlayers();
+        createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
+        setTimestamp();
+    }
+
+    public GameSession(GameSession gameSession) {
+        this.previousGameSession = gameSession;
+        this.ladder = gameSession.getReorderedLadder();
         initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         setTimestamp();
@@ -270,5 +282,29 @@ public class GameSession extends Persistable {
 
     public Map<Pair, Time> getTimeSlots() {
         return new HashMap<>(timeSlots);
+    }
+
+    private int getPositionOfPair(Pair pair) {
+        return ladder.getPairs().indexOf(pair);
+    }
+
+    public Map<Pair, Integer> getPositionChanges() {
+        Map<Pair, Integer> positionsChanges = new HashMap<>();
+        if (previousGameSession == null) {
+            return positionsChanges;
+        }
+        List<Pair> pairs = ladder.getPairs();
+        for (int position = 0; position < pairs.size(); position++) {
+            Pair pair = pairs.get(position);
+
+            int oldPosition = previousGameSession.getPositionOfPair(pair);
+
+            if (oldPosition == -1) {
+                positionsChanges.put(pair, 0);
+            } else {
+                positionsChanges.put(pair, position - oldPosition);
+            }
+        }
+        return positionsChanges;
     }
 }

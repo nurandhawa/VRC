@@ -38,8 +38,6 @@ public class LadderJSONSerializer implements JsonSerializer<GameSession> {
         pairJson.addProperty("id", pair.getID());
         pairJson.addProperty("pairScore", pair.getPairScore());
         pairJson.addProperty("position", position);
-        int positionChange = ( pair.getLastWeekPosition() - position );
-        pairJson.addProperty("positionChange", positionChange);
         pairJson.addProperty("isPlaying", isPlaying);
         if (timeSlots.containsKey(pair)) {
             pairJson.addProperty("timeSlot", timeSlots.get(pair).toString());
@@ -52,6 +50,7 @@ public class LadderJSONSerializer implements JsonSerializer<GameSession> {
         List<Pair> pairList = src.getAllPairs();
         Set<Pair> activePairs = src.getActivePairSet();
         Map<Pair, Time> timeSlots = src.getTimeSlots();
+        Map<Pair, Integer> positionChanges = src.getPositionChanges();
         Date ladderModificationDate = src.getLadderModificationDate();
 
         JsonObject ladderObject = new JsonObject();
@@ -61,6 +60,7 @@ public class LadderJSONSerializer implements JsonSerializer<GameSession> {
         for (Pair pair : pairList) {
             JsonObject pairJson = getPairJsonObject(pair, timeSlots, position,
                     activePairs.contains(pair));
+            pairJson.addProperty("positionChange", positionChanges.getOrDefault(pair, 0));
             position++;
             pairsArray.add(pairJson);
         }
