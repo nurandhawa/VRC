@@ -62,7 +62,6 @@ public class GameSession extends Persistable {
 
     public GameSession(Ladder ladder) {
         this.ladder = ladder;
-        initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         setTimestamp();
     }
@@ -70,7 +69,6 @@ public class GameSession extends Persistable {
     public GameSession(GameSession gameSession) {
         this.previousGameSession = gameSession;
         this.ladder = gameSession.getReorderedLadder();
-        initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         setTimestamp();
     }
@@ -78,7 +76,6 @@ public class GameSession extends Persistable {
     // Constructor for testing
     public GameSession(Ladder ladder, long timestamp) {
         this.ladder = ladder;
-        initializeActivePlayers();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         this.timestamp = timestamp;
     }
@@ -90,8 +87,6 @@ public class GameSession extends Persistable {
     // Use me ONLY for importing a CSV file!!
     public void replaceLadder(Ladder ladder) {
         this.ladder = ladder;
-        initializeActivePlayers();
-        updatePairsLastWeekPositions();
         createGroups(new VrcScorecardGenerator(), new VrcTimeSelection());
         setTimestamp();
     }
@@ -113,14 +108,6 @@ public class GameSession extends Persistable {
         return ladder.getPairs().stream()
                 .filter(pair -> activePairs.contains(pair))
                 .collect(Collectors.toList());
-    }
-
-    public void initializeActivePlayers() {
-        for (Pair p : this.ladder.getPairs()) {
-            if (p.isPlaying()) {
-                setPairActive(p);
-            }
-        }
     }
 
     public Set<Pair> getActivePairSet() {
@@ -196,7 +183,6 @@ public class GameSession extends Persistable {
     }
 
     public void reorderLadder(LadderReorderer reorderer, TimeSelection timeSelector) {
-        updatePairsLastWeekPositions();
         List<Pair> reorderedList =
                 reorderer.reorder(getAllPairs(), scorecards, activePairs, penalties);
         if (reorderedLadder == null) {
@@ -209,18 +195,9 @@ public class GameSession extends Persistable {
         }
     }
 
-    private void updatePairsLastWeekPositions() {
-        List<Pair> pairList = this.ladder.getPairs();
-        for (int i = 0; i < pairList.size(); i++) {
-            Pair pair = pairList.get(i);
-            pair.setLastWeekPosition(i + 1);
-        }
-    }
-
     public boolean addNewPairAtIndex(Pair newPair, int index) {
         boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
-            newPair.setLastWeekPosition(index + 1);
             ladder.insertAtIndex(index, newPair);
         }
         return pairExists;
@@ -229,7 +206,6 @@ public class GameSession extends Persistable {
     public boolean addNewPairAtEnd(Pair newPair) {
         boolean pairExists = ladder.getPairs().contains(newPair);
         if (!pairExists) {
-            newPair.setLastWeekPosition(ladder.getLadderLength() + 1);
             ladder.insertAtEnd(newPair);
         }
         return pairExists;

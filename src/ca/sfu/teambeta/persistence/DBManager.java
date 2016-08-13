@@ -279,10 +279,8 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
-        int previousPosition = pair.getLastWeekPosition();
         removePair(pairId);
         gameSession.addNewPairAtIndex(pair, newPosition);
-        pair.setLastWeekPosition(previousPosition);
         persistEntity(gameSession);
     }
 

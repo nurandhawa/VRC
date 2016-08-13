@@ -18,7 +18,6 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
-import javax.persistence.Transient;
 
 import ca.sfu.teambeta.persistence.Persistable;
 
@@ -37,11 +36,6 @@ public class Pair extends Persistable {
     @Type(type = "timestamp")
     private Date dateCreated;
 
-    @Transient
-    private int lastWeekPosition;
-    @Transient
-    @Expose
-    private boolean isPlaying;
     @Expose
     private int pairScore;
 
@@ -52,14 +46,12 @@ public class Pair extends Persistable {
         players.add(firstPlayer);
         players.add(secondPlayer);
         dateCreated = new Date();
-        this.isPlaying = false;
     }
 
     public Pair(Player firstPlayer, Player secondPlayer, boolean isPlaying) {
         players.add(firstPlayer);
         players.add(secondPlayer);
         dateCreated = new Date();
-        this.isPlaying = isPlaying;
     }
 
     public List<Player> getPlayers() {
@@ -107,19 +99,4 @@ public class Pair extends Persistable {
         this.pairScore = pairScore;
     }
 
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
-    }
-
-    public int getLastWeekPosition() {
-        return lastWeekPosition;
-    }
-
-    public void setLastWeekPosition(int lastWeekPosition) {
-        this.lastWeekPosition = lastWeekPosition;
-    }
 }
