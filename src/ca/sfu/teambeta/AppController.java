@@ -213,6 +213,21 @@ public class AppController {
             return output;
         });
 
+        get("/registration", (request, response) -> {
+            PebbleEngine engine = new PebbleEngine.Builder()
+                    .templateCache(null)
+                    .autoEscaping(false)
+                    .build();
+            PebbleTemplate compiledTemplate = engine.getTemplate("templates/registration.html");
+
+            Writer writer = new StringWriter();
+            compiledTemplate.evaluate(writer);
+
+            String output = writer.toString();
+            response.body(output);
+            return output;
+        });
+
         get("/", (request, response) -> {
             PebbleEngine engine = new PebbleEngine.Builder()
                     .templateCache(null)
@@ -759,8 +774,12 @@ public class AppController {
         });
 
         before("/logout", (request, response) -> {
-            String sessionToken = request.cookie(SESSION_TOKEN_KEY);
-            accountManager.logout(sessionToken);
+            try {
+                String sessionToken = request.cookie(SESSION_TOKEN_KEY);
+                accountManager.logout(sessionToken);
+            } catch (NoSuchSessionException ignored) {
+
+            }
             response.redirect("/");
         });
     }
