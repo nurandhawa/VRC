@@ -155,10 +155,10 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
-            if (TimeManager.getInstance().isExpired()) {
-                response.status(NOT_FOUND);
-                return getErrResponse(LADDER_DISABLED);
-            }
+//            if (TimeManager.getInstance().isExpired()) {
+//                response.status(NOT_FOUND);
+//                return getErrResponse(LADDER_DISABLED);
+//            }
             int id;
             try {
                 id = Integer.parseInt(request.params(ID));
