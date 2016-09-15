@@ -1,5 +1,7 @@
 package ca.sfu.teambeta;
 
+import com.esotericsoftware.minlog.Log;
+
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import org.hibernate.SessionFactory;
 
@@ -12,6 +14,8 @@ import ca.sfu.teambeta.persistence.DBManager;
 
 class Main {
     public static void main(String[] args) throws Exception {
+        Log.set(Log.LEVEL_DEBUG);
+
         DBManager dbManager;
         if (args.length > 0 && args[0].equals("production")) {
             SessionFactory sessionFactory = DBManager.getProductionSession();

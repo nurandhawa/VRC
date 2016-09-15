@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -55,6 +57,8 @@ import static spark.Spark.staticFiles;
  * Created by NoorUllah on 2016-06-16.
  */
 public class AppController {
+    public static final String TAG = "AppController";
+
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
@@ -108,10 +112,10 @@ public class AppController {
         secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
         before("/api/*", (request, response) -> {
-            // Allow access to the login endpoint, so they can sign up/log in
             String endpoint = request.splat()[0];
+            Log.debug(TAG, "Request received at " + endpoint);
+            // Allow access to the login endpoint, so they can sign up/log in
             if (!endpoint.contains("login")) {
-
                 String sessionToken = request.cookie(SESSION_TOKEN_KEY);
                 try {
                     boolean authenticated =
@@ -171,8 +175,8 @@ public class AppController {
 
             try {
                 newPosition = Integer.parseInt(request.queryParams(POSITION)) - 1;
-            } catch (Exception ignored) {
-                ignored.getMessage();
+            } catch (Exception e) {
+                Log.debug(TAG, e.getMessage());
             }
 
             String status = request.queryParams(STATUS);
@@ -244,6 +248,7 @@ public class AppController {
             try {
                 InputValidator.validateNewPlayers(newPlayers, MAX_SIZE);
             } catch (InvalidInputException exception) {
+                Log.debug(TAG, exception.getMessage());
                 response.status(BAD_REQUEST);
                 return getErrResponse(exception.getMessage());
             }
@@ -429,6 +434,7 @@ public class AppController {
                 response.cookie(SESSION_TOKEN_KEY, sessionResponse.getSessionToken());
                 return gson.toJson(sessionResponse);
             } catch (NoSuchUserException | InvalidCredentialsException e) {
+                Log.debug(TAG, e.getMessage());
                 response.status(NOT_AUTHENTICATED);
                 return "";
             }
@@ -578,6 +584,7 @@ public class AppController {
                 response.status(NOT_AUTHENTICATED);
                 return getErrResponse("You need to be logged in to change your security question.");
             } catch (GeneralUserAccountException e) {
+                Log.debug(TAG, e.getMessage());
                 response.status(400);
                 return getErrResponse(e.getMessage());
             }

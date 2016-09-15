@@ -1,5 +1,7 @@
 package ca.sfu.teambeta;
 
+import com.esotericsoftware.minlog.Log;
+
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
@@ -10,6 +12,8 @@ import ca.sfu.teambeta.persistence.DBManager;
 // Do not call me via the IDE!
 public class JarEntry {
     public static void main(String[] args) {
+        Log.set(Log.LEVEL_DEBUG);
+
         SessionFactory sessionFactory = DBManager.getProductionSession();
         DBManager dbManager = new DBManager(sessionFactory);
 
