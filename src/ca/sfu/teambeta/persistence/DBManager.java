@@ -1,7 +1,33 @@
 package ca.sfu.teambeta.persistence;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
+import org.hibernate.criterion.Restrictions;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Map;
+
 import ca.sfu.teambeta.accounts.UserRole;
-import ca.sfu.teambeta.core.*;
+import ca.sfu.teambeta.core.Ladder;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.IllegalDatabaseOperation;
 import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
@@ -9,20 +35,6 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.*;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Utility class that reads and writes data to the database
@@ -267,10 +279,8 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
-        int previousPosition = pair.getLastWeekPosition();
         removePair(pairId);
         gameSession.addNewPairAtIndex(pair, newPosition);
-        pair.setLastWeekPosition(previousPosition);
         persistEntity(gameSession);
     }
 
@@ -458,8 +468,7 @@ public class DBManager {
     }
 
     public synchronized GameSession createNewGameSession(GameSession sourceGameSession) {
-        Ladder nextWeekLadder = sourceGameSession.getReorderedLadder();
-        return new GameSession(nextWeekLadder);
+        return new GameSession(sourceGameSession);
     }
 
     public synchronized void saveGameSession(GameSession gameSession) {

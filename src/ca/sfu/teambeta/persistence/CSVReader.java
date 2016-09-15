@@ -4,16 +4,14 @@ import com.opencsv.CSVWriter;
 
 import java.io.FileReader;
 import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -84,7 +82,6 @@ public class CSVReader {
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
-                pair.setLastWeekPosition(index);
 
                 pairs.put(index, pair);
             }
