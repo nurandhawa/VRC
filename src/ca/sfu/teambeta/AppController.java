@@ -96,6 +96,8 @@ public class AppController {
     private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static Gson gson;
 
+    private boolean isAdministrator;
+
     public AppController(DBManager dbManager, CredentialsManager credentialsManager, int port, String staticFilePath) {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
@@ -124,7 +126,8 @@ public class AppController {
                     halt(NOT_AUTHENTICATED, getNotAuthenticatedResponse(
                             "You must be logged in to view this page."));
                 }
-                //UserSessionManager.isAdministratorSession(sessionToken);
+
+                isAdministrator = UserSessionManager.isAdministratorSession(sessionToken);
             }
         });
 
@@ -155,7 +158,7 @@ public class AppController {
 
         //updates a pair's playing status or position
         patch("/api/ladder/:id", (request, response) -> {
-            if (TimeManager.getInstance().isExpired()) {
+            if (TimeManager.getInstance().isExpired() && !isAdministrator) {
                 response.status(NOT_FOUND);
                 return getErrResponse(LADDER_DISABLED);
             }
@@ -588,7 +591,7 @@ public class AppController {
 
         //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
-            if (TimeManager.getInstance().isExpired()) {
+            if (TimeManager.getInstance().isExpired() && !isAdministrator) {
                 response.status(NOT_FOUND);
                 return getErrResponse(LADDER_DISABLED);
             }
