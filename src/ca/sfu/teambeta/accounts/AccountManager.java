@@ -12,19 +12,18 @@ import java.util.Map;
 /**
  * AccountManager handles:
  * - User Login/Logout
- *
+ * <p>
  * - User Registration
- *  - Registering a user as administrator
- *  - Registering a user as anonymous
- *   - The flow to register a user as anonymous is:
- *     first call registerAnonymousUser which will
- *     pass back a 6 digit code (aka anonymous code).
- *     Since registration is done by the admin, this
- *     code is given to the person to input on a
- *     separate login page. If successful the anon.
- *     user will notice no difference once logged in
- *     from a regular user.
- *
+ * - Registering a user as administrator
+ * - Registering a user as anonymous
+ * - The flow to register a user as anonymous is:
+ * first call registerAnonymousUser which will
+ * pass back a 6 digit code (aka anonymous code).
+ * Since registration is done by the admin, this
+ * code is given to the person to input on a
+ * separate login page. If successful the anon.
+ * user will notice no difference once logged in
+ * from a regular user.
  */
 
 public class AccountManager {
@@ -92,7 +91,6 @@ public class AccountManager {
      * This method can be used to extend the functionality of anonymous
      * users in the future. Or simply provide a way to give limited access
      * to users.
-     *
      */
     public SessionResponse loginViaAnonymousCode(String anonymousLoginCode) throws InvalidCredentialsException {
         boolean validAnonymousLoginCode = (anonymousLoginCodes.get(anonymousLoginCode) != null);
@@ -123,7 +121,7 @@ public class AccountManager {
         boolean questionFieldIsEmpty = (securityQuestion == null || securityQuestion == "");
         boolean answerFieldIsEmpty = (securityQuestionAnswer == null || securityQuestionAnswer == "");
 
-        if (questionFieldIsEmpty || answerFieldIsEmpty ) {
+        if (questionFieldIsEmpty || answerFieldIsEmpty) {
             throw new InvalidInputException("Security question fields cannot be empty");
         }
 
@@ -146,8 +144,7 @@ public class AccountManager {
     }
 
     /**
-     * @deprecated
-     * Moving all registration to use the "registerUserWithPlayer" method
+     * @deprecated Moving all registration to use the "registerUserWithPlayer" method
      * to associate players and users. In the future this method will move
      * to become a private method.
      */
@@ -188,7 +185,6 @@ public class AccountManager {
      * This method can be used to extend the functionality of anonymous
      * users in the future. Or simply provide a way to give limited access
      * to users.
-     *
      */
     public String registerNewAnonymousAccount() throws InvalidInputException, AccountRegistrationException, GeneralUserAccountException {
         String accountName = tokenGenerator.generateUniqueRandomToken();
@@ -230,7 +226,7 @@ public class AccountManager {
         return nonDeletableUsers;
     }
 
-    public User getUser (String email) throws InvalidInputException, NoSuchUserException {
+    public User getUser(String email) throws InvalidInputException, NoSuchUserException {
         InputValidator.validateEmailFormat(email);
         User user = accountDbHandler.getUser(email);
         return user;

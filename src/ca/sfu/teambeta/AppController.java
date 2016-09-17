@@ -614,6 +614,12 @@ public class AppController {
             if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
+            } else if (!isAdministrator) {
+                Player currentPlayer = currentUser.getAssociatedPlayer();
+                if (!dbManager.isPlayerInPair(currentPlayer, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(INVALID_USER);
+                }
             }
 
             String body = request.body();

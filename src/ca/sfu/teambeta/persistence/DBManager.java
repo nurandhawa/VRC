@@ -320,9 +320,9 @@ public class DBManager {
         return status;
     }
 
-    public synchronized boolean isPlayerInPair (Player player, int pairId) {
+    public synchronized boolean isPlayerInPair(Player player, int pairId) {
         Pair pair = getPairFromID(pairId);
-        List<Player> players =  pair.getPlayers();
+        List<Player> players = pair.getPlayers();
         if (players.contains(player)) {
             return true;
         }

@@ -17,7 +17,6 @@ import java.util.Map;
  * - Deleting a session
  * - Checking if a session belongs to an administrator
  * - Getting the number of users logged in
- *
  */
 
 public class UserSessionManager {

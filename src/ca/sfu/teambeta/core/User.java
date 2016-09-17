@@ -66,7 +66,9 @@ public class User extends Persistable {
         return securityAnswerHash;
     }
 
-    public Player getAssociatedPlayer() { return associatedPlayer; }
+    public Player getAssociatedPlayer() {
+        return associatedPlayer;
+    }
 
 
     // MARK: Setters
