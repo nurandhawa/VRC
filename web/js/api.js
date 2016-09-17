@@ -510,6 +510,10 @@ var API = (function() {
                 if (failCallback) {
                     failCallback(response);
                 }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
             });
     };
 
