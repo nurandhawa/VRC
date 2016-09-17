@@ -230,4 +230,10 @@ public class AccountManager {
         return nonDeletableUsers;
     }
 
+    public User getUser (String email) throws InvalidInputException, NoSuchUserException {
+        InputValidator.validateEmailFormat(email);
+        User user = accountDbHandler.getUser(email);
+        return user;
+    }
+
 }
