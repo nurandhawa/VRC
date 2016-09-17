@@ -35,6 +35,9 @@ public class AccountManager {
     // User's for testing purposes
     public static final String DEMO_EMAIL = "testuser@vrc.ca";
     public static final String DEMO_PASSWORD = "userPass";
+    public static final int DEMO_PLAYER_ID = 4;
+    public static final String DEMO_SECURITY_QUESTION = "question";
+    public static final String DEMO_SECURITY_ANSWER = "answer";
     public static final String DEMO_ADMIN_EMAIL = "admin_billy@vrc.ca";
     public static final String DEMO_ADMIN_PASSWORD = "demoPass";
 
@@ -165,8 +168,16 @@ public class AccountManager {
 
     public void registerNewAdministratorAccount(String email, String password)
             throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
+        InputValidator.validateEmailFormat(email);
+        InputValidator.validatePasswordFormat(password);
 
-        registerUser(email, password);
+        // Hash the user's password
+        String passwordHash = CredentialsManager.getHash(password, "Could not create the account");
+
+        User newUser = new User(email, passwordHash);
+
+        // Save the user to the database, no Exception marks success
+        accountDbHandler.saveNewUser(newUser);
 
         try {
             userRoleHandler.setUserRole(email, UserRole.ADMINISTRATOR);

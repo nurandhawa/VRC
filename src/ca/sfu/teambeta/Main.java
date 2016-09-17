@@ -32,7 +32,8 @@ class Main {
         }
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         AccountManager am = new AccountManager(accountDatabaseHandler);
-        am.registerUser(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD);
+        am.registerUserWithPlayer(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD, AccountManager.DEMO_PLAYER_ID,
+                AccountManager.DEMO_SECURITY_QUESTION, AccountManager.DEMO_SECURITY_ANSWER);
         am.registerNewAdministratorAccount(AccountManager.DEMO_ADMIN_EMAIL, AccountManager.DEMO_ADMIN_PASSWORD);
 
         CredentialsManager credentialsManager = new CredentialsManager(accountDatabaseHandler);
