@@ -352,7 +352,7 @@ var API = (function() {
     API.prototype.userRegistration = function (email, password, securityInfo, playerId, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/login/newFull",
+            url: SERVER_URL + "/login/new",
             data: JSON.stringify({
                 "email": email,
                 "password": password,
@@ -380,7 +380,7 @@ var API = (function() {
     API.prototype.setUserSecurityQuestion = function (email, securityQuestion, answer, doneCallback, failCallback) {
         $.ajax({
             method: "PATCH",
-            url: SERVER_URL + "/login/new",
+            url: SERVER_URL + "/login/security",
             data: JSON.stringify({
                 "email": email,
                 "securityQuestion": securityQuestion,

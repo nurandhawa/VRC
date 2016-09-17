@@ -510,32 +510,9 @@ public class AppController {
             return getOkResponse("Password reset.");
         });
 
-        //registers a new user
+        // registers a new user alongside a player
+        // TODO: Either create a user alongside a player or create an admin account that is not attached to any player. */
         post("/api/login/new", (request, response) -> {
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
-            String email = jsonObject.get(EMAIL).getAsString();
-            String password = jsonObject.get(PASSWORD).getAsString();
-
-            String message = "";
-            try {
-                accountManager.registerUser(email, password);
-
-                return getOkResponse("Account registered");
-            } catch (GeneralUserAccountException e) {
-                message = e.getMessage();
-            } catch (AccountRegistrationException e) {
-                message = e.getMessage();
-            } catch (InvalidInputException e) {
-                message = e.getMessage();
-            }
-
-            response.status(BAD_REQUEST);
-            return getErrResponse(message);
-        });
-
-        //registers a new user alongside a player
-        post("/api/login/newFull", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String message = "";
@@ -566,7 +543,7 @@ public class AppController {
         });
 
         //set security question
-        patch("/api/login/new", (request, response) -> {
+        patch("/api/login/security", (request, response) -> {
             JsonParser parser = new JsonParser();
             JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
             String email = jsonObject.get(EMAIL).getAsString();
