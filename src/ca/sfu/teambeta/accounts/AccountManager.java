@@ -35,7 +35,7 @@ public class AccountManager {
     // User's for testing purposes
     public static final String DEMO_EMAIL = "testuser@vrc.ca";
     public static final String DEMO_PASSWORD = "userPass";
-    public static final int DEMO_PLAYER_ID = 4;
+    public static final int DEMO_PLAYER_ID = 3;
     public static final String DEMO_SECURITY_QUESTION = "question";
     public static final String DEMO_SECURITY_ANSWER = "answer";
     public static final String DEMO_ADMIN_EMAIL = "admin_billy@vrc.ca";

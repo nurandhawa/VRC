@@ -7,11 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -41,13 +37,11 @@ public class CSVReader {
     private static Ladder setupLadder(InputStreamReader inputStreamReader) throws Exception {
         Map<Integer, Pair> pairs;
         pairs = getInformationAboutPairs(inputStreamReader);
-
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
             Pair pair = entry.getValue();
             ladder.insertAtEnd(pair);
         }
-
         return ladder;
     }
 
@@ -57,12 +51,13 @@ public class CSVReader {
     }
 
     private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader) throws Exception {
-        Map<Integer, Pair> pairs = new HashMap<>();
+        Map<Integer, Pair> pairs = new LinkedHashMap<>();
 
         try (com.opencsv.CSVReader reader =
                      new com.opencsv.CSVReader(inputStreamReader)) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
+            List<Player> distinctPlayers = new ArrayList<>();
 
             String[] pairInfo;
             while (iterator.hasNext()) {
@@ -72,13 +67,34 @@ public class CSVReader {
                 String firstNameFirst = pairInfo[1];
                 int idFirst = Integer.parseInt(pairInfo[2]);
 
-
                 String lastNameSecond = pairInfo[3];
                 String firstNameSecond = pairInfo[4];
                 int idSecond = Integer.parseInt(pairInfo[5]);
 
-                Player firstPlayer = new Player(firstNameFirst, lastNameFirst);
-                Player secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                Player firstPlayer = null;
+                Player secondPlayer= null;
+
+                for (Player player : distinctPlayers) {
+                    if (player.getExistingId() == idFirst) {
+                        firstPlayer = player;
+                    }
+                    if (player.getExistingId() == idSecond) {
+                        secondPlayer = player;
+                    }
+                }
+
+                if (firstPlayer == null) {
+                    firstPlayer = new Player(firstNameFirst, lastNameFirst);
+                    // this is for the above part where we check if the ids are the same.
+                    // cannot use getId() since that is not set at this point.
+                    firstPlayer.setExistingId(idFirst);
+                    distinctPlayers.add(firstPlayer);
+                }
+                if (secondPlayer == null) {
+                    secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                    secondPlayer.setExistingId(idSecond);
+                    distinctPlayers.add(secondPlayer);
+                }
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
