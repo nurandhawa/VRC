@@ -46,8 +46,10 @@ public class AccountManagerTest {
 
         String email = "nick@gmail.com";
         String password = "password";
+        String securityQuestion = "question";
+        String securityAnswer = "answer";
 
-        accountManager.registerNewAdministratorAccount(email, password);
+        accountManager.registerNewAdministratorAccount(email, password, securityQuestion, securityAnswer);
         SessionResponse response = accountManager.login(email, password);
 
         UserRole actualRole = response.getUserRole();

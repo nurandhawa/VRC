@@ -166,15 +166,19 @@ public class AccountManager {
         accountDbHandler.saveNewUser(newUser);
     }
 
-    public void registerNewAdministratorAccount(String email, String password)
+    public void registerNewAdministratorAccount(String email, String password,
+                                                String securityQuestion, String securityAnswer)
             throws InvalidInputException, GeneralUserAccountException, AccountRegistrationException {
         InputValidator.validateEmailFormat(email);
         InputValidator.validatePasswordFormat(password);
 
         // Hash the user's password
         String passwordHash = CredentialsManager.getHash(password, "Could not create the account");
+        String securityQuestionAnswerHash = CredentialsManager.getHash(securityAnswer, "Could not create the account");
 
         User newUser = new User(email, passwordHash);
+        newUser.setSecurityQuestion(securityQuestion);
+        newUser.setSecurityAnswerHash(securityQuestionAnswerHash);
 
         // Save the user to the database, no Exception marks success
         accountDbHandler.saveNewUser(newUser);
