@@ -72,7 +72,7 @@ public class CSVReader {
                 int idSecond = Integer.parseInt(pairInfo[5]);
 
                 Player firstPlayer = null;
-                Player secondPlayer= null;
+                Player secondPlayer = null;
 
                 for (Player player : distinctPlayers) {
                     if (player.getExistingId() == idFirst) {
