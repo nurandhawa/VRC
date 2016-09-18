@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.logic;
 
+import ca.sfu.teambeta.persistence.DBManager;
+import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -160,13 +162,20 @@ public class TimeSelectionTest {
         List<Pair> pairs;
 
         try {
-            Ladder ladder = CSVReader.setupLadder();
-            pairs = ladder.getPairs();
+            pairs = getPairsAfterSettingUpLadder();
         } catch (Exception e) {
             throw e;
         }
 
         return pairs;
+    }
+
+    private List<Pair> getPairsAfterSettingUpLadder() throws Exception {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+
+        Ladder ladder = CSVReader.setupLadder(dbManager);
+        return ladder.getPairs();
     }
 
     private void checkLogic(TimeSelection selector, List<Scorecard> scorecards) {
@@ -243,8 +252,7 @@ public class TimeSelectionTest {
         List<Pair> littlePairs = new ArrayList<>();
 
         try {
-            Ladder ladder = CSVReader.setupLadder();
-            pairs = ladder.getPairs();
+            pairs = getPairsAfterSettingUpLadder();
         } catch (Exception e) {
             throw e;
         }

@@ -25,13 +25,13 @@ public class AccountManagerTest {
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        Ladder newLadder = CSVReader.setupLadder();
+        dbManager = new DBManager(sessionFactory);
+        Ladder newLadder = CSVReader.setupLadder(dbManager);
 
         Pair pair = newLadder.getPairs().get(0);
         playerFromDB = pair.getPlayers().get(0);
 
         GameSession gameSession = new GameSession(newLadder);
-        dbManager = new DBManager(sessionFactory);
         dbManager.persistEntity(gameSession);
 
         accountDbHandler = new AccountDatabaseHandler(dbManager);

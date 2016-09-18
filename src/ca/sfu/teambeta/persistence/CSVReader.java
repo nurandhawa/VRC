@@ -22,21 +22,17 @@ public class CSVReader {
     private static final String DEFAULT_PATH = System.getProperty("user.home") + "/Downloads/";
 
     public static void main(String[] args) throws Exception {
-        try {
-            setupLadder();
-        } catch (Exception e) {
-            throw e;
-        }
+
     }
 
-    public static Ladder setupLadder() throws Exception {
+    public static Ladder setupLadder(DBManager db) throws Exception {
         FileReader reader = new FileReader(DEFAULT_FILENAME);
-        return setupLadder(reader);
+        return setupLadder(reader, db);
     }
 
-    private static Ladder setupLadder(InputStreamReader inputStreamReader) throws Exception {
+    private static Ladder setupLadder(InputStreamReader inputStreamReader, DBManager db) throws Exception {
         Map<Integer, Pair> pairs;
-        pairs = getInformationAboutPairs(inputStreamReader);
+        pairs = getInformationAboutPairs(inputStreamReader, db);
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
             Pair pair = entry.getValue();
@@ -45,12 +41,13 @@ public class CSVReader {
         return ladder;
     }
 
-    public static Ladder setupTestingLadder() throws Exception {
+    public static Ladder setupTestingLadder(DBManager db) throws Exception {
         FileReader reader = new FileReader(TESTING_FILENAME);
-        return setupLadder(reader);
+        return setupLadder(reader, db);
     }
 
-    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader) throws Exception {
+    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader,
+                                                               DBManager db) throws Exception {
         Map<Integer, Pair> pairs = new LinkedHashMap<>();
 
         try (com.opencsv.CSVReader reader =
@@ -75,29 +72,26 @@ public class CSVReader {
                 Player secondPlayer = null;
 
                 for (Player player : distinctPlayers) {
-                    if (player.getExistingId() == idFirst) {
+                    if (player.getID() == idFirst) {
                         firstPlayer = player;
                     }
-                    if (player.getExistingId() == idSecond) {
+                    if (player.getID() == idSecond) {
                         secondPlayer = player;
                     }
                 }
 
                 if (firstPlayer == null) {
                     firstPlayer = new Player(firstNameFirst, lastNameFirst);
-                    // this is for the above part where we check if the ids are the same.
-                    // cannot use getId() since that is not set at this point.
-                    firstPlayer.setExistingId(idFirst);
                     distinctPlayers.add(firstPlayer);
                 }
                 if (secondPlayer == null) {
                     secondPlayer = new Player(firstNameSecond, lastNameSecond);
-                    secondPlayer.setExistingId(idSecond);
                     distinctPlayers.add(secondPlayer);
                 }
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
+                db.persistEntity(pair);
 
                 pairs.put(index, pair);
             }

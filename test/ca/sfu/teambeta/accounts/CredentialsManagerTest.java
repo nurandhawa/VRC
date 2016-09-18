@@ -28,10 +28,10 @@ public class CredentialsManagerTest {
     public void setUp() throws Exception {
         // Setup the database
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        Ladder newLadder = CSVReader.setupLadder();
-        GameSession gameSession = new GameSession(newLadder);
-
         DBManager dbManager = new DBManager(sessionFactory);
+        Ladder newLadder = CSVReader.setupLadder(dbManager);
+
+        GameSession gameSession = new GameSession(newLadder);
         dbManager.persistEntity(gameSession);
 
         AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);

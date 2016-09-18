@@ -52,17 +52,16 @@ public class APITest {
             DBManager dbManager;
             try {
                 Ladder newLadder = null;
+                SessionFactory sessionFactory = DBManager.getTestingSession(true);
+                dbManager = new DBManager(sessionFactory);
                 try {
-                    newLadder = CSVReader.setupTestingLadder();
+                    newLadder = CSVReader.setupTestingLadder(dbManager);
                     originalLadderLength = newLadder.getLadderLength();
                 } catch (Exception e) {
                     System.out.println("INVALID CSV FILE");
                     throw e;
                 }
-                SessionFactory sessionFactory = DBManager.getTestingSession(true);
-
                 GameSession gameSession = new GameSession(newLadder);
-                dbManager = new DBManager(sessionFactory);
                 dbManager.persistEntity(gameSession);
 
                 AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
