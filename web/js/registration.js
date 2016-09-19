@@ -57,7 +57,7 @@
     });
 
     Vue.validator('existingPlayer', function (val) {
-        if (this._vm.existingPlayer) {
+        if (this._vm.administrator || this._vm.existingPlayer) {
             return true;
         }
     });
