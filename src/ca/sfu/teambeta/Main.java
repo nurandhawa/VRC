@@ -18,16 +18,15 @@ class Main {
             dbManager = new DBManager(sessionFactory);
         } else {
             Ladder newLadder = null;
+            SessionFactory sessionFactory = DBManager.getMySQLSession(true);
+            dbManager = new DBManager(sessionFactory);
             try {
-                newLadder = CSVReader.setupLadder();
+                newLadder = CSVReader.setupLadder(dbManager);
             } catch (Exception e) {
                 System.out.println("INVALID CSV FILE");
                 throw e;
             }
-            SessionFactory sessionFactory = DBManager.getMySQLSession(true);
-
             GameSession gameSession = new GameSession(newLadder);
-            dbManager = new DBManager(sessionFactory);
             dbManager.persistEntity(gameSession);
         }
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);

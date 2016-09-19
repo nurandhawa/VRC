@@ -7,11 +7,7 @@ import com.google.gson.annotations.Expose;
 
 import org.hibernate.annotations.Type;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -31,7 +27,7 @@ public class Pair extends Persistable {
 
     @ManyToMany(cascade = CascadeType.ALL)
     @Expose
-    private Set<Player> players = new HashSet<>();
+    private Set<Player> players = new LinkedHashSet<>();
     @Column(name = "date_created")
     @Type(type = "timestamp")
     private Date dateCreated;

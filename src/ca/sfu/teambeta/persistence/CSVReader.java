@@ -7,11 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
@@ -26,43 +22,39 @@ public class CSVReader {
     private static final String DEFAULT_PATH = System.getProperty("user.home") + "/Downloads/";
 
     public static void main(String[] args) throws Exception {
-        try {
-            setupLadder();
-        } catch (Exception e) {
-            throw e;
-        }
+
     }
 
-    public static Ladder setupLadder() throws Exception {
+    public static Ladder setupLadder(DBManager db) throws Exception {
         FileReader reader = new FileReader(DEFAULT_FILENAME);
-        return setupLadder(reader);
+        return setupLadder(reader, db);
     }
 
-    private static Ladder setupLadder(InputStreamReader inputStreamReader) throws Exception {
+    private static Ladder setupLadder(InputStreamReader inputStreamReader, DBManager db) throws Exception {
         Map<Integer, Pair> pairs;
-        pairs = getInformationAboutPairs(inputStreamReader);
-
+        pairs = getInformationAboutPairs(inputStreamReader, db);
         Ladder ladder = new Ladder();
         for (Map.Entry<Integer, Pair> entry : pairs.entrySet()) {
             Pair pair = entry.getValue();
             ladder.insertAtEnd(pair);
         }
-
         return ladder;
     }
 
-    public static Ladder setupTestingLadder() throws Exception {
+    public static Ladder setupTestingLadder(DBManager db) throws Exception {
         FileReader reader = new FileReader(TESTING_FILENAME);
-        return setupLadder(reader);
+        return setupLadder(reader, db);
     }
 
-    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader) throws Exception {
-        Map<Integer, Pair> pairs = new HashMap<>();
+    private static Map<Integer, Pair> getInformationAboutPairs(InputStreamReader inputStreamReader,
+                                                               DBManager db) throws Exception {
+        Map<Integer, Pair> pairs = new LinkedHashMap<>();
 
         try (com.opencsv.CSVReader reader =
                      new com.opencsv.CSVReader(inputStreamReader)) {
             List<String[]> entries = reader.readAll();
             Iterator<String[]> iterator = entries.iterator();
+            List<Player> distinctPlayers = new ArrayList<>();
 
             String[] pairInfo;
             while (iterator.hasNext()) {
@@ -72,16 +64,34 @@ public class CSVReader {
                 String firstNameFirst = pairInfo[1];
                 int idFirst = Integer.parseInt(pairInfo[2]);
 
-
                 String lastNameSecond = pairInfo[3];
                 String firstNameSecond = pairInfo[4];
                 int idSecond = Integer.parseInt(pairInfo[5]);
 
-                Player firstPlayer = new Player(firstNameFirst, lastNameFirst);
-                Player secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                Player firstPlayer = null;
+                Player secondPlayer = null;
+
+                for (Player player : distinctPlayers) {
+                    if (player.getID() == idFirst) {
+                        firstPlayer = player;
+                    }
+                    if (player.getID() == idSecond) {
+                        secondPlayer = player;
+                    }
+                }
+
+                if (firstPlayer == null) {
+                    firstPlayer = new Player(firstNameFirst, lastNameFirst);
+                    distinctPlayers.add(firstPlayer);
+                }
+                if (secondPlayer == null) {
+                    secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                    distinctPlayers.add(secondPlayer);
+                }
 
                 int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
+                db.persistEntity(pair);
 
                 pairs.put(index, pair);
             }
