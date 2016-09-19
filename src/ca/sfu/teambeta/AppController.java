@@ -1,5 +1,6 @@
 package ca.sfu.teambeta;
 
+import ca.sfu.teambeta.core.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -23,11 +24,6 @@ import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
 import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
 import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.accounts.UserSessionManager;
-import ca.sfu.teambeta.core.JsonExtractedData;
-import ca.sfu.teambeta.core.Pair;
-import ca.sfu.teambeta.core.Penalty;
-import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.Time;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
@@ -94,9 +90,12 @@ public class AppController {
     private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
     private static final String LADDER_DISABLED = "Ladder is Disabled";
+    private static final String INVALID_USER = "You are not allowed to modify this pair";
     private static Gson gson;
 
     private boolean isAdministrator;
+    private User currentUser;
+
 
     public AppController(DBManager dbManager, CredentialsManager credentialsManager, int port, String staticFilePath) {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
@@ -128,6 +127,9 @@ public class AppController {
                 }
 
                 isAdministrator = UserSessionManager.isAdministratorSession(sessionToken);
+                String email = UserSessionManager.getEmailFromSessionId(sessionToken);
+                currentUser = accountManager.getUser(email);
+
             }
         });
 
@@ -193,6 +195,12 @@ public class AppController {
             if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
+            } else if (!isAdministrator) {
+                Player currentPlayer = currentUser.getAssociatedPlayer();
+                if (!dbManager.isPlayerInPair(currentPlayer, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(INVALID_USER);
+                }
             }
 
             if (!validStatus && !validNewPos) {
@@ -502,32 +510,9 @@ public class AppController {
             return getOkResponse("Password reset.");
         });
 
-        //registers a new user
+        // registers a new user alongside a player
+        // TODO: Either create a user alongside a player or create an admin account that is not attached to any player. */
         post("/api/login/new", (request, response) -> {
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
-            String email = jsonObject.get(EMAIL).getAsString();
-            String password = jsonObject.get(PASSWORD).getAsString();
-
-            String message = "";
-            try {
-                accountManager.registerUser(email, password);
-
-                return getOkResponse("Account registered");
-            } catch (GeneralUserAccountException e) {
-                message = e.getMessage();
-            } catch (AccountRegistrationException e) {
-                message = e.getMessage();
-            } catch (InvalidInputException e) {
-                message = e.getMessage();
-            }
-
-            response.status(BAD_REQUEST);
-            return getErrResponse(message);
-        });
-
-        //registers a new user alongside a player
-        post("/api/login/newFull", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String message = "";
@@ -558,7 +543,7 @@ public class AppController {
         });
 
         //set security question
-        patch("/api/login/new", (request, response) -> {
+        patch("/api/login/security", (request, response) -> {
             JsonParser parser = new JsonParser();
             JsonObject jsonObject = parser.parse(request.body()).getAsJsonObject();
             String email = jsonObject.get(EMAIL).getAsString();
@@ -606,6 +591,12 @@ public class AppController {
             if (!InputValidator.checkPairExists(dbManager, id)) {
                 response.status(NOT_FOUND);
                 return getErrResponse(PAIR_NOT_FOUND + id);
+            } else if (!isAdministrator) {
+                Player currentPlayer = currentUser.getAssociatedPlayer();
+                if (!dbManager.isPlayerInPair(currentPlayer, id)) {
+                    response.status(NOT_FOUND);
+                    return getErrResponse(INVALID_USER);
+                }
             }
 
             String body = request.body();

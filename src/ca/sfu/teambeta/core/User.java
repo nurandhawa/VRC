@@ -19,9 +19,6 @@ public class User extends Persistable {
     @Column(name = "email", unique = true)
     private String email;
     private String passwordHash;
-    private String firstName = "";
-    private String lastName = "";
-    private String phoneNumber = "";
     private String securityQuestion = "";
     private String securityAnswerHash = "";
     private UserRole role = UserRole.REGULAR;
@@ -57,18 +54,6 @@ public class User extends Persistable {
         return passwordHash;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
     public UserRole getUserRole() {
         return role;
     }
@@ -81,6 +66,10 @@ public class User extends Persistable {
         return securityAnswerHash;
     }
 
+    public Player getAssociatedPlayer() {
+        return associatedPlayer;
+    }
+
 
     // MARK: Setters
     public void setEmail(String email) {
@@ -91,24 +80,12 @@ public class User extends Persistable {
         this.passwordHash = passwordHash;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public void setSecurityQuestion(String securityQuestion) {
         this.securityQuestion = securityQuestion;
     }
 
     public void setSecurityAnswerHash(String securityAnswerHash) {
         this.securityAnswerHash = securityAnswerHash;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public void setUserRole(UserRole role) {
@@ -140,15 +117,6 @@ public class User extends Persistable {
 
         if (!email.equals(user.email)) {
             return false;
-        }
-        if (!firstName.equals(user.firstName)) {
-            return false;
-        }
-        if (!lastName.equals(user.lastName)) {
-            return false;
-        }
-        if (phoneNumber != null) {
-            return phoneNumber.equals(user.phoneNumber);
         } else {
             return true;
         }
@@ -157,9 +125,6 @@ public class User extends Persistable {
     @Override
     public int hashCode() {
         int result = email.hashCode();
-        result = 31 * result + firstName.hashCode();
-        result = 31 * result + lastName.hashCode();
-        result = 31 * result + (phoneNumber != null ? phoneNumber.hashCode() : 0);
         return result;
     }
 }

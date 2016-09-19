@@ -320,6 +320,15 @@ public class DBManager {
         return status;
     }
 
+    public synchronized boolean isPlayerInPair(Player player, int pairId) {
+        Pair pair = getPairFromID(pairId);
+        List<Player> players = pair.getPlayers();
+        if (players.contains(player)) {
+            return true;
+        }
+        return false;
+    }
+
     public synchronized int getLadderSize(GameSession gameSession) {
         List<Pair> ladder = gameSession.getAllPairs();
         return ladder.size();

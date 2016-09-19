@@ -292,6 +292,7 @@ var Ladder = (function () {
             api.setTime("NO_SLOT", pair.id);
             pair.timeSlot = "NO_SLOT";
         }
+        this.refreshLadder();
     };
 
     Ladder.prototype.addPair = function (event) {
