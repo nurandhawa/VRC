@@ -512,7 +512,7 @@ public class AppController {
 
         // registers a new user alongside a player
         // TODO: Either create a user alongside a player or create an admin account that is not attached to any player. */
-        post("/api/login/new", (request, response) -> {
+        post("/api/register", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String message = "";

@@ -352,7 +352,7 @@ var API = (function() {
     API.prototype.userRegistration = function (email, password, securityInfo, playerId, doneCallback, failCallback) {
         $.ajax({
             method: "POST",
-            url: SERVER_URL + "/login/new",
+            url: SERVER_URL + "/register",
             data: JSON.stringify({
                 "email": email,
                 "password": password,
