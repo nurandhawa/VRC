@@ -38,7 +38,14 @@
     var onSubmit = function(event) {
         this.spinnerVisibility = true;
         var api = new API();
-        api.userRegistration(this.email, this.password, this.securityInfo, this.existingPlayer.id, onRegSuccess.bind(this), onRegError.bind(this));
+        if (this.administrator) {
+            var invalidPlayerId = -1;
+            api.userRegistration(this.email, this.password, this.securityInfo,
+                invalidPlayerId, onRegSuccess.bind(this), onRegError.bind(this));
+        } else {
+            api.userRegistration(this.email, this.password, this.securityInfo,
+                this.existingPlayer.id, onRegSuccess.bind(this), onRegError.bind(this));
+        }
     };
 
     Vue.validator('email', function (val) {
@@ -50,7 +57,7 @@
     });
 
     Vue.validator('existingPlayer', function (val) {
-        if (this._vm.existingPlayer) {
+        if (this._vm.administrator || this._vm.existingPlayer) {
             return true;
         }
     });
@@ -78,6 +85,7 @@
                 'v-select': VueSelect.VueSelect
             },
             data: {
+                administrator: false,
                 firstName: "",
                 lastName: "",
                 phoneNumber: "",

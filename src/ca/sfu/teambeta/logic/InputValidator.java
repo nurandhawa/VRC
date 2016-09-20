@@ -150,6 +150,10 @@ public class InputValidator {
         return dbManager.hasPairID(id);
     }
 
+    public static boolean checkPlayerExists(DBManager dbManager, int id) {
+        return dbManager.hasPlayerID(id);
+    }
+
     public static boolean checkPairActive(DBManager dbManager, GameSession gameSession, int id) {
         return dbManager.isActivePair(gameSession, id);
     }

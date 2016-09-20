@@ -512,30 +512,45 @@ public class AppController {
 
         // registers a new user alongside a player
         // TODO: Either create a user alongside a player or create an admin account that is not attached to any player. */
-        post("/api/login/new", (request, response) -> {
+        post("/api/register", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
             String message = "";
             String email = extractedData.getEmail();
             String pwd = extractedData.getPassword();
+            String securityQuestion = extractedData.getSecurityQuestion();
+            String securityAnswer = extractedData.getSecurityAnswer();
             int playerID = -1;
             try {
                 playerID = Integer.parseInt(extractedData.getPlayerId());
             } catch (Exception e) {
                 message = e.getMessage();
             }
-            String securityQuestion = extractedData.getSecurityQuestion();
-            String securityAnswer = extractedData.getSecurityAnswer();
-            try {
-                accountManager.registerUserWithPlayer(email, pwd, playerID, securityQuestion, securityAnswer);
-                response.status(OK);
-                return getOkResponse("Account registered");
-            } catch (GeneralUserAccountException e) {
-                message = e.getMessage();
-            } catch (AccountRegistrationException e) {
-                message = e.getMessage();
-            } catch (InvalidInputException e) {
-                message = e.getMessage();
+
+            if (!InputValidator.checkPlayerExists(dbManager, playerID)) {
+                try {
+                    accountManager.registerNewAdministratorAccount(email, pwd, securityQuestion, securityAnswer);
+                    response.status(OK);
+                    return getOkResponse("Account registered");
+                } catch (GeneralUserAccountException e) {
+                    message = e.getMessage();
+                } catch (AccountRegistrationException e) {
+                    message = e.getMessage();
+                } catch (InvalidInputException e) {
+                    message = e.getMessage();
+                }
+            } else {
+                try {
+                    accountManager.registerUserWithPlayer(email, pwd, playerID, securityQuestion, securityAnswer);
+                    response.status(OK);
+                    return getOkResponse("Account registered");
+                } catch (GeneralUserAccountException e) {
+                    message = e.getMessage();
+                } catch (AccountRegistrationException e) {
+                    message = e.getMessage();
+                } catch (InvalidInputException e) {
+                    message = e.getMessage();
+                }
             }
 
             response.status(BAD_REQUEST);

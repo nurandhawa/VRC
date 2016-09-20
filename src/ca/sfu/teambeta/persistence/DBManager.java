@@ -274,7 +274,26 @@ public class DBManager {
     }
 
     public synchronized boolean hasPairID(int id) {
-        return getPairFromID(id) != null;
+        List<Pair> pairs = getLatestLadder().getPairs();
+        for (Pair pair : pairs) {
+            if (pair.getID() == id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean hasPlayerID(int id) {
+        List<Pair> pairs = getLatestLadder().getPairs();
+        for (Pair pair : pairs) {
+            List<Player> players = pair.getPlayers();
+            for (Player player : players) {
+                if (player.getID() == id) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {

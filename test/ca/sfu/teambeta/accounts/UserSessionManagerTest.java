@@ -101,7 +101,10 @@ public class UserSessionManagerTest {
 
         String email = "nick@gmail.com";
         String password = "secret";
-        manager.registerNewAdministratorAccount(email, password);
+        String securityQuestion = "question";
+        String securityAnswer = "answer";
+
+        manager.registerNewAdministratorAccount(email, password, securityQuestion, securityAnswer);
         handler.setUserRole(email, UserRole.REGULAR);
         SessionResponse sessionResponse = manager.login(email, password);
         UserRole actualRole = sessionResponse.getUserRole();

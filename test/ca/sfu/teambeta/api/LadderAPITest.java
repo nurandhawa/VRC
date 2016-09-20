@@ -102,7 +102,7 @@ public class LadderAPITest extends APITest {
                 .queryString("newStatus", "playing")
                 .asJson();
 
-        assertEquals(500, jsonPairUpdateResponse.getStatus());
+        assertEquals(404, jsonPairUpdateResponse.getStatus());
     }
 
     @Test

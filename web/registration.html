@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-validate="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -69,9 +69,16 @@
                     <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
                         <label for="existingPlayer" class="control-label">Player:</label>
                         <v-select id="existingPlayer" v-validate:player="['existingPlayer']" :classes="{ invalid: 'has-error', }"
-                          label="label" :value.sync="existingPlayer" :options="existingPlayers" placeholder="Search for a player...">
+                          label="label" :value.sync="existingPlayer" :options="existingPlayers"
+                          placeholder="Search for a player...">
                         </v-select>
                         <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
+                    </div>
+                    <div class="checkbox" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                        <label>
+                            <input type="checkbox" v-model="administrator"
+                                   v-validate:player="['existingPlayer']"> Administrator
+                        </label>
                     </div>
                     <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
                         <label for="inputEmail" class="control-label">Email:</label>

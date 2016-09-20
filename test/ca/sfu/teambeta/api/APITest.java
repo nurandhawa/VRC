@@ -44,6 +44,8 @@ public class APITest {
     public static final String PASSWORD = "demoPass";
     public static final String REMEMBER_ME = "false";
     public static final String URI_BASENAME = "https://localhost:8000/";
+    public static final String SECURITY_QUESTION = "question";
+    public static final String SECURITY_ANSWER = "answer";
     private int originalLadderLength;
 
     @Before
@@ -66,7 +68,7 @@ public class APITest {
 
                 AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
                 AccountManager am = new AccountManager(accountDbHandler);
-                am.registerNewAdministratorAccount(EMAIL, PASSWORD);
+                am.registerNewAdministratorAccount(EMAIL, PASSWORD, SECURITY_QUESTION, SECURITY_ANSWER);
 
                 CredentialsManager cm = new CredentialsManager(accountDbHandler);
 
