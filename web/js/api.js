@@ -43,7 +43,7 @@ var API = (function() {
                 if (doneCallback) {
                     var userRole = Cookies.get(ROLE_COOKIE);
                     var isAdministrator = userRole === ROLE_ADMINISTRATOR;
-                    var playerId = Cookies.get(ID_COOKIE);
+                    var playerId = parseInt(Cookies.get(ID_COOKIE));
 
                     var ladderData = {};
                     ladderData = JSON.parse(response);
