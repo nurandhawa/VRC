@@ -11,10 +11,13 @@ public class SessionResponse {
     private String sessionToken;
     @Expose
     private UserRole userRole;
+    @Expose
+    private int playerId;
 
-    public SessionResponse(String sessionId, UserRole userRole) {
+    public SessionResponse(String sessionId, UserRole userRole, int playerId) {
         this.sessionToken = sessionId;
         this.userRole = userRole;
+        this.playerId = playerId;
     }
 
     public String getSessionToken() {
@@ -23,5 +26,9 @@ public class SessionResponse {
 
     public UserRole getUserRole() {
         return userRole;
+    }
+
+    public int getPlayerId() {
+        return playerId;
     }
 }

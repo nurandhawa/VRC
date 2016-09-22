@@ -86,7 +86,13 @@ public class AccountManager {
         // Create a session for the user
         UserRole role = userRoleHandler.getUserRole(email);
 
-        return UserSessionManager.createNewSession(email, role, extendedSessionExpiry);
+        int playerId = -1;
+        Player associatedPlayer = user.getAssociatedPlayer();
+        if (associatedPlayer != null) {
+            playerId = associatedPlayer.getID();
+        }
+
+        return UserSessionManager.createNewSession(email, role, playerId, extendedSessionExpiry);
     }
 
     /**
@@ -104,7 +110,9 @@ public class AccountManager {
 
         String email = anonymousLoginCodes.get(anonymousLoginCode);
 
-        return UserSessionManager.createNewSession(email, UserRole.ANONYMOUS);
+        int playerId = -1;
+
+        return UserSessionManager.createNewSession(email, UserRole.ANONYMOUS, playerId);
     }
 
     public void logout(String sessionId) throws NoSuchSessionException {

@@ -9,6 +9,10 @@ var API = (function() {
     var GAMESESSION_PARAM = "?gameSession=";
     var EMAIL_PARAM = "?email=";
 
+    var ROLE_ADMINISTRATOR = "ADMINISTRATOR";
+    var ROLE_COOKIE = "userRole";
+    var ID_COOKIE = "playerId";
+
     function API() {
         this.playingStatus = Object.freeze({
             PLAYING: "playing",
@@ -37,6 +41,10 @@ var API = (function() {
         })
             .done(function(response) {
                 if (doneCallback) {
+                    var userRole = Cookies.get(ROLE_COOKIE);
+                    var isAdministrator = userRole === ROLE_ADMINISTRATOR;
+                    var playerId = Cookies.get(ID_COOKIE);
+
                     var ladderData = {};
                     ladderData = JSON.parse(response);
                     ladderData.players = [];
@@ -51,6 +59,9 @@ var API = (function() {
                         pair.p1Name = player1Name;
                         pair.p2Name = player2Name;
                         pair.playingStatus = pair.isPlaying ? "playing" : "notplaying";
+                        pair.showPlayingStatus = (isAdministrator ||
+                                                player1.id === playerId ||
+                                                player2.id === playerId) ? true : false;
                         ladderData.players.push({
                             label: player1Name,
                             id: player1.id
