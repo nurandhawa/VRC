@@ -22,9 +22,9 @@ public class UserSessionManagerTest {
 
     @Test
     public void createIdenticalSessions() {
-        UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
-        UserSessionManager.createNewSession("steve@gmail.com", UserRole.REGULAR);
-        UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
+        UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR, -1);
+        UserSessionManager.createNewSession("steve@gmail.com", UserRole.REGULAR, -1);
+        UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR, -1);
 
         int numUsers = UserSessionManager.numUsersLoggedIn();
         Assert.assertEquals(3, numUsers);
@@ -32,7 +32,7 @@ public class UserSessionManagerTest {
 
     @Test
     public void deleteSession() throws NoSuchSessionException {
-        SessionResponse session = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
+        SessionResponse session = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR, -1);
         String token = session.getSessionToken();
 
         UserSessionManager.deleteSession(token);
@@ -43,8 +43,8 @@ public class UserSessionManagerTest {
 
     @Test
     public void authenticateSession() throws NoSuchSessionException {
-        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
-        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR, -1);
+        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR, -1);
 
         String token1 = session1.getSessionToken();
         String token2 = session2.getSessionToken();
@@ -63,8 +63,8 @@ public class UserSessionManagerTest {
 
     @Test
     public void isAdminSession() throws NoSuchSessionException {
-        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR);
-        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR);
+        SessionResponse session1 = UserSessionManager.createNewSession("maria@gmail.com", UserRole.REGULAR, -1);
+        SessionResponse session2 = UserSessionManager.createNewSession("nick@gmail.com", UserRole.ADMINISTRATOR, -1);
 
         String token1 = session1.getSessionToken();
         String token2 = session2.getSessionToken();
@@ -80,7 +80,7 @@ public class UserSessionManagerTest {
     @Test
     public void checkEmail() throws NoSuchSessionException {
         String expectedEmail = "maria@gmail.com";
-        SessionResponse session = UserSessionManager.createNewSession(expectedEmail, UserRole.REGULAR);
+        SessionResponse session = UserSessionManager.createNewSession(expectedEmail, UserRole.REGULAR, -1);
         String token = session.getSessionToken();
 
         String actualEmail = UserSessionManager.getEmailFromSessionId(token);
