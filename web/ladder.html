@@ -256,8 +256,8 @@
                                       class="btn btn-raised btn-xs toggle-button"></time-select-button>
               </div>
               <div v-else>
-                  <a v-if="entry.playingStatus === 'playing'" class="btn btn-success btn-xs disabled">Playing</a>
-                  <a v-else class="btn btn-danger btn-xs disabled">Not Playing</a>
+                  <a v-if="entry.playingStatus === 'playing'" class="btn btn-success btn-xs disabled playing-status">Playing</a>
+                  <a v-else class="btn btn-danger btn-xs disabled playing-status">Not Playing</a>
               </div>
 
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">

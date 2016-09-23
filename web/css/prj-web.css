@@ -532,3 +532,9 @@
         font-size: .9em;
     }
 }
+
+.btn.btn-xs.playing-status {
+    border: solid;
+    border-width: 1px !important;
+    color: red;
+}
