@@ -25,18 +25,18 @@ public class UserSessionManager {
 
 
     // MARK: Methods for creating/deleting a session
-    public static SessionResponse createNewSession(String email, UserRole role) {
-        return createNewSession(email, role, false);
+    public static SessionResponse createNewSession(String email, UserRole role, int playerId) {
+        return createNewSession(email, role, playerId, false);
     }
 
-    public static SessionResponse createNewSession(String email, UserRole role, boolean extendSessionExpiry) {
+    public static SessionResponse createNewSession(String email, UserRole role, int playerId, boolean extendSessionExpiry) {
         String sessionId = tokenGenerator.generateUniqueRandomToken();
 
         UserSessionMetadata metadata = new UserSessionMetadata(email, role, extendSessionExpiry);
 
         sessions.put(sessionId, metadata);
 
-        return new SessionResponse(sessionId, role);
+        return new SessionResponse(sessionId, role, playerId);
     }
 
     public static void deleteSession(String sessionId) throws NoSuchSessionException {

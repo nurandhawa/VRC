@@ -249,11 +249,15 @@
               {{ entry.p2Name }}
             </span>
             </div>
-              <div>
+              <div v-if="entry.showPlayingStatus">
                   <component :is="entry.playingStatus" :index="entry.position - 1" transition="fade" transition-mode="out-in">
                   </component>
                   <time-select-button v-if="entry.playingStatus == 'playing'" v-on:click=fillTimeModal(entry.position-1)
                                       class="btn btn-raised btn-xs toggle-button"></time-select-button>
+              </div>
+              <div v-else>
+                  <a v-if="entry.playingStatus === 'playing'" class="btn btn-success btn-xs disabled playing-status">Playing</a>
+                  <a v-else class="btn btn-danger btn-xs disabled playing-status">Not Playing</a>
               </div>
 
             <div id="timeSelectModal{{entry.position - 1}}" class="modal">
