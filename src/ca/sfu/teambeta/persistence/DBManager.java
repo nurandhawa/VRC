@@ -298,8 +298,12 @@ public class DBManager {
 
     public synchronized void movePair(GameSession gameSession, int pairId, int newPosition) {
         Pair pair = getPairFromID(pairId);
+        boolean isPairPlaying = isActivePair(gameSession, pairId);
         removePair(pairId);
         gameSession.addNewPairAtIndex(pair, newPosition);
+        if (isPairPlaying) {
+            setPairActive(gameSession, pair.getID());
+        }
         persistEntity(gameSession);
     }
 
