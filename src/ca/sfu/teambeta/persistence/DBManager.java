@@ -17,6 +17,7 @@ import org.hibernate.criterion.Restrictions;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -423,6 +424,20 @@ public class DBManager {
         return anonymousUsers;
     }
 
+    public synchronized List<User> getAllUsers() {
+        Transaction tx = null;
+        List<User> users = new ArrayList<>();
+
+        try {
+            tx = session.beginTransaction();
+            users = session.createCriteria(User.class).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return users;
+    }
+
     public synchronized void deleteUser(String userEmail) throws NoSuchUserException, IllegalDatabaseOperation {
 
         User user = getUser(userEmail);
@@ -539,6 +554,31 @@ public class DBManager {
         gameSession.replaceLadder(ladder);
         persistEntity(gameSession);
         return true;
+    }
+
+    public List<Player> getDanglingPlayers() {
+        List<Player> players = getAllPlayers();
+        List<Player> playersWithAccounts = new ArrayList<>();
+        List<User> users = getAllUsers();
+        for (User user : users) {
+            if (user.getAssociatedPlayer() != null) {
+                playersWithAccounts.add(user.getAssociatedPlayer());
+            }
+        }
+        for (Player player : playersWithAccounts) {
+            players.remove(player);
+        }
+        return players;
+    }
+
+    public synchronized List<Player> getAllPlayers() {
+        List<Pair> pairs = getLatestLadder().getPairs();
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : pairs) {
+            players.add(pair.getPlayers().get(0));
+            players.add(pair.getPlayers().get(1));
+        }
+        return players;
     }
 
     public enum GameSessionVersion {
