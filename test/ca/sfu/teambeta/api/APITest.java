@@ -43,7 +43,7 @@ public class APITest {
     public static final String EMAIL = "admin_billy@vrc.ca";
     public static final String PASSWORD = "demoPass";
     public static final String REMEMBER_ME = "false";
-    public static final String URI_BASENAME = "https://localhost:8000/";
+    public static final String URI_BASENAME = "http://localhost:8000/";
     public static final String SECURITY_QUESTION = "question";
     public static final String SECURITY_ANSWER = "answer";
     private int originalLadderLength;

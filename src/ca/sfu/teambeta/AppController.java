@@ -54,7 +54,7 @@ public class AppController {
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
     public static final String JAR_STATIC_HTML_PATH = "/web";
     public static final int DEVELOP_SERVER_PORT = 8000;
-    public static final int JAR_SERVER_PORT = 443;
+    public static final int JAR_SERVER_PORT = 8080;
     public static final String PLAYING_STATUS = "playing";
     public static final String NOT_PLAYING_STATUS = "not playing";
     private static final String ID = "id";
@@ -104,9 +104,6 @@ public class AppController {
         staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-        String keystorePath = this.getClass().getClassLoader()
-                .getResource(KEYSTORE_LOCATION).toString();
-        secure(keystorePath, KEYSTORE_PASSWORD, null, null);
 
         before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in
