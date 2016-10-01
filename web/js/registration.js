@@ -77,7 +77,7 @@
     };
 
     var api = new API();
-    api.getLadder(function (ladderData) {
+    api.getPlayers(function (playerData) {
         var registrationForm = new Vue({
             el: REGISTRATION_FORM_ID,
             components: {
@@ -97,7 +97,7 @@
                     answer: ""
                 },
                 existingPlayer: "",
-                existingPlayers: ladderData.players,
+                existingPlayers: playerData.players,
                 color: '#03a9f4',
                 spinnerVisibility: false,
                 invalidCredentials: false

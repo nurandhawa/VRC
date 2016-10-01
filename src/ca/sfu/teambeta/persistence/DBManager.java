@@ -365,6 +365,12 @@ public class DBManager {
         return gson.toJson(gameSession);
     }
 
+    public synchronized String getJSONDanglingPlayers() {
+        Gson gson = new GsonBuilder().create();
+        List<Player> players = getDanglingPlayers();
+        return gson.toJson(players);
+    }
+
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder()
