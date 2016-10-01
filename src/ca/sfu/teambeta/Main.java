@@ -7,6 +7,7 @@ import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.logic.GameSession;
+import ca.sfu.teambeta.logic.NotificationManager;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
 
@@ -29,6 +30,12 @@ class Main {
             GameSession gameSession = new GameSession(newLadder);
             dbManager.persistEntity(gameSession);
         }
+
+        NotificationManager notificationManager = new NotificationManager(
+                dbManager, NotificationManager.getDefaultEmailScheduledTime(),
+                NotificationManager.PERIOD_ONE_WEEK);
+        notificationManager.scheduleEmailNotifications();
+
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         AccountManager am = new AccountManager(accountDatabaseHandler);
 
