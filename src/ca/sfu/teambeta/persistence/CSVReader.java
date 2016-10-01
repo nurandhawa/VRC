@@ -79,7 +79,7 @@ public class CSVReader {
                         from their ID on the csv. This is an issue not only because our csv would be out of sync with
                         the database but also result in invalid creation of the ladder. For e.g. if a player is in
                         multiple pairs and we compare by original ID then the database will have multiple entries
-                        for the same player since their IDs on the csv and database don't match. 
+                        for the same player since their IDs on the csv and database don't match.
                      */
                     if (player.getExistingId() == idFirst) {
                         firstPlayer = player;
@@ -146,24 +146,10 @@ public class CSVReader {
         }
     }
 
-    public static List<Integer> getPairIdsFromCsvStream(InputStreamReader inputStreamReader) throws Exception {
-        List<Integer> pairIds = new ArrayList<>();
-        try (com.opencsv.CSVReader reader =
-                     new com.opencsv.CSVReader(inputStreamReader)) {
-            List<String[]> entries = reader.readAll();
-            Iterator<String[]> iterator = entries.iterator();
-
-            String[] pairInfo;
-            while (iterator.hasNext()) {
-                pairInfo = iterator.next();
-
-                int pairId = Integer.parseInt(pairInfo[7]);
-                pairIds.add(pairId);
-            }
-            reader.close();
-            return pairIds;
-        } catch (IOException e) {
-            throw new Exception("Malformed CSV stream");
-        }
+    public static Ladder importCsv(InputStreamReader inputStreamReader,
+                                DBManager db) throws Exception {
+        Ladder ladder = null;
+        ladder = setupLadder(inputStreamReader, db);
+        return ladder;
     }
 }
