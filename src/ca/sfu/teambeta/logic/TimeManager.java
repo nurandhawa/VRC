@@ -13,7 +13,7 @@ import java.util.Calendar;
  */
 public class TimeManager {
     private static final int DAY = Calendar.THURSDAY;
-    private static final int HOUR = 18;
+    private static final int HOUR = 17;
     private static final int MINUTE = 00;
     private static final int SECOND = 0;
     private static final int WEEK = 7;
