@@ -44,7 +44,6 @@ import static spark.Spark.halt;
 import static spark.Spark.patch;
 import static spark.Spark.port;
 import static spark.Spark.post;
-import static spark.Spark.secure;
 import static spark.Spark.staticFiles;
 
 /**
@@ -86,8 +85,6 @@ public class AppController {
     private static final int NOT_AUTHENTICATED = 401;
     private static final int SERVER_ERROR = 500;
     private static final int OK = 200;
-    private static final String KEYSTORE_LOCATION = "testkeystore.jks";
-    private static final String KEYSTORE_PASSWORD = "password";
     private static final String SESSION_TOKEN_KEY = "sessionToken";
     private static final String LADDER_DISABLED = "Ladder is Disabled";
     private static final String INVALID_USER = "You are not allowed to modify this pair";
