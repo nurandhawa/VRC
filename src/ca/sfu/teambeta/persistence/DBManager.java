@@ -395,6 +395,20 @@ public class DBManager {
         return gameSession;
     }
 
+    public synchronized List<Player> getAllPlayers() {
+        Transaction tx = null;
+        List<Player> players = new ArrayList<>();
+
+        try {
+            tx = session.beginTransaction();
+            players = session.createCriteria(Player.class).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return players;
+    }
+
     public synchronized User getUser(String email) {
         Transaction tx = null;
         User user = null;
@@ -571,15 +585,6 @@ public class DBManager {
         return players;
     }
 
-    public synchronized List<Player> getAllPlayers() {
-        List<Pair> pairs = getLatestLadder().getPairs();
-        List<Player> players = new ArrayList<>();
-        for (Pair pair : pairs) {
-            players.add(pair.getPlayers().get(0));
-            players.add(pair.getPlayers().get(1));
-        }
-        return players;
-    }
 
     public enum GameSessionVersion {
         CURRENT,
