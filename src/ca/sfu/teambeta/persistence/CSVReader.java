@@ -72,20 +72,31 @@ public class CSVReader {
                 Player secondPlayer = null;
 
                 for (Player player : distinctPlayers) {
-                    if (player.getID() == idFirst) {
+                    /*
+                        Using existingIds here because the other ID is only generated after an entity is persisted.
+                        In case the order of the csv changes (which it definitely would) and players are not
+                        in order of the ID, then the ID that is given to an entity after persist would be different
+                        from their ID on the csv. This is an issue not only because our csv would be out of sync with
+                        the database but also result in invalid creation of the ladder. For e.g. if a player is in
+                        multiple pairs and we compare by original ID then the database will have multiple entries
+                        for the same player since their IDs on the csv and database don't match.
+                     */
+                    if (player.getExistingId() == idFirst) {
                         firstPlayer = player;
                     }
-                    if (player.getID() == idSecond) {
+                    if (player.getExistingId() == idSecond) {
                         secondPlayer = player;
                     }
                 }
 
                 if (firstPlayer == null) {
                     firstPlayer = new Player(firstNameFirst, lastNameFirst);
+                    firstPlayer.setExistingId(idFirst);
                     distinctPlayers.add(firstPlayer);
                 }
                 if (secondPlayer == null) {
                     secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                    secondPlayer.setExistingId(idSecond);
                     distinctPlayers.add(secondPlayer);
                 }
 
@@ -135,24 +146,10 @@ public class CSVReader {
         }
     }
 
-    public static List<Integer> getPairIdsFromCsvStream(InputStreamReader inputStreamReader) throws Exception {
-        List<Integer> pairIds = new ArrayList<>();
-        try (com.opencsv.CSVReader reader =
-                     new com.opencsv.CSVReader(inputStreamReader)) {
-            List<String[]> entries = reader.readAll();
-            Iterator<String[]> iterator = entries.iterator();
-
-            String[] pairInfo;
-            while (iterator.hasNext()) {
-                pairInfo = iterator.next();
-
-                int pairId = Integer.parseInt(pairInfo[7]);
-                pairIds.add(pairId);
-            }
-            reader.close();
-            return pairIds;
-        } catch (IOException e) {
-            throw new Exception("Malformed CSV stream");
-        }
+    public static Ladder importCsv(InputStreamReader inputStreamReader,
+                                DBManager db) throws Exception {
+        Ladder ladder = null;
+        ladder = setupLadder(inputStreamReader, db);
+        return ladder;
     }
 }

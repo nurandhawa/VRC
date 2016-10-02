@@ -524,16 +524,11 @@ public class DBManager {
     }
 
     public synchronized boolean importLadderFromCsv(InputStreamReader inputStreamReader) {
-        List<Integer> pairIds;
+        Ladder ladder;
         try {
-            pairIds = CSVReader.getPairIdsFromCsvStream(inputStreamReader);
+            ladder = CSVReader.importCsv(inputStreamReader, this);
         } catch (Exception e) {
             return false;
-        }
-        Ladder ladder = new Ladder();
-        for (int id : pairIds) {
-            Pair pair = getPairFromID(id);
-            ladder.insertAtEnd(pair);
         }
         GameSession gameSession = getGameSessionLatest();
         gameSession.replaceLadder(ladder);
