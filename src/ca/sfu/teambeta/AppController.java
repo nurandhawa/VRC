@@ -628,6 +628,17 @@ public class AppController {
 
         });
 
+        //return a list of players which do not have an account.
+        get("/api/players", (request, response) -> {
+            String json = dbManager.getJSONDanglingPlayers();
+            if (!json.isEmpty()) {
+                return json;
+            } else {
+                response.status(NOT_FOUND);
+                return getErrResponse("No Players were found");
+            }
+        });
+
         //download ladder to a new csv file
         get("/api/ladder/download", (request, response) -> {
 

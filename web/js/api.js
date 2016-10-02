@@ -528,6 +528,35 @@ var API = (function() {
             });
     };
 
+    API.prototype.getPlayers = function(doneCallback, failCallback) {
+        $.ajax({
+            method: "GET",
+            url: SERVER_URL + "/players"
+        })
+            .done(function(response) {
+                if (doneCallback) {
+                    var playerData = JSON.parse(response);
+                    playerData.players = [];
+                    playerData.forEach(function(player){
+                        playerData.players.push({
+                            label: player.firstName + " " + player.lastName,
+                            id: player.id
+                        });
+                    });
+                    doneCallback(playerData);
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    alert(responseBody.message);
+                }
+            });
+    };
+
     return API;
 
 })();
