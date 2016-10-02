@@ -9,6 +9,7 @@ import java.util.TimerTask;
 
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.persistence.DBManager;
 
 /**
@@ -18,7 +19,7 @@ public class NotificationManager {
     public static final long PERIOD_ONE_WEEK = 604800000;
 
     private DBManager dbManager;
-    private EmailNotifier emailNotifier;
+    private EmailNotifier emailNotifier = new EmailNotifier();
     private Date scheduledTime;
     private long timerPeriod;
 
@@ -42,14 +43,19 @@ public class NotificationManager {
     }
 
     private void sendEmailNotification() {
+        List<User> users = dbManager.getAllUsers();
+        List<User> activeUsers = new ArrayList<>();
         List<Pair> activePairs = dbManager.getGameSessionLatest().getActivePairs();
-        List<Player> activePlayers = new ArrayList<>();
-        for (Pair pair : activePairs) {
-            activePlayers.addAll(pair.getPlayers());
+        for (User user : users) {
+            Player player = user.getAssociatedPlayer();
+            boolean belongsToActivePair = activePairs.stream().anyMatch(pair -> pair.hasPlayer(player));
+            if (belongsToActivePair) {
+                activeUsers.add(user);
+            }
         }
 
-        for (Player player : activePlayers) {
-            emailNotifier.notify(player);
+        for (User user : activeUsers) {
+            emailNotifier.notify(user);
         }
     }
 

@@ -61,6 +61,7 @@ dependencies {
     compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
     compile group: 'com.java-adventures.security', name: 'secure-password-hash', version: '1.0.1'
     compile files('web')
+    compile 'com.sun.mail:javax.mail:1.5.6'
 }
 
 buildscript {
