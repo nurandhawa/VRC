@@ -19,7 +19,6 @@ public class NotificationManager {
     public static final long PERIOD_ONE_WEEK = 604800000;
 
     private DBManager dbManager;
-    private EmailNotifier emailNotifier = new EmailNotifier();
     private Date scheduledTime;
     private long timerPeriod;
 
@@ -29,20 +28,20 @@ public class NotificationManager {
         this.timerPeriod = timerPeriod;
     }
 
-    public void scheduleEmailNotifications() {
+    public void scheduleEmailNotifications(Notifier emailNotifier) {
         // TODO: Log scheduled time and execution time
         Timer notificationTimer = new Timer();
         notificationTimer.scheduleAtFixedRate(
                 new TimerTask() {
                     @Override
                     public void run() {
-                        sendEmailNotification();
+                        sendEmailNotification(emailNotifier);
                     }
                 },
                 scheduledTime, timerPeriod);
     }
 
-    private void sendEmailNotification() {
+    private void sendEmailNotification(Notifier emailNotifier) {
         List<User> users = dbManager.getAllUsers();
         List<User> activeUsers = new ArrayList<>();
         List<Pair> activePairs = dbManager.getGameSessionLatest().getActivePairs();
