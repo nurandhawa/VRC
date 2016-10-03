@@ -79,7 +79,7 @@ public class NotificationManagerTest {
                 testTime.getTime(), 1000);
         notificationManager.scheduleEmailNotifications(mockEmailNotifier);
 
-        Mockito.verify(mockEmailNotifier, Mockito.after(3000).times(3)).notify(Mockito.any());
+        Mockito.verify(mockEmailNotifier, Mockito.after(3000).atLeast(3)).notify(Mockito.any());
 
     }
 }
