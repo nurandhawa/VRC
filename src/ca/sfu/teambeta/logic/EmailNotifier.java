@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.logic;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -21,17 +22,21 @@ import ca.sfu.teambeta.core.User;
  * Notifier class to send an email to players regarding their scheduled play time and group
  */
 public class EmailNotifier implements Notifier {
-    public static final String EMAIL_SMTP_HOSTNAME = "localhost";
-    public static final int EMAIL_SMTP_PORT = 587;
-    public static final String EMAIL_SMTP_USERNAME = "test";
-    public static final String EMAIL_SMTP_PASSWORD = "password";
+    private static final String EMAIL_SMTP_HOSTNAME = "smtp.sendgrid.net";
+    private static final int EMAIL_SMTP_PORT = 587;
+    private static final String EMAIL_SMTP_USERNAME = "alexlandmail";
+    private static final String EMAIL_SMTP_PASSWORD = "0rant-2brady-tapa-scowl0";
 
     private static final String KEY_TRANSPORT_PROTOCOL = "mail.transport.protocol";
     private static final String KEY_SMTP_HOST = "mail.smtp.host";
     private static final String KEY_SMTP_PORT = "mail.smtp.port";
     private static final String KEY_SMTP_AUTH = "mail.smtp.auth";
 
+    private static final String FROM_EMAIL_ADDRESS = "admin@vrc.bc.ca";
+    private static final String FROM_EMAIL_ADDRESS_NAME = "VRC Admin";
+
     private Properties mailServerProperties;
+    private InternetAddress fromAddress;
 
     public EmailNotifier() {
         mailServerProperties = new Properties();
@@ -39,6 +44,12 @@ public class EmailNotifier implements Notifier {
         mailServerProperties.put(KEY_SMTP_HOST, EMAIL_SMTP_HOSTNAME);
         mailServerProperties.put(KEY_SMTP_PORT, EMAIL_SMTP_PORT);
         mailServerProperties.put(KEY_SMTP_AUTH, "true");
+
+        try {
+            fromAddress = new InternetAddress(FROM_EMAIL_ADDRESS, FROM_EMAIL_ADDRESS_NAME);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -64,6 +75,7 @@ public class EmailNotifier implements Notifier {
         Message message = new MimeMessage(session);
 
         message.addRecipients(Message.RecipientType.TO, recipients);
+        message.setFrom(fromAddress);
 
         message.setSubject("Test message");
 
