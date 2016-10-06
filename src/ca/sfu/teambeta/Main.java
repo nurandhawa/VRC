@@ -6,9 +6,10 @@ import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
-import ca.sfu.teambeta.logic.EmailNotifier;
 import ca.sfu.teambeta.logic.GameSession;
-import ca.sfu.teambeta.logic.NotificationManager;
+import ca.sfu.teambeta.notifications.EmailNotifier;
+import ca.sfu.teambeta.notifications.NotificationManager;
+import ca.sfu.teambeta.notifications.SimpleComposer;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
 
@@ -35,7 +36,7 @@ class Main {
         NotificationManager notificationManager = new NotificationManager(
                 dbManager, NotificationManager.getDefaultEmailScheduledTime(),
                 NotificationManager.PERIOD_ONE_WEEK);
-        notificationManager.scheduleEmailNotifications(new EmailNotifier());
+        notificationManager.scheduleEmailNotifications(new EmailNotifier(new SimpleComposer()));
 
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         AccountManager am = new AccountManager(accountDatabaseHandler);

@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.notifications;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
@@ -16,6 +16,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.User;
 
 /**
@@ -37,8 +38,11 @@ public class EmailNotifier implements Notifier {
 
     private Properties mailServerProperties;
     private InternetAddress fromAddress;
+    private Composer composer;
 
-    public EmailNotifier() {
+    public EmailNotifier(Composer composer) {
+        this.composer = composer;
+
         mailServerProperties = new Properties();
         mailServerProperties.put(KEY_TRANSPORT_PROTOCOL, "smtp");
         mailServerProperties.put(KEY_SMTP_HOST, EMAIL_SMTP_HOSTNAME);
@@ -53,12 +57,14 @@ public class EmailNotifier implements Notifier {
     }
 
     @Override
-    public void notify(User user) {
+    public void notify(User user, Scorecard scorecard) {
         Session session = createSession();
 
         try {
             Address[] recipients = {new InternetAddress(user.getEmail())};
-            Message message = createMessage(recipients, session);
+            String subject = composer.composeSubject(user, scorecard);
+            String body = composer.composeMessage(user, scorecard);
+            Message message = createMessage(recipients, subject, body, session);
 
             Transport transport = session.getTransport();
             transport.connect();
@@ -71,16 +77,17 @@ public class EmailNotifier implements Notifier {
 
     }
 
-    private Message createMessage(Address[] recipients, Session session) throws MessagingException {
+    private Message createMessage(Address[] recipients, String subject,
+                                  String body, Session session) throws MessagingException {
         Message message = new MimeMessage(session);
 
         message.addRecipients(Message.RecipientType.TO, recipients);
         message.setFrom(fromAddress);
 
-        message.setSubject("Test message");
+        message.setSubject(subject);
 
         BodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText("This is a test email message.");
+        bodyPart.setText(body);
         message.setContent(new MimeMultipart(bodyPart));
 
         return message;

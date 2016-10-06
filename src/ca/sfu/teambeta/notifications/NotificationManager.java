@@ -1,14 +1,16 @@
-package ca.sfu.teambeta.logic;
+package ca.sfu.teambeta.notifications;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.persistence.DBManager;
 
@@ -43,18 +45,25 @@ public class NotificationManager {
 
     private void sendEmailNotification(Notifier emailNotifier) {
         List<User> users = dbManager.getAllUsers();
-        List<User> activeUsers = new ArrayList<>();
-        List<Pair> activePairs = dbManager.getGameSessionLatest().getActivePairs();
-        for (User user : users) {
-            Player player = user.getAssociatedPlayer();
-            boolean belongsToActivePair = activePairs.stream().anyMatch(pair -> pair.hasPlayer(player));
-            if (belongsToActivePair) {
-                activeUsers.add(user);
+        List<Scorecard> scorecards = dbManager.getGameSessionLatest().getScorecards();
+        Map<Player, Scorecard> activePlayers = new HashMap<>();
+
+        // Create a map of players to the scorecards they are in
+        for (Scorecard scorecard : scorecards) {
+            for (Pair pair : scorecard.getPairs()) {
+                pair.getPlayers().forEach(player -> activePlayers.put(player, scorecard));
             }
         }
 
-        for (User user : activeUsers) {
-            emailNotifier.notify(user);
+        // If a User's Player is active, pass the User and the Scorecard that
+        // contains the Player (as mapped above) to the notifier
+        for (User user : users) {
+            Player player = user.getAssociatedPlayer();
+            boolean isActive = activePlayers.containsKey(player);
+            if (isActive) {
+                Scorecard playerScorecard = activePlayers.get(player);
+                emailNotifier.notify(user, playerScorecard);
+            }
         }
     }
 

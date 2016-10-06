@@ -12,6 +12,9 @@ import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
 import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.notifications.EmailNotifier;
+import ca.sfu.teambeta.notifications.NotificationManager;
+import ca.sfu.teambeta.notifications.Notifier;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
 
@@ -64,7 +67,7 @@ public class NotificationManagerTest {
                 testTime.getTime(), NotificationManager.PERIOD_ONE_WEEK);
         notificationManager.scheduleEmailNotifications(mockEmailNotifier);
 
-        Mockito.verify(mockEmailNotifier, Mockito.after(1000)).notify(Mockito.any());
+        Mockito.verify(mockEmailNotifier, Mockito.after(1000)).notify(Mockito.any(), Mockito.any());
 
     }
 
@@ -79,7 +82,7 @@ public class NotificationManagerTest {
                 testTime.getTime(), 1000);
         notificationManager.scheduleEmailNotifications(mockEmailNotifier);
 
-        Mockito.verify(mockEmailNotifier, Mockito.after(3000).atLeast(3)).notify(Mockito.any());
+        Mockito.verify(mockEmailNotifier, Mockito.after(3000).atLeast(3)).notify(Mockito.any(), Mockito.any());
 
     }
 }
