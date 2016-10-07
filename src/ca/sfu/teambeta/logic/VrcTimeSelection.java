@@ -40,9 +40,6 @@ public class VrcTimeSelection implements TimeSelection {
 
     public void distributePairs(List<Scorecard> allScorecards, Map<Pair, Time> timeSlotsMap) {
         //if no. of scorecards are less than or equal to 12 then just assign the first time slot
-        if (allScorecards.size() <= MIN_SCORECARDS_FOR_DISTRIBUTION) {
-
-        }
         //Make schedule of groups by selecting most popular time slot
         for (Scorecard scorecard : allScorecards) {
             if (allScorecards.size() <= MIN_SCORECARDS_FOR_DISTRIBUTION) {
