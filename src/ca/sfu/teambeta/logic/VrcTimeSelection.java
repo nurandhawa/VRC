@@ -25,6 +25,7 @@ public class VrcTimeSelection implements TimeSelection {
     private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private static final int MIN_SCORECARDS_FOR_DISTRIBUTION = 12;
+
     public int getAmountPairsByTime(List<Scorecard> scorecards, Time time) {
         int amount = 0;
 
@@ -45,7 +46,7 @@ public class VrcTimeSelection implements TimeSelection {
         //Make schedule of groups by selecting most popular time slot
         for (Scorecard scorecard : allScorecards) {
             if (allScorecards.size() <= MIN_SCORECARDS_FOR_DISTRIBUTION) {
-               scorecard.setTimeSlot(Time.SLOT_1);
+                scorecard.setTimeSlot(Time.SLOT_1);
             } else {
                 List<Time> timeSlots = getTimeSlotsOfGroup(scorecard, timeSlotsMap);
                 Time time = getDominantTime(timeSlots);
