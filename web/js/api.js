@@ -250,9 +250,9 @@ var API = (function() {
                     match.scorecardIndex = i;
                     match.gameSession = gameSession;
                     if(match.timeSlot === "SLOT_1") {
-                        match.timeSlot = "08:00 pm";
+                        match.timeSlot = "07:45 pm";
                     } else if(match.timeSlot === "SLOT_2"){
-                        match.timeSlot = "09:30 pm";
+                        match.timeSlot = "07:45 pm";
                     } else {
                         match.timeSlot = "00:00";
                     }
