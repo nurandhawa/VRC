@@ -534,6 +534,14 @@
 }
 
 .btn.btn-xs.playing-status {
+    font-weight: bolder;
+    border: solid;
+    border-width: 1px !important;
+    color: green;
+}
+
+.btn.btn-xs.not-playing-status {
+    font-weight: bolder;
     border: solid;
     border-width: 1px !important;
     color: red;
