@@ -22,25 +22,23 @@ import ca.sfu.teambeta.core.Time;
  */
 public class VrcTimeSelection implements TimeSelection {
     private static final Time DEFAULT_TIME_SLOT = Time.SLOT_1;
-    private static final int MAX_NUM_PAIRS_PER_SLOT = 24;
+    private static final int MAX_NUM_PAIRS_PER_SLOT = 38;
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
     private static final int MIN_SCORECARDS_FOR_DISTRIBUTION = 12;
 
     public int getAmountPairsByTime(List<Scorecard> scorecards, Time time) {
         int amount = 0;
-
         for (Scorecard scorecard : scorecards) {
             if (scorecard.getTimeSlot() == time) {
                 amount += scorecard.getReorderedPairs().size();
             }
         }
-
         return amount;
     }
 
     public void distributePairs(List<Scorecard> allScorecards, Map<Pair, Time> timeSlotsMap) {
-        //if no. of scorecards are less than or equal to 12 then just assign the first time slot
-        //Make schedule of groups by selecting most popular time slot
+        /* If no. of scorecards are less than or equal to 12 then just assign the first time slot,
+        *  otherwise distribute scorecards as per the preference of pairs */
         for (Scorecard scorecard : allScorecards) {
             if (allScorecards.size() <= MIN_SCORECARDS_FOR_DISTRIBUTION) {
                 scorecard.setTimeSlot(Time.SLOT_1);
@@ -51,17 +49,17 @@ public class VrcTimeSelection implements TimeSelection {
             }
         }
 
-        //Create Limitations which determine how to arrange groups between time slots
+        /* If no. of pairs exceed the maximum number of pairs the gym can entertain
+        *  then distribute scorecards equally into all time slots. */
         int amountPlayingPairs = getTotalPairCount(allScorecards);
         int maxNumPairs = AMOUNT_TIME_SLOTS * MAX_NUM_PAIRS_PER_SLOT;
-        //Amount of active pairs exceed the amount the gym can contain at all time slots combined
         boolean crowded = amountPlayingPairs > maxNumPairs;
 
         if (crowded) {
-            //Every time slot will have equal amount of pairs
             distributeEqually(amountPlayingPairs, allScorecards);
         } else {
-            //Some time slots have to many groups, moves them to next time slot
+            /* If a certain time slot has more than 12 scorecards then
+            * move the extra scorecards to other time slots. */
             rearrangeGroupsBetweenTimeSlots(allScorecards);
         }
     }
