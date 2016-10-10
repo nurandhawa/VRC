@@ -50,6 +50,7 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'com.mashape.unirest:unirest-java:1.4.9'
+    testCompile 'org.mockito:mockito-core:1.10.19'
     compile 'com.opencsv:opencsv:3.7'
     compile 'org.hibernate:hibernate-core:5.1.0.Final'
     compile 'com.h2database:h2:1.4.192'
@@ -61,6 +62,7 @@ dependencies {
     compile group: 'javax.json', name: 'javax.json-api', version: '1.0'
     compile group: 'com.java-adventures.security', name: 'secure-password-hash', version: '1.0.1'
     compile files('web')
+    compile 'com.sun.mail:javax.mail:1.5.6'
 }
 
 buildscript {
