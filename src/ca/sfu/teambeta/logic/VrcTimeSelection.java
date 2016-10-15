@@ -10,10 +10,10 @@ import ca.sfu.teambeta.core.Scorecard;
 import ca.sfu.teambeta.core.Time;
 
 /**
- *  If no. of scorecards are less than or equal to 12 then just assign the first time slot,
- *  otherwise distribute scorecards as per the preference of pairs and then distribute them
- *  equally into all time slots.
- *  */
+ * If no. of scorecards are less than or equal to 12 then just assign the first time slot,
+ * otherwise distribute scorecards as per the preference of pairs and then distribute them
+ * equally into all time slots.
+ */
 public class VrcTimeSelection implements TimeSelection {
     private static final Time DEFAULT_TIME_SLOT = Time.SLOT_1;
     private static final int AMOUNT_TIME_SLOTS = Time.values().length - 1;
@@ -148,7 +148,7 @@ public class VrcTimeSelection implements TimeSelection {
         return null;
     }
 
-    private Scorecard getLastScorecardWithNoPreferredTime (List<Scorecard> scorecards, Time oldTime) {
+    private Scorecard getLastScorecardWithNoPreferredTime(List<Scorecard> scorecards, Time oldTime) {
         for (int i = scorecards.size() - 1; i > 0; i--) {
             Scorecard group = scorecards.get(i);
             if (group.getTimeSlot() == oldTime) {
@@ -192,7 +192,7 @@ public class VrcTimeSelection implements TimeSelection {
         return nextTimeSlot;
     }
 
-    private void distributeScorecardsEqually (List<Scorecard> allScorecards) {
+    private void distributeScorecardsEqually(List<Scorecard> allScorecards) {
         int numOfScorecards = allScorecards.size();
         int scorecardsOnEachTime = numOfScorecards / AMOUNT_TIME_SLOTS;
         for (Time time : Time.values()) {
