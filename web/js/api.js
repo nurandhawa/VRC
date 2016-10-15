@@ -252,7 +252,7 @@ var API = (function() {
                     if(match.timeSlot === "SLOT_1") {
                         match.timeSlot = "07:45 pm";
                     } else if(match.timeSlot === "SLOT_2"){
-                        match.timeSlot = "07:45 pm";
+                        match.timeSlot = "09:15 pm";
                     } else {
                         match.timeSlot = "00:00";
                     }
