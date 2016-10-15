@@ -5,8 +5,8 @@ package ca.sfu.teambeta.core;
  */
 public enum Time {
     NO_SLOT(""),
-    SLOT_1("7:45pm"),
-    SLOT_2("7:45pm");
+    SLOT_1("7:45 pm"),
+    SLOT_2("9:15 pm");
 
     private String timeString;
 
