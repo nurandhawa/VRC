@@ -7,12 +7,15 @@ import java.util.Calendar;
  */
 
 public class UserSessionMetadata {
-    // TTL is calculated in days
-    private static final int TIME_MEASUREMENT = Calendar.DAY_OF_MONTH;
-    private static final int TIME_TO_LIVE_ADMIN = 3;
-    private static final int TIME_TO_LIVE_ANON_USER = 2;
-    private static final int TIME_TO_LIVE_DEFAULT = 15;
-    private static final int TIME_TO_LIVE_EXTENDED = 60;
+    // TTL is calculated in the units TIME_MEASUREMENT is set to.
+    private static final int TIME_MEASUREMENT = Calendar.MINUTE;
+    private static final int TIME_TO_LIVE_ADMIN = 30;
+    private static final int TIME_TO_LIVE_ANON_USER = 30;
+    private static final int TIME_TO_LIVE_DEFAULT = 30;
+
+    // Extended TTL is used when "remember me" is checked, so it lasts for a very long time.
+    // Format is (days) * (hours in a day) * (minutes in an hour).
+    private static final int TIME_TO_LIVE_EXTENDED = 365 * 24 * 60;
 
     private String email;
     private Calendar expiryDate;

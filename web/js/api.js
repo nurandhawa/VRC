@@ -13,6 +13,18 @@ var API = (function() {
     var ROLE_COOKIE = "userRole";
     var ID_COOKIE = "playerId";
 
+    var RESPONSE_STATUS_OK = "OK";
+    var RESPONSE_STATUS_ERROR = "ERROR";
+    var RESPONSE_STATUS_AUTH_ERROR = "AUTH_ERROR";
+
+    var defaultFailCallback = function(response) {
+        alert(response.message);
+
+        if (response.status === RESPONSE_STATUS_AUTH_ERROR) {
+            window.location.href = "/index.html";
+        }
+    };
+
     function API() {
         this.playingStatus = Object.freeze({
             PLAYING: "playing",
@@ -80,7 +92,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -102,7 +114,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -123,7 +135,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -169,7 +181,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -190,7 +202,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -213,7 +225,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -234,7 +246,7 @@ var API = (function() {
             }
             else {
                 var responseBody = JSON.parse(response.responseText);
-                alert(responseBody.message);
+                defaultFailCallback(responseBody);
             }
         });
     };
@@ -284,7 +296,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -308,7 +320,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -329,7 +341,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -355,7 +367,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -383,7 +395,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -409,7 +421,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -430,7 +442,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -455,7 +467,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -481,7 +493,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -523,7 +535,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
@@ -552,7 +564,7 @@ var API = (function() {
                 }
                 else {
                     var responseBody = JSON.parse(response.responseText);
-                    alert(responseBody.message);
+                    defaultFailCallback(responseBody);
                 }
             });
     };
