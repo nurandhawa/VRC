@@ -123,62 +123,66 @@ public class CSVReader {
         return pairs;
     }
 
+    /*  If an account is already created, the player is again associated with that
+    *   account since the id has changed. If account has not been created,
+    *   then create a new one.  */
     private static void associateUser(DBManager db, String[] pairInfo,
                                       Player firstPlayer, Player secondPlayer) {
         String emailFirst = pairInfo[4];
         String emailSecond = pairInfo[12];
         User user = db.getUser(emailFirst);
         if (user != null) {
-            user.associatePlayer(firstPlayer);
+            if (firstPlayer != null) {
+                user.associatePlayer(firstPlayer);
+            }
         } else {
             if (!emailFirst.equals("")) {
-                String passHash = pairInfo[5];
-                String question = pairInfo[6];
-                String answer = pairInfo[7];
-                UserRole userRole = null;
-                for (UserRole role : UserRole.values()) {
-                    if (role.name().equals(pairInfo[8])) {
-                        userRole = role;
-                    }
-                }
-                User newUser = new User(emailFirst, passHash, question, answer);
-                newUser.setUserRole(userRole);
-                if (!userRole.equals(UserRole.ADMINISTRATOR)) {
-                    newUser.associatePlayer(firstPlayer);
-                }
-                try {
-                    db.addNewUser(newUser);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                int startIndex = 5;
+                createUser(emailFirst, pairInfo, startIndex, firstPlayer, db);
             }
         }
         user = db.getUser(emailSecond);
         if (user != null) {
-            user.associatePlayer(secondPlayer);
+            if (secondPlayer != null) {
+                user.associatePlayer(secondPlayer);
+            }
         } else {
             if (!emailSecond.equals("")) {
-                String passHash = pairInfo[13];
-                String question = pairInfo[14];
-                String answer = pairInfo[15];
-                UserRole userRole = null;
-                for (UserRole role : UserRole.values()) {
-                    if (role.name().equals(pairInfo[16])) {
-                        userRole = role;
-                    }
-                }
-                User newUser = new User(emailSecond, passHash, question, answer);
-                newUser.setUserRole(userRole);
-                if (!userRole.equals(UserRole.ADMINISTRATOR)) {
-                    newUser.associatePlayer(secondPlayer);
-                }
-                try {
-                    db.addNewUser(newUser);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                int startIndex = 13;
+                createUser(emailSecond, pairInfo, startIndex, secondPlayer, db);
             }
         }
+    }
+
+    private static void createUser(String email, String[] pairInfo, int startIndex, Player player,
+                                   DBManager db) {
+        User newUser;
+        String passHash = pairInfo[startIndex];
+        String question = pairInfo[startIndex + 1];
+        String answer = pairInfo[startIndex + 2];
+        UserRole userRole = null;
+        for (UserRole role : UserRole.values()) {
+            if (role.name().equals(pairInfo[startIndex + 3])) {
+                userRole = role;
+            }
+        }
+        newUser = new User(email, passHash, question, answer);
+        newUser.setUserRole(userRole);
+        if (!userRole.equals(UserRole.ADMINISTRATOR)) {
+            newUser.associatePlayer(player);
+        }
+        try {
+            db.addNewUser(newUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Ladder importCsv(InputStreamReader inputStreamReader,
+                                   DBManager db) throws Exception {
+        Ladder ladder = null;
+        ladder = setupLadder(inputStreamReader, db);
+        return ladder;
     }
 
     public static void exportCsv(OutputStream outputStream, List<Pair> pairs,
@@ -188,10 +192,10 @@ public class CSVReader {
 
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 17;
-        String[] headers = { "Pair ID", "Last Name", "First Name", "Player ID", "Email",
-                             "Password Hash", "Security Question", "Answer Hash", "Role",
-                             "Last Name", "First Name", "Player ID", "Email",
-                             "Password Hash", "Security Question", "Answer Hash", "Role" };
+        String[] headers = {"Pair ID", "Last Name", "First Name", "Player ID", "Email",
+                "Password Hash", "Security Question", "Answer Hash", "Role",
+                "Last Name", "First Name", "Player ID", "Email",
+                "Password Hash", "Security Question", "Answer Hash", "Role"};
         entries.add(headers);
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
@@ -245,13 +249,6 @@ public class CSVReader {
         } catch (IOException e) {
             throw e;
         }
-    }
-
-    public static Ladder importCsv(InputStreamReader inputStreamReader,
-                                   DBManager db) throws Exception {
-        Ladder ladder = null;
-        ladder = setupLadder(inputStreamReader, db);
-        return ladder;
     }
 
     private static void addAdminAccountsToCsv(List<String[]> entries, DBManager db, int cols) {
