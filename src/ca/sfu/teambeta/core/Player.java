@@ -20,6 +20,7 @@ public class Player extends Persistable {
     private String firstName;
     @Expose
     private String lastName;
+    private String email;
     @Transient
     @Expose
     private int existingId;
@@ -30,6 +31,7 @@ public class Player extends Persistable {
     public Player(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = null;
     }
 
     public String getFirstName() {
@@ -75,5 +77,13 @@ public class Player extends Persistable {
 
     public void setExistingId(int existingId) {
         this.existingId = existingId;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

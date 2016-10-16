@@ -551,7 +551,7 @@ public class DBManager {
 
     public boolean writeToCsvFile(OutputStream outputStream, GameSession gameSession) {
         try {
-            CSVReader.exportCsv(outputStream, gameSession.getAllPairs());
+            CSVReader.exportCsv(outputStream, gameSession.getAllPairs(), this);
         } catch (IOException e) {
             return false;
         }

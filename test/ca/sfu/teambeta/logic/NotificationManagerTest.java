@@ -58,7 +58,7 @@ public class NotificationManagerTest {
     private GameSession setupGameSession() throws Exception {
         Ladder newLadder;
         try {
-            newLadder = CSVReader.setupLadder(dbManager);
+            newLadder = CSVReader.setupTestingLadder(dbManager);
         } catch (Exception e) {
             System.out.println("INVALID CSV FILE");
             throw e;
