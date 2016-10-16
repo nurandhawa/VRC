@@ -136,9 +136,8 @@ public class CSVReader {
 
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 9;
-        String[] headers = {"Last Name", "First Name", "Player ID", "Email",
-                "Last Name", "First Name", "Player ID", "Email",
-                "Pair ID"};
+        String[] headers = { "Last Name", "First Name", "Player ID", "Email",
+                "Last Name", "First Name", "Player ID", "Email", "Pair ID" };
         entries.add(headers);
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
