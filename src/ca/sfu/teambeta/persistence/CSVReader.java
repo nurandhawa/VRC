@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.accounts.UserRole;
 import ca.sfu.teambeta.core.User;
 import com.opencsv.CSVWriter;
 
@@ -62,14 +63,17 @@ public class CSVReader {
             while (iterator.hasNext()) {
                 pairInfo = iterator.next();
 
-                String lastNameFirst = pairInfo[0];
-                String firstNameFirst = pairInfo[1];
-                int idFirst = Integer.parseInt(pairInfo[2]);
-                String emailFirst = pairInfo[3];
-                String lastNameSecond = pairInfo[4];
-                String firstNameSecond = pairInfo[5];
-                int idSecond = Integer.parseInt(pairInfo[6]);
-                String emailSecond = pairInfo[7];
+                if (pairInfo[0].equals("")) {
+                    associateUser(db, pairInfo, null, null);
+                    continue;
+                }
+                String lastNameFirst = pairInfo[1];
+                String firstNameFirst = pairInfo[2];
+                int idFirst = Integer.parseInt(pairInfo[3]);
+
+                String lastNameSecond = pairInfo[9];
+                String firstNameSecond = pairInfo[10];
+                int idSecond = Integer.parseInt(pairInfo[11]);
 
                 Player firstPlayer = null;
                 Player secondPlayer = null;
@@ -106,7 +110,7 @@ public class CSVReader {
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
                 db.persistEntity(pair);
 
-                associateUsers(db, emailFirst, emailSecond, firstPlayer, secondPlayer);
+                associateUser(db, pairInfo, firstPlayer, secondPlayer);
 
                 pairs.put(index, pair);
                 index++;
@@ -119,42 +123,119 @@ public class CSVReader {
         return pairs;
     }
 
-    private static void associateUsers(DBManager db, String emailFirst, String emailSecond, Player firstPlayer, Player secondPlayer) {
+    private static void associateUser(DBManager db, String[] pairInfo,
+                                      Player firstPlayer, Player secondPlayer) {
+        String emailFirst = pairInfo[4];
+        String emailSecond = pairInfo[12];
         User user = db.getUser(emailFirst);
         if (user != null) {
             user.associatePlayer(firstPlayer);
+        } else {
+            if (!emailFirst.equals("")) {
+                String passHash = pairInfo[5];
+                String question = pairInfo[6];
+                String answer = pairInfo[7];
+                UserRole userRole = null;
+                for (UserRole role : UserRole.values()) {
+                    if (role.name().equals(pairInfo[8])) {
+                        userRole = role;
+                    }
+                }
+                User newUser = new User(emailFirst, passHash, question, answer);
+                newUser.setUserRole(userRole);
+                if (!userRole.equals(UserRole.ADMINISTRATOR)) {
+                    newUser.associatePlayer(firstPlayer);
+                }
+                try {
+                    db.addNewUser(newUser);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         user = db.getUser(emailSecond);
         if (user != null) {
             user.associatePlayer(secondPlayer);
+        } else {
+            if (!emailSecond.equals("")) {
+                String passHash = pairInfo[13];
+                String question = pairInfo[14];
+                String answer = pairInfo[15];
+                UserRole userRole = null;
+                for (UserRole role : UserRole.values()) {
+                    if (role.name().equals(pairInfo[16])) {
+                        userRole = role;
+                    }
+                }
+                User newUser = new User(emailSecond, passHash, question, answer);
+                newUser.setUserRole(userRole);
+                if (!userRole.equals(UserRole.ADMINISTRATOR)) {
+                    newUser.associatePlayer(secondPlayer);
+                }
+                try {
+                    db.addNewUser(newUser);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
-    public static void exportCsv(OutputStream outputStream, List<Pair> pairs) throws IOException {
+    public static void exportCsv(OutputStream outputStream, List<Pair> pairs,
+                                 DBManager db) throws IOException {
         OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
         CSVWriter writer = new CSVWriter(streamWriter);
 
         List<String[]> entries = new ArrayList<>();
-        final int NUM_OF_COLUMNS_IN_CSV = 9;
-        String[] headers = { "Last Name", "First Name", "Player ID", "Email",
-                             "Last Name", "First Name", "Player ID", "Email", "Pair ID" };
+        final int NUM_OF_COLUMNS_IN_CSV = 17;
+        String[] headers = { "Pair ID", "Last Name", "First Name", "Player ID", "Email",
+                             "Password Hash", "Security Question", "Answer Hash", "Role",
+                             "Last Name", "First Name", "Player ID", "Email",
+                             "Password Hash", "Security Question", "Answer Hash", "Role" };
         entries.add(headers);
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
             Player p1 = pair.getPlayers().get(0);
-            String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
-            entry[0] = p1.getLastName();
-            entry[1] = p1.getFirstName();
-            entry[2] = String.valueOf(p1.getID());
-            entry[3] = p1.getEmail();
             Player p2 = pair.getPlayers().get(1);
-            entry[4] = p2.getLastName();
-            entry[5] = p2.getFirstName();
-            entry[6] = String.valueOf(p2.getID());
-            entry[7] = p2.getEmail();
-            entry[8] = String.valueOf(pair.getID());
+            User user1 = db.getUser(p1.getEmail());
+            User user2 = db.getUser(p2.getEmail());
+            String[] entry = new String[NUM_OF_COLUMNS_IN_CSV];
+            entry[0] = String.valueOf(pair.getID());
+            entry[1] = p1.getLastName();
+            entry[2] = p1.getFirstName();
+            entry[3] = String.valueOf(p1.getID());
+            entry[4] = p1.getEmail();
+            if (user1 != null) {
+                entry[5] = user1.getPasswordHash();
+                entry[6] = user1.getSecurityQuestion();
+                entry[7] = user1.getSecurityAnswerHash();
+                entry[8] = String.valueOf(user1.getUserRole());
+            } else {
+                entry[5] = null;
+                entry[6] = null;
+                entry[7] = null;
+                entry[8] = null;
+            }
+            entry[9] = p2.getLastName();
+            entry[10] = p2.getFirstName();
+            entry[11] = String.valueOf(p2.getID());
+            entry[12] = p2.getEmail();
+            if (user2 != null) {
+                entry[13] = user2.getPasswordHash();
+                entry[14] = user2.getSecurityQuestion();
+                entry[15] = user2.getSecurityAnswerHash();
+                entry[16] = String.valueOf(user2.getUserRole());
+            } else {
+                entry[13] = null;
+                entry[14] = null;
+                entry[15] = null;
+                entry[16] = null;
+            }
+
             entries.add(entry);
         }
+
+        addAdminAccountsToCsv(entries, db, NUM_OF_COLUMNS_IN_CSV);
         writer.writeAll(entries, false);
         try {
             writer.flush();
@@ -171,5 +252,31 @@ public class CSVReader {
         Ladder ladder = null;
         ladder = setupLadder(inputStreamReader, db);
         return ladder;
+    }
+
+    private static void addAdminAccountsToCsv(List<String[]> entries, DBManager db, int cols) {
+        List<User> users = db.getAllUsersOfRole(UserRole.ADMINISTRATOR);
+        for (User user : users) {
+            String[] entry = new String[cols];
+            entry[0] = null;
+            entry[1] = null;
+            entry[2] = null;
+            entry[3] = null;
+            entry[4] = user.getEmail();
+            entry[5] = user.getPasswordHash();
+            entry[6] = user.getSecurityQuestion();
+            entry[7] = user.getSecurityAnswerHash();
+            entry[8] = String.valueOf(user.getUserRole());
+
+            entry[9] = null;
+            entry[10] = null;
+            entry[11] = null;
+            entry[12] = null;
+            entry[13] = null;
+            entry[14] = null;
+            entry[15] = null;
+            entry[16] = null;
+            entries.add(entry);
+        }
     }
 }
