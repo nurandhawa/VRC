@@ -96,6 +96,7 @@ public class User extends Persistable {
     // MARK: Misc Methods
     public void associatePlayer(Player player) {
         this.associatedPlayer = player;
+        player.setEmail(getEmail());
     }
 
     public void unassociatePlayer() {

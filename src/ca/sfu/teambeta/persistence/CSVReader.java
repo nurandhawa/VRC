@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.core.User;
 import com.opencsv.CSVWriter;
 
 import java.io.FileReader;
@@ -19,7 +20,6 @@ import ca.sfu.teambeta.core.Player;
 public class CSVReader {
     private static final String DEFAULT_FILENAME = "ladder.csv";
     private static final String TESTING_FILENAME = "ladder_junit.csv";
-    private static final String DEFAULT_PATH = System.getProperty("user.home") + "/Downloads/";
 
     public static void main(String[] args) throws Exception {
 
@@ -53,20 +53,23 @@ public class CSVReader {
         try (com.opencsv.CSVReader reader =
                      new com.opencsv.CSVReader(inputStreamReader)) {
             List<String[]> entries = reader.readAll();
+            entries.remove(0);
             Iterator<String[]> iterator = entries.iterator();
             List<Player> distinctPlayers = new ArrayList<>();
 
             String[] pairInfo;
+            int index = 1;
             while (iterator.hasNext()) {
                 pairInfo = iterator.next();
 
                 String lastNameFirst = pairInfo[0];
                 String firstNameFirst = pairInfo[1];
                 int idFirst = Integer.parseInt(pairInfo[2]);
-
-                String lastNameSecond = pairInfo[3];
-                String firstNameSecond = pairInfo[4];
-                int idSecond = Integer.parseInt(pairInfo[5]);
+                String emailFirst = pairInfo[3];
+                String lastNameSecond = pairInfo[4];
+                String firstNameSecond = pairInfo[5];
+                int idSecond = Integer.parseInt(pairInfo[6]);
+                String emailSecond = pairInfo[7];
 
                 Player firstPlayer = null;
                 Player secondPlayer = null;
@@ -100,11 +103,13 @@ public class CSVReader {
                     distinctPlayers.add(secondPlayer);
                 }
 
-                int index = Integer.parseInt(pairInfo[6]);
                 Pair pair = new Pair(firstPlayer, secondPlayer, false);
                 db.persistEntity(pair);
 
+                associateUsers(db, emailFirst, emailSecond, firstPlayer, secondPlayer);
+
                 pairs.put(index, pair);
+                index++;
             }
             reader.close();
         } catch (IOException e) {
@@ -114,12 +119,27 @@ public class CSVReader {
         return pairs;
     }
 
+    private static void associateUsers(DBManager db, String emailFirst, String emailSecond, Player firstPlayer, Player secondPlayer) {
+        User user = db.getUser(emailFirst);
+        if (user != null) {
+            user.associatePlayer(firstPlayer);
+        }
+        user = db.getUser(emailSecond);
+        if (user != null) {
+            user.associatePlayer(secondPlayer);
+        }
+    }
+
     public static void exportCsv(OutputStream outputStream, List<Pair> pairs) throws IOException {
         OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream);
         CSVWriter writer = new CSVWriter(streamWriter);
 
         List<String[]> entries = new ArrayList<>();
-        final int NUM_OF_COLUMNS_IN_CSV = 8;
+        final int NUM_OF_COLUMNS_IN_CSV = 9;
+        String[] headers = {"Last Name", "First Name", "Player ID", "Email",
+                "Last Name", "First Name", "Player ID", "Email",
+                "Pair ID"};
+        entries.add(headers);
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
             Player p1 = pair.getPlayers().get(0);
@@ -127,12 +147,13 @@ public class CSVReader {
             entry[0] = p1.getLastName();
             entry[1] = p1.getFirstName();
             entry[2] = String.valueOf(p1.getID());
+            entry[3] = p1.getEmail();
             Player p2 = pair.getPlayers().get(1);
-            entry[3] = p2.getLastName();
-            entry[4] = p2.getFirstName();
-            entry[5] = String.valueOf(p2.getID());
-            entry[6] = String.valueOf(i + 1);
-            entry[7] = String.valueOf(pair.getID());
+            entry[4] = p2.getLastName();
+            entry[5] = p2.getFirstName();
+            entry[6] = String.valueOf(p2.getID());
+            entry[7] = p2.getEmail();
+            entry[8] = String.valueOf(pair.getID());
             entries.add(entry);
         }
         writer.writeAll(entries, false);
@@ -147,7 +168,7 @@ public class CSVReader {
     }
 
     public static Ladder importCsv(InputStreamReader inputStreamReader,
-                                DBManager db) throws Exception {
+                                   DBManager db) throws Exception {
         Ladder ladder = null;
         ladder = setupLadder(inputStreamReader, db);
         return ladder;
