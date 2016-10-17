@@ -91,15 +91,6 @@
     background: #707070;
 }
 
-#timeSelectModalContent {
-    margin: 50% auto;
-    padding: 20px;
-    padding-bottom: 5px;
-    width: 60%;
-    border: 2px solid;
-    border-color: #03a9f4;
-}
-
 #time-modal-footer {
     padding: 0%;
 }
