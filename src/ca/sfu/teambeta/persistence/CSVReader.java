@@ -73,8 +73,8 @@ public class CSVReader {
                 }
 
                 if (db.getGameSessionLatest() != null && db.hasPairID(pairId)) {
-                        pair = db.getPairFromID(pairId);
-                        associateUser(db, pairInfo, pair.getPlayers().get(0), pair.getPlayers().get(1));
+                    pair = db.getPairFromID(pairId);
+                    associateUser(db, pairInfo, pair.getPlayers().get(0), pair.getPlayers().get(1));
                 } else {
                     String lastNameFirst = pairInfo[1];
                     String firstNameFirst = pairInfo[2];
@@ -212,10 +212,10 @@ public class CSVReader {
 
         List<String[]> entries = new ArrayList<>();
         final int NUM_OF_COLUMNS_IN_CSV = 17;
-        String[] headers = { "Pair ID", "Last Name", "First Name", "Player ID", "Email",
-                             "Password Hash", "Security Question", "Answer Hash", "Role",
-                             "Last Name", "First Name", "Player ID", "Email",
-                             "Password Hash", "Security Question", "Answer Hash", "Role"};
+        String[] headers = {"Pair ID", "Last Name", "First Name", "Player ID", "Email",
+                "Password Hash", "Security Question", "Answer Hash", "Role",
+                "Last Name", "First Name", "Player ID", "Email",
+                "Password Hash", "Security Question", "Answer Hash", "Role"};
         entries.add(headers);
         for (int i = 0; i < pairs.size(); i++) {
             Pair pair = pairs.get(i);
