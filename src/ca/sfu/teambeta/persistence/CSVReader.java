@@ -62,23 +62,39 @@ public class CSVReader {
             int index = 1;
             while (iterator.hasNext()) {
                 pairInfo = iterator.next();
+                int pairId;
+                Pair pair = null;
 
                 if (pairInfo[0].equals("")) {
                     associateUser(db, pairInfo, null, null);
                     continue;
+                } else {
+                    pairId = Integer.parseInt(pairInfo[0]);
                 }
-                String lastNameFirst = pairInfo[1];
-                String firstNameFirst = pairInfo[2];
-                int idFirst = Integer.parseInt(pairInfo[3]);
 
-                String lastNameSecond = pairInfo[9];
-                String firstNameSecond = pairInfo[10];
-                int idSecond = Integer.parseInt(pairInfo[11]);
+                if (db.getGameSessionLatest() != null && db.hasPairID(pairId)) {
+                        pair = db.getPairFromID(pairId);
+                        associateUser(db, pairInfo, pair.getPlayers().get(0), pair.getPlayers().get(1));
+                } else {
+                    String lastNameFirst = pairInfo[1];
+                    String firstNameFirst = pairInfo[2];
+                    int idFirst = Integer.parseInt(pairInfo[3]);
 
-                Player firstPlayer = null;
-                Player secondPlayer = null;
+                    String lastNameSecond = pairInfo[9];
+                    String firstNameSecond = pairInfo[10];
+                    int idSecond = Integer.parseInt(pairInfo[11]);
 
-                for (Player player : distinctPlayers) {
+                    Player firstPlayer = null;
+                    Player secondPlayer = null;
+
+                    if (db.getGameSessionLatest() != null && db.hasPlayerID(idFirst)) {
+                        firstPlayer = db.getPlayerFromID(idFirst);
+                    }
+                    if (db.getGameSessionLatest() != null && db.hasPlayerID(idSecond)) {
+                        secondPlayer = db.getPlayerFromID(idSecond);
+                    }
+
+                    for (Player player : distinctPlayers) {
                     /*
                         Using existingIds here because the other ID is only generated after an entity is persisted.
                         In case the order of the csv changes (which it definitely would) and players are not
@@ -88,29 +104,33 @@ public class CSVReader {
                         multiple pairs and we compare by original ID then the database will have multiple entries
                         for the same player since their IDs on the csv and database don't match.
                      */
-                    if (player.getExistingId() == idFirst) {
-                        firstPlayer = player;
+                        if (firstPlayer == null) {
+                            if (player.getExistingId() == idFirst) {
+                                firstPlayer = player;
+                            }
+                        }
+                        if (secondPlayer == null) {
+                            if (player.getExistingId() == idSecond) {
+                                secondPlayer = player;
+                            }
+                        }
                     }
-                    if (player.getExistingId() == idSecond) {
-                        secondPlayer = player;
+
+                    if (firstPlayer == null) {
+                        firstPlayer = new Player(firstNameFirst, lastNameFirst);
+                        firstPlayer.setExistingId(idFirst);
+                        distinctPlayers.add(firstPlayer);
                     }
-                }
+                    if (secondPlayer == null) {
+                        secondPlayer = new Player(firstNameSecond, lastNameSecond);
+                        secondPlayer.setExistingId(idSecond);
+                        distinctPlayers.add(secondPlayer);
+                    }
 
-                if (firstPlayer == null) {
-                    firstPlayer = new Player(firstNameFirst, lastNameFirst);
-                    firstPlayer.setExistingId(idFirst);
-                    distinctPlayers.add(firstPlayer);
+                    pair = new Pair(firstPlayer, secondPlayer, false);
+                    db.persistEntity(pair);
+                    associateUser(db, pairInfo, firstPlayer, secondPlayer);
                 }
-                if (secondPlayer == null) {
-                    secondPlayer = new Player(firstNameSecond, lastNameSecond);
-                    secondPlayer.setExistingId(idSecond);
-                    distinctPlayers.add(secondPlayer);
-                }
-
-                Pair pair = new Pair(firstPlayer, secondPlayer, false);
-                db.persistEntity(pair);
-
-                associateUser(db, pairInfo, firstPlayer, secondPlayer);
 
                 pairs.put(index, pair);
                 index++;
