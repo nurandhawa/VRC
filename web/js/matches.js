@@ -140,9 +140,21 @@ var Matches = (function () {
                   props: ["index", "gameSession"],
                   methods: {
                       openModal: function (index) {
+                          this.populateDropdown(index);
                           this.showModal = true;
                           this.active = index;
                           return this.active;
+                      },
+                      populateDropdown: function(index) {
+                          console.log("HELLO " + index);
+                          var currentMatch = this.matches[index];
+                          var numOfPairs = currentMatch.pairs.length;
+                          console.log(numOfPairs);
+                          for (var i = 0; i < numOfPairs; i++) {
+                              var dropdown = $("#postMatchDropdown" + i);
+                              console.log(dropdown);
+                              dropdown.selectedIndex = i;
+                          }
                       },
                       validateResults: function (currentMatch, newVal, oldVal) {
                           var ROUNDS_TO_PLAY = currentMatch.pairs.length;
