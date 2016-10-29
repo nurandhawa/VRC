@@ -122,7 +122,8 @@
                     </div>
 
                     <div id="removeAccountDiv" style="display: none">
-                        <div v-validate-class style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
+                        <legend style="margin-left: .5em;">Delete User</legend>
+                        <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
                             <label for="existingPlayer" class="control-label">Player:</label>
                             <v-select id="existingPlayer" v-validate:player="['existingPlayer']" :classes="{ invalid: 'has-error', }"
                                       label="label" :value.sync="existingPlayer" :options="existingPlayers"
