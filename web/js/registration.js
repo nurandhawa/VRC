@@ -76,6 +76,16 @@
         $("#submitButton").prop("disabled", true);
     };
 
+    var showCreateAccountDiv = function() {
+        document.getElementById("createAccountDiv").style.display = "block";
+        document.getElementById("removeAccountDiv").style.display = "none";
+    };
+
+    var showRemoveAccountDiv = function() {
+        document.getElementById("removeAccountDiv").style.display = "block";
+        document.getElementById("createAccountDiv").style.display = "none";
+    };
+
     var api = new API();
     api.getPlayers(function (playerData) {
         var registrationForm = new Vue({
@@ -106,7 +116,9 @@
                 onSubmit: onSubmit,
                 onValid: onValid,
                 onInvalid: onInvalid,
-                onEmailChange: onEmailChange
+                onEmailChange: onEmailChange,
+                showRemoveAccountDiv: showRemoveAccountDiv,
+                showCreateAccountDiv: showCreateAccountDiv
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {

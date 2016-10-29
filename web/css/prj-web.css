@@ -537,3 +537,15 @@
     border-width: 1px !important;
     color: red;
 }
+
+.btn-accounts {
+    color: #009688 !important;
+    margin: 1px;
+    padding: 8px;
+    font-weight: normal;
+}
+
+.div-btn-accounts {
+    float: right;
+    margin-bottom: 30px;
+}
