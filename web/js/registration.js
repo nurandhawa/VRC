@@ -107,7 +107,8 @@
                     answer: ""
                 },
                 existingPlayer: "",
-                existingPlayers: playerData.players,
+                existingPlayers: playerData.danglingPlayers,
+                users: playerData.playersWithAccounts,
                 color: '#03a9f4',
                 spinnerVisibility: false,
                 invalidCredentials: false

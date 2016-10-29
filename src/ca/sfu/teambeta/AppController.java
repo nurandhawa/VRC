@@ -1,10 +1,7 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.core.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -630,7 +627,15 @@ public class AppController {
 
         //return a list of players which do not have an account.
         get("/api/players", (request, response) -> {
-            String json = dbManager.getJSONDanglingPlayers();
+            JsonObject jsonObject = new JsonObject();
+            JsonParser parser = new JsonParser();
+
+            JsonElement element = parser.parse(dbManager.getJSONDanglingPlayers());
+            jsonObject.add("players", element);
+            element = parser.parse(dbManager.getJSONPlayersWithAccount());
+            jsonObject.add("users", element);
+
+            String json = jsonObject.toString();
             if (!json.isEmpty()) {
                 return json;
             } else {

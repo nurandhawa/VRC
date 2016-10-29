@@ -548,11 +548,18 @@ var API = (function() {
             .done(function(response) {
                 if (doneCallback) {
                     var playerData = JSON.parse(response);
-                    playerData.players = [];
-                    playerData.forEach(function(player){
-                        playerData.players.push({
+                    playerData.danglingPlayers = [];
+                    playerData.players.forEach(function(player){
+                        playerData.danglingPlayers.push({
                             label: player.firstName + " " + player.lastName,
                             id: player.id
+                        });
+                    });
+                    playerData.playersWithAccounts = [];
+                    playerData.users.forEach(function(user){
+                        playerData.playersWithAccounts.push({
+                            label: user.firstName + " " + user.lastName,
+                            id: user.id
                         });
                     });
                     doneCallback(playerData);
