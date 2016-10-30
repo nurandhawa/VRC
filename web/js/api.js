@@ -400,6 +400,30 @@ var API = (function() {
             });
     };
 
+    API.prototype.deleteUser = function (playerId, doneCallback, failCallback) {
+        $.ajax({
+            method: "DELETE",
+            url: SERVER_URL + "/register",
+            data: JSON.stringify({
+                "playerId": playerId
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    defaultFailCallback(responseBody);
+                }
+            });
+    };
+
     API.prototype.setUserSecurityQuestion = function (email, securityQuestion, answer, doneCallback, failCallback) {
         $.ajax({
             method: "PATCH",

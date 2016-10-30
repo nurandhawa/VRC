@@ -62,7 +62,7 @@
     <h4 class="admin-panel-element admin-panel-header"> Admin Panel </h4>
     <div id="registrationForm" class="login panel panel-default admin-panel-element">
         <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
-            <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
+            <form class="form-horizontal">
                     <div class="div-btn-accounts">
                         <a class="btn btn-accounts" v-on:click="showCreateAccountDiv()">Create Account</a>
                         <a class="btn btn-accounts" v-on:click="showRemoveAccountDiv()">Remove Account</a>
@@ -114,7 +114,8 @@
                                    v-validate:answer="['required']" :classes="{ invalid: 'has-error', }">
                         </div>
                         <div class="col-md-10 ">
-                            <button id="submitButton" type="submit" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
+                            <button id="submitButton" type="submit" class="btn btn-success btn-raised" v-on:click="onSubmit()"
+                                    style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
                             <div id="loginAnimation" v-if="spinnerVisibility">
                                 <clip-loader :color="color"></clip-loader>
                             </div>
@@ -132,7 +133,7 @@
                             <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
                         </div>
                         <div class="col-md-10 ">
-                            <button id="submitButtonRemove" type="submit" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
+                            <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;">Submit</button>
                             <div id="loginAnimationRemove" v-if="spinnerVisibility">
                                 <clip-loader :color="color"></clip-loader>
                             </div>

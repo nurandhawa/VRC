@@ -31,6 +31,19 @@
         alert(failureMessage);
     };
 
+    var onDelSuccess = function (response) {
+        this.spinnerVisibility = false;
+        alert("Account successfully deleted!");
+    };
+
+    var onDelError = function (response) {
+        this.spinnerVisibility = false;
+        var failureMessage = "Failed to delete the account.\n";
+        var responseBody = JSON.parse(response.responseText);
+        failureMessage += responseBody.message;
+        alert(failureMessage);
+    };
+
     var onEmailChange = function () {
         this.invalidCredentials = false;
     };
@@ -62,6 +75,12 @@
         }
     });
 
+    Vue.validator('deletePlayer', function (val) {
+        if (this._vm.administrator || this._vm.existingPlayer) {
+            return true;
+        }
+    });
+
     Vue.validator('minLength', function (val) {
         return /^.{6,}$/.test(val);
     });
@@ -86,6 +105,19 @@
         document.getElementById("createAccountDiv").style.display = "none";
     };
 
+    var onDelete = function () {
+        this.spinnerVisibility = true;
+        var api = new API();
+        api.deleteUser(this.deletePlayer.id, onDelSuccess.bind(this), onDelError.bind(this));
+    };
+
+    var enableDeleteSubmitBtn = function() {
+        var deletePlayerDropdown = document.getElementById("deletePlayer");
+        if (deletePlayerDropdown.selected != null) {
+            $("#submitButtonRemove").prop("disabled", false);
+        }
+    };
+
     var api = new API();
     api.getPlayers(function (playerData) {
         var registrationForm = new Vue({
@@ -107,6 +139,7 @@
                     answer: ""
                 },
                 existingPlayer: "",
+                deletePlayer: "",
                 existingPlayers: playerData.danglingPlayers,
                 users: playerData.playersWithAccounts,
                 color: '#03a9f4',
@@ -118,8 +151,10 @@
                 onValid: onValid,
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
+                onDelete: onDelete,
                 showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv
+                showCreateAccountDiv: showCreateAccountDiv,
+                enableDeleteSubmitBtn: enableDeleteSubmitBtn
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
