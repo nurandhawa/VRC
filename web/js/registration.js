@@ -76,7 +76,7 @@
     });
 
     Vue.validator('deletePlayer', function (val) {
-        if (this._vm.administrator || this._vm.existingPlayer) {
+        if (this._vm.administrator || this._vm.deletePlayer) {
             return true;
         }
     });
