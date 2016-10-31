@@ -254,7 +254,7 @@ public class DBManagerTest {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
         Ladder ladder = null;
-        try{
+        try {
             ladder = CSVReader.setupTestingLadder(dbManager);
         } catch (Exception e) {
             e.printStackTrace();
