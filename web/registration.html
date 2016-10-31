@@ -133,7 +133,8 @@
                             <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
                         </div>
                         <div class="col-md-10 ">
-                            <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;">Submit</button>
+                            <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised"
+                                    style="margin-left: 45%; margin-right: 45%;" disabled>Submit</button>
                             <div id="loginAnimationRemove" v-if="spinnerVisibility">
                                 <clip-loader :color="color"></clip-loader>
                             </div>

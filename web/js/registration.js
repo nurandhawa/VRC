@@ -76,7 +76,7 @@
     });
 
     Vue.validator('deletePlayer', function (val) {
-        if (this._vm.administrator || this._vm.deletePlayer) {
+        if (this._vm.deletePlayer) {
             return true;
         }
     });
@@ -109,13 +109,6 @@
         this.spinnerVisibility = true;
         var api = new API();
         api.deleteUser(this.deletePlayer.id, onDelSuccess.bind(this), onDelError.bind(this));
-    };
-
-    var enableDeleteSubmitBtn = function() {
-        var deletePlayerDropdown = document.getElementById("deletePlayer");
-        if (deletePlayerDropdown.selected != null) {
-            $("#submitButtonRemove").prop("disabled", false);
-        }
     };
 
     var api = new API();
@@ -153,8 +146,7 @@
                 onEmailChange: onEmailChange,
                 onDelete: onDelete,
                 showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv,
-                enableDeleteSubmitBtn: enableDeleteSubmitBtn
+                showCreateAccountDiv: showCreateAccountDiv
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
