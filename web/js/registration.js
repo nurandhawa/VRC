@@ -31,6 +31,19 @@
         alert(failureMessage);
     };
 
+    var onDelSuccess = function (response) {
+        this.spinnerVisibility = false;
+        alert("Account successfully deleted!");
+    };
+
+    var onDelError = function (response) {
+        this.spinnerVisibility = false;
+        var failureMessage = "Failed to delete the account.\n";
+        var responseBody = JSON.parse(response.responseText);
+        failureMessage += responseBody.message;
+        alert(failureMessage);
+    };
+
     var onEmailChange = function () {
         this.invalidCredentials = false;
     };
@@ -62,6 +75,12 @@
         }
     });
 
+    Vue.validator('deletePlayer', function (val) {
+        if (this._vm.deletePlayer) {
+            return true;
+        }
+    });
+
     Vue.validator('minLength', function (val) {
         return /^.{6,}$/.test(val);
     });
@@ -74,6 +93,22 @@
 
     var onInvalid = function(element) {
         $("#submitButton").prop("disabled", true);
+    };
+
+    var showCreateAccountDiv = function() {
+        document.getElementById("createAccountDiv").style.display = "block";
+        document.getElementById("removeAccountDiv").style.display = "none";
+    };
+
+    var showRemoveAccountDiv = function() {
+        document.getElementById("removeAccountDiv").style.display = "block";
+        document.getElementById("createAccountDiv").style.display = "none";
+    };
+
+    var onDelete = function () {
+        this.spinnerVisibility = true;
+        var api = new API();
+        api.deleteUser(this.deletePlayer.id, onDelSuccess.bind(this), onDelError.bind(this));
     };
 
     var api = new API();
@@ -97,7 +132,9 @@
                     answer: ""
                 },
                 existingPlayer: "",
-                existingPlayers: playerData.players,
+                deletePlayer: "",
+                existingPlayers: playerData.danglingPlayers,
+                users: playerData.playersWithAccounts,
                 color: '#03a9f4',
                 spinnerVisibility: false,
                 invalidCredentials: false
@@ -106,7 +143,10 @@
                 onSubmit: onSubmit,
                 onValid: onValid,
                 onInvalid: onInvalid,
-                onEmailChange: onEmailChange
+                onEmailChange: onEmailChange,
+                onDelete: onDelete,
+                showRemoveAccountDiv: showRemoveAccountDiv,
+                showCreateAccountDiv: showCreateAccountDiv
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {

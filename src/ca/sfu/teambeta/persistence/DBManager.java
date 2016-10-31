@@ -371,6 +371,12 @@ public class DBManager {
         return gson.toJson(players);
     }
 
+    public synchronized String getJSONPlayersWithAccount() {
+        Gson gson = new GsonBuilder().create();
+        List<Player> players = getPlayersWithAccount();
+        return gson.toJson(players);
+    }
+
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder()
@@ -571,7 +577,7 @@ public class DBManager {
         return true;
     }
 
-    public List<Player> getDanglingPlayers() {
+    public synchronized List<Player> getDanglingPlayers() {
         List<Player> players = getAllPlayers();
         List<Player> playersWithAccounts = new ArrayList<>();
         List<User> users = getAllUsers();
@@ -584,6 +590,17 @@ public class DBManager {
             players.remove(player);
         }
         return players;
+    }
+
+    public synchronized List<Player> getPlayersWithAccount() {
+        List<Player> playersWithAccount = new ArrayList<>();
+        List<User> users = getAllUsers();
+        for (User user : users) {
+            if (user.getAssociatedPlayer() != null) {
+                playersWithAccount.add(user.getAssociatedPlayer());
+            }
+        }
+        return playersWithAccount;
     }
 
 

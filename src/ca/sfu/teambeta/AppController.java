@@ -1,10 +1,7 @@
 package ca.sfu.teambeta;
 
 import ca.sfu.teambeta.core.*;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -504,8 +501,7 @@ public class AppController {
             return getOkResponse("Password reset.");
         });
 
-        // registers a new user alongside a player
-        // TODO: Either create a user alongside a player or create an admin account that is not attached to any player. */
+
         post("/api/register", (request, response) -> {
             String body = request.body();
             JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
@@ -583,6 +579,30 @@ public class AppController {
             return getOkResponse("Security question set.");
         });
 
+        delete("/api/register", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String message = "";
+            int playerID = -1;
+            try {
+                playerID = Integer.parseInt(extractedData.getPlayerId());
+            } catch (Exception e) {
+                message = e.getMessage();
+            }
+
+            if (InputValidator.checkPlayerExists(dbManager, playerID)) {
+                String email = dbManager.getPlayerFromID(playerID).getEmail();
+                dbManager.deleteUser(email);
+                response.status(OK);
+                return getOkResponse("Account successfully deleted.");
+            } else {
+                message = "Player does not exist.";
+            }
+
+            response.status(BAD_REQUEST);
+            return getErrResponse(message);
+        });
+
         //Set time to a pair and dynamically assign times to scorecards.
         patch("/api/ladder/time/:id", (request, response) -> {
             if (TimeManager.getInstance().isExpired() && !isAdministrator) {
@@ -630,7 +650,15 @@ public class AppController {
 
         //return a list of players which do not have an account.
         get("/api/players", (request, response) -> {
-            String json = dbManager.getJSONDanglingPlayers();
+            JsonObject jsonObject = new JsonObject();
+            JsonParser parser = new JsonParser();
+
+            JsonElement element = parser.parse(dbManager.getJSONDanglingPlayers());
+            jsonObject.add("players", element);
+            element = parser.parse(dbManager.getJSONPlayersWithAccount());
+            jsonObject.add("users", element);
+
+            String json = jsonObject.toString();
             if (!json.isEmpty()) {
                 return json;
             } else {

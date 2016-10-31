@@ -62,57 +62,82 @@
     <h4 class="admin-panel-element admin-panel-header"> Admin Panel </h4>
     <div id="registrationForm" class="login panel panel-default admin-panel-element">
         <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
-            <form class="form-horizontal" v-on:submit.prevent="onSubmit($event)">
-                <fieldset>
-                    <legend style="margin-left: .5em;">Register User</legend>
-                    <span style="margin-left: 1.5em"> (All fields must be filled.) </span>
-                    <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label for="existingPlayer" class="control-label">Player:</label>
-                        <v-select id="existingPlayer" v-validate:player="['existingPlayer']" :classes="{ invalid: 'has-error', }"
-                          label="label" :value.sync="existingPlayer" :options="existingPlayers"
-                          placeholder="Search for a player...">
-                        </v-select>
-                        <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
+            <form class="form-horizontal">
+                    <div class="div-btn-accounts">
+                        <a class="btn btn-accounts" v-on:click="showCreateAccountDiv()">Create Account</a>
+                        <a class="btn btn-accounts" v-on:click="showRemoveAccountDiv()">Remove Account</a>
                     </div>
-                    <div class="checkbox" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label>
-                            <input type="checkbox" v-model="administrator"
-                                   v-validate:player="['existingPlayer']"> Administrator
-                        </label>
+                    <div id="createAccountDiv">
+                        <legend style="margin-left: .5em;">Register User</legend>
+                        <span style="margin-left: 1.5em"> (All fields must be filled.) </span>
+                        <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label for="existingPlayer" class="control-label">Player:</label>
+                            <v-select id="existingPlayer" v-validate:player="['existingPlayer']" :classes="{ invalid: 'has-error', }"
+                                      label="label" :value.sync="existingPlayer" :options="existingPlayers"
+                                      placeholder="Search for a player...">
+                            </v-select>
+                            <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
+                        </div>
+                        <div class="checkbox" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label>
+                                <input type="checkbox" v-model="administrator"
+                                       v-validate:player="['existingPlayer']"> Administrator
+                            </label>
+                        </div>
+                        <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label for="inputEmail" class="control-label">Email:</label>
+                            <input type="text" class="form-control" id="inputEmail" v-model="email"
+                                   v-validate:email="['required', 'email']"
+                                   :classes="{ invalid: 'has-error', }">
+                            <p class="help-block" v-if="$registrationFormValidator.email.invalid">You must enter a valid email.</p>
+                        </div>
+                        <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label for="inputPassword" class="control-label">Password:</label>
+                            <input type="password" class="form-control" id="inputPassword" v-model="password"
+                                   v-validate:password="['required'], ['minLength']"  :classes="{ invalid: 'has-error', }">
+                            <p class="help-block" v-if="$registrationFormValidator.password.invalid">You must enter a valid password.</p>
+                        </div>
+                        <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label for="inputPasswordConfirmation" class="control-label">Re-enter Password:</label>
+                            <input type="password" class="form-control" id="inputPasswordConfirmation" group="passwordGroup" v-model="passwordConfirmation"
+                                   v-validate:passwordConfirmation="['required', 'passwordConfirmation']" :classes="{ invalid: 'has-error', }">
+                            <p class="help-block" v-if="$registrationFormValidator.passwordGroup.invalid">Your password does not match.</p>
+                        </div>
+                        <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; ">
+                            <label for="inputSecQues" class="control-label">Please create a security question:</label>
+                            <input class="form-control" id="inputSecQues" v-model="securityInfo.question"
+                                   v-validate:question="['required']" :classes="{ invalid: 'has-error', }">
+                        </div>
+                        <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
+                            <label for="inputSecAns" class="control-label">Security Answer:</label>
+                            <input class="form-control" id="inputSecAns" v-model="securityInfo.answer"
+                                   v-validate:answer="['required']" :classes="{ invalid: 'has-error', }">
+                        </div>
+                        <div class="col-md-10 ">
+                            <button id="submitButton" type="submit" class="btn btn-success btn-raised" v-on:click="onSubmit()"
+                                    style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
+                            <div id="loginAnimation" v-if="spinnerVisibility">
+                                <clip-loader :color="color"></clip-loader>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label for="inputEmail" class="control-label">Email:</label>
-                        <input type="text" class="form-control" id="inputEmail" v-model="email"
-                               v-validate:email="['required', 'email']"
-                               :classes="{ invalid: 'has-error', }">
-                        <p class="help-block" v-if="$registrationFormValidator.email.invalid">You must enter a valid email.</p>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label for="inputPassword" class="control-label">Password:</label>
-                        <input type="password" class="form-control" id="inputPassword" v-model="password"
-                               v-validate:password="['required'], ['minLength']"  :classes="{ invalid: 'has-error', }">
-                        <p class="help-block" v-if="$registrationFormValidator.password.invalid">You must enter a valid password.</p>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label for="inputPasswordConfirmation" class="control-label">Re-enter Password:</label>
-                        <input type="password" class="form-control" id="inputPasswordConfirmation" group="passwordGroup" v-model="passwordConfirmation"
-                               v-validate:passwordConfirmation="['required', 'passwordConfirmation']" :classes="{ invalid: 'has-error', }">
-                        <p class="help-block" v-if="$registrationFormValidator.passwordGroup.invalid">Your password does not match.</p>
-                    </div>
-                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; ">
-                        <label for="inputSecQues" class="control-label">Please create a security question:</label>
-                        <input class="form-control" id="inputSecQues" v-model="securityInfo.question"
-                               v-validate:question="['required']" :classes="{ invalid: 'has-error', }">
-                    </div>
-                    <div class="form-group label-floating" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
-                        <label for="inputSecAns" class="control-label">Security Answer:</label>
-                        <input class="form-control" id="inputSecAns" v-model="securityInfo.answer"
-                               v-validate:answer="['required']" :classes="{ invalid: 'has-error', }">
-                    </div>
-                    <div class="col-md-10 ">
-                        <button id="submitButton" type="submit" class="btn btn-success btn-raised" style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
-                        <div id="loginAnimation" v-if="spinnerVisibility">
-                            <clip-loader :color="color"></clip-loader>
+
+                    <div id="removeAccountDiv" style="display: none">
+                        <legend style="margin-left: .5em;">Delete User</legend>
+                        <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
+                            <label for="deletePlayer" class="control-label">Player:</label>
+                            <v-select id="deletePlayer" v-validate:player="['deletePlayer']" :classes="{ invalid: 'has-error', }"
+                                      label="label" :value.sync="deletePlayer" :options="users"
+                                      placeholder="Search for a player...">
+                            </v-select>
+                            <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
+                        </div>
+                        <div class="col-md-10 ">
+                            <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised"
+                                    style="margin-left: 45%; margin-right: 45%;">Submit</button>
+                            <div id="loginAnimationRemove" v-if="spinnerVisibility">
+                                <clip-loader :color="color"></clip-loader>
+                            </div>
                         </div>
                     </div>
 

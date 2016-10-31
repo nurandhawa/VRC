@@ -1,5 +1,7 @@
 package ca.sfu.teambeta.persistence;
 
+import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.logic.TimeSelection;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
 import org.hibernate.ObjectNotFoundException;
@@ -245,5 +247,43 @@ public class DBManagerTest {
         List<Pair> allPairs = gameSession.getAllPairs();
 
         assertTrue(!allPairs.contains(pair));
+    }
+
+    @Test
+    public void testRemoveUser() {
+        SessionFactory sessionFactory = DBManager.getTestingSession(true);
+        DBManager dbManager = new DBManager(sessionFactory);
+        Ladder ladder = null;
+        try {
+            ladder = CSVReader.setupTestingLadder(dbManager);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        GameSession gameSession = new GameSession(ladder);
+        dbManager.persistEntity(gameSession);
+
+        List<User> expected = dbManager.getAllUsers();
+        assertEquals(expected.size(), 0);
+
+        User newUser = new User("testuser@vrc.ca", "testing");
+        Player randomPlayer = ladder.getPairs().get(0).getPlayers().get(0);
+        newUser.associatePlayer(randomPlayer);
+        try {
+            dbManager.addNewUser(newUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        expected = dbManager.getAllUsers();
+        assertEquals(expected.size(), 1);
+
+        try {
+            dbManager.deleteUser(newUser.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        expected = dbManager.getAllUsers();
+        assertEquals(expected.size(), 0);
     }
 }
