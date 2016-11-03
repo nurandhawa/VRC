@@ -1,6 +1,5 @@
 package ca.sfu.teambeta.logic;
 
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -30,8 +29,7 @@ public class NotificationManagerTest {
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        Session session = sessionFactory.openSession();
-        this.dbManager = new DBManager(session);
+        this.dbManager = new DBManager(sessionFactory);
 
         GameSession gameSession = setupGameSession();
 
