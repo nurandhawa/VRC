@@ -1,7 +1,10 @@
 package ca.sfu.teambeta;
 
-import ca.sfu.teambeta.core.*;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,6 +24,12 @@ import ca.sfu.teambeta.accounts.Responses.PasswordResetResponse;
 import ca.sfu.teambeta.accounts.Responses.SecurityQuestionResponse;
 import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.accounts.UserSessionManager;
+import ca.sfu.teambeta.core.JsonExtractedData;
+import ca.sfu.teambeta.core.Pair;
+import ca.sfu.teambeta.core.Penalty;
+import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.Time;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
 import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
 import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
@@ -32,7 +41,9 @@ import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.TimeManager;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
 import ca.sfu.teambeta.persistence.DBManager;
+import ca.sfu.teambeta.serialization.JSONManager;
 
+import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.exception;
@@ -44,7 +55,7 @@ import static spark.Spark.post;
 import static spark.Spark.staticFiles;
 
 /**
- * Created by NoorUllah on 2016-06-16.
+ * Definition and implementation of REST API routes.
  */
 public class AppController {
     public static final String DEVELOP_STATIC_HTML_PATH = ".";
@@ -89,15 +100,24 @@ public class AppController {
 
     private boolean isAdministrator;
     private User currentUser;
-
+    private JSONManager jsonManager;
 
     public AppController(DBManager dbManager, CredentialsManager credentialsManager, int port, String staticFilePath) {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
+        jsonManager = new JSONManager(dbManager);
         port(port);
         staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+        before((request, response) -> {
+            dbManager.startSession();
+        });
+
+        after((request, response) -> {
+            dbManager.finishSession();
+        });
 
         before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in
@@ -138,7 +158,7 @@ public class AppController {
 
         //homepage: return ladder
         get("/api/ladder", (request, response) -> {
-            String json = dbManager.getJSONLadder(dbManager.getGameSessionLatest());
+            String json = jsonManager.getJSONLadder(dbManager.getGameSessionLatest());
             if (!json.isEmpty()) {
                 return json;
             } else {
@@ -358,7 +378,7 @@ public class AppController {
                 return "[]";
             }
 
-            String json = dbManager.getJSONScorecards(gameSession);
+            String json = jsonManager.getJSONScorecards(gameSession);
             final String EMPTY_JSON_ARRAY = "[]";
             if (!json.equals(EMPTY_JSON_ARRAY)) {
                 response.status(OK);
@@ -658,9 +678,9 @@ public class AppController {
             JsonObject jsonObject = new JsonObject();
             JsonParser parser = new JsonParser();
 
-            JsonElement element = parser.parse(dbManager.getJSONDanglingPlayers());
+            JsonElement element = parser.parse(jsonManager.getJSONDanglingPlayers());
             jsonObject.add("players", element);
-            element = parser.parse(dbManager.getJSONPlayersWithAccount());
+            element = parser.parse(jsonManager.getJSONPlayersWithAccount());
             jsonObject.add("users", element);
 
             String json = jsonObject.toString();

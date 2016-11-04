@@ -3,7 +3,6 @@ package ca.sfu.teambeta;
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
-import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.logic.GameSession;
@@ -29,8 +28,10 @@ class Main {
                 System.out.println("INVALID CSV FILE");
                 throw e;
             }
+            dbManager.startSession();
             GameSession gameSession = new GameSession(newLadder);
             dbManager.persistEntity(gameSession);
+            dbManager.finishSession();
         }
 
         NotificationManager notificationManager = new NotificationManager(
