@@ -70,11 +70,11 @@ public class APITest {
                 }
                 GameSession gameSession = new GameSession(newLadder);
                 dbManager.persistEntity(gameSession);
-                dbManager.finishSession();
 
                 AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
                 AccountManager am = new AccountManager(accountDbHandler);
                 am.registerNewAdministratorAccount(EMAIL, PASSWORD, SECURITY_QUESTION, SECURITY_ANSWER);
+                dbManager.finishSession();
 
                 CredentialsManager cm = new CredentialsManager(accountDbHandler);
 
