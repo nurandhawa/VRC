@@ -1,6 +1,7 @@
 package ca.sfu.teambeta.logic;
 
 import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -30,6 +31,7 @@ public class NotificationManagerTest {
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         this.dbManager = new DBManager(sessionFactory);
+        this.dbManager.startSession();
 
         GameSession gameSession = setupGameSession();
 
@@ -51,6 +53,11 @@ public class NotificationManagerTest {
         am.registerUserWithPlayer(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD,
                 activePair1.getPlayers().get(0).getID(),
                 AccountManager.DEMO_SECURITY_QUESTION, AccountManager.DEMO_SECURITY_ANSWER);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dbManager.finishSession();
     }
 
     private GameSession setupGameSession() throws Exception {

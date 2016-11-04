@@ -1,15 +1,17 @@
 package ca.sfu.teambeta.accounts;
 
+import org.hibernate.SessionFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
-import org.hibernate.SessionFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the intermediary class AccountDatabaseHandler
@@ -25,6 +27,7 @@ public class AccountDatabaseHandlerTest {
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         dbManager = new DBManager(sessionFactory);
+        dbManager.startSession();
         Ladder newLadder = CSVReader.setupLadder(dbManager);
         GameSession gameSession = new GameSession(newLadder);
         dbManager.persistEntity(gameSession);
@@ -32,6 +35,11 @@ public class AccountDatabaseHandlerTest {
         accountDbHandler = new AccountDatabaseHandler(dbManager);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        dbManager.finishSession();
+
+    }
 
     // MARK: Tests
     @Test

@@ -1,9 +1,7 @@
 package ca.sfu.teambeta.persistence;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
@@ -34,10 +32,6 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
-import ca.sfu.teambeta.serialization.JSONSerializer;
-import ca.sfu.teambeta.serialization.LadderJSONSerializer;
-import ca.sfu.teambeta.serialization.ScorecardSerializer;
-import ca.sfu.teambeta.serialization.SessionJSONSerializer;
 
 /**
  * Utility class that reads and writes data to the database
@@ -49,10 +43,13 @@ public class DBManager {
     private static final String DOCKER_CFG_XML = "hibernate.docker.cfg.xml";
     private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
+    private SessionFactory sessionFactory;
     private TransactionManager transactionManager;
+    private Session currentSession;
 
     public DBManager(SessionFactory factory) {
-        this.transactionManager = new TransactionManager(factory);
+        this.sessionFactory = factory;
+        this.transactionManager = new TransactionManager();
     }
 
     // Use me if the database is down
@@ -117,6 +114,16 @@ public class DBManager {
             ex.printStackTrace();
             throw new RuntimeException();
         }
+    }
+
+    public void startSession() {
+        currentSession = sessionFactory.openSession();
+        transactionManager.startSession(currentSession);
+    }
+
+    public void finishSession() {
+        transactionManager.finishSession();
+        currentSession.close();
     }
 
     public synchronized void persistEntity(Persistable entity) {
@@ -320,40 +327,6 @@ public class DBManager {
         return ladder.size();
     }
 
-    public synchronized String getJSONLadder(GameSession gameSession) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(GameSession.class, new LadderJSONSerializer())
-                .create();
-        return gson.toJson(gameSession);
-    }
-
-    public synchronized String getJSONDanglingPlayers() {
-        Gson gson = new GsonBuilder().create();
-        List<Player> players = getDanglingPlayers();
-        return gson.toJson(players);
-    }
-
-    public synchronized String getJSONPlayersWithAccount() {
-        Gson gson = new GsonBuilder().create();
-        List<Player> players = getPlayersWithAccount();
-        return gson.toJson(players);
-    }
-
-    public synchronized String getJSONScorecards(GameSession gameSession) {
-        List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Scorecard.class, new ScorecardSerializer())
-                .create();
-
-        return gson.toJson(scorecards);
-    }
-
-    public synchronized String getJSONSession(String sessionToken) {
-        //ex: {"email":"test@gmail.com","admin":true}
-        JSONSerializer serializer = new SessionJSONSerializer(sessionToken);
-        return serializer.toJson();
-    }
-
     private GameSession getGameSession(int gameSessionId) {
         return transactionManager.executeTransaction((session, transaction) -> {
             return (GameSession) session.createCriteria(GameSession.class)
@@ -482,33 +455,6 @@ public class DBManager {
         persistEntity(gameSession);
         return true;
     }
-
-    public synchronized List<Player> getDanglingPlayers() {
-        List<Player> players = getAllPlayers();
-        List<Player> playersWithAccounts = new ArrayList<>();
-        List<User> users = getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccounts.add(user.getAssociatedPlayer());
-            }
-        }
-        for (Player player : playersWithAccounts) {
-            players.remove(player);
-        }
-        return players;
-    }
-
-    public synchronized List<Player> getPlayersWithAccount() {
-        List<Player> playersWithAccount = new ArrayList<>();
-        List<User> users = getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccount.add(user.getAssociatedPlayer());
-            }
-        }
-        return playersWithAccount;
-    }
-
 
     public enum GameSessionVersion {
         CURRENT,

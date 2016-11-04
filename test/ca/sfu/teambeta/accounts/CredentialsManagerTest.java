@@ -1,17 +1,24 @@
 package ca.sfu.teambeta.accounts;
 
+import org.hibernate.SessionFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import ca.sfu.teambeta.accounts.Responses.SessionResponse;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
-import ca.sfu.teambeta.core.exceptions.*;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
-import org.hibernate.SessionFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Created by constantin on 28/07/16.
@@ -19,6 +26,7 @@ import org.junit.Test;
 public class CredentialsManagerTest {
     private CredentialsManager credentialsManager;
     private AccountManager accountManager;
+    private DBManager dbManager;
     private String email;
     private String password;
     private String secQuestion;
@@ -28,7 +36,8 @@ public class CredentialsManagerTest {
     public void setUp() throws Exception {
         // Setup the database
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
+        dbManager = new DBManager(sessionFactory);
+        dbManager.startSession();
         Ladder newLadder = CSVReader.setupLadder(dbManager);
 
         GameSession gameSession = new GameSession(newLadder);
@@ -50,6 +59,12 @@ public class CredentialsManagerTest {
         int playerId = playerFromDB.getID();
 
         accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        dbManager.finishSession();
+
     }
 
     @Test

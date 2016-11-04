@@ -2,6 +2,7 @@ package ca.sfu.teambeta.persistence;
 
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,12 @@ public class DBManagerTest {
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         this.dbManager = new DBManager(sessionFactory);
+        this.dbManager.startSession();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        this.dbManager.finishSession();
     }
 
     @Test

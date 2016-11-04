@@ -1,13 +1,18 @@
 package ca.sfu.teambeta.accounts;
 
-import ca.sfu.teambeta.accounts.Responses.SessionResponse;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.persistence.DBManager;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.persistence.DBManager;
 
 
 /**
@@ -95,6 +100,7 @@ public class UserSessionManagerTest {
 
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
+        dbManager.startSession();
         AccountDatabaseHandler dbHandler = new AccountDatabaseHandler(dbManager);
         UserRoleHandler handler = new UserRoleHandler(dbHandler);
         AccountManager manager = new AccountManager(dbHandler);
@@ -110,5 +116,6 @@ public class UserSessionManagerTest {
         UserRole actualRole = sessionResponse.getUserRole();
 
         Assert.assertEquals(UserRole.REGULAR, actualRole);
+        dbManager.finishSession();
     }
 }
