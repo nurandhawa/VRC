@@ -138,9 +138,6 @@ public class DBManagerTest {
 
     @Test
     public void testGetLatestGameSessionManySessions() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
-
         List<GameSession> sessionsList = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             GameSession currSession = generateGameSession(i);
@@ -156,8 +153,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPair() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -174,8 +169,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAlreadyExists() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -194,8 +187,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtPosition() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -212,8 +203,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtPositionEnd() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -230,8 +219,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtInvalidPosition() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -246,8 +233,6 @@ public class DBManagerTest {
 
     @Test
     public void testRemoveUser() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         Ladder ladder = null;
         try {
             ladder = CSVReader.setupTestingLadder(dbManager);
