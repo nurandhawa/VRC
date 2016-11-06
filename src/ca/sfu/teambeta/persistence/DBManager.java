@@ -123,7 +123,9 @@ public class DBManager {
 
     public void finishSession() {
         transactionManager.finishSession();
-        currentSession.close();
+        if (currentSession.isOpen()) {
+            currentSession.close();
+        }
     }
 
     public synchronized void persistEntity(Persistable entity) {
