@@ -18,20 +18,20 @@ class Main {
         if (args.length > 0 && args[0].equals("production")) {
             SessionFactory sessionFactory = DBManager.getProductionSession();
             dbManager = new DBManager(sessionFactory);
+            dbManager.startSession();
         } else {
             Ladder newLadder = null;
             SessionFactory sessionFactory = DBManager.getMySQLSession(true);
             dbManager = new DBManager(sessionFactory);
+            dbManager.startSession();
             try {
                 newLadder = CSVReader.setupLadder(dbManager);
             } catch (Exception e) {
                 System.out.println("INVALID CSV FILE");
                 throw e;
             }
-            dbManager.startSession();
             GameSession gameSession = new GameSession(newLadder);
             dbManager.persistEntity(gameSession);
-            dbManager.finishSession();
         }
 
         NotificationManager notificationManager = new NotificationManager(
@@ -42,6 +42,9 @@ class Main {
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
 
         CredentialsManager credentialsManager = new CredentialsManager(accountDatabaseHandler);
+
+        dbManager.finishSession();
+
         AppController appController =
                 new AppController(dbManager, credentialsManager, AppController.DEVELOP_SERVER_PORT,
                 AppController.DEVELOP_STATIC_HTML_PATH);

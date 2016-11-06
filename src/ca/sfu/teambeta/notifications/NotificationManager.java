@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.notifications;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,13 +32,15 @@ public class NotificationManager {
     }
 
     public void scheduleEmailNotifications(Notifier emailNotifier) {
-        // TODO: Log scheduled time and execution time
         Timer notificationTimer = new Timer();
         notificationTimer.scheduleAtFixedRate(
                 new TimerTask() {
                     @Override
                     public void run() {
+                        System.out.println("Email notifications triggered at " + new SimpleDateFormat("MM dd, yyyy 'at' HH:mm.ss a").format(new Date()));
+                        dbManager.startSession();
                         sendEmailNotification(emailNotifier);
+                        dbManager.finishSession();
                     }
                 },
                 scheduledTime, timerPeriod);
