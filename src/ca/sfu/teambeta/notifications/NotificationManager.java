@@ -74,6 +74,13 @@ public class NotificationManager {
         scheduledTime.set(Calendar.MINUTE, 0);
         scheduledTime.set(Calendar.SECOND, 0);
         scheduledTime.set(Calendar.AM_PM, Calendar.PM);
+
+        // scheduledTime could be set to the previous week's Thursday.
+        Calendar now = Calendar.getInstance();
+        if (scheduledTime.before(now)) {
+            scheduledTime.add(Calendar.WEEK_OF_YEAR, 1);
+        }
+
         return scheduledTime.getTime();
     }
 }
