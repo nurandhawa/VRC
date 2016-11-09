@@ -32,6 +32,7 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.VrcLadderReorderer;
 import ca.sfu.teambeta.logic.VrcScorecardGenerator;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.notifications.Announcement;
 
 /**
  * Utility class that reads and writes data to the database
@@ -453,5 +454,19 @@ public class DBManager {
     public enum GameSessionVersion {
         CURRENT,
         PREVIOUS
+    }
+
+    public synchronized List<Announcement> getAnnoucements() {
+        Transaction tx = null;
+        List<Announcement> announcements = new ArrayList<>();
+
+        try {
+            tx = session.beginTransaction();
+            announcements = session.createCriteria(Announcement.class).list();
+            tx.commit();
+        } catch (HibernateException e) {
+            tx.rollback();
+        }
+        return announcements;
     }
 }

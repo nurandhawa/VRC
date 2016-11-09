@@ -3,6 +3,8 @@ package ca.sfu.teambeta.notifications;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import org.hibernate.annotations.Type;
+
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -21,7 +23,10 @@ public class Announcement extends Persistable {
     @Expose
     private String message;
 
+    @Type(type = "timestamp")
     private Date createdDate;
+
+    @Type(type = "timestamp")
     private Date expiryDate;
 
     public Announcement(String title, String message) {
@@ -34,6 +39,9 @@ public class Announcement extends Persistable {
         this.expiryDate = expiryDate;
 
         this.createdDate = new Date();
+    }
+
+    public Announcement() {
     }
 
     public String getAnnouncementJSON() {

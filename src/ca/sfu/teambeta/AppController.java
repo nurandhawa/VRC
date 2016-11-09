@@ -109,7 +109,7 @@ public class AppController {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         jsonManager = new JSONManager(dbManager);
-        final AnnouncementManager announcementManager = new AnnouncementManager();
+        final AnnouncementManager announcementManager = new AnnouncementManager(dbManager);
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -796,7 +796,7 @@ public class AppController {
             }
         });
 
-        delete("/api/announcements", (request, response) -> {
+        delete("/api/announcements/:id", (request, response) -> {
             int id = Integer.parseInt(request.params(ID));
             boolean removed = announcementManager.removeAnnouncement(id);
             if (removed) {

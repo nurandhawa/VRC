@@ -9,6 +9,8 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ManyToMany;
 
+import ca.sfu.teambeta.persistence.DBManager;
+
 /**
  * Facilitates the creation, modification and deletion of Announcements, which are displayed
  * to the user upon logging in to the system.
@@ -17,12 +19,17 @@ public class AnnouncementManager {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Announcement> announcementList;
 
-    public AnnouncementManager() {
+    private DBManager dbManager;
+
+    public AnnouncementManager(DBManager dbManager) {
+        this.dbManager = dbManager;
         this.announcementList = new ArrayList<>();
+//        this.announcementList.addAll(dbManager.getAnnoucements());
     }
 
     public void addAnnouncement(Announcement announcement) {
         announcementList.add(announcement);
+        dbManager.persistEntity(announcement);
     }
 
     public boolean removeAnnouncement(int id) {
