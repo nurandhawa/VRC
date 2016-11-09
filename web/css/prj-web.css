@@ -549,3 +549,55 @@
     float: right;
     margin-bottom: 30px;
 }
+
+.announcements-wrapper {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: flex-start;
+    margin:auto;
+    width: 70%;
+}
+
+.announcement-item-default {
+    width: 300px;
+    height: 250px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+}
+
+.panel.panel-default.announcements {
+    width: 80%;
+    max-width: 80%;
+    padding: 20px 15px;
+    margin: auto;
+    flex-grow: 10;
+    flex-shrink: 0;
+    flex-basis: 500px;
+}
+
+.announcement-title {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.btn.btn-raised.btn-lg.btn-success.announcement-button {
+    margin: auto;
+    margin-top: 10px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn.btn-primary.btn-fab.announcement-change-button {
+    flex-grow: 0.5;
+    flex-shrink: 0;
+    flex-basis: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 56px;
+}

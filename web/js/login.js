@@ -16,7 +16,15 @@
         Cookies.set('sessionToken', response.sessionToken);
         Cookies.set('userRole', response.userRole);
         Cookies.set('playerId', response.playerId);
-        window.location.href = "/ladder.html";
+        var api = new API();
+        api.getAnnouncementCount(function(numAnnouncements) {
+            if (numAnnouncements > 0) {
+                window.location.href = "/announcement.html";
+            }
+            else {
+                window.location.href = "/ladder.html";
+            }
+        });
     };
 
     var onLoginError = function (response) {
