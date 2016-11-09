@@ -6,9 +6,15 @@
     $.material.init();
 
     var REGISTRATION_FORM_ID = "#registrationForm";
+    var REMOVE_ACCOUNT_FORM_ID = "#removeAccountForm";
+    var ANNOUNCEMENT_DIV_ID = "#announcementTab";
 
     // Override the submit button redirect
     $(REGISTRATION_FORM_ID).submit(function () {
+        return false;
+    });
+
+    $(REMOVE_ACCOUNT_FORM_ID).submit(function () {
         return false;
     });
 
@@ -153,24 +159,6 @@
         $("#submitButton").prop("disabled", true);
     };
 
-    var showCreateAccountDiv = function() {
-        document.getElementById("createAccountDiv").style.display = "block";
-        document.getElementById("removeAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "none";
-    };
-
-    var showRemoveAccountDiv = function() {
-        document.getElementById("removeAccountDiv").style.display = "block";
-        document.getElementById("createAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "none";
-    };
-
-    var editPlayerInfo = function() {
-        document.getElementById("removeAccountDiv").style.display = "none";
-        document.getElementById("createAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "block";
-    };
-
     var onDelete = function () {
         this.spinnerVisibility = true;
         var api = new API();
@@ -180,7 +168,7 @@
     var onEditPlayer = function () {
         this.spinnerVisibility = true;
         var api = new API();
-        api.editPlayer(this.editEmail, this.editPassword, this.firstName, this.lastName, 
+        api.editPlayer(this.editEmail, this.editPassword, this.firstName, this.lastName,
                         this.editPlayer.id, onEditSuccess.bind(this), onEditError.bind(this));
     };
 
@@ -259,6 +247,83 @@
                         $("#editPassword").prop("disabled", true);
                         $("#editPasswordConfirmation").prop("disabled", true);
                     }
+                }
+            }
+        });
+
+        var removeAccountForm = new Vue({
+            el: REMOVE_ACCOUNT_FORM_ID,
+            components: {
+                'ClipLoader': VueSpinner.ClipLoader,
+                'v-select': VueSelect.VueSelect
+            },
+            data: {
+                administrator: false,
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+                email: "",
+                password: "",
+                passwordConfirmation: "",
+                securityInfo: {
+                    question: "",
+                    answer: ""
+                },
+                existingPlayer: "",
+                deletePlayer: "",
+                existingPlayers: playerData.danglingPlayers,
+                users: playerData.playersWithAccounts,
+                color: '#03a9f4',
+                spinnerVisibility: false,
+                invalidCredentials: false
+            },
+            methods: {
+                onSubmit: onSubmit,
+                onValid: onValid,
+                onInvalid: onInvalid,
+                onEmailChange: onEmailChange,
+                onDelete: onDelete,
+                showRemoveAccountDiv: showRemoveAccountDiv,
+                showCreateAccountDiv: showCreateAccountDiv
+            },
+            watch: {
+                "existingPlayer": function (newVal, oldVal) {
+                    this.$validate();
+                }
+            }
+        });
+    });
+
+    api.getAnnouncements(function(announcements) {
+        var announcementComponent = new Vue({
+            el: ANNOUNCEMENT_DIV_ID,
+            data: {
+                announcements: announcements
+            },
+            methods: {
+                deleteAnnouncement(id) {
+                    console.log("Delete announcement " + id + ".");
+                    var api = new API();
+                    api.deleteAnnouncement(id, function() {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                },
+                addAnnouncement(announcementTitle, announcementMessage) {
+                    console.log("Add announcement.");
+                    var now = new Date();
+                    announcementTitle = "Announcement at " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+                    announcementMessage = "This message was created " + now.getTime() + " since epoch.";
+                    var api = new API();
+                    api.addAnnouncement(announcementTitle, announcementMessage, function() {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                },
+                refreshAnnouncements() {
+                    console.log("Refreshing announcements.");
+                    var api = new API();
+                    api.getAnnouncements(function(announcements) {
+                        this.announcements = announcements;
+                    }.bind(this));
                 }
             }
         });

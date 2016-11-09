@@ -60,15 +60,28 @@
 
 <div class="loginwrapper">
     <h4 class="admin-panel-element admin-panel-header"> Admin Panel </h4>
-    <div id="registrationForm" class="login panel panel-default admin-panel-element">
-        <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
-            <form class="form-horizontal">
-                    <div class="div-btn-accounts">
-                        <a class="btn btn-accounts" v-on:click="showCreateAccountDiv()">Create Account</a>
-                        <a class="btn btn-accounts" v-on:click="showRemoveAccountDiv()">Remove Account</a>
-                        <a class="btn btn-accounts" v-on:click="editPlayerInfo()">Edit Player</a>
-                    </div>
-                    <div id="createAccountDiv">
+
+          <div id="tabs" class="panel panel-primary matches-container">
+              <ul class="nav nav-tabs matches-container-tabs">
+                  <li class="active"><a class="matches-tabs" href="#createAccountTab" data-toggle="tab"
+                                  aria-expanded="true">Create Account
+                    <div class="ripple-container"></div>
+                  </a></li>
+                  <li><a class="matches-tabs" href="#removeAccountTab" data-toggle="tab"
+                                  aria-expanded="false">Remove Account
+                    <div class="ripple-container"></div>
+                  </a></li>
+                  <li><a class="matches-tabs" href="#announcementTab" data-toggle="tab"
+                                  aria-expanded="false">Announcements
+                    <div class="ripple-container"></div>
+                  </a></li>
+              </ul>
+
+            <div id="tabcontent" class="tab-content">
+              <div class="tab-pane fade active in" id="createAccountTab">
+                <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
+                  <div id="registrationForm" class="login panel panel-default admin-panel-element">
+                    <form class="form-horizontal">
                         <legend style="margin-left: .5em;">Register User</legend>
                         <span style="margin-left: 1.5em"> (All fields must be filled.) </span>
                         <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
@@ -121,9 +134,16 @@
                                 <clip-loader :color="color"></clip-loader>
                             </div>
                         </div>
+                      </form>
                     </div>
+                  </validator>
+                </div>
 
-                    <div id="removeAccountDiv" style="display: none">
+
+                <div class="tab-pane fade" id="removeAccountTab">
+                  <validator name="registrationFormValidator" :groups="['passwordGroup']" @valid="onValid" @invalid="onInvalid">
+                    <div id="removeAccountForm" class="login panel panel-default admin-panel-element">
+                      <form class="form-horizontal">
                         <legend style="margin-left: .5em;">Delete User</legend>
                         <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
                             <label for="deletePlayer" class="control-label">Player:</label>
@@ -140,6 +160,33 @@
                                 <clip-loader :color="color"></clip-loader>
                             </div>
                         </div>
+                      </form>
+                    </div>
+                  </validator>
+                </div>
+
+
+                <div class="tab-pane fade" id="announcementTab">
+                  <div class="flex-row" style="justify-content: flex-end;">
+                    <button id="addAnnouncement" @click="addAnnouncement()" class="btn btn-success btn-raised" style="margin: 10px;">Add</button>
+                  </div>
+
+                  <div class="panel panel-default announcements" v-for="announcement in announcements">
+                    <div class="panel-body flex-row">
+                      <div class="flex-row-element" style="flex: 2;">
+                        <h3 class="announcement-title">{{ announcement.title }}</h3>
+                        <p>{{ announcement.message }}</p>
+                      </div>
+                      <a class="btn btn-danger btn-fab" @click="deleteAnnouncement(announcement.id)">
+                        <i class="material-icons">delete</i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
                     </div>
 
                 <div id="editPlayerDiv" style="display: none">

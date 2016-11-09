@@ -679,7 +679,7 @@ var API = (function() {
             url: SERVER_URL + "/announcements",
             data: JSON.stringify({
                 title: announcementTitle,
-                text: announcementMessage
+                message: announcementMessage
             })
         })
         .done(function(response) {
@@ -701,10 +701,7 @@ var API = (function() {
     API.prototype.deleteAnnouncement = function(id, doneCallback, failCallback) {
         $.ajax({
             method: "DELETE",
-            url: SERVER_URL + "/announcements",
-            data: {
-                id: id
-            }
+            url: SERVER_URL + "/announcements/" + id
         })
         .done(function(response) {
             if (doneCallback) {
