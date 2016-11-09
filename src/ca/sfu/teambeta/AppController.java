@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +41,8 @@ import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.logic.InputValidator;
 import ca.sfu.teambeta.logic.TimeManager;
 import ca.sfu.teambeta.logic.VrcTimeSelection;
+import ca.sfu.teambeta.notifications.Announcement;
+import ca.sfu.teambeta.notifications.AnnouncementManager;
 import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.serialization.JSONManager;
 
@@ -106,6 +109,7 @@ public class AppController {
         final AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
         final AccountManager accountManager = new AccountManager(accountDatabaseHandler);
         jsonManager = new JSONManager(dbManager);
+        final AnnouncementManager announcementManager = new AnnouncementManager();
         port(port);
         staticFiles.location(staticFilePath);
 
@@ -772,6 +776,34 @@ public class AppController {
             }
             response.redirect("/ladder.html");
             return getOkResponse("");
+        });
+
+        get("/api/announcements/count", (request, response) -> {
+            return announcementManager.getAnnouncementCount();
+        });
+
+        get("/api/announcements", (request, response) -> {
+            return announcementManager.getAnnouncementsJSON();
+        });
+
+        post("/api/announcements", (request, response) -> {
+            try {
+                Announcement newAnnouncement = gson.fromJson(request.body(), Announcement.class);
+                announcementManager.addAnnouncement(newAnnouncement);
+                return getOkResponse("Announcement added.");
+            } catch (JsonSyntaxException e) {
+                return getErrResponse("Invalid announcement JSON.");
+            }
+        });
+
+        delete("/api/announcements", (request, response) -> {
+            int id = Integer.parseInt(request.params(ID));
+            boolean removed = announcementManager.removeAnnouncement(id);
+            if (removed) {
+                return getOkResponse("Announcement " + id + " removed.");
+            } else {
+                return getErrResponse("Announcement " + id + "doesn't exist.");
+            }
         });
 
         exception(Exception.class, (exception, request, response) -> {
