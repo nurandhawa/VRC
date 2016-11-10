@@ -301,14 +301,14 @@
                 announcements: announcements
             },
             methods: {
-                deleteAnnouncement(id) {
+                deleteAnnouncement: function(id) {
                     console.log("Delete announcement " + id + ".");
                     var api = new API();
                     api.deleteAnnouncement(id, function() {
                         this.refreshAnnouncements();
                     }.bind(this));
                 },
-                addAnnouncement(announcementTitle, announcementMessage) {
+                addAnnouncement: function(announcementTitle, announcementMessage) {
                     console.log("Add announcement.");
                     var now = new Date();
                     announcementTitle = "Announcement at " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
@@ -318,7 +318,7 @@
                         this.refreshAnnouncements();
                     }.bind(this));
                 },
-                refreshAnnouncements() {
+                refreshAnnouncements: function() {
                     console.log("Refreshing announcements.");
                     var api = new API();
                     api.getAnnouncements(function(announcements) {

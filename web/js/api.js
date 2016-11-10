@@ -717,7 +717,7 @@ var API = (function() {
                 defaultFailCallback(responseBody);
             }
         });
-    }
+    };
 
     return API;
 
