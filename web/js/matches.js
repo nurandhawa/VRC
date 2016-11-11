@@ -146,7 +146,6 @@ var Matches = (function () {
                           return this.active;
                       },
                       populateDropdown: function(index) {
-                          console.log("HELLO " + index);
                           var currentMatch = this.matches[index];
                           var numOfPairs = currentMatch.pairs.length;
                           console.log(numOfPairs);
