@@ -129,6 +129,11 @@ public class AppController {
             if (requestedGameSession == null) {
                 halt(BAD_REQUEST, getErrResponse("Must specify gameSession: latest or previous"));
             }
+            if (!TimeManager.getInstance().isExpired() && !isAdministrator) {
+                halt(BAD_REQUEST, getErrResponse("Oops! Groups are locked right now. Please come back " +
+                        "after 05:15 pm on Thursday to access this page."));
+
+            }
         });
 
         //homepage: return ladder
