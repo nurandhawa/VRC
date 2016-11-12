@@ -151,18 +151,16 @@ var Matches = (function () {
                           var numPlayed = 0;
                           var ranksTaken = [];
                           results.forEach(function(result){
-                              if(result.beenPlayed === true){
-                                  var thisRanking = result.newRanking;
-                                  var isRankTaken = false;
-                                  for (var i = 0; i < ranksTaken.length; i++) {
-                                      if (ranksTaken[i] === thisRanking){
-                                          isRankTaken = true;
-                                      }
+                              var thisRanking = result.newRanking;
+                              var isRankTaken = false;
+                              for (var i = 0; i < ranksTaken.length; i++) {
+                                  if (ranksTaken[i] === thisRanking){
+                                      isRankTaken = true;
                                   }
-                                  if(!isRankTaken){
-                                      ranksTaken.push(thisRanking);
-                                      numPlayed++;
-                                  }
+                              }
+                              if(!isRankTaken){
+                                  ranksTaken.push(thisRanking);
+                                  numPlayed++;
                               }
                           });
 

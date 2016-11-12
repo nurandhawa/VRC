@@ -270,11 +270,10 @@ var API = (function() {
                     }
                     match.resultsValid = false;
                     match.results = [];
-                    match.pairs.forEach(function(pair) {
+                    match.pairs.forEach(function(pair, index) {
                         var result = {
-                            pairId: 0,
-                            newRanking: 0,
-                            beenPlayed: false
+                            pairId: pair.id,
+                            newRanking: index + 1
                         };
                         match.results.push(result);
 
