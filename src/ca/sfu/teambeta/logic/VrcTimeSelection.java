@@ -53,6 +53,23 @@ public class VrcTimeSelection implements TimeSelection {
                 }
             }
             distributeScorecardsEqually(allScorecards);
+
+            List<Scorecard> lateScorecards = getScorecardsByTime(allScorecards, Time.SLOT_2);
+            List<Time> dynamicTimeSlots = getDynamicTimeSlots();
+            int extra = allScorecards.size() - MIN_SCORECARDS_FOR_DISTRIBUTION;
+            int index = 0;
+            while (extra > 0) {
+                Time time;
+                Scorecard scorecard = getLastScorecard(lateScorecards, Time.SLOT_2);
+                if (index >= dynamicTimeSlots.size()) {
+                    time = Time.DYNAMIC_SLOT_5;
+                } else {
+                    time = dynamicTimeSlots.get(index);
+                }
+                scorecard.setTimeSlot(time);
+                extra--;
+                index++;
+            }
         }
     }
 
@@ -179,7 +196,7 @@ public class VrcTimeSelection implements TimeSelection {
         //Then next time is the element in the beginning.
 
         Time nextTimeSlot = DEFAULT_TIME_SLOT;
-        Time[] times = Time.values();
+        Time[] times = {Time.NO_SLOT, Time.SLOT_1, Time.SLOT_2};
 
         for (int index = 0; index < times.length; index++) {
             if (times[index] == time) {
@@ -190,6 +207,17 @@ public class VrcTimeSelection implements TimeSelection {
             }
         }
         return nextTimeSlot;
+    }
+
+    private List<Time> getDynamicTimeSlots() {
+
+        List<Time> times = new ArrayList<>();
+        times.add(Time.DYNAMIC_SLOT_1);
+        times.add(Time.DYNAMIC_SLOT_2);
+        times.add(Time.DYNAMIC_SLOT_3);
+        times.add(Time.DYNAMIC_SLOT_4);
+        times.add(Time.DYNAMIC_SLOT_5);
+        return times;
     }
 
     private void distributeScorecardsEqually(List<Scorecard> allScorecards) {
