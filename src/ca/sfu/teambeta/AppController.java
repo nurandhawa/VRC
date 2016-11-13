@@ -130,8 +130,8 @@ public class AppController {
                 halt(BAD_REQUEST, getErrResponse("Must specify gameSession: latest or previous"));
             }
             if (!TimeManager.getInstance().isExpired() && !isAdministrator) {
-                halt(BAD_REQUEST, getErrResponse("Oops! Groups are locked right now. Please come back " +
-                        "after 05:15 pm on Thursday to access this page."));
+                halt(BAD_REQUEST, getErrResponse("Groups aren't formed yet, Please check back " +
+                        "after 05:15 pm on Thursday to view the finalized groups."));
 
             }
         });
