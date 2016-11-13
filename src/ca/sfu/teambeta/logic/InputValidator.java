@@ -159,7 +159,7 @@ public class InputValidator {
     }
 
     public static boolean checkLadderPosition(int position, int ladderSize) {
-        return 0 <= position && position <= ladderSize;
+        return 0 < position && position <= ladderSize;
     }
 
 
