@@ -129,6 +129,11 @@ public class AppController {
             if (requestedGameSession == null) {
                 halt(BAD_REQUEST, getErrResponse("Must specify gameSession: latest or previous"));
             }
+            if (!TimeManager.getInstance().isExpired() && !isAdministrator) {
+                halt(BAD_REQUEST, getErrResponse("Groups aren't formed yet, Please check back " +
+                        "after 05:15 pm on Thursday to view the finalized groups."));
+
+            }
         });
 
         //homepage: return ladder

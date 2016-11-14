@@ -7,7 +7,7 @@ import java.util.Calendar;
  * --- This class uses Singleton Pattern ---
  * <p>
  * 1) It stores the time after which editing pairs (status and time) is disabled.
- * 2) Currently Blocking Time is set to -> 6 pm Thursday.
+ * 2) Currently Blocking Time is set to -> 05:15 pm Thursday.
  * 3) When Admin reorders ladder time is updated. Which means that Users can edit
  * they information again up till next week.
  */
