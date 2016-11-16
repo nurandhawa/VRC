@@ -193,4 +193,29 @@ public class VrcTimeSelectionTest {
         Assert.assertEquals(slot2Scorecard.getTimeSlot(), Time.SLOT_2);
     }
 
+    @Test
+    public void testDynamicTimeslots() {
+
+        List<Scorecard> scorecards = new ArrayList<>();
+        Map<Pair, Time> timeMap = new HashMap<>();
+        for (int i= 0 ; i < 25; i ++) {
+            List<Pair> pairs = new ArrayList<>();
+            for (int j = 0; j < 3; j++) {
+                String name = Integer.toString(i) + Integer.toString(j);
+                Pair pair = new Pair(new Player(name, ""), new Player(name,""));
+                pairs.add(pair);
+                timeMap.put(pair, Time.SLOT_1);
+            }
+            Scorecard scorecard = new Scorecard(pairs, null);
+            scorecards.add(scorecard);
+        }
+
+        TimeSelection selector = new VrcTimeSelection();
+        selector.distributePairs(scorecards, timeMap);
+
+        for (Scorecard sc : scorecards) {
+            System.out.println(sc.getTimeSlot());
+        }
+    }
+
 }
