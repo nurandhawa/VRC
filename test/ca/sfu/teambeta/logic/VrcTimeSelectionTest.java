@@ -198,7 +198,7 @@ public class VrcTimeSelectionTest {
 
         List<Scorecard> scorecards = new ArrayList<>();
         Map<Pair, Time> timeMap = new HashMap<>();
-        for (int i= 0 ; i < 25; i ++) {
+        for (int i= 0 ; i < 15; i ++) {
             List<Pair> pairs = new ArrayList<>();
             for (int j = 0; j < 3; j++) {
                 String name = Integer.toString(i) + Integer.toString(j);
@@ -213,9 +213,18 @@ public class VrcTimeSelectionTest {
         TimeSelection selector = new VrcTimeSelection();
         selector.distributePairs(scorecards, timeMap);
 
+        int numOfFirstTimeslotScorecards = 0;
+        int numOfSecondTimeslotScorecards = 0;
         for (Scorecard sc : scorecards) {
-            System.out.println(sc.getTimeSlot());
+            if (sc.getTimeSlot().equals(Time.SLOT_1)) {
+                numOfFirstTimeslotScorecards ++;
+            } else if (sc.getTimeSlot().equals(Time.SLOT_2)) {
+                numOfSecondTimeslotScorecards ++;
+            }
         }
+
+        Assert.assertEquals(numOfFirstTimeslotScorecards, 8);
+        Assert.assertEquals(numOfSecondTimeslotScorecards, 5);
     }
 
 }

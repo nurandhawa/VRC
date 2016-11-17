@@ -15,7 +15,7 @@ public class VrcTimeSelection implements TimeSelection {
     private static final Time DEFAULT_TIME_SLOT = Time.SLOT_1;
     private static final int AMOUNT_TIME_SLOTS = 2;
     private static final int MIN_SCORECARDS_FOR_DISTRIBUTION = 12;
-    private static final int MAX_SCORECARDS_FOR_DYNAMIC_DISTRIBUTION = 24;
+    private static final int MAX_SCORECARDS_FOR_DYNAMIC_DISTRIBUTION = 32;
     private boolean[] noPreferredTime;
 
     public int getAmountPairsByTime(List<Scorecard> scorecards, Time time) {
@@ -53,7 +53,7 @@ public class VrcTimeSelection implements TimeSelection {
             distributeScorecardsEqually(allScorecards);
 
             /*  When number of scorecards exceed this amount, it gets complicated since we
-                do not have enough scorecards on the second time slot.
+                do not have enough dynamic time slots.
              */
             if (allScorecards.size() <= MAX_SCORECARDS_FOR_DYNAMIC_DISTRIBUTION) {
                 dynamicDistributionOfLaterScorecards(allScorecards);
@@ -69,7 +69,7 @@ public class VrcTimeSelection implements TimeSelection {
     private void dynamicDistributionOfLaterScorecards(List<Scorecard> allScorecards) {
         List<Scorecard> lateScorecards = getScorecardsByTime(allScorecards, Time.SLOT_2);
         List<Time> dynamicTimeSlots = getDynamicTimeSlots();
-        int extra = allScorecards.size() - MIN_SCORECARDS_FOR_DISTRIBUTION;
+        int extra = allScorecards.size() - lateScorecards.size() - (MIN_SCORECARDS_FOR_DISTRIBUTION / 2);
 
         List<Scorecard> neededScorecards = new ArrayList<>();
         for (int i = lateScorecards.size() - 1; i >= 0; i--) {
@@ -248,6 +248,11 @@ public class VrcTimeSelection implements TimeSelection {
             List<Scorecard> scorecardsByTime = getScorecardsByTime(allScorecards, time);
             int amount = scorecardsByTime.size();
             int extra = amount - scorecardsOnEachTime;
+
+            // the odd scorecard left should be in the first time slot
+            if (numOfScorecards % AMOUNT_TIME_SLOTS != 0) {
+                extra--;
+            }
 
             if (extra > 0) {
                 //Move extra groups to the next time slot, do that for all time slots
