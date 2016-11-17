@@ -81,8 +81,29 @@
         }
     });
 
+    Vue.validator('editEmail', function (val) {
+        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
+    });
+
+    Vue.validator('editPasswordConfirmation', function (val) {
+        return (this._vm.editPassword === val);
+    });
+
+    Vue.validator('editMinLength', function (val) {
+        return /^.{6,}$/.test(val);
+    });
+
     Vue.validator('minLength', function (val) {
         return /^.{6,}$/.test(val);
+    });
+
+    Vue.validator('alpha', function (val) {
+        return /^[A-z]+$/.test(val);
+    });
+
+    // Same as alpha, but empty string also returns true
+    Vue.validator('alphaEmpty', function (val) {
+        return /^[A-z]+$|^$/.test(val);
     });
 
     var onValid = function() {
@@ -98,17 +119,39 @@
     var showCreateAccountDiv = function() {
         document.getElementById("createAccountDiv").style.display = "block";
         document.getElementById("removeAccountDiv").style.display = "none";
+        document.getElementById("editPlayerDiv").style.display = "none";
     };
 
     var showRemoveAccountDiv = function() {
         document.getElementById("removeAccountDiv").style.display = "block";
         document.getElementById("createAccountDiv").style.display = "none";
+        document.getElementById("editPlayerDiv").style.display = "none";
+    };
+
+    var editPlayerInfo = function() {
+        document.getElementById("removeAccountDiv").style.display = "none";
+        document.getElementById("createAccountDiv").style.display = "none";
+        document.getElementById("editPlayerDiv").style.display = "block";
     };
 
     var onDelete = function () {
         this.spinnerVisibility = true;
         var api = new API();
         api.deleteUser(this.deletePlayer.id, onDelSuccess.bind(this), onDelError.bind(this));
+    };
+
+    var onEditPlayer = function () {
+        console.log("HELLO");
+        console.log(this.firstName + this.lastName + this.email + this.password);
+        var api = new API();
+    };
+
+    var onChange = function () {
+        console.log("HELLO");
+    };
+
+    document.getElementById("editPlayer").onChange = function () {
+        console.log("HEELLO");
     };
 
     var api = new API();
@@ -124,6 +167,9 @@
                 firstName: "",
                 lastName: "",
                 phoneNumber: "",
+                editEmail: "",
+                editPassword: "",
+                editPasswordConfirmation: "",
                 email: "",
                 password: "",
                 passwordConfirmation: "",
@@ -133,6 +179,7 @@
                 },
                 existingPlayer: "",
                 deletePlayer: "",
+                editPlayer: "",
                 existingPlayers: playerData.danglingPlayers,
                 users: playerData.playersWithAccounts,
                 color: '#03a9f4',
@@ -145,8 +192,11 @@
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
                 onDelete: onDelete,
+                onEditPlayer: onEditPlayer,
+                onChange: onChange,
                 showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv
+                showCreateAccountDiv: showCreateAccountDiv,
+                editPlayerInfo: editPlayerInfo
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
