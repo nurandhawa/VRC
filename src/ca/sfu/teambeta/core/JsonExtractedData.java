@@ -28,6 +28,10 @@ public class JsonExtractedData {
     private String securityAnswer;
     @Expose
     private String playerId;
+    @Expose
+    private String firstName;
+    @Expose
+    private String lastName;
 
 
     public JsonExtractedData() {
@@ -92,5 +96,21 @@ public class JsonExtractedData {
 
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }

@@ -44,6 +44,19 @@
         alert(failureMessage);
     };
 
+    var onEditSuccess = function (response) {
+        this.spinnerVisibility = false;
+        alert("Player info successfully modified!");
+    };
+
+    var onEditError = function (response) {
+        this.spinnerVisibility = false;
+        var failureMessage = "Failed to modify the player info.\n";
+        var responseBody = JSON.parse(response.responseText);
+        failureMessage += responseBody.message;
+        alert(failureMessage);
+    };
+
     var onEmailChange = function () {
         this.invalidCredentials = false;
     };
@@ -141,10 +154,10 @@
     };
 
     var onEditPlayer = function () {
-        console.log("HELLO");
-
-
+        this.spinnerVisibility = true;
         var api = new API();
+        api.editPlayer(this.editEmail, this.editPassword, this.firstName, this.lastName, 
+                        this.editPlayer.id, onEditSuccess.bind(this), onEditError.bind(this));
     };
 
     var api = new API();
