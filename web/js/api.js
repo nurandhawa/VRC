@@ -576,7 +576,8 @@ var API = (function() {
                     playerData.players.forEach(function(player){
                         playerData.danglingPlayers.push({
                             label: player.firstName + " " + player.lastName,
-                            id: player.id
+                            id: player.id,
+                            email: player.email
                         });
                     });
                     playerData.playersWithAccounts = [];

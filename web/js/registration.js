@@ -82,7 +82,7 @@
     });
 
     Vue.validator('editEmail', function (val) {
-        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(val);
+        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|^$/.test(val);
     });
 
     Vue.validator('editPasswordConfirmation', function (val) {
@@ -90,7 +90,7 @@
     });
 
     Vue.validator('editMinLength', function (val) {
-        return /^.{6,}$/.test(val);
+        return /^.{6,}$|^$/.test(val);
     });
 
     Vue.validator('minLength', function (val) {
@@ -142,16 +142,9 @@
 
     var onEditPlayer = function () {
         console.log("HELLO");
-        console.log(this.firstName + this.lastName + this.email + this.password);
+
+
         var api = new API();
-    };
-
-    var onChange = function () {
-        console.log("HELLO");
-    };
-
-    document.getElementById("editPlayer").onChange = function () {
-        console.log("HEELLO");
     };
 
     var api = new API();
@@ -193,7 +186,6 @@
                 onEmailChange: onEmailChange,
                 onDelete: onDelete,
                 onEditPlayer: onEditPlayer,
-                onChange: onChange,
                 showRemoveAccountDiv: showRemoveAccountDiv,
                 showCreateAccountDiv: showCreateAccountDiv,
                 editPlayerInfo: editPlayerInfo
@@ -201,6 +193,13 @@
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
                     this.$validate();
+                },
+                "editPlayer": function () {
+                    console.log("hello");
+                    var name = (this.editPlayer.label).split(" ");
+                    this.editEmail = this.editPlayer.email;
+                    this.firstName = name[0];
+                    this.lastName = name[1];
                 }
             }
         });
