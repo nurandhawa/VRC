@@ -571,10 +571,28 @@ public class AppController {
             if (InputValidator.checkPlayerExists(dbManager, playerID)) {
                 try {
                     Player player = dbManager.getPlayerFromID(playerID);
-                    User user = dbManager.getUser(player.getEmail());
+                    User user = null;
+                    if (player.getEmail() != null) {
+                        user = dbManager.getUser(player.getEmail());
+                    }
                     player.setFirstName(firstName);
                     player.setLastName(lastName);
-                    accountManager.updateUser(user, player, email, pwd);
+
+                    try {
+                        InputValidator.validateEmailFormat(email);
+                    } catch (Exception e) {
+                        email = null;
+                    }
+                    try {
+                        InputValidator.validatePasswordFormat(pwd);
+                    } catch (Exception e) {
+                        pwd = null;
+                    }
+
+                    if (user != null) {
+                        accountManager.updateUser(user, player, email, pwd);
+                    }
+                    dbManager.persistEntity(player);
 
                     response.status(OK);
                     return getOkResponse("Player info successfully modified.");

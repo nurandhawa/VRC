@@ -612,9 +612,11 @@ var API = (function() {
                     playerData.users.forEach(function(user){
                         playerData.playersWithAccounts.push({
                             label: user.firstName + " " + user.lastName,
-                            id: user.id
+                            id: user.id,
+                            email: user.email
                         });
                     });
+                    playerData.allPlayers = playerData.playersWithAccounts.concat(playerData.danglingPlayers);
                     doneCallback(playerData);
                 }
             })

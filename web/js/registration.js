@@ -188,6 +188,7 @@
                 editPlayer: "",
                 existingPlayers: playerData.danglingPlayers,
                 users: playerData.playersWithAccounts,
+                allPlayers: playerData.allPlayers,
                 color: '#03a9f4',
                 spinnerVisibility: false,
                 invalidCredentials: false

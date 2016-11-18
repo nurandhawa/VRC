@@ -147,7 +147,7 @@
                     <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
                         <label for="editPlayer" class="control-label">Player:</label>
                         <v-select id="editPlayer" v-validate:player="['editPlayer']" :classes="{ invalid: 'has-error', }"
-                                  label="label" :value.sync="editPlayer" :options="existingPlayers"
+                                  label="label" :value.sync="editPlayer" :options="allPlayers"
                                   placeholder="Search for a player...">
                         </v-select>
                         <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
