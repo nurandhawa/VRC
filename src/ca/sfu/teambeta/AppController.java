@@ -575,6 +575,9 @@ public class AppController {
                     if (player.getEmail() != null) {
                         user = dbManager.getUser(player.getEmail());
                     }
+
+                    InputValidator.validatePlayerName(firstName);
+
                     player.setFirstName(firstName);
                     player.setLastName(lastName);
 

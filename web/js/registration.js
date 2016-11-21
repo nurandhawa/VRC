@@ -95,15 +95,33 @@
     });
 
     Vue.validator('editEmail', function (val) {
-        return /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|^$/.test(val);
+        var isValid = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$|^$/.test(val);
+        if (isValid) {
+            $("#submitButtonEdit").prop("disabled", false);
+            return true;
+        }
+        $("#submitButtonEdit").prop("disabled", true);
+        return false;
     });
 
     Vue.validator('editPasswordConfirmation', function (val) {
-        return (this._vm.editPassword === val);
+        var isValid =  (this._vm.editPassword === val);
+        if (isValid) {
+            $("#submitButtonEdit").prop("disabled", false);
+            return true;
+        }
+        $("#submitButtonEdit").prop("disabled", true);
+        return false;
     });
 
     Vue.validator('editMinLength', function (val) {
-        return /^.{6,}$|^$/.test(val);
+        var isValid =  /^.{6,}$|^$/.test(val);
+        if (isValid) {
+            $("#submitButtonEdit").prop("disabled", false);
+            return true;
+        }
+        $("#submitButtonEdit").prop("disabled", true);
+        return false;
     });
 
     Vue.validator('minLength', function (val) {
@@ -116,7 +134,13 @@
 
     // Same as alpha, but empty string also returns true
     Vue.validator('alphaEmpty', function (val) {
-        return /^[A-z]+$|^$/.test(val);
+        var isValid = /^[A-z]+$|^$/.test(val);
+        if (isValid) {
+            $("#submitButtonEdit").prop("disabled", false);
+            return true;
+        }
+        $("#submitButtonEdit").prop("disabled", true);
+        return false;
     });
 
     var onValid = function() {
@@ -209,7 +233,6 @@
                     this.$validate();
                 },
                 "editPlayer": function () {
-                    console.log("hello");
                     var name = (this.editPlayer.label).split(" ");
                     this.editEmail = this.editPlayer.email;
                     this.firstName = name[0];

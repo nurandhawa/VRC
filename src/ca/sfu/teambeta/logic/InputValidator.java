@@ -140,6 +140,7 @@ public class InputValidator {
     }
 
     public static void validatePlayerName(String name) throws InvalidInputException {
+        validateNullOrEmptyString(name);
         boolean isAlpha = name.chars().allMatch(Character::isAlphabetic);
         if (!isAlpha) {
             throw new InvalidInputException("Name is not alphabetic.");
