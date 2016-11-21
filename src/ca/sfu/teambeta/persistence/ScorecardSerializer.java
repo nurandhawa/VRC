@@ -22,7 +22,7 @@ public class ScorecardSerializer implements JsonSerializer<Scorecard> {
         JsonObject jsonElement = new JsonObject();
         jsonElement.addProperty("id", src.getID());
         jsonElement.addProperty("isDone", src.isDone());
-        jsonElement.addProperty("timeSlot", src.getTimeSlot().toString());
+        jsonElement.addProperty("timeSlot", src.getTimeSlot().getTimeString());
 
         JsonArray pairsJsonArray = new JsonArray();
         for (Pair pair : src.getReorderedPairs()) {
