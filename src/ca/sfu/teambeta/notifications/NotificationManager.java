@@ -38,9 +38,7 @@ public class NotificationManager {
                     @Override
                     public void run() {
                         System.out.println("Email notifications triggered at " + new SimpleDateFormat("MM dd, yyyy 'at' HH:mm.ss a").format(new Date()));
-                        dbManager.startSession();
                         sendEmailNotification(emailNotifier);
-                        dbManager.finishSession();
                     }
                 },
                 scheduledTime, timerPeriod);

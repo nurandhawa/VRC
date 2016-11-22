@@ -100,7 +100,6 @@ public class UserSessionManagerTest {
 
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         DBManager dbManager = new DBManager(sessionFactory);
-        dbManager.startSession();
         AccountDatabaseHandler dbHandler = new AccountDatabaseHandler(dbManager);
         UserRoleHandler handler = new UserRoleHandler(dbHandler);
         AccountManager manager = new AccountManager(dbHandler);
@@ -116,6 +115,5 @@ public class UserSessionManagerTest {
         UserRole actualRole = sessionResponse.getUserRole();
 
         Assert.assertEquals(UserRole.REGULAR, actualRole);
-        dbManager.finishSession();
     }
 }

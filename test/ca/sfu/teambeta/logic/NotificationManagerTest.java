@@ -30,7 +30,6 @@ public class NotificationManagerTest {
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         this.dbManager = new DBManager(sessionFactory);
-        this.dbManager.startSession();
 
         GameSession gameSession = setupGameSession();
 
@@ -52,7 +51,6 @@ public class NotificationManagerTest {
         am.registerUserWithPlayer(AccountManager.DEMO_EMAIL, AccountManager.DEMO_PASSWORD,
                 activePair1.getPlayers().get(0).getID(),
                 AccountManager.DEMO_SECURITY_QUESTION, AccountManager.DEMO_SECURITY_ANSWER);
-        this.dbManager.finishSession();
     }
 
     private GameSession setupGameSession() throws Exception {

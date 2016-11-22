@@ -60,7 +60,6 @@ public class APITest {
                 Ladder newLadder = null;
                 SessionFactory sessionFactory = DBManager.getTestingSession(true);
                 dbManager = new DBManager(sessionFactory);
-                dbManager.startSession();
                 try {
                     newLadder = CSVReader.setupTestingLadder(dbManager);
                     originalLadderLength = newLadder.getLadderLength();
@@ -74,7 +73,6 @@ public class APITest {
                 AccountDatabaseHandler accountDbHandler = new AccountDatabaseHandler(dbManager);
                 AccountManager am = new AccountManager(accountDbHandler);
                 am.registerNewAdministratorAccount(EMAIL, PASSWORD, SECURITY_QUESTION, SECURITY_ANSWER);
-                dbManager.finishSession();
 
                 CredentialsManager cm = new CredentialsManager(accountDbHandler);
 

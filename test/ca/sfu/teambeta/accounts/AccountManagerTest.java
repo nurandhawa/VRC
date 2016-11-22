@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.accounts;
 
 import org.hibernate.SessionFactory;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,6 @@ public class AccountManagerTest {
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         dbManager = new DBManager(sessionFactory);
-        dbManager.startSession();
         Ladder newLadder = CSVReader.setupLadder(dbManager);
 
         Pair pair = newLadder.getPairs().get(0);
@@ -47,12 +45,6 @@ public class AccountManagerTest {
 
         accountDbHandler = new AccountDatabaseHandler(dbManager);
         accountManager = new AccountManager(accountDbHandler);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dbManager.finishSession();
-
     }
 
     // MARK: Tests

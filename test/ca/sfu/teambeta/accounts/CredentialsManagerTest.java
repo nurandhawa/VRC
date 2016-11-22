@@ -1,7 +1,6 @@
 package ca.sfu.teambeta.accounts;
 
 import org.hibernate.SessionFactory;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +36,6 @@ public class CredentialsManagerTest {
         // Setup the database
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
         dbManager = new DBManager(sessionFactory);
-        dbManager.startSession();
         Ladder newLadder = CSVReader.setupLadder(dbManager);
 
         GameSession gameSession = new GameSession(newLadder);
@@ -59,12 +57,6 @@ public class CredentialsManagerTest {
         int playerId = playerFromDB.getID();
 
         accountManager.registerUserWithPlayer(email, password, playerId, secQuestion, secAnswer);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dbManager.finishSession();
-
     }
 
     @Test

@@ -43,7 +43,6 @@ import ca.sfu.teambeta.logic.VrcTimeSelection;
 import ca.sfu.teambeta.persistence.DBManager;
 import ca.sfu.teambeta.serialization.JSONManager;
 
-import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.exception;
@@ -110,14 +109,6 @@ public class AppController {
         staticFiles.location(staticFilePath);
 
         gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-        before((request, response) -> {
-            dbManager.startSession();
-        });
-
-        after((request, response) -> {
-            dbManager.finishSession();
-        });
 
         before("/api/*", (request, response) -> {
             // Allow access to the login endpoint, so they can sign up/log in

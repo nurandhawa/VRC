@@ -49,7 +49,7 @@ public class DBManager {
 
     public DBManager(SessionFactory factory) {
         this.sessionFactory = factory;
-        this.transactionManager = new TransactionManager();
+        this.transactionManager = new TransactionManager(this::refreshSession);
     }
 
     // Use me if the database is down
@@ -116,16 +116,8 @@ public class DBManager {
         }
     }
 
-    public void startSession() {
-        currentSession = sessionFactory.openSession();
-        transactionManager.startSession(currentSession);
-    }
-
-    public void finishSession() {
-        transactionManager.finishSession();
-        if (currentSession.isOpen()) {
-            currentSession.close();
-        }
+    private Session refreshSession() {
+        return this.sessionFactory.openSession();
     }
 
     public synchronized void persistEntity(Persistable entity) {
