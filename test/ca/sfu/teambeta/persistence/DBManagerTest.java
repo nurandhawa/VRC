@@ -1,6 +1,5 @@
 package ca.sfu.teambeta.persistence;
 
-import org.hibernate.ObjectNotFoundException;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,10 +45,9 @@ public class DBManagerTest {
         Assert.assertEquals(playerExpected, playerActual);
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void testGetPlayerFromIDNotFound() {
         Player playerActual = dbManager.getPlayerFromID(99);
-
         Assert.assertNull(playerActual);
     }
 

@@ -128,7 +128,7 @@ public class DBManager {
     }
 
     private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
-        return transactionManager.executeTransaction((session, transaction) -> (Persistable) session.load(persistable, id));
+        return transactionManager.executeTransaction((session, transaction) -> (Persistable) session.get(persistable, id));
     }
 
     public synchronized Player getPlayerFromID(int id) {
@@ -228,7 +228,7 @@ public class DBManager {
 
     public synchronized boolean removePair(int pairId) {
         GameSession gameSession = getGameSessionLatest();
-        Pair pair = transactionManager.executeTransaction((session, transaction) -> session.load(Pair.class, pairId));
+        Pair pair = transactionManager.executeTransaction((session, transaction) -> session.get(Pair.class, pairId));
 
         boolean removed = gameSession.removePairFromLadder(pair);
 
