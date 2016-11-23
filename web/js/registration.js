@@ -239,7 +239,14 @@
                         this.editEmail = this.editPlayer.email;
                         this.firstName = name[0];
                         this.lastName = name[1];
+                        this.editPassword = "";
+                        this.editPasswordConfirmation = "";
                     } else {
+                        this.editEmail = null;
+                        this.firstName = "";
+                        this.lastName = "";
+                        this.editPassword = "";
+                        this.editPasswordConfirmation = "";
                         $("#submitButtonEdit").prop("disabled", false);
                     }
 
