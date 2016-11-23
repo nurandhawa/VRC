@@ -233,18 +233,17 @@
                     this.$validate();
                 },
                 "editPlayer": function () {
-                    if (this.editPlayer == null || this.editPlayer == "") {
+                    if (this.editPlayer) {
                         $("#submitButtonEdit").prop("disabled", true);
+                        var name = (this.editPlayer.label).split(" ");
+                        this.editEmail = this.editPlayer.email;
+                        this.firstName = name[0];
+                        this.lastName = name[1];
                     } else {
                         $("#submitButtonEdit").prop("disabled", false);
                     }
-                    
-                    var name = (this.editPlayer.label).split(" ");
-                    this.editEmail = this.editPlayer.email;
-                    this.firstName = name[0];
-                    this.lastName = name[1];
-                    
-                    if (this.editEmail == null || this.editEmail == "") {
+
+                    if (this.editEmail) {
                         $("#editEmail").prop("disabled", true);
                         $("#editPassword").prop("disabled", true);
                         $("#editPasswordConfirmation").prop("disabled", true);
