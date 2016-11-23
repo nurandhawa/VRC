@@ -572,9 +572,6 @@ public class AppController {
                 try {
                     Player player = dbManager.getPlayerFromID(playerID);
                     User user = null;
-                    if (player.getEmail() != null) {
-                        user = dbManager.getUser(player.getEmail());
-                    }
 
                     InputValidator.validatePlayerFirstName(firstName);
                     InputValidator.validatePlayerLastName(lastName);
@@ -582,20 +579,17 @@ public class AppController {
                     player.setFirstName(firstName);
                     player.setLastName(lastName);
 
-                    try {
+                    if (player.getEmail() != null) {
+                        user = dbManager.getUser(player.getEmail());
                         InputValidator.validateEmailFormat(email);
-                    } catch (Exception e) {
-                        email = null;
-                    }
-                    try {
-                        InputValidator.validatePasswordFormat(pwd);
-                    } catch (Exception e) {
-                        pwd = null;
-                    }
-
-                    if (user != null) {
+                        try {
+                            InputValidator.validatePasswordFormat(pwd);
+                        } catch (Exception e) {
+                            pwd = null;
+                        }
                         accountManager.updateUser(user, player, email, pwd);
                     }
+
                     dbManager.persistEntity(player);
 
                     response.status(OK);
