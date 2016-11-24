@@ -5,8 +5,8 @@
     $.material.options.validate = false;
     $.material.init();
 
-    var REGISTRATION_FORM_ID = "#registrationForm";
-    var REMOVE_ACCOUNT_FORM_ID = "#removeAccountForm";
+    var REGISTRATION_FORM_ID = "#createAccountTab";
+    var REMOVE_ACCOUNT_FORM_ID = "#removeAccountTab";
     var ANNOUNCEMENT_DIV_ID = "#announcementTab";
 
     var ANNOUNCEMENT_EMPTY_DATA = {
@@ -215,11 +215,9 @@
                 onValid: onValid,
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
-                onDelete: onDelete,
                 onEditPlayer: onEditPlayer,
-                showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv,
                 editPlayerInfo: editPlayerInfo
+                onDelete: onDelete
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
@@ -287,9 +285,7 @@
                 onValid: onValid,
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
-                onDelete: onDelete,
-                showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv
+                onDelete: onDelete
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {

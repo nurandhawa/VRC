@@ -86,7 +86,8 @@
                         <span style="margin-left: 1.5em"> (All fields must be filled.) </span>
                         <div class="form-group" v-validate-class style="margin-left: 1.5em; margin-right:1.5em;">
                             <label for="existingPlayer" class="control-label">Player:</label>
-                            <v-select id="existingPlayer" v-validate:player="['existingPlayer']" :classes="{ invalid: 'has-error', }"
+                            <v-select id="existingPlayer" v-validate:player="['existingPlayer']"
+                                      :classes="{ invalid: 'has-error' }"
                                       label="label" :value.sync="existingPlayer" :options="existingPlayers"
                                       placeholder="Search for a player...">
                             </v-select>
@@ -127,7 +128,7 @@
                             <input class="form-control" id="inputSecAns" v-model="securityInfo.answer"
                                    v-validate:answer="['required']" :classes="{ invalid: 'has-error', }">
                         </div>
-                        <div class="col-md-10 ">
+                        <div class="col-md-10 flex-center">
                             <button id="submitButton" type="submit" class="btn btn-success btn-raised" v-on:click="onSubmit()"
                                     style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
                             <div id="loginAnimation" v-if="spinnerVisibility">
@@ -153,7 +154,7 @@
                             </v-select>
                             <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
                         </div>
-                        <div class="col-md-10 ">
+                          <div class="col-md-10 flex-center">
                             <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised"
                                     style="margin-left: 45%; margin-right: 45%;">Submit</button>
                             <div id="loginAnimationRemove" v-if="spinnerVisibility">
@@ -167,9 +168,10 @@
 
 
                 <div class="tab-pane fade" id="announcementTab">
-                  <div class="flex-row" style="justify-content: flex-end;">
-                    <button id="addAnnouncement" @click="addAnnouncement()" class="btn btn-success btn-raised" style="margin: 10px;">Add</button>
-                  </div>
+                    <a class="btn btn-primary btn-fab" style="margin-right: 20px; float: right;"
+                       @click="addAnnouncement()">
+                        <i class="material-icons">add</i>
+                    </a>
 
                     <div id="addAnnouncementModal" class="modal">
                         <div class="modal-dialog">
@@ -267,11 +269,12 @@
                                 <h3 class="announcement-title">{{ announcement.title }}</h3>
                                 <p>{{ announcement.message }}</p>
                             </div>
-                            <a class="btn btn-info btn-fab"
+                            <a class="btn btn-info btn-fab btn-fab-mini"
                                @click="editAnnouncement(announcement.id)">
                                 <i class="material-icons">create</i>
                             </a>
-                            <a class="btn btn-danger btn-fab"
+                            <a class="btn btn-danger btn-fab btn-fab-mini"
+                               style="margin-left: 10px;"
                                @click="deleteAnnouncement(announcement.id)">
                                 <i class="material-icons">delete</i>
                             </a>
