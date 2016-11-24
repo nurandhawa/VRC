@@ -76,6 +76,7 @@ public class AppController {
     private static final String SECURITY_QUESTION = "securityQuestion";
 
     private static final String PAIR_NOT_FOUND = "No pair was found with given id";
+    private static final String PLAYER_NOT_FOUND = "No player was found with given id";
     private static final String ID_NOT_INT = "Id is not of integer type";
     private static final int NOT_FOUND = 404;
     private static final int BAD_REQUEST = 400;
@@ -546,6 +547,58 @@ public class AppController {
                 } catch (InvalidInputException e) {
                     message = e.getMessage();
                 }
+            }
+
+            response.status(BAD_REQUEST);
+            return getErrResponse(message);
+        });
+
+        patch("/api/register", (request, response) -> {
+            String body = request.body();
+            JsonExtractedData extractedData = gson.fromJson(body, JsonExtractedData.class);
+            String message = "";
+            String email = extractedData.getEmail();
+            String pwd = extractedData.getPassword();
+            String firstName = extractedData.getFirstName();
+            String lastName = extractedData.getLastName();
+            int playerID = -1;
+            try {
+                playerID = Integer.parseInt(extractedData.getPlayerId());
+            } catch (Exception e) {
+                message = e.getMessage();
+            }
+
+            if (InputValidator.checkPlayerExists(dbManager, playerID)) {
+                try {
+                    Player player = dbManager.getPlayerFromID(playerID);
+                    User user = null;
+
+                    InputValidator.validatePlayerFirstName(firstName);
+                    InputValidator.validatePlayerLastName(lastName);
+
+                    player.setFirstName(firstName);
+                    player.setLastName(lastName);
+
+                    if (player.getEmail() != null) {
+                        user = dbManager.getUser(player.getEmail());
+                        InputValidator.validateEmailFormat(email);
+                        try {
+                            InputValidator.validatePasswordFormat(pwd);
+                        } catch (Exception e) {
+                            pwd = null;
+                        }
+                        accountManager.updateUser(user, player, email, pwd);
+                    }
+
+                    dbManager.persistEntity(player);
+
+                    response.status(OK);
+                    return getOkResponse("Player info successfully modified.");
+                } catch (Exception e) {
+                    message = e.getMessage();
+                }
+            } else {
+                message = PLAYER_NOT_FOUND;
             }
 
             response.status(BAD_REQUEST);

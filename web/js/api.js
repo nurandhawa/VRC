@@ -393,6 +393,34 @@ var API = (function() {
             });
     };
 
+    API.prototype.editPlayer = function (email, password, firstName, lastName, playerId, doneCallback, failCallback) {
+        $.ajax({
+            method: "PATCH",
+            url: SERVER_URL + "/register",
+            data: JSON.stringify({
+                "email": email,
+                "password": password,
+                "firstName": firstName,
+                "lastName": lastName,
+                "playerId": playerId
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function(response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    defaultFailCallback(responseBody);
+                }
+            });
+    };
+
     API.prototype.deleteUser = function (playerId, doneCallback, failCallback) {
         $.ajax({
             method: "DELETE",
@@ -569,16 +597,19 @@ var API = (function() {
                     playerData.players.forEach(function(player){
                         playerData.danglingPlayers.push({
                             label: player.firstName + " " + player.lastName,
-                            id: player.id
+                            id: player.id,
+                            email: player.email
                         });
                     });
                     playerData.playersWithAccounts = [];
                     playerData.users.forEach(function(user){
                         playerData.playersWithAccounts.push({
                             label: user.firstName + " " + user.lastName,
-                            id: user.id
+                            id: user.id,
+                            email: user.email
                         });
                     });
+                    playerData.allPlayers = playerData.playersWithAccounts.concat(playerData.danglingPlayers);
                     doneCallback(playerData);
                 }
             })

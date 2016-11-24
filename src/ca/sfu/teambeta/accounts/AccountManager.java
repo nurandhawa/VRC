@@ -255,4 +255,18 @@ public class AccountManager {
         return user;
     }
 
+    public void updateUser(User user, Player player, String newEmail, String newPwd) throws GeneralUserAccountException,
+                                                    AccountRegistrationException {
+        if (newEmail != null) {
+            user.setEmail(newEmail);
+        }
+        if (newPwd != null) {
+            String passwordHash = CredentialsManager.getHash(newPwd, "Could not create the account");
+            user.setPasswordHash(passwordHash);
+        }
+
+        user.associatePlayer(player);
+        accountDbHandler.updateExistingUser(user);
+    }
+
 }

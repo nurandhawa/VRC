@@ -104,9 +104,9 @@ public class InputValidator {
             Integer existingId = player.getExistingId();
             // Ignore player objects that will be replaced by existing player objects
             if (!(existingId >= 0)) {
-                validatePlayerName(player.getFirstName());
+                validatePlayerFirstName(player.getFirstName());
                 validateNullOrEmptyString(player.getFirstName());
-                validatePlayerName(player.getLastName());
+                validatePlayerFirstName(player.getLastName());
             }
         }
     }
@@ -139,7 +139,15 @@ public class InputValidator {
         }
     }
 
-    public static void validatePlayerName(String name) throws InvalidInputException {
+    public static void validatePlayerFirstName(String name) throws InvalidInputException {
+        validateNullOrEmptyString(name);
+        boolean isAlpha = name.chars().allMatch(Character::isAlphabetic);
+        if (!isAlpha) {
+            throw new InvalidInputException("Name is not alphabetic.");
+        }
+    }
+
+    public static void validatePlayerLastName(String name) throws InvalidInputException {
         boolean isAlpha = name.chars().allMatch(Character::isAlphabetic);
         if (!isAlpha) {
             throw new InvalidInputException("Name is not alphabetic.");
