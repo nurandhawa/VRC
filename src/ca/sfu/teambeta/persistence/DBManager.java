@@ -1,12 +1,8 @@
 package ca.sfu.teambeta.persistence;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -47,15 +43,13 @@ public class DBManager {
     private static final String DOCKER_CFG_XML = "hibernate.docker.cfg.xml";
     private static final String H2_CFG_XML = "hibernate.h2.cfg.xml";
     private static String TESTING_ENV_VAR = "TESTING";
-    private Session session;
+    private SessionFactory sessionFactory;
+    private TransactionManager transactionManager;
+    private Session currentSession;
 
     public DBManager(SessionFactory factory) {
-        this.session = factory.openSession();
-    }
-
-    // Used for testing purposes where session needs to be closed
-    public DBManager(Session session) {
-        this.session = session;
+        this.sessionFactory = factory;
+        this.transactionManager = new TransactionManager(this::refreshSession);
     }
 
     // Use me if the database is down
@@ -122,28 +116,19 @@ public class DBManager {
         }
     }
 
+    private Session refreshSession() {
+        return this.sessionFactory.openSession();
+    }
+
     public synchronized void persistEntity(Persistable entity) {
-        Transaction tx = session.beginTransaction();
-        try {
+        transactionManager.executeTransaction(((session, transaction) -> {
             session.saveOrUpdate(entity);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-            e.printStackTrace();
-        }
+            return true;
+        }));
     }
 
     private Persistable getEntityFromID(Class persistable, int id) throws HibernateException {
-        Transaction tx = null;
-        Persistable entity = null;
-        try {
-            tx = session.beginTransaction();
-            entity = (Persistable) session.load(persistable, id);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-        return entity;
+        return transactionManager.executeTransaction((session, transaction) -> (Persistable) session.get(persistable, id));
     }
 
     public synchronized Player getPlayerFromID(int id) {
@@ -167,35 +152,28 @@ public class DBManager {
     }
 
     public synchronized Ladder getLatestLadder() {
-        Transaction tx = null;
-        Ladder ladder = null;
-        try {
-            tx = session.beginTransaction();
+        return transactionManager.executeTransaction((session, transaction) -> {
             DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
                     .setProjection(Projections.max("id"));
-            ladder = (Ladder) session.createCriteria(Ladder.class)
+            return (Ladder) session.createCriteria(Ladder.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-        return ladder;
+        });
     }
 
     private synchronized GameSession getGameSessionByVersion(GameSessionVersion version) {
-        Transaction tx = null;
-        List gameSessions = null;
-        GameSession gameSession = null;
+        final List gameSessions = new ArrayList();
+        GameSession gameSession;
         try {
-            tx = session.beginTransaction();
-            DetachedCriteria idCriteria = DetachedCriteria.forClass(GameSession.class)
-                    .setProjection(Projections.id());
-            gameSessions = session.createCriteria(GameSession.class)
-                    .add(Property.forName("id").in(idCriteria))
-                    .addOrder(Order.desc("timestamp"))
-                    .list();
-            tx.commit();
+            transactionManager.executeTransaction((session, transaction) -> {
+                DetachedCriteria idCriteria = DetachedCriteria.forClass(GameSession.class)
+                        .setProjection(Projections.id());
+                List results = (session.createCriteria(GameSession.class)
+                        .add(Property.forName("id").in(idCriteria))
+                        .addOrder(Order.desc("timestamp"))
+                        .list());
+                return gameSessions.addAll(results);
+            });
 
             int gameSessionIndex = -1;
 
@@ -207,8 +185,6 @@ public class DBManager {
 
             gameSession = (GameSession) gameSessions.get(gameSessionIndex);
 
-        } catch (HibernateException e) {
-            tx.rollback();
         } catch (IndexOutOfBoundsException e) {
             return null;
         }
@@ -229,20 +205,15 @@ public class DBManager {
     }
 
     public synchronized void addPairToLatestLadder(Pair pair) {
-        Transaction tx = null;
-        Ladder ladder = null;
-        try {
-            tx = session.beginTransaction();
+        Ladder ladder = transactionManager.executeTransaction((session, transaction) -> {
             DetachedCriteria maxId = DetachedCriteria.forClass(Ladder.class)
                     .setProjection(Projections.max("id"));
-            ladder = (Ladder) session.createCriteria(Ladder.class)
+            return (Ladder) session.createCriteria(Ladder.class)
                     .add(Property.forName("id").eq(maxId))
                     .uniqueResult();
-            ladder.insertAtEnd(pair);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+
+        });
+        ladder.insertAtEnd(pair);
     }
 
     public synchronized void addPair(GameSession gameSession, Pair pair, int position) {
@@ -257,15 +228,7 @@ public class DBManager {
 
     public synchronized boolean removePair(int pairId) {
         GameSession gameSession = getGameSessionLatest();
-        Transaction tx = session.beginTransaction();
-        Pair pair = null;
-        try {
-            pair = session.load(Pair.class, pairId);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-            throw e;
-        }
+        Pair pair = transactionManager.executeTransaction((session, transaction) -> session.get(Pair.class, pairId));
 
         boolean removed = gameSession.removePairFromLadder(pair);
 
@@ -358,109 +321,45 @@ public class DBManager {
         return ladder.size();
     }
 
-    public synchronized String getJSONLadder(GameSession gameSession) {
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(GameSession.class, new LadderJSONSerializer())
-                .create();
-        return gson.toJson(gameSession);
-    }
-
-    public synchronized String getJSONDanglingPlayers() {
-        Gson gson = new GsonBuilder().create();
-        List<Player> players = getDanglingPlayers();
-        return gson.toJson(players);
-    }
-
-    public synchronized String getJSONPlayersWithAccount() {
-        Gson gson = new GsonBuilder().create();
-        List<Player> players = getPlayersWithAccount();
-        return gson.toJson(players);
-    }
-
-    public synchronized String getJSONScorecards(GameSession gameSession) {
-        List<Scorecard> scorecards = gameSession.getScorecards();
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Scorecard.class, new ScorecardSerializer())
-                .create();
-
-        return gson.toJson(scorecards);
-    }
-
-    public synchronized String getJSONSession(String sessionToken) {
-        //ex: {"email":"test@gmail.com","admin":true}
-        JSONSerializer serializer = new SessionJSONSerializer(sessionToken);
-        return serializer.toJson();
-    }
-
     private GameSession getGameSession(int gameSessionId) {
-        Transaction tx = null;
-        GameSession gameSession = null;
-        try {
-            tx = session.beginTransaction();
-            gameSession = (GameSession) session.createCriteria(GameSession.class)
+        return transactionManager.executeTransaction((session, transaction) -> {
+            return (GameSession) session.createCriteria(GameSession.class)
                     .add(Property.forName("id").eq(gameSessionId))
                     .uniqueResult();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-        return gameSession;
+        });
     }
 
     public synchronized List<Player> getAllPlayers() {
-        Transaction tx = null;
         List<Player> players = new ArrayList<>();
-
-        try {
-            tx = session.beginTransaction();
-            players = session.createCriteria(Player.class).list();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        transactionManager.executeTransaction((session, transaction) -> {
+            return players.addAll(session.createCriteria(Player.class).list());
+        });
         return players;
     }
 
     public synchronized User getUser(String email) {
-        Transaction tx = null;
-        User user = null;
-        try {
-            tx = session.beginTransaction();
-            user = (User) session.createCriteria(User.class)
+        return transactionManager.executeTransaction((session, transaction) -> {
+            return (User) session.createCriteria(User.class)
                     .add(Restrictions.eq("email", email))
                     .uniqueResult();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
-        return user;
+        });
     }
 
     public synchronized List<User> getAllUsersOfRole(UserRole role) {
-        Transaction tx = null;
         List<User> anonymousUsers = null;
-
-        try {
-            tx = session.beginTransaction();
-            anonymousUsers = session.createCriteria(User.class).add(Restrictions.eq("role", role)).list();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        transactionManager.executeTransaction((session, transaction) -> {
+            List users = session.createCriteria(User.class).add(Restrictions.eq("role", role)).list();
+            return anonymousUsers.addAll(users);
+        });
         return anonymousUsers;
     }
 
     public synchronized List<User> getAllUsers() {
-        Transaction tx = null;
         List<User> users = new ArrayList<>();
+        transactionManager.executeTransaction((session, transaction) -> {
+            return users.addAll(session.createCriteria(User.class).list());
 
-        try {
-            tx = session.beginTransaction();
-            users = session.createCriteria(User.class).list();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        });
         return users;
     }
 
@@ -476,14 +375,10 @@ public class DBManager {
             throw new IllegalDatabaseOperation("Cannot delete an administrator");
         }
 
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
+        transactionManager.executeTransaction((session, transaction) -> {
             session.delete(user);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+            return true;
+        });
     }
 
     public synchronized void addNewUser(User user) throws AccountRegistrationException {
@@ -493,37 +388,15 @@ public class DBManager {
             throw new AccountRegistrationException("The email '" + email + "' is already in use");
         }
 
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(user);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        persistEntity(user);
     }
 
     public synchronized void updateExistingUser(User user) {
-
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(user);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        persistEntity(user);
     }
 
     public synchronized void addNewPlayer(Player player) throws AccountRegistrationException {
-        Transaction tx = null;
-        try {
-            tx = session.beginTransaction();
-            session.saveOrUpdate(player);
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        persistEntity(player);
     }
 
     // Rankings are in a format of pairID -> position in scorecard
@@ -576,33 +449,6 @@ public class DBManager {
         persistEntity(gameSession);
         return true;
     }
-
-    public synchronized List<Player> getDanglingPlayers() {
-        List<Player> players = getAllPlayers();
-        List<Player> playersWithAccounts = new ArrayList<>();
-        List<User> users = getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccounts.add(user.getAssociatedPlayer());
-            }
-        }
-        for (Player player : playersWithAccounts) {
-            players.remove(player);
-        }
-        return players;
-    }
-
-    public synchronized List<Player> getPlayersWithAccount() {
-        List<Player> playersWithAccount = new ArrayList<>();
-        List<User> users = getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccount.add(user.getAssociatedPlayer());
-            }
-        }
-        return playersWithAccount;
-    }
-
 
     public enum GameSessionVersion {
         CURRENT,

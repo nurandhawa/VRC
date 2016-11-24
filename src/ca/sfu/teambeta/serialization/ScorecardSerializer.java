@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.persistence;
+package ca.sfu.teambeta.serialization;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -1,7 +1,8 @@
-package ca.sfu.teambeta.persistence;
+package ca.sfu.teambeta.serialization;
+
+import com.google.gson.JsonObject;
 
 import ca.sfu.teambeta.accounts.UserSessionManager;
-import com.google.gson.JsonObject;
 
 /**
  * Created by constantin on 21/07/16.

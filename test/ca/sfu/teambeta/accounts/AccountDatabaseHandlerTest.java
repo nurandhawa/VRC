@@ -1,15 +1,16 @@
 package ca.sfu.teambeta.accounts;
 
+import org.hibernate.SessionFactory;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Player;
 import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.logic.GameSession;
 import ca.sfu.teambeta.persistence.CSVReader;
 import ca.sfu.teambeta.persistence.DBManager;
-import org.hibernate.SessionFactory;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests for the intermediary class AccountDatabaseHandler
@@ -31,7 +32,6 @@ public class AccountDatabaseHandlerTest {
 
         accountDbHandler = new AccountDatabaseHandler(dbManager);
     }
-
 
     // MARK: Tests
     @Test
@@ -62,7 +62,7 @@ public class AccountDatabaseHandlerTest {
     }
 
     @Test
-    public void updateUser() throws Exception {
+    public void wupdateUser() throws Exception {
         String email = "maria@gmail.com";
         String password = "password";
 

@@ -1,13 +1,6 @@
 package ca.sfu.teambeta.persistence;
 
-import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
-import ca.sfu.teambeta.core.User;
-import ca.sfu.teambeta.logic.TimeSelection;
-import ca.sfu.teambeta.logic.VrcTimeSelection;
-import org.hibernate.ObjectNotFoundException;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +16,7 @@ import java.util.List;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.core.Pair;
 import ca.sfu.teambeta.core.Player;
+import ca.sfu.teambeta.core.User;
 import ca.sfu.teambeta.logic.GameSession;
 
 import static junit.framework.TestCase.assertEquals;
@@ -34,18 +28,11 @@ import static junit.framework.TestCase.assertTrue;
  */
 public class DBManagerTest {
     private DBManager dbManager;
-    private Session session;
 
     @Before
     public void setUp() throws Exception {
         SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        this.session = sessionFactory.openSession();
-        this.dbManager = new DBManager(session);
-    }
-
-    @After
-    public void tearDown() {
-        session.close();
+        this.dbManager = new DBManager(sessionFactory);
     }
 
     @Test
@@ -58,10 +45,9 @@ public class DBManagerTest {
         Assert.assertEquals(playerExpected, playerActual);
     }
 
-    @Test(expected = ObjectNotFoundException.class)
+    @Test
     public void testGetPlayerFromIDNotFound() {
         Player playerActual = dbManager.getPlayerFromID(99);
-
         Assert.assertNull(playerActual);
     }
 
@@ -143,9 +129,6 @@ public class DBManagerTest {
 
     @Test
     public void testGetLatestGameSessionManySessions() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
-
         List<GameSession> sessionsList = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             GameSession currSession = generateGameSession(i);
@@ -161,8 +144,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPair() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -179,8 +160,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAlreadyExists() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -199,8 +178,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtPosition() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -217,8 +194,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtPositionEnd() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -235,8 +210,6 @@ public class DBManagerTest {
 
     @Test
     public void testAddPairAtInvalidPosition() throws Exception {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         GameSession gameSession = generateGameSession(Instant.now().getEpochSecond());
         dbManager.persistEntity(gameSession);
 
@@ -251,8 +224,6 @@ public class DBManagerTest {
 
     @Test
     public void testRemoveUser() {
-        SessionFactory sessionFactory = DBManager.getTestingSession(true);
-        DBManager dbManager = new DBManager(sessionFactory);
         Ladder ladder = null;
         try {
             ladder = CSVReader.setupTestingLadder(dbManager);

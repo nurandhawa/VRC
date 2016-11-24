@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.notifications;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +38,7 @@ public class NotificationManager {
                 new TimerTask() {
                     @Override
                     public void run() {
+                        System.out.println("Email notifications triggered at " + new SimpleDateFormat("MM dd, yyyy 'at' HH:mm.ss a").format(new Date()));
                         sendEmailNotification(emailNotifier);
                     }
                 },

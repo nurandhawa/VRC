@@ -1,4 +1,4 @@
-package ca.sfu.teambeta.persistence;
+package ca.sfu.teambeta.serialization;
 
 /**
  * Created by Gordon Shieh on 30/06/16.

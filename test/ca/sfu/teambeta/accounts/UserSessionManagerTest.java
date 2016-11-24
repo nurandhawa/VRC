@@ -1,13 +1,18 @@
 package ca.sfu.teambeta.accounts;
 
-import ca.sfu.teambeta.accounts.Responses.SessionResponse;
-import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
-import ca.sfu.teambeta.core.exceptions.*;
-import ca.sfu.teambeta.persistence.DBManager;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+
+import ca.sfu.teambeta.accounts.Responses.SessionResponse;
+import ca.sfu.teambeta.core.exceptions.AccountRegistrationException;
+import ca.sfu.teambeta.core.exceptions.GeneralUserAccountException;
+import ca.sfu.teambeta.core.exceptions.InvalidCredentialsException;
+import ca.sfu.teambeta.core.exceptions.InvalidInputException;
+import ca.sfu.teambeta.core.exceptions.NoSuchSessionException;
+import ca.sfu.teambeta.core.exceptions.NoSuchUserException;
+import ca.sfu.teambeta.persistence.DBManager;
 
 
 /**

@@ -3,7 +3,6 @@ package ca.sfu.teambeta;
 import org.hibernate.SessionFactory;
 
 import ca.sfu.teambeta.accounts.AccountDatabaseHandler;
-import ca.sfu.teambeta.accounts.AccountManager;
 import ca.sfu.teambeta.accounts.CredentialsManager;
 import ca.sfu.teambeta.core.Ladder;
 import ca.sfu.teambeta.logic.GameSession;
@@ -41,6 +40,7 @@ class Main {
         AccountDatabaseHandler accountDatabaseHandler = new AccountDatabaseHandler(dbManager);
 
         CredentialsManager credentialsManager = new CredentialsManager(accountDatabaseHandler);
+
         AppController appController =
                 new AppController(dbManager, credentialsManager, AppController.DEVELOP_SERVER_PORT,
                 AppController.DEVELOP_STATIC_HTML_PATH);
