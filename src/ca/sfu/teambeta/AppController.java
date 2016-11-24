@@ -796,13 +796,28 @@ public class AppController {
             }
         });
 
+        patch("/api/announcements/:id", (request, response) -> {
+            try {
+                int id = Integer.parseInt(request.params(ID));
+                Announcement editedAnnouncement = gson.fromJson(request.body(), Announcement.class);
+                announcementManager.editAnnouncement(id, editedAnnouncement);
+                return getOkResponse("Announcement edited.");
+            } catch (NumberFormatException e) {
+                return getErrResponse("Invalid announcement id.");
+            }
+        });
+
         delete("/api/announcements/:id", (request, response) -> {
-            int id = Integer.parseInt(request.params(ID));
-            boolean removed = announcementManager.removeAnnouncement(id);
-            if (removed) {
-                return getOkResponse("Announcement " + id + " removed.");
-            } else {
-                return getErrResponse("Announcement " + id + "doesn't exist.");
+            try {
+                int id = Integer.parseInt(request.params(ID));
+                boolean removed = announcementManager.removeAnnouncement(id);
+                if (removed) {
+                    return getOkResponse("Announcement " + id + " removed.");
+                } else {
+                    return getErrResponse("Announcement " + id + "doesn't exist.");
+                }
+            } catch (NumberFormatException e) {
+                return getErrResponse("Invalid announcement id.");
             }
         });
 

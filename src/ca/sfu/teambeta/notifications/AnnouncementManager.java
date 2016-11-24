@@ -54,4 +54,13 @@ public class AnnouncementManager {
     public int getAnnouncementCount() {
         return getValidAnnouncements().size();
     }
+
+    public boolean editAnnouncement(int id, Announcement editedAnnouncement) {
+        boolean removedExistingAnnouncement = removeAnnouncement(id);
+        if (removedExistingAnnouncement) {
+            addAnnouncement(editedAnnouncement);
+            return true;
+        }
+        return false;
+    }
 }
