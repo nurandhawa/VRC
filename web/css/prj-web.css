@@ -561,7 +561,6 @@
     justify-content: center;
     align-content: flex-start;
     align-items: flex-start;
-    width: 70%;
 }
 
 .announcement-item-default {
@@ -588,8 +587,7 @@
 }
 
 .btn.btn-raised.btn-lg.btn-success.announcement-button {
-    margin: auto;
-    margin-top: 10px;
+    margin: auto auto 20px;
     width: 100px;
     height: 35px;
     display: flex;

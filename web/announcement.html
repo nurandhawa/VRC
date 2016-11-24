@@ -46,12 +46,11 @@
 </nav>
 
 <div id="announcements" class="announcements-wrapper">
-  <a href="javascript:void(0)" @click="previousAnnouncement()" v-bind:class="{ disabled: announcementIndex < 1 }" class="btn btn-info btn-fab announcement-item-default announcement-change-button"><i class="material-icons">keyboard_arrow_left</i></a>
-  <div class="panel panel-default announcement-item-default announcements">
-      <h1 class="announcement-title">{{ announcementTitle }}</h1>
-      <p>{{ announcementMessage }}</p>
+  <div class="panel panel-default announcement-item-default announcements"
+       v-for="announcement in announcements">
+    <h1 class="announcement-title">{{ announcement.title }}</h1>
+    <p>{{ announcement.message }}</p>
   </div>
-  <a href="javascript:void(0)" @click="nextAnnouncement()" v-bind:class="{ disabled: announcementIndex >= (announcements.length - 1) }" class="btn btn-info btn-fab announcement-item-default announcement-change-button"><i class="material-icons">keyboard_arrow_right</i></a>
 </div>
 <a href="/ladder.html" class="btn btn-raised btn-lg btn-success announcement-button">Got it!</a>
 
