@@ -9,6 +9,11 @@
     var REMOVE_ACCOUNT_FORM_ID = "#removeAccountForm";
     var ANNOUNCEMENT_DIV_ID = "#announcementTab";
 
+    var ANNOUNCEMENT_EMPTY_DATA = {
+        title: "",
+        message: ""
+    };
+
     // Override the submit button redirect
     $(REGISTRATION_FORM_ID).submit(function () {
         return false;
@@ -298,7 +303,9 @@
         var announcementComponent = new Vue({
             el: ANNOUNCEMENT_DIV_ID,
             data: {
-                announcements: announcements
+                announcements: announcements,
+                newAnnouncementData: jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA),
+                editAnnouncementData: jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA)
             },
             methods: {
                 deleteAnnouncement: function(id) {
@@ -308,15 +315,32 @@
                         this.refreshAnnouncements();
                     }.bind(this));
                 },
-                addAnnouncement: function(announcementTitle, announcementMessage) {
-                    console.log("Add announcement.");
-                    var now = new Date();
-                    announcementTitle = "Announcement at " + now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-                    announcementMessage = "This message was created " + now.getTime() + " since epoch.";
+                addAnnouncement: function () {
+                    $("#addAnnouncementModal").modal("show");
+                },
+                onAdd: function () {
                     var api = new API();
-                    api.addAnnouncement(announcementTitle, announcementMessage, function() {
+                    api.addAnnouncement(this.newAnnouncementData.title, this.newAnnouncementData.message, function () {
                         this.refreshAnnouncements();
                     }.bind(this));
+                    $("#addAnnouncementModal").modal("hide");
+                    this.newAnnouncementData = jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA);
+                },
+                editAnnouncement: function (id) {
+                    announcements.forEach(function (announcement) {
+                        if (announcement.id === id) {
+                            this.editAnnouncementData = jQuery.extend(true, {}, announcement);
+                        }
+                    }.bind(this));
+                    $("#editAnnouncementModal").modal("show");
+                },
+                onEdit: function () {
+                    var api = new API();
+                    api.editAnnouncement(this.editAnnouncementData.id, this.editAnnouncementData.title, this.editAnnouncementData.message, function () {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                    $("#editAnnouncementModal").modal("hide");
+                    this.editAnnouncementData = jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA);
                 },
                 refreshAnnouncements: function() {
                     console.log("Refreshing announcements.");
@@ -324,6 +348,12 @@
                     api.getAnnouncements(function(announcements) {
                         this.announcements = announcements;
                     }.bind(this));
+                },
+                onValidAnnouncement: function (submitButtonId) {
+                    $(submitButtonId).prop("disabled", false);
+                },
+                onInvalidAnnouncement: function (submitButtonId) {
+                    $(submitButtonId).prop("disabled", true);
                 }
             }
         });

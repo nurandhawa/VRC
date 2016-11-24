@@ -171,17 +171,112 @@
                     <button id="addAnnouncement" @click="addAnnouncement()" class="btn btn-success btn-raised" style="margin: 10px;">Add</button>
                   </div>
 
-                  <div class="panel panel-default announcements" v-for="announcement in announcements">
-                    <div class="panel-body flex-row">
-                      <div class="flex-row-element" style="flex: 2;">
-                        <h3 class="announcement-title">{{ announcement.title }}</h3>
-                        <p>{{ announcement.message }}</p>
-                      </div>
-                      <a class="btn btn-danger btn-fab" @click="deleteAnnouncement(announcement.id)">
-                        <i class="material-icons">delete</i>
-                      </a>
+                    <div id="addAnnouncementModal" class="modal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">×
+                                    </button>
+                                    <h3 class="modal-title">Add Announcement</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <validator name="newAnnouncementValidator"
+                                               @valid="onValidAnnouncement('#addAnnouncementSave')"
+                                               @invalid="onInvalidAnnouncement('#addAnnouncementSave')">
+                                        <div class="form-group modal-form-group" v-validate-class>
+                                            <label for="title"
+                                                   class="col-md-2 control-label">Title</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" id="title"
+                                                       v-model="newAnnouncementData.title"
+                                                       v-validate:title="['required']"
+                                                       :classes="{ invalid: 'has-error' }">
+                                            </div>
+                                        </div>
+                                        <div class="form-group modal-form-group">
+                                            <label for="message" class="col-md-2 control-label">Message</label>
+                                            <div class="col-md-10">
+                                                <textarea class="form-control" rows="3" id="message"
+                                                          v-model="newAnnouncementData.message"></textarea>
+                                            </div>
+                                        </div>
+                                    </validator>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Cancel
+                                    </button>
+                                    <button id="addAnnouncementSave" type="button"
+                                            class="btn btn-success" v-on:click="onAdd"
+                                            disabled="disabled">Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
+                    <div id="editAnnouncementModal" class="modal">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">×
+                                    </button>
+                                    <h3 class="modal-title">Edit Announcement</h3>
+                                </div>
+                                <div class="modal-body">
+                                    <validator name="editAnnouncementValidator"
+                                               @valid="onValidAnnouncement('#editAnnouncementSave')"
+                                               @invalid="onInvalidAnnouncement('#editAnnouncementSave')">
+                                        <div class="form-group modal-form-group" v-validate-class>
+                                            <label for="editTitle" class="col-md-2 control-label">Title</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control"
+                                                       id="editTitle"
+                                                       v-model="editAnnouncementData.title"
+                                                       v-validate:title="['required']"
+                                                       :classes="{ invalid: 'has-error' }">
+                                            </div>
+                                        </div>
+                                        <div class="form-group modal-form-group">
+                                            <label for="editMessage" class="col-md-2 control-label">Message</label>
+                                            <div class="col-md-10">
+                                                <textarea class="form-control" rows="3"
+                                                          id="editMessage"
+                                                          v-model="editAnnouncementData.message"></textarea>
+                                            </div>
+                                        </div>
+                                    </validator>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default"
+                                            data-dismiss="modal">Cancel
+                                    </button>
+                                    <button id="editAnnouncementSave" type="button"
+                                            class="btn btn-success" v-on:click="onEdit"
+                                            disabled="disabled">Save
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default announcements"
+                         v-for="announcement in announcements">
+                        <div class="panel-body flex-row">
+                            <div class="flex-row-element" style="flex: 2;">
+                                <h3 class="announcement-title">{{ announcement.title }}</h3>
+                                <p>{{ announcement.message }}</p>
+                            </div>
+                            <a class="btn btn-info btn-fab"
+                               @click="editAnnouncement(announcement.id)">
+                                <i class="material-icons">create</i>
+                            </a>
+                            <a class="btn btn-danger btn-fab"
+                               @click="deleteAnnouncement(announcement.id)">
+                                <i class="material-icons">delete</i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
 
