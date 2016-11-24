@@ -71,7 +71,7 @@ public class EmailNotifier implements Notifier {
             transport.sendMessage(message, recipients);
             transport.close();
 
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

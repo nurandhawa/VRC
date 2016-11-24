@@ -18,6 +18,7 @@ import ca.sfu.teambeta.persistence.DBManager;
  * Schedule notifications that are sent to players before their matches.
  */
 public class NotificationManager {
+    public static final String TAG = "[NotificationManager] ";
     public static final long PERIOD_ONE_WEEK = 604800000;
 
     private DBManager dbManager;
@@ -31,7 +32,6 @@ public class NotificationManager {
     }
 
     public void scheduleEmailNotifications(Notifier emailNotifier) {
-        // TODO: Log scheduled time and execution time
         Timer notificationTimer = new Timer();
         notificationTimer.scheduleAtFixedRate(
                 new TimerTask() {
@@ -41,6 +41,8 @@ public class NotificationManager {
                     }
                 },
                 scheduledTime, timerPeriod);
+        System.out.println(TAG + "Email notifications scheduled for " +
+                scheduledTime + "with interval " + timerPeriod);
     }
 
     private void sendEmailNotification(Notifier emailNotifier) {
@@ -61,6 +63,9 @@ public class NotificationManager {
             Player player = user.getAssociatedPlayer();
             boolean isActive = activePlayers.containsKey(player);
             if (isActive) {
+                System.out.println(TAG + "Sending email notification for " +
+                        player.getFirstName() + player.getLastName() + " at email address " +
+                        user.getEmail() + " at " + new Date().toString());
                 Scorecard playerScorecard = activePlayers.get(player);
                 emailNotifier.notify(user, playerScorecard);
             }
