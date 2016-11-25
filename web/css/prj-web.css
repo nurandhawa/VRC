@@ -513,6 +513,10 @@
 }
 
 @media screen and (max-width: 500px) {
+    .header-initial {
+        font-size: 2em;
+    }
+
     .mi-header-teamname {
         font-size: .7em;
     }
@@ -525,6 +529,10 @@
     }
     .btn {
         font-size: .9em;
+    }
+
+    h1 {
+        font-size: 2em;
     }
 }
 
@@ -564,8 +572,8 @@
 }
 
 .announcement-item-default {
-    width: 300px;
-    height: 250px;
+    min-width: 300px;
+    min-height: 250px;
     flex-grow: 0;
     flex-shrink: 0;
     flex-basis: 0;

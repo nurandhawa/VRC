@@ -19,8 +19,10 @@ import ca.sfu.teambeta.persistence.Persistable;
 @Entity(name = "Announcement")
 public class Announcement extends Persistable {
     @Expose
+    @Type(type = "text")
     private String title;
     @Expose
+    @Type(type = "text")
     private String message;
 
     @Type(type = "timestamp")
