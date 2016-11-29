@@ -58,13 +58,8 @@ public class JSONManager {
 
     private synchronized List<Player> getDanglingPlayers(DBManager dbManager) {
         List<Player> players = dbManager.getAllPlayers();
-        List<Player> playersWithAccounts = new ArrayList<>();
-        List<User> users = dbManager.getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccounts.add(user.getAssociatedPlayer());
-            }
-        }
+        List<Player> playersWithAccounts = getPlayersWithAccount(dbManager);
+
         for (Player player : playersWithAccounts) {
             players.remove(player);
         }
