@@ -346,10 +346,9 @@ public class DBManager {
     }
 
     public synchronized List<User> getAllUsersOfRole(UserRole role) {
-        List<User> anonymousUsers = null;
+        List<User> anonymousUsers = new ArrayList<>();
         transactionManager.executeTransaction((session, transaction) -> {
-            List users = session.createCriteria(User.class).add(Restrictions.eq("role", role)).list();
-            return anonymousUsers.addAll(users);
+            return anonymousUsers.addAll(session.createCriteria(User.class).add(Restrictions.eq("role", role)).list());
         });
         return anonymousUsers;
     }
