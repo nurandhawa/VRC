@@ -41,6 +41,12 @@ public class JSONManager {
         return gson.toJson(players);
     }
 
+    public synchronized String getJSONAllPlayers() {
+        Gson gson = new GsonBuilder().create();
+        List<Player> players = dbManager.getAllPlayers();
+        return gson.toJson(players);
+    }
+
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder()

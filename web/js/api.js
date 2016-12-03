@@ -609,7 +609,14 @@ var API = (function() {
                             email: user.email
                         });
                     });
-                    playerData.allPlayers = playerData.playersWithAccounts.concat(playerData.danglingPlayers);
+                    playerData.allPlayers = [];
+                    playerData.playersAndUsers.forEach(function(player){
+                        playerData.allPlayers.push({
+                            label: player.firstName + " " + player.lastName,
+                            id: player.id,
+                            email: player.email
+                        });
+                    });
                     doneCallback(playerData);
                 }
             })

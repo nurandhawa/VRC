@@ -732,6 +732,8 @@ public class AppController {
             jsonObject.add("players", element);
             element = parser.parse(jsonManager.getJSONPlayersWithAccount());
             jsonObject.add("users", element);
+            element = parser.parse(jsonManager.getJSONAllPlayers());
+            jsonObject.add("playersAndUsers", element);
 
             String json = jsonObject.toString();
             if (!json.isEmpty()) {
