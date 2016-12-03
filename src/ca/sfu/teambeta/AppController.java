@@ -662,10 +662,14 @@ public class AppController {
             if (InputValidator.checkPlayerExists(dbManager, playerID)) {
                 String email = dbManager.getPlayerFromID(playerID).getEmail();
                 Player player = dbManager.getUser(email).getAssociatedPlayer();
-                dbManager.deleteUser(email);
-                player.setEmail(null);
-                response.status(OK);
-                return getOkResponse("Account successfully deleted.");
+                try {
+                    dbManager.deleteUser(email);
+                    player.setEmail(null);
+                    response.status(OK);
+                    return getOkResponse("Account successfully deleted.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 message = "Player does not exist.";
             }
