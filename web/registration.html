@@ -170,100 +170,103 @@
                 </div>
 
                 <div class="tab-pane fade" id="editPlayerTab">
-                    <div id="editPlayerForm" class="login panel panel-default admin-panel-element">
-                        <form class="form-horizontal">
-                            <legend style="margin-left: .5em;">Edit Player</legend>
-                            <div class="alert alert-warning">
-                                <h6>Player name and email will be populated upon selecting a player.
-                                    <br>
-                                    An empty email suggests that an account has not yet been created
-                                    for that player and so,
-                                    changes cannot be made to email and password for such players.
-                                    <br> <br>
-                                    Leave the password empty if it is not to be changed.</h6>
-                            </div>
-                            <div class="form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
-                                <label for="editPlayer" class="control-label">Player:</label>
-                                <v-select id="editPlayer" v-validate:player="['editPlayer']"
-                                          :classes="{ invalid: 'has-error', }"
-                                          label="label" :value.sync="editPlayer"
-                                          :options="allPlayers"
-                                          placeholder="Search for a player...">
-                                </v-select>
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.player.invalid">You must select
-                                    a player.</p>
-                            </div>
-                            <div class="form-group modal-form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em;">
-                                <label for="playerFirst" class="control-label">First Name</label>
-                                <input type="text" class="form-control" id="playerFirst"
-                                       v-model="firstName"
-                                       v-validate:firstname="['alphaEmpty']"
-                                       :classes="{ invalid: 'has-error', }">
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.firstname.invalid">Required
-                                    field. Alphabetic characters only.</p>
-                            </div>
-                            <div class="form-group modal-form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em;">
-                                <label for="playerLast" class="control-label">Last Name</label>
-                                <input type="text" class="form-control" id="playerLast"
-                                       v-model="lastName"
-                                       v-validate:lastname="['alphaEmpty']"
-                                       :classes="{ invalid: 'has-error', }">
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.lastname.invalid">Alphabetic
-                                    characters only.</p>
-                            </div>
-                            <div class="form-group modal-form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em;">
-                                <label for="editEmail" class="control-label">Email:</label>
-                                <input type="text" class="form-control" id="editEmail"
-                                       v-model="editEmail"
-                                       v-validate:editEmail="['editEmail']"
-                                       :classes="{ invalid: 'has-error', }">
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.email.invalid">You must enter a
-                                    valid email.</p>
-                            </div>
-                            <div class="form-group modal-form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em;">
-                                <label for="editPassword" class="control-label">New
-                                    Password:</label>
-                                <input type="password" class="form-control" id="editPassword"
-                                       v-model="editPassword"
-                                       v-validate:editPassword="['editMinLength']"
-                                       :classes="{ invalid: 'has-error', }">
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.password.invalid">You must enter
-                                    a valid password.</p>
-                            </div>
-                            <div class="form-group modal-form-group" v-validate-class
-                                 style="margin-left: 1.5em; margin-right:1.5em;">
-                                <label for="editPasswordConfirmation" class="control-label">Re-enter
-                                    Password:</label>
-                                <input type="password" class="form-control"
-                                       id="editPasswordConfirmation" group="passwordGroup"
-                                       v-model="editPasswordConfirmation"
-                                       v-validate:editPasswordConfirmation="['editPasswordConfirmation']"
-                                       :classes="{ invalid: 'has-error', }">
-                                <p class="help-block"
-                                   v-if="$registrationFormValidator.passwordGroup.invalid">Your
-                                    password does not match.</p>
-                            </div>
-                            <div class="flex-center">
-                                <button id="submitButtonEdit" v-on:click="onEditPlayer()"
-                                        class="btn btn-success btn-raised"
-                                        style="margin-left: 45%; margin-right: 45%;" disabled>Submit
-                                </button>
-                                <div id="loginAnimationEdit" v-if="spinnerVisibility">
-                                    <clip-loader :color="color"></clip-loader>
+                    <validator name="registrationFormValidator" :groups="['passwordGroup']"
+                               @valid="onValid" @invalid="onInvalid">
+                        <div id="editPlayerForm" class="login panel panel-default admin-panel-element">
+                            <form class="form-horizontal">
+                                <legend style="margin-left: .5em;">Edit Player</legend>
+                                <div class="alert alert-warning">
+                                    <h6>Player name and email will be populated upon selecting a player.
+                                        <br>
+                                        An empty email suggests that an account has not yet been created
+                                        for that player and so,
+                                        changes cannot be made to email and password for such players.
+                                        <br> <br>
+                                        Leave the password empty if it is not to be changed.</h6>
                                 </div>
-                            </div>
-                        </form>
-                    </div>
+                                <div class="form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em; margin-top: 20px">
+                                    <label for="editPlayer" class="control-label">Player:</label>
+                                    <v-select id="editPlayer" v-validate:player="['editPlayer']"
+                                              :classes="{ invalid: 'has-error', }"
+                                              label="label" :value.sync="editPlayer"
+                                              :options="allPlayers"
+                                              placeholder="Search for a player...">
+                                    </v-select>
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.player.invalid">You must select
+                                        a player.</p>
+                                </div>
+                                <div class="form-group modal-form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em;">
+                                    <label for="playerFirst" class="control-label">First Name</label>
+                                    <input type="text" class="form-control" id="playerFirst"
+                                           v-model="firstName"
+                                           v-validate:firstname="['alphaEmpty']"
+                                           :classes="{ invalid: 'has-error', }">
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.firstname.invalid">Required
+                                        field. Alphabetic characters only.</p>
+                                </div>
+                                <div class="form-group modal-form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em;">
+                                    <label for="playerLast" class="control-label">Last Name</label>
+                                    <input type="text" class="form-control" id="playerLast"
+                                           v-model="lastName"
+                                           v-validate:lastname="['alphaEmpty']"
+                                           :classes="{ invalid: 'has-error', }">
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.lastname.invalid">Alphabetic
+                                        characters only.</p>
+                                </div>
+                                <div class="form-group modal-form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em;">
+                                    <label for="editEmail" class="control-label">Email:</label>
+                                    <input type="text" class="form-control" id="editEmail"
+                                           v-model="editEmail"
+                                           v-validate:editEmail="['editEmail']"
+                                           :classes="{ invalid: 'has-error', }">
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.email.invalid">You must enter a
+                                        valid email.</p>
+                                </div>
+                                <div class="form-group modal-form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em;">
+                                    <label for="editPassword" class="control-label">New
+                                        Password:</label>
+                                    <input type="password" class="form-control" id="editPassword"
+                                           v-model="editPassword"
+                                           v-validate:editPassword="['editMinLength']"
+                                           :classes="{ invalid: 'has-error', }">
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.password.invalid">You must enter
+                                        a valid password.</p>
+                                </div>
+                                <div class="form-group modal-form-group" v-validate-class
+                                     style="margin-left: 1.5em; margin-right:1.5em;">
+                                    <label for="editPasswordConfirmation" class="control-label">Re-enter
+                                        Password:</label>
+                                    <input type="password" class="form-control"
+                                           id="editPasswordConfirmation" group="passwordGroup"
+                                           v-model="editPasswordConfirmation"
+                                           v-validate:editPasswordConfirmation="['editPasswordConfirmation']"
+                                           :classes="{ invalid: 'has-error', }">
+                                    <p class="help-block"
+                                       v-if="$registrationFormValidator.passwordGroup.invalid">Your
+                                        password does not match.</p>
+                                </div>
+                                <div class="flex-center">
+                                    <button id="submitButtonEdit" v-on:click="onEditPlayer()"
+                                            class="btn btn-success btn-raised"
+                                            style="margin-left: 45%; margin-right: 45%;" disabled>Submit
+                                    </button>
+                                    <div id="loginAnimationEdit" v-if="spinnerVisibility">
+                                        <clip-loader :color="color"></clip-loader>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </validator>
                 </div>
 
                 <div class="tab-pane fade" id="announcementTab">

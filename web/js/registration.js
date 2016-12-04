@@ -7,6 +7,7 @@
 
     var REGISTRATION_FORM_ID = "#createAccountTab";
     var REMOVE_ACCOUNT_FORM_ID = "#removeAccountTab";
+    var EDIT_PLAYER_FORM_ID = "#editPlayerTab";
     var ANNOUNCEMENT_DIV_ID = "#announcementTab";
 
     var ANNOUNCEMENT_EMPTY_DATA = {
@@ -190,9 +191,6 @@
                 firstName: "",
                 lastName: "",
                 phoneNumber: "",
-                editEmail: "",
-                editPassword: "",
-                editPasswordConfirmation: "",
                 email: "",
                 password: "",
                 passwordConfirmation: "",
@@ -215,40 +213,11 @@
                 onValid: onValid,
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
-                onEditPlayer: onEditPlayer,
                 onDelete: onDelete
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
                     this.$validate();
-                },
-                "editPlayer": function () {
-                    if (this.editPlayer) {
-                        var name = (this.editPlayer.label).split(" ");
-                        this.editEmail = this.editPlayer.email;
-                        this.firstName = name[0];
-                        this.lastName = name[1];
-                        this.editPassword = "";
-                        this.editPasswordConfirmation = "";
-                        $("#submitButtonEdit").prop("disabled", false);
-                    } else {
-                        this.editEmail = null;
-                        this.firstName = "";
-                        this.lastName = "";
-                        this.editPassword = "";
-                        this.editPasswordConfirmation = "";
-                        $("#submitButtonEdit").prop("disabled", true);
-                    }
-
-                    if (this.editEmail) {
-                        $("#editEmail").prop("disabled", false);
-                        $("#editPassword").prop("disabled", false);
-                        $("#editPasswordConfirmation").prop("disabled", false);
-                    } else {
-                        $("#editEmail").prop("disabled", true);
-                        $("#editPassword").prop("disabled", true);
-                        $("#editPasswordConfirmation").prop("disabled", true);
-                    }
                 }
             }
         });
@@ -292,7 +261,63 @@
                 }
             }
         });
+
+        var editPlayerForm = new Vue({
+            el: EDIT_PLAYER_FORM_ID,
+            components: {
+                'ClipLoader': VueSpinner.ClipLoader,
+                'v-select': VueSelect.VueSelect
+            },
+            data: {
+                administrator: false,
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+                editEmail: "",
+                editPassword: "",
+                editPasswordConfirmation: "",
+                editPlayer: "",
+                allPlayers: playerData.allPlayers,
+                spinnerVisibility: false,
+            },
+            methods: {
+                onValid: onValid,
+                onInvalid: onInvalid,
+                onEditPlayer: onEditPlayer
+            },
+            watch: {
+                "editPlayer": function () {
+                    if (this.editPlayer) {
+                        var name = (this.editPlayer.label).split(" ");
+                        this.editEmail = this.editPlayer.email;
+                        this.firstName = name[0];
+                        this.lastName = name[1];
+                        this.editPassword = "";
+                        this.editPasswordConfirmation = "";
+                        $("#submitButtonEdit").prop("disabled", false);
+                    } else {
+                        this.editEmail = null;
+                        this.firstName = "";
+                        this.lastName = "";
+                        this.editPassword = "";
+                        this.editPasswordConfirmation = "";
+                        $("#submitButtonEdit").prop("disabled", true);
+                    }
+
+                    if (this.editEmail) {
+                        $("#editEmail").prop("disabled", false);
+                        $("#editPassword").prop("disabled", false);
+                        $("#editPasswordConfirmation").prop("disabled", false);
+                    } else {
+                        $("#editEmail").prop("disabled", true);
+                        $("#editPassword").prop("disabled", true);
+                        $("#editPasswordConfirmation").prop("disabled", true);
+                    }
+                }
+            }
+        });
     });
+
 
     api.getAnnouncements(function(announcements) {
         var announcementComponent = new Vue({
