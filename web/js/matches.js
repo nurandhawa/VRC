@@ -158,7 +158,7 @@ var Matches = (function () {
                                       isRankTaken = true;
                                   }
                               }
-                              if(!isRankTaken){
+                              if(!isRankTaken && result.newRanking){
                                   ranksTaken.push(thisRanking);
                                   numPlayed++;
                               }
