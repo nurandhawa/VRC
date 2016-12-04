@@ -216,7 +216,6 @@
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
                 onEditPlayer: onEditPlayer,
-                editPlayerInfo: editPlayerInfo
                 onDelete: onDelete
             },
             watch: {
@@ -323,7 +322,7 @@
                     this.newAnnouncementData = jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA);
                 },
                 editAnnouncement: function (id) {
-                    announcements.forEach(function (announcement) {
+                    this.announcements.forEach(function (announcement) {
                         if (announcement.id === id) {
                             this.editAnnouncementData = jQuery.extend(true, {}, announcement);
                         }

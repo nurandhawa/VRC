@@ -24,7 +24,7 @@ public class AnnouncementManager {
     public AnnouncementManager(DBManager dbManager) {
         this.dbManager = dbManager;
         this.announcementList = new ArrayList<>();
-        this.announcementList.addAll(dbManager.getAnnoucements());
+        this.announcementList.addAll(dbManager.getAnnouncements());
     }
 
     public void addAnnouncement(Announcement announcement) {

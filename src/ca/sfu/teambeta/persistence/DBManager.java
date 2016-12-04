@@ -456,17 +456,11 @@ public class DBManager {
         PREVIOUS
     }
 
-    public synchronized List<Announcement> getAnnoucements() {
-        Transaction tx = null;
+    public synchronized List<Announcement> getAnnouncements() {
         List<Announcement> announcements = new ArrayList<>();
-
-        try {
-            tx = session.beginTransaction();
-            announcements = session.createCriteria(Announcement.class).list();
-            tx.commit();
-        } catch (HibernateException e) {
-            tx.rollback();
-        }
+        transactionManager.executeTransaction(((session, transaction) -> {
+            return announcements.addAll(session.createCriteria(Announcement.class).list());
+        }));
         return announcements;
     }
 }
