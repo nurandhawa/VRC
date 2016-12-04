@@ -271,13 +271,14 @@ var API = (function() {
                     match.resultsValid = false;
                     match.results = [];
                     match.pairs.forEach(function(pair, index) {
+                        var result;
                         if (match.isDone) {
-                            var result = {
+                            result = {
                                 pairId: pair.id,
                                 newRanking: index + 1
                             };
                         } else {
-                            var result = {
+                            result = {
                                 pairId: pair.id,
                                 newRanking: 0
                             };
