@@ -441,6 +441,7 @@ public class DBManager {
         try {
             ladder = CSVReader.importCsv(inputStreamReader, this);
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         GameSession gameSession = getGameSessionLatest();

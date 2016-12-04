@@ -661,9 +661,15 @@ public class AppController {
 
             if (InputValidator.checkPlayerExists(dbManager, playerID)) {
                 String email = dbManager.getPlayerFromID(playerID).getEmail();
-                dbManager.deleteUser(email);
-                response.status(OK);
-                return getOkResponse("Account successfully deleted.");
+                Player player = dbManager.getUser(email).getAssociatedPlayer();
+                try {
+                    dbManager.deleteUser(email);
+                    player.setEmail(null);
+                    response.status(OK);
+                    return getOkResponse("Account successfully deleted.");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             } else {
                 message = "Player does not exist.";
             }
@@ -726,6 +732,8 @@ public class AppController {
             jsonObject.add("players", element);
             element = parser.parse(jsonManager.getJSONPlayersWithAccount());
             jsonObject.add("users", element);
+            element = parser.parse(jsonManager.getJSONAllPlayers());
+            jsonObject.add("playersAndUsers", element);
 
             String json = jsonObject.toString();
             if (!json.isEmpty()) {

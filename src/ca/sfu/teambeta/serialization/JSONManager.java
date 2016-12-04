@@ -1,5 +1,6 @@
 package ca.sfu.teambeta.serialization;
 
+import ca.sfu.teambeta.core.Pair;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -41,6 +42,21 @@ public class JSONManager {
         return gson.toJson(players);
     }
 
+    public synchronized List<Player> getPlayers(DBManager dbManager) {
+        List<Player> players = new ArrayList<>();
+        for (Pair pair : dbManager.getLatestLadder().getPairs()) {
+            players.add(pair.getPlayers().get(0));
+            players.add(pair.getPlayers().get(1));
+        }
+        return players;
+    }
+
+    public synchronized String getJSONAllPlayers() {
+        Gson gson = new GsonBuilder().create();
+        List<Player> players = getPlayers(dbManager);
+        return gson.toJson(players);
+    }
+
     public synchronized String getJSONScorecards(GameSession gameSession) {
         List<Scorecard> scorecards = gameSession.getScorecards();
         Gson gson = new GsonBuilder()
@@ -57,14 +73,9 @@ public class JSONManager {
     }
 
     private synchronized List<Player> getDanglingPlayers(DBManager dbManager) {
-        List<Player> players = dbManager.getAllPlayers();
-        List<Player> playersWithAccounts = new ArrayList<>();
-        List<User> users = dbManager.getAllUsers();
-        for (User user : users) {
-            if (user.getAssociatedPlayer() != null) {
-                playersWithAccounts.add(user.getAssociatedPlayer());
-            }
-        }
+        List<Player> players = getPlayers(dbManager);
+        List<Player> playersWithAccounts = getPlayersWithAccount(dbManager);
+
         for (Player player : playersWithAccounts) {
             players.remove(player);
         }
