@@ -39,6 +39,7 @@ public class Player extends Persistable {
     }
 
     public void setFirstName(String firstName) {
+        changeUUID();
         this.firstName = firstName;
     }
 
@@ -47,6 +48,7 @@ public class Player extends Persistable {
     }
 
     public void setLastName(String lastName) {
+        changeUUID();
         this.lastName = lastName;
     }
 
@@ -85,5 +87,9 @@ public class Player extends Persistable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    private void changeUUID() {
+        this.uuid = UUID.randomUUID();
     }
 }

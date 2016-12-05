@@ -638,6 +638,119 @@ var API = (function() {
             });
     };
 
+    API.prototype.getAnnouncementCount = function(doneCallback, failCallback) {
+        $.ajax({
+            method: "GET",
+            url: SERVER_URL + "/announcements/count"
+        })
+        .done(function(response) {
+            if (doneCallback) {
+                doneCallback(JSON.parse(response));
+            }
+        })
+        .fail(function(response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                defaultFailCallback(responseBody);
+            }
+        });
+    };
+
+    API.prototype.getAnnouncements = function(doneCallback, failCallback) {
+        $.ajax({
+            method: "GET",
+            url: SERVER_URL + "/announcements"
+        })
+        .done(function(response) {
+            if (doneCallback) {
+                doneCallback(JSON.parse(response));
+            }
+        })
+        .fail(function(response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                defaultFailCallback(responseBody);
+            }
+        });
+    };
+
+    API.prototype.addAnnouncement = function(announcementTitle, announcementMessage, doneCallback, failCallback) {
+        $.ajax({
+            method: "POST",
+            url: SERVER_URL + "/announcements",
+            data: JSON.stringify({
+                title: announcementTitle,
+                message: announcementMessage
+            })
+        })
+        .done(function(response) {
+            if (doneCallback) {
+                doneCallback(JSON.parse(response));
+            }
+        })
+        .fail(function(response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                defaultFailCallback(responseBody);
+            }
+        });
+    };
+
+    API.prototype.editAnnouncement = function (id, announcementTitle, announcementMessage, doneCallback, failCallback) {
+        $.ajax({
+            method: "PATCH",
+            url: SERVER_URL + "/announcements/" + id,
+            data: JSON.stringify({
+                title: announcementTitle,
+                message: announcementMessage
+            })
+        })
+            .done(function (response) {
+                if (doneCallback) {
+                    doneCallback(JSON.parse(response));
+                }
+            })
+            .fail(function (response) {
+                if (failCallback) {
+                    failCallback(response);
+                }
+                else {
+                    var responseBody = JSON.parse(response.responseText);
+                    defaultFailCallback(responseBody);
+                }
+            });
+    };
+
+    API.prototype.deleteAnnouncement = function(id, doneCallback, failCallback) {
+        $.ajax({
+            method: "DELETE",
+            url: SERVER_URL + "/announcements/" + id
+        })
+        .done(function(response) {
+            if (doneCallback) {
+                doneCallback(JSON.parse(response));
+            }
+        })
+        .fail(function(response) {
+            if (failCallback) {
+                failCallback(response);
+            }
+            else {
+                var responseBody = JSON.parse(response.responseText);
+                defaultFailCallback(responseBody);
+            }
+        });
+    };
+
     return API;
 
 })();

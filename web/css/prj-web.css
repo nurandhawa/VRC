@@ -117,14 +117,13 @@
 }
 
 .matches-container {
-    margin: 10px;
-    margin-top: 20px;
+    margin: 20px 10px 10px;
+    padding-bottom: 20px;
     background: #f2f2f2;
 }
 
 .matches-container-tabs {
     margin-bottom: 15px;
-    margin-top: 3em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -375,6 +374,12 @@
     flex: 1;
 }
 
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .position-label {
     font-size: 1.5em;
     margin: auto;
@@ -509,6 +514,10 @@
 }
 
 @media screen and (max-width: 500px) {
+    .header-initial {
+        font-size: 2em;
+    }
+
     .mi-header-teamname {
         font-size: .7em;
     }
@@ -521,6 +530,10 @@
     }
     .btn {
         font-size: .9em;
+    }
+
+    h1 {
+        font-size: 2em;
     }
 }
 
@@ -548,4 +561,53 @@
 .div-btn-accounts {
     float: right;
     margin-bottom: 30px;
+}
+
+.announcements-wrapper {
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    align-items: flex-start;
+}
+
+.announcement-item-default {
+    min-width: 300px;
+    min-height: 250px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0;
+}
+
+.panel.panel-default.announcements {
+    width: 70%;
+    max-width: 70%;
+    padding: 20px 15px;
+    margin: 20px auto 20px;
+    flex-grow: 10;
+    flex-shrink: 0;
+    flex-basis: 500px;
+}
+
+.announcement-title {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.btn.btn-raised.btn-lg.btn-success.announcement-button {
+    margin: auto auto 20px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+}
+
+.btn.btn-primary.btn-fab.announcement-change-button {
+    flex-grow: 0.5;
+    flex-shrink: 0;
+    flex-basis: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 56px;
 }

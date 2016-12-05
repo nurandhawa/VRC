@@ -12,5 +12,6 @@
         <mapping class="ca.sfu.teambeta.core.Penalty"/>
         <mapping class="ca.sfu.teambeta.core.User"/>
         <mapping class="ca.sfu.teambeta.logic.GameSession"/>
+        <mapping class="ca.sfu.teambeta.notifications.Announcement"/>
     </session-factory>
 </hibernate-configuration>

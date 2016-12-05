@@ -5,10 +5,26 @@
     $.material.options.validate = false;
     $.material.init();
 
-    var REGISTRATION_FORM_ID = "#registrationForm";
+    var REGISTRATION_FORM_ID = "#createAccountTab";
+    var REMOVE_ACCOUNT_FORM_ID = "#removeAccountTab";
+    var EDIT_PLAYER_FORM_ID = "#editPlayerTab";
+    var ANNOUNCEMENT_DIV_ID = "#announcementTab";
+
+    var ANNOUNCEMENT_EMPTY_DATA = {
+        title: "",
+        message: ""
+    };
 
     // Override the submit button redirect
     $(REGISTRATION_FORM_ID).submit(function () {
+        return false;
+    });
+
+    $(REMOVE_ACCOUNT_FORM_ID).submit(function () {
+        return false;
+    });
+
+    $(EDIT_PLAYER_FORM_ID).submit(function () {
         return false;
     });
 
@@ -153,24 +169,6 @@
         $("#submitButton").prop("disabled", true);
     };
 
-    var showCreateAccountDiv = function() {
-        document.getElementById("createAccountDiv").style.display = "block";
-        document.getElementById("removeAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "none";
-    };
-
-    var showRemoveAccountDiv = function() {
-        document.getElementById("removeAccountDiv").style.display = "block";
-        document.getElementById("createAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "none";
-    };
-
-    var editPlayerInfo = function() {
-        document.getElementById("removeAccountDiv").style.display = "none";
-        document.getElementById("createAccountDiv").style.display = "none";
-        document.getElementById("editPlayerDiv").style.display = "block";
-    };
-
     var onDelete = function () {
         this.spinnerVisibility = true;
         var api = new API();
@@ -180,8 +178,12 @@
     var onEditPlayer = function () {
         this.spinnerVisibility = true;
         var api = new API();
-        api.editPlayer(this.editEmail, this.editPassword, this.firstName, this.lastName, 
+        api.editPlayer(this.editEmail, this.editPassword, this.firstName, this.lastName,
                         this.editPlayer.id, onEditSuccess.bind(this), onEditError.bind(this));
+    };
+
+    var convertToHtml = function (text) {
+        return text.replace(/\n/g, '<br />');
     };
 
     var api = new API();
@@ -197,9 +199,6 @@
                 firstName: "",
                 lastName: "",
                 phoneNumber: "",
-                editEmail: "",
-                editPassword: "",
-                editPasswordConfirmation: "",
                 email: "",
                 password: "",
                 passwordConfirmation: "",
@@ -222,16 +221,79 @@
                 onValid: onValid,
                 onInvalid: onInvalid,
                 onEmailChange: onEmailChange,
-                onDelete: onDelete,
-                onEditPlayer: onEditPlayer,
-                showRemoveAccountDiv: showRemoveAccountDiv,
-                showCreateAccountDiv: showCreateAccountDiv,
-                editPlayerInfo: editPlayerInfo
+                onDelete: onDelete
             },
             watch: {
                 "existingPlayer": function (newVal, oldVal) {
                     this.$validate();
+                }
+            }
+        });
+
+        var removeAccountForm = new Vue({
+            el: REMOVE_ACCOUNT_FORM_ID,
+            components: {
+                'ClipLoader': VueSpinner.ClipLoader,
+                'v-select': VueSelect.VueSelect
+            },
+            data: {
+                administrator: false,
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+                email: "",
+                password: "",
+                passwordConfirmation: "",
+                securityInfo: {
+                    question: "",
+                    answer: ""
                 },
+                existingPlayer: "",
+                deletePlayer: "",
+                existingPlayers: playerData.danglingPlayers,
+                users: playerData.playersWithAccounts,
+                color: '#03a9f4',
+                spinnerVisibility: false,
+                invalidCredentials: false
+            },
+            methods: {
+                onSubmit: onSubmit,
+                onValid: onValid,
+                onInvalid: onInvalid,
+                onEmailChange: onEmailChange,
+                onDelete: onDelete
+            },
+            watch: {
+                "existingPlayer": function (newVal, oldVal) {
+                    this.$validate();
+                }
+            }
+        });
+
+        var editPlayerForm = new Vue({
+            el: EDIT_PLAYER_FORM_ID,
+            components: {
+                'ClipLoader': VueSpinner.ClipLoader,
+                'v-select': VueSelect.VueSelect
+            },
+            data: {
+                administrator: false,
+                firstName: "",
+                lastName: "",
+                phoneNumber: "",
+                editEmail: "",
+                editPassword: "",
+                editPasswordConfirmation: "",
+                editPlayer: "",
+                allPlayers: playerData.allPlayers,
+                spinnerVisibility: false,
+            },
+            methods: {
+                onValid: onValid,
+                onInvalid: onInvalid,
+                onEditPlayer: onEditPlayer
+            },
+            watch: {
                 "editPlayer": function () {
                     if (this.editPlayer) {
                         var name = (this.editPlayer.label).split(" ");
@@ -259,6 +321,67 @@
                         $("#editPassword").prop("disabled", true);
                         $("#editPasswordConfirmation").prop("disabled", true);
                     }
+                }
+            }
+        });
+    });
+
+
+    api.getAnnouncements(function(announcements) {
+        var announcementComponent = new Vue({
+            el: ANNOUNCEMENT_DIV_ID,
+            data: {
+                announcements: announcements,
+                newAnnouncementData: jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA),
+                editAnnouncementData: jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA)
+            },
+            methods: {
+                deleteAnnouncement: function(id) {
+                    console.log("Delete announcement " + id + ".");
+                    var api = new API();
+                    api.deleteAnnouncement(id, function() {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                },
+                addAnnouncement: function () {
+                    $("#addAnnouncementModal").modal("show");
+                },
+                onAdd: function () {
+                    var api = new API();
+                    api.addAnnouncement(convertToHtml(this.newAnnouncementData.title), convertToHtml(this.newAnnouncementData.message), function () {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                    $("#addAnnouncementModal").modal("hide");
+                    this.newAnnouncementData = jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA);
+                },
+                editAnnouncement: function (id) {
+                    this.announcements.forEach(function (announcement) {
+                        if (announcement.id === id) {
+                            this.editAnnouncementData = jQuery.extend(true, {}, announcement);
+                        }
+                    }.bind(this));
+                    $("#editAnnouncementModal").modal("show");
+                },
+                onEdit: function () {
+                    var api = new API();
+                    api.editAnnouncement(this.editAnnouncementData.id, convertToHtml(this.editAnnouncementData.title), convertToHtml(this.editAnnouncementData.message), function () {
+                        this.refreshAnnouncements();
+                    }.bind(this));
+                    $("#editAnnouncementModal").modal("hide");
+                    this.editAnnouncementData = jQuery.extend(true, {}, ANNOUNCEMENT_EMPTY_DATA);
+                },
+                refreshAnnouncements: function() {
+                    console.log("Refreshing announcements.");
+                    var api = new API();
+                    api.getAnnouncements(function(announcements) {
+                        this.announcements = announcements;
+                    }.bind(this));
+                },
+                onValidAnnouncement: function (submitButtonId) {
+                    $(submitButtonId).prop("disabled", false);
+                },
+                onInvalidAnnouncement: function (submitButtonId) {
+                    $(submitButtonId).prop("disabled", true);
                 }
             }
         });
