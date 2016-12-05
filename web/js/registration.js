@@ -178,6 +178,10 @@
                         this.editPlayer.id, onEditSuccess.bind(this), onEditError.bind(this));
     };
 
+    var convertToHtml = function (text) {
+        return text.replace(/\n/g, '<br />');
+    };
+
     var api = new API();
     api.getPlayers(function (playerData) {
         var registrationForm = new Vue({
@@ -340,7 +344,7 @@
                 },
                 onAdd: function () {
                     var api = new API();
-                    api.addAnnouncement(this.newAnnouncementData.title, this.newAnnouncementData.message, function () {
+                    api.addAnnouncement(convertToHtml(this.newAnnouncementData.title), convertToHtml(this.newAnnouncementData.message), function () {
                         this.refreshAnnouncements();
                     }.bind(this));
                     $("#addAnnouncementModal").modal("hide");
@@ -356,7 +360,7 @@
                 },
                 onEdit: function () {
                     var api = new API();
-                    api.editAnnouncement(this.editAnnouncementData.id, this.editAnnouncementData.title, this.editAnnouncementData.message, function () {
+                    api.editAnnouncement(this.editAnnouncementData.id, convertToHtml(this.editAnnouncementData.title), convertToHtml(this.editAnnouncementData.message), function () {
                         this.refreshAnnouncements();
                     }.bind(this));
                     $("#editAnnouncementModal").modal("hide");

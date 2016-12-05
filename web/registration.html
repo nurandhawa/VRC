@@ -368,8 +368,8 @@
                          v-for="announcement in announcements">
                         <div class="panel-body flex-row">
                             <div class="flex-row-element" style="flex: 2;">
-                                <h3 class="announcement-title">{{ announcement.title }}</h3>
-                                <p>{{ announcement.message }}</p>
+                                <h3 class="announcement-title">{{{ announcement.title }}}</h3>
+                                <p>{{{ announcement.message }}}</p>
                             </div>
                             <a class="btn btn-info btn-fab btn-fab-mini"
                                @click="editAnnouncement(announcement.id)">
