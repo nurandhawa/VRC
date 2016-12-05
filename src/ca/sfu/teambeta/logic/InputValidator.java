@@ -105,8 +105,7 @@ public class InputValidator {
             // Ignore player objects that will be replaced by existing player objects
             if (!(existingId >= 0)) {
                 validatePlayerFirstName(player.getFirstName());
-                validateNullOrEmptyString(player.getFirstName());
-                validatePlayerFirstName(player.getLastName());
+                validatePlayerLastName(player.getLastName());
             }
         }
     }
