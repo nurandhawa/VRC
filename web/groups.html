@@ -63,7 +63,7 @@
                                                     style="margin-right: 10px; padding: 5px"
                                                     v-model="match.results[pairIndex]">
                                                <option v-for="(pairIndex, pair2) in match.pairs"
-                                                       v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1, beenPlayed: true }">
+                                                       v-bind:value="{ pairId: pair.id, newRanking: pairIndex + 1 }">
                                                    {{ pairIndex + 1 }}
                                                </option>
                                             </select>

@@ -263,12 +263,19 @@ var API = (function() {
                     match.gameSession = gameSession;
                     match.resultsValid = false;
                     match.results = [];
-                    match.pairs.forEach(function(pair) {
-                        var result = {
-                            pairId: 0,
-                            newRanking: 0,
-                            beenPlayed: false
-                        };
+                    match.pairs.forEach(function(pair, index) {
+                        var result;
+                        if (match.isDone) {
+                            result = {
+                                pairId: pair.id,
+                                newRanking: index + 1
+                            };
+                        } else {
+                            result = {
+                                pairId: pair.id,
+                                newRanking: 0
+                            };
+                        }
                         match.results.push(result);
 
                         pair.absentPenalty = {
