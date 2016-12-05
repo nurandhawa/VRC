@@ -24,6 +24,10 @@
         return false;
     });
 
+    $(EDIT_PLAYER_FORM_ID).submit(function () {
+        return false;
+    });
+
     var onRegSuccess = function (response) {
         this.spinnerVisibility = false;
         alert("Registration successful!");

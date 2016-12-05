@@ -134,7 +134,8 @@
                         </div>
                         <div class="flex-center">
                             <button id="submitButton" type="submit" class="btn btn-success btn-raised" v-on:click="onSubmit()"
-                                    style="margin-left: 45%; margin-right: 45%;" disabled="disabled">Submit</button>
+                                    disabled="disabled">Submit
+                            </button>
                             <div id="loginAnimation" v-if="spinnerVisibility">
                                 <clip-loader :color="color"></clip-loader>
                             </div>
@@ -158,8 +159,9 @@
                             <p class="help-block" v-if="$registrationFormValidator.player.invalid">You must select a player.</p>
                         </div>
                           <div class="flex-center">
-                            <button id="submitButtonRemove" v-on:click="onDelete()" class="btn btn-success btn-raised"
-                                    style="margin-left: 45%; margin-right: 45%;">Submit</button>
+                              <button id="submitButtonRemove" v-on:click="onDelete()"
+                                      class="btn btn-success btn-raised">Submit
+                              </button>
                             <div id="loginAnimationRemove" v-if="spinnerVisibility">
                                 <clip-loader :color="color"></clip-loader>
                             </div>
@@ -257,8 +259,7 @@
                                 </div>
                                 <div class="flex-center">
                                     <button id="submitButtonEdit" v-on:click="onEditPlayer()"
-                                            class="btn btn-success btn-raised"
-                                            style="margin-left: 45%; margin-right: 45%;" disabled>Submit
+                                            class="btn btn-success btn-raised" disabled>Submit
                                     </button>
                                     <div id="loginAnimationEdit" v-if="spinnerVisibility">
                                         <clip-loader :color="color"></clip-loader>
