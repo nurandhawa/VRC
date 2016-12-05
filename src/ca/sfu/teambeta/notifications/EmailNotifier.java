@@ -25,8 +25,8 @@ import ca.sfu.teambeta.core.User;
 public class EmailNotifier implements Notifier {
     private static final String EMAIL_SMTP_HOSTNAME = "smtp.sendgrid.net";
     private static final int EMAIL_SMTP_PORT = 587;
-    private static final String EMAIL_SMTP_USERNAME = "alexlandmail";
-    private static final String EMAIL_SMTP_PASSWORD = "0rant-2brady-tapa-scowl0";
+    private static final String EMAIL_SMTP_USERNAME = "";
+    private static final String EMAIL_SMTP_PASSWORD = "";
 
     private static final String KEY_TRANSPORT_PROTOCOL = "mail.transport.protocol";
     private static final String KEY_SMTP_HOST = "mail.smtp.host";
